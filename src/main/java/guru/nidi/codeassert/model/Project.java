@@ -22,7 +22,6 @@ import java.util.Map;
 public class Project {
     private final Map<String, JavaPackage> packages;
     private final PackageFilter filter;
-    private final ClassFileParser parser;
     private final JavaClassBuilder builder;
 
     public Project(FileManager fileManager) {
@@ -31,11 +30,8 @@ public class Project {
 
     public Project(FileManager fileManager, PackageFilter filter) {
         this.filter = filter;
-
         this.packages = new HashMap<>();
-
-        this.parser = new ClassFileParser(filter);
-        this.builder = new JavaClassBuilder(parser, fileManager);
+        this.builder = new JavaClassBuilder(new ClassFileParser(filter), fileManager);
     }
 
     public Collection<JavaPackage> getPackages() {
