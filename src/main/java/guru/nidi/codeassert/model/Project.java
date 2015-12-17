@@ -81,7 +81,7 @@ public class Project {
             JavaPackage clazzPackage = addPackage(packageName);
             clazzPackage.addClass(clazz);
 
-            for (JavaPackage importedPackage : clazz.getImportedPackages()) {
+            for (JavaPackage importedPackage : clazz.getImports()) {
                 importedPackage = addPackage(importedPackage.getName());
                 clazzPackage.dependsUpon(importedPackage);
             }

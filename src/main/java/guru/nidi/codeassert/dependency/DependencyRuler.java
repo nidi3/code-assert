@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package guru.nidi.codeassert.dependency;
-
+package guru.nidi.codeassert.dependency;
 
 /**
  *
  */
-public class EmptyRuleDefiner implements RuleDefiner {
-    @Override
-    public void defineRules() {
-    }
+public interface DependencyRuler {
+    void defineRules();
 }

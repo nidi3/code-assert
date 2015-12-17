@@ -29,7 +29,6 @@ import java.util.Map;
  */
 
 public class JavaClass {
-
     private String className;
     private String packageName;
     private Map<String, JavaPackage> imports;
@@ -66,14 +65,18 @@ public class JavaClass {
         return sourceFile;
     }
 
-    public Collection<JavaPackage> getImportedPackages() {
+    public Collection<JavaPackage> getImports() {
         return imports.values();
     }
 
-    public void addImportedPackage(JavaPackage jPackage) {
+    public void addImport(JavaPackage jPackage) {
         if (!jPackage.getName().equals(getPackageName())) {
             imports.put(jPackage.getName(), jPackage);
         }
+    }
+
+    public boolean hasImportsMatchedBy(String name) {
+        return !JavaPackage.allMatchesBy(getImports(), name).isEmpty();
     }
 
     public boolean equals(Object other) {
@@ -87,11 +90,5 @@ public class JavaClass {
 
     public int hashCode() {
         return getName().hashCode();
-    }
-
-    public static class ClassComparator implements Comparator<JavaClass> {
-        public int compare(JavaClass a, JavaClass b) {
-            return a.getName().compareTo(b.getName());
-        }
     }
 }

@@ -25,8 +25,8 @@ import java.util.*;
 /**
  *
  */
-public class RuleMatchers {
-    private RuleMatchers() {
+public class DependencyMatchers {
+    private DependencyMatchers() {
     }
 
     public static Matcher<Project> matchesRules(final DependencyRules rules) {

@@ -25,7 +25,7 @@ import java.util.*;
  *
  */
 public class DependencyRules {
-    private final List<PackageRule> rules = new ArrayList<>();
+    private final List<DependencyRule> rules = new ArrayList<>();
     private final boolean allowAll;
 
     private DependencyRules(boolean allowAll) {
@@ -40,29 +40,29 @@ public class DependencyRules {
         return new DependencyRules(false);
     }
 
-    public PackageRule addRule(String pack) {
-        final PackageRule rule = new PackageRule(pack, allowAll);
+    public DependencyRule addRule(String pack) {
+        final DependencyRule rule = new DependencyRule(pack, allowAll);
         rules.add(rule);
         return rule;
     }
 
-    public PackageRule addRule(PackageRule pack) {
+    public DependencyRule addRule(DependencyRule pack) {
         rules.add(pack);
         return pack;
     }
 
     /**
-     * Add rules defined by a RuleDefiner class. The following DependencyRules are all equal:
+     * Add rules defined by a DependencyRuler class. The following DependencyRules are all equal:
      * <pre>
      * DependencyRules rules1 = DependencyRules.allowAll();
-     * PackageRule a = rules1.addRule("com.acme.a.*"));
-     * PackageRule b = rules1.addRule("com.acme.sub.b"));
+     * DependencyRule a = rules1.addRule("com.acme.a.*"));
+     * DependencyRule b = rules1.addRule("com.acme.sub.b"));
      * a.mustNotDependUpon(b);
      * </pre>
      * ----
      * <pre>
-     * class ComAcme implements RuleDefiner{
-     *     PackageRule a_, subB;
+     * class ComAcme implements DependencyRuler{
+     *     DependencyRule a_, subB;
      *
      *     public defineRules(){
      *         a_.mustNotDependUpon(subB);
@@ -72,8 +72,8 @@ public class DependencyRules {
      * </pre>
      * ----
      * <pre>
-     * DependencyRules rules3 = DependencyRules.allowAll().addRules("com.acme", new RuleDefiner(){
-     *     PackageRule a_, subB;
+     * DependencyRules rules3 = DependencyRules.allowAll().addRules("com.acme", new DependencyRuler(){
+     *     DependencyRule a_, subB;
      *
      *     public defineRules(){
      *         a_.mustNotDependUpon(subB);
@@ -82,33 +82,33 @@ public class DependencyRules {
      * </pre>
      *
      * @param basePackage
-     * @param definer
+     * @param ruler
      * @return
      */
-    public DependencyRules withRules(String basePackage, RuleDefiner definer) {
+    public DependencyRules withRules(String basePackage, DependencyRuler ruler) {
         try {
-            for (Field f : definer.getClass().getDeclaredFields()) {
+            for (Field f : ruler.getClass().getDeclaredFields()) {
                 f.setAccessible(true);
-                if (f.getType() == PackageRule.class) {
-                    final String name = definer.getClass().isAnonymousClass()
+                if (f.getType() == DependencyRule.class) {
+                    final String name = ruler.getClass().isAnonymousClass()
                             ? ""
-                            : camelCaseToDotCase(definer.getClass().getSimpleName());
+                            : camelCaseToDotCase(ruler.getClass().getSimpleName());
                     final String start = basePackage.length() > 0 && !basePackage.endsWith(".") && name.length() > 0
                             ? basePackage + "." + name
                             : basePackage + name;
-                    f.set(definer, addRule(start + (f.getName().equals("self") ? "" : ("." + camelCaseToDotCase(f.getName())))));
+                    f.set(ruler, addRule(start + (f.getName().equals("self") ? "" : ("." + camelCaseToDotCase(f.getName())))));
                 }
             }
-            definer.defineRules();
+            ruler.defineRules();
             return this;
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException("Could not access field", e);
         }
     }
 
-    public DependencyRules withRules(RuleDefiner... definers) {
-        for (final RuleDefiner definer : definers) {
-            withRules("", definer);
+    public DependencyRules withRules(DependencyRuler... rulers) {
+        for (final DependencyRuler ruler : rulers) {
+            withRules("", ruler);
         }
         return this;
     }
@@ -144,12 +144,12 @@ public class DependencyRules {
 
     public RuleResult analyzeRules(Collection<JavaPackage> packs) {
         final RuleResult result = new RuleResult();
-        for (final PackageRule rule : rules) {
+        for (final DependencyRule rule : rules) {
             result.merge(rule.analyze(packs));
         }
         for (final JavaPackage pack : packs) {
             boolean defined = false;
-            for (final PackageRule rule : rules) {
+            for (final DependencyRule rule : rules) {
                 if (rule.matches(pack)) {
                     defined = true;
                     break;

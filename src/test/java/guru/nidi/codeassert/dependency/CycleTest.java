@@ -43,7 +43,7 @@ public class CycleTest {
 
     @Test
     public void cycles() throws IOException {
-        final Matcher<Project> matcher = RuleMatchers.hasNoCycles();
+        final Matcher<Project> matcher = DependencyMatchers.hasNoCycles();
         assertMatcher("Found these cyclic groups:\n" +
                         "\n" +
                         "- Group of 3: guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.c.a\n" +
@@ -70,7 +70,7 @@ public class CycleTest {
 
     @Test
     public void cyclesWithExceptions() throws IOException {
-        final Matcher<Project> matcher = RuleMatchers.hasNoCyclesExcept(
+        final Matcher<Project> matcher = DependencyMatchers.hasNoCyclesExcept(
                 packages(base("a"), base("b"), base("c")),
                 packages(base("a.a")),
                 packages(base("b.a"), base("c.a")));

@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package guru.nidi.codeassert.dependency;
+package guru.nidi.codeassert.dependency;
 
 
-import guru.nidi.codeassert.model.JavaClass;
 import guru.nidi.codeassert.model.JavaPackage;
 
 import java.util.*;
@@ -31,31 +30,7 @@ public class DependencyMap {
     }
 
     public void with(JavaPackage from, JavaPackage to) {
-        with(from.getName(), findClasses(from, to), to.getName());
-    }
-
-    private static Set<String> findClasses(JavaPackage from, JavaPackage to) {
-        final Set<String> res = new HashSet<>();
-        for (JavaClass jc : from.getClasses()) {
-            if (hasEfferent(jc, to.getName())) {
-                res.add(jc.getName());
-            }
-        }
-        return res;
-    }
-
-    private static boolean hasEfferent(JavaClass jc, String name) {
-        return !selectMatchingPackages(jc.getImportedPackages(), name).isEmpty();
-    }
-
-    static List<JavaPackage> selectMatchingPackages(Collection<JavaPackage> packages, String name) {
-        final List<JavaPackage> res = new ArrayList<>();
-        for (JavaPackage pack : packages) {
-            if (pack.isMatchedBy(name)) {
-                res.add(pack);
-            }
-        }
-        return res;
+        with(from.getName(), from.classesWithImportsFrom(to), to.getName());
     }
 
     public DependencyMap with(String from, Set<String> fromClasses, String to) {

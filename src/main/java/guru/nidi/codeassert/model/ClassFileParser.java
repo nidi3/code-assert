@@ -475,7 +475,7 @@ class ClassFileParser {
 
     private void addImport(String importPackage) {
         if (importPackage != null && collector.accept(importPackage)) {
-            jClass.addImportedPackage(new JavaPackage(importPackage));
+            jClass.addImport(new JavaPackage(importPackage));
         }
     }
 
@@ -708,7 +708,7 @@ class ClassFileParser {
             }
 
             s.append("\nDependencies:\n");
-            for (JavaPackage jPackage : jClass.getImportedPackages()) {
+            for (JavaPackage jPackage : jClass.getImports()) {
                 s.append("    " + jPackage.getName() + "\n");
             }
 

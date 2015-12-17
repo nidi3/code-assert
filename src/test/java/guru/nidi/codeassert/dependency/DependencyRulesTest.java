@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import static guru.nidi.codeassert.dependency.RuleMatchers.*;
+import static guru.nidi.codeassert.dependency.DependencyMatchers.*;
 import static guru.nidi.codeassert.model.PackageCollector.all;
 import static org.junit.Assert.*;
 
@@ -46,19 +46,19 @@ public class DependencyRulesTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void wildcardNotAtEnd() {
-        PackageRule.allowAll("a*b");
+        DependencyRule.allowAll("a*b");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void wildcardWithoutPriorDot() {
-        PackageRule.allowAll("a*");
+        DependencyRule.allowAll("a*");
     }
 
     @Test
     public void matcherFlags() {
         final DependencyRules rules = DependencyRules.allowAll();
-        final PackageRule a = rules.addRule(base("a"));
-        final PackageRule d = rules.addRule(base("d"));
+        final DependencyRule a = rules.addRule(base("a"));
+        final DependencyRule d = rules.addRule(base("d"));
         final Set<String> undefined = new HashSet<>(UNDEFINED);
         undefined.addAll(set(base("b"), base("c")));
 
@@ -91,15 +91,15 @@ public class DependencyRulesTest {
     @Test
     public void allow() {
         final DependencyRules rules = DependencyRules.allowAll();
-        final PackageRule a = rules.addRule(base("a"));
-        final PackageRule b = rules.addRule(base("b"));
-        final PackageRule c = rules.addRule(base("c"));
+        final DependencyRule a = rules.addRule(base("a"));
+        final DependencyRule b = rules.addRule(base("b"));
+        final DependencyRule c = rules.addRule(base("c"));
 
         a.mustDependUpon(b);
         b.mustNotDependUpon(a, c).mayDependUpon(a);
 
-        class GuruNidiCodeassertDependency implements RuleDefiner {
-            PackageRule a, b, c;
+        class GuruNidiCodeassertDependency implements DependencyRuler {
+            DependencyRule a, b, c;
 
             public void defineRules() {
                 a.mustDependUpon(b);
@@ -131,9 +131,9 @@ public class DependencyRulesTest {
     @Test
     public void deny() {
         final DependencyRules rules = DependencyRules.denyAll();
-        final PackageRule a = rules.addRule(base("a"));
-        final PackageRule b = rules.addRule(base("b"));
-        final PackageRule c = rules.addRule(base("c"));
+        final DependencyRule a = rules.addRule(base("a"));
+        final DependencyRule b = rules.addRule(base("b"));
+        final DependencyRule c = rules.addRule(base("c"));
 
         a.mustDependUpon(b);
         b.mayDependUpon(a, c).mustNotDependUpon(a);
@@ -169,17 +169,17 @@ public class DependencyRulesTest {
     @Test
     public void allowWithWildcard() {
         final DependencyRules rules = DependencyRules.allowAll();
-        final PackageRule a1 = rules.addRule(base("a.a"));
-        final PackageRule a = rules.addRule(base("a.*"));
-        final PackageRule b = rules.addRule(base("b.*"));
-        final PackageRule c = rules.addRule(base("c.*"));
+        final DependencyRule a1 = rules.addRule(base("a.a"));
+        final DependencyRule a = rules.addRule(base("a.*"));
+        final DependencyRule b = rules.addRule(base("b.*"));
+        final DependencyRule c = rules.addRule(base("c.*"));
 
         a.mustDependUpon(b);
         b.mustNotDependUpon(a, c).mayDependUpon(a1);
 
         final RuleResult result = rules.analyzeRules(project.getPackages());
-        final DependencyRules rules2 = DependencyRules.allowAll().withRules("guru.nidi.codeassert.dependency", new RuleDefiner() {
-            PackageRule aA, a_, b_, c_;
+        final DependencyRules rules2 = DependencyRules.allowAll().withRules("guru.nidi.codeassert.dependency", new DependencyRuler() {
+            DependencyRule aA, a_, b_, c_;
 
             @Override
             public void defineRules() {
@@ -187,6 +187,7 @@ public class DependencyRulesTest {
                 b_.mustNotDependUpon(a_, c_).mayDependUpon(aA);
             }
         });
+
         assertEquals(result, rules2.analyzeRules(project.getPackages()));
         assertEquals(new RuleResult(
                         new DependencyMap(),
@@ -225,10 +226,10 @@ public class DependencyRulesTest {
     @Test
     public void denyWithWildcard() {
         final DependencyRules rules = DependencyRules.denyAll();
-        final PackageRule a1 = rules.addRule(base("a.a"));
-        final PackageRule a = rules.addRule(base("a.*"));
-        final PackageRule b = rules.addRule(base("b.*"));
-        final PackageRule c = rules.addRule(base("c.*"));
+        final DependencyRule a1 = rules.addRule(base("a.a"));
+        final DependencyRule a = rules.addRule(base("a.*"));
+        final DependencyRule b = rules.addRule(base("b.*"));
+        final DependencyRule c = rules.addRule(base("c.*"));
 
         a.mustDependUpon(b);
         b.mayDependUpon(a, c).mustNotDependUpon(a1);

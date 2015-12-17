@@ -24,14 +24,14 @@ import java.util.List;
 /**
  *
  */
-public class PackageRule {
+public class DependencyRule {
     private final String name;
     private final boolean allowAll;
     private final List<String> mustDepend = new ArrayList<>();
     private final List<String> mayDepend = new ArrayList<>();
     private final List<String> mustNotDepend = new ArrayList<>();
 
-    PackageRule(String name, boolean allowAll) {
+    DependencyRule(String name, boolean allowAll) {
         final int starPos = name.indexOf("*");
         if (starPos >= 0 && (starPos != name.length() - 1 || !name.endsWith(".*"))) {
             throw new IllegalArgumentException("Wildcard * is only allowed at the end (e.g. java.*)");
@@ -40,30 +40,30 @@ public class PackageRule {
         this.allowAll = allowAll;
     }
 
-    public static PackageRule allowAll(String name) {
-        return new PackageRule(name, true);
+    public static DependencyRule allowAll(String name) {
+        return new DependencyRule(name, true);
     }
 
-    public static PackageRule denyAll(String name) {
-        return new PackageRule(name, false);
+    public static DependencyRule denyAll(String name) {
+        return new DependencyRule(name, false);
     }
 
-    public PackageRule mustDependUpon(PackageRule... rules) {
-        for (PackageRule rule : rules) {
+    public DependencyRule mustDependUpon(DependencyRule... rules) {
+        for (DependencyRule rule : rules) {
             mustDepend.add(rule.name);
         }
         return this;
     }
 
-    public PackageRule mayDependUpon(PackageRule... rules) {
-        for (PackageRule rule : rules) {
+    public DependencyRule mayDependUpon(DependencyRule... rules) {
+        for (DependencyRule rule : rules) {
             mayDepend.add(rule.name);
         }
         return this;
     }
 
-    public PackageRule mustNotDependUpon(PackageRule... rules) {
-        for (PackageRule rule : rules) {
+    public DependencyRule mustNotDependUpon(DependencyRule... rules) {
+        for (DependencyRule rule : rules) {
             mustNotDepend.add(rule.name);
         }
         return this;
@@ -75,15 +75,15 @@ public class PackageRule {
 
     public RuleResult analyze(Collection<JavaPackage> packages) {
         final RuleResult result = new RuleResult();
-        final List<JavaPackage> thisPackages = DependencyMap.selectMatchingPackages(packages, name);
+        final List<JavaPackage> thisPackages = JavaPackage.allMatchesBy(packages, name);
         if (thisPackages.isEmpty()) {
             result.notExisting.add(name);
         }
 
         for (String must : mustDepend) {
-            for (JavaPackage mustPack : DependencyMap.selectMatchingPackages(packages, must)) {
+            for (JavaPackage mustPack : JavaPackage.allMatchesBy(packages, must)) {
                 for (JavaPackage thisPack : thisPackages) {
-                    if (!hasEfferent(thisPack, mustPack.getName())) {
+                    if (!thisPack.hasEfferentsMatchedBy(mustPack.getName())) {
                         result.missing.with(thisPack, mustPack);
                     }
                 }
@@ -91,9 +91,9 @@ public class PackageRule {
         }
         if (allowAll) {
             for (String mustNot : mustNotDepend) {
-                for (JavaPackage mustNotPack : DependencyMap.selectMatchingPackages(packages, mustNot)) {
+                for (JavaPackage mustNotPack : JavaPackage.allMatchesBy(packages, mustNot)) {
                     for (JavaPackage thisPack : thisPackages) {
-                        if (hasEfferent(thisPack, mustNotPack.getName()) && !hasAnyMatch(mustNotPack, mayDepend)) {
+                        if (thisPack.hasEfferentsMatchedBy(mustNotPack.getName()) && !mustNotPack.isMatchedByAny(mayDepend)) {
                             result.denied.with(thisPack, mustNotPack);
                         }
                     }
@@ -102,8 +102,8 @@ public class PackageRule {
         } else {
             for (JavaPackage thisPack : thisPackages) {
                 for (JavaPackage dep : thisPack.getEfferents()) {
-                    final boolean allowed = hasAnyMatch(dep, mustDepend) || hasAnyMatch(dep, mayDepend);
-                    final boolean mustNot = hasAnyMatch(dep, mustNotDepend);
+                    final boolean allowed = dep.isMatchedByAny(mustDepend) || dep.isMatchedByAny(mayDepend);
+                    final boolean mustNot = dep.isMatchedByAny(mustNotDepend);
                     if (!mustNot && allowed) {
                         result.allowed.with(thisPack, dep);
                     }
@@ -115,19 +115,6 @@ public class PackageRule {
         }
 
         return result;
-    }
-
-    private static boolean hasAnyMatch(JavaPackage pack, List<String> names) {
-        for (String name : names) {
-            if (pack.isMatchedBy(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean hasEfferent(JavaPackage pack, String name) {
-        return !DependencyMap.selectMatchingPackages(pack.getEfferents(), name).isEmpty();
     }
 
 }

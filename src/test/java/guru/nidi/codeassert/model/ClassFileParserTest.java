@@ -49,7 +49,7 @@ public class ClassFileParserTest {
         assertEquals("guru.nidi.codeassert.model.ExampleConcreteClass", clazz.getName());
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
 
-        Collection imports = clazz.getImportedPackages();
+        Collection imports = clazz.getImports();
         assertEquals(19, imports.size());
 
         assertTrue(imports.contains(new JavaPackage("java.net")));
@@ -82,7 +82,7 @@ public class ClassFileParserTest {
         assertEquals("guru.nidi.codeassert.model.ExampleConcreteClass$ExampleInnerClass", clazz.getName());
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
 
-        Collection imports = clazz.getImportedPackages();
+        Collection imports = clazz.getImports();
         assertEquals(1, imports.size());
         assertTrue(imports.contains(new JavaPackage("java.lang")));
     }
@@ -94,7 +94,7 @@ public class ClassFileParserTest {
         assertEquals("guru.nidi.codeassert.model.ExamplePackageClass", clazz.getName());
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
 
-        Collection imports = clazz.getImportedPackages();
+        Collection imports = clazz.getImports();
         assertEquals(1, imports.size());
         assertTrue(imports.contains(new JavaPackage("java.lang")));
     }
@@ -114,8 +114,8 @@ public class ClassFileParserTest {
         final JavaClass generic = parser.parse(Path.testClass("p4/GenericParameters"));
         final JavaClass subGeneric = parser.parse(Path.testClass("p4/SubGenericParameters"));
 
-        assertEquals(11, generic.getImportedPackages().size());
-        assertEquals(1, subGeneric.getImportedPackages().size());
+        assertEquals(11, generic.getImports().size());
+        assertEquals(1, subGeneric.getImports().size());
     }
 }
 
