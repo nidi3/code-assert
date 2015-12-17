@@ -15,8 +15,6 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.FileManager;
-import guru.nidi.codeassert.model.PackageFilter;
 import guru.nidi.codeassert.model.Project;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -26,6 +24,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static guru.nidi.codeassert.dependency.CycleResult.packages;
+import static guru.nidi.codeassert.model.PackageCollector.all;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -34,14 +33,12 @@ import static org.junit.Assert.assertFalse;
  */
 public class CycleTest {
     private static final String BASE = "guru.nidi.codeassert.dependency.";
-    private Project project;
+    private Project project = new Project();
 
     @Before
     public void analyze() throws IOException {
-        project = new Project(
-                new FileManager().withDirectories("target/test-classes/guru/nidi/codeassert/dependency"),
-                PackageFilter.all().excluding("java.").excluding("org"));
-        project.read();
+        project.fromCode("target/test-classes/guru/nidi/codeassert/dependency")
+                .readPackages(all().excluding("java.", "org"));
     }
 
     @Test

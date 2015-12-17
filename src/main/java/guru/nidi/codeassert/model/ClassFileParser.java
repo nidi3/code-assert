@@ -54,7 +54,7 @@ class ClassFileParser {
     private static final String ATTR_SIGNATURE = "Signature";
     private static final String ATTR_SOURCE = "SourceFile";
 
-    private final PackageFilter filter;
+    private final PackageCollector collector;
     private String className;
     private String superClassName;
     private String interfaceNames[];
@@ -67,11 +67,11 @@ class ClassFileParser {
 
 
     public ClassFileParser() {
-        this(PackageFilter.all());
+        this(PackageCollector.all());
     }
 
-    public ClassFileParser(PackageFilter filter) {
-        this.filter = filter;
+    public ClassFileParser(PackageCollector collector) {
+        this.collector = collector;
         reset();
     }
 
@@ -474,7 +474,7 @@ class ClassFileParser {
     }
 
     private void addImport(String importPackage) {
-        if (importPackage != null && filter.accept(importPackage)) {
+        if (importPackage != null && collector.accept(importPackage)) {
             jClass.addImportedPackage(new JavaPackage(importPackage));
         }
     }

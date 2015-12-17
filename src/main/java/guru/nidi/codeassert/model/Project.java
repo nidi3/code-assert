@@ -15,24 +15,13 @@
  */
 package guru.nidi.codeassert.model;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Project {
-    private final Map<String, JavaPackage> packages;
-    private final PackageFilter filter;
-    private final JavaClassBuilder builder;
-
-    public Project(FileManager fileManager) {
-        this(fileManager, PackageFilter.all());
-    }
-
-    public Project(FileManager fileManager, PackageFilter filter) {
-        this.filter = filter;
-        this.packages = new HashMap<>();
-        this.builder = new JavaClassBuilder(new ClassFileParser(filter), fileManager);
-    }
+    private final Map<String, JavaPackage> packages = new HashMap<>();
 
     public Collection<JavaPackage> getPackages() {
         return packages.values();
@@ -63,31 +52,39 @@ public class Project {
         }
     }
 
-    public PackageFilter getFilter() {
-        return filter;
+    public FileSource fromCode(String... directoryOrJar) throws IOException {
+        return new FileSource(directoryOrJar);
     }
 
-    public Collection<JavaPackage> read() {
-        Collection<JavaClass> classes = builder.build();
-        for (JavaClass aClass : classes) {
-            readClass(aClass);
-        }
-        return getPackages();
-    }
+    public class FileSource {
+        private final FileManager fileManager;
 
-    private void readClass(JavaClass clazz) {
-        String packageName = clazz.getPackageName();
-
-        if (!getFilter().accept(packageName)) {
-            return;
+        private FileSource(String[] code) throws IOException {
+            fileManager = new FileManager().withDirectories(code);
         }
 
-        JavaPackage clazzPackage = addPackage(packageName);
-        clazzPackage.addClass(clazz);
+        public Collection<JavaPackage> readPackages(PackageCollector collector) {
+            final Collection<JavaClass> classes = new JavaClassBuilder(new ClassFileParser(collector), fileManager).build();
+            for (JavaClass aClass : classes) {
+                readClass(aClass, collector);
+            }
+            return getPackages();
+        }
 
-        for (JavaPackage importedPackage : clazz.getImportedPackages()) {
-            importedPackage = addPackage(importedPackage.getName());
-            clazzPackage.dependsUpon(importedPackage);
+        private void readClass(JavaClass clazz, PackageCollector collector) {
+            String packageName = clazz.getPackageName();
+
+            if (!collector.accept(packageName)) {
+                return;
+            }
+
+            JavaPackage clazzPackage = addPackage(packageName);
+            clazzPackage.addClass(clazz);
+
+            for (JavaPackage importedPackage : clazz.getImportedPackages()) {
+                importedPackage = addPackage(importedPackage.getName());
+                clazzPackage.dependsUpon(importedPackage);
+            }
         }
     }
 }

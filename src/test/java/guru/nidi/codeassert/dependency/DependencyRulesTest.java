@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.FileManager;
-import guru.nidi.codeassert.model.JavaPackage;
-import guru.nidi.codeassert.model.PackageFilter;
 import guru.nidi.codeassert.model.Project;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -25,11 +22,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import static guru.nidi.codeassert.dependency.RuleMatchers.*;
+import static guru.nidi.codeassert.model.PackageCollector.all;
 import static org.junit.Assert.*;
 
 /**
@@ -39,15 +36,12 @@ public class DependencyRulesTest {
     private static final String BASE = "guru.nidi.codeassert.dependency.";
     private static final Set<String> WILDCARD_UNDEFINED = set("guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", base("a"), base("b"), base("c"));
     private static final Set<String> UNDEFINED = set("guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", base("a.a"), base("a.b"), base("b.a"), base("b.b"), base("c.a"), base("c.b"));
-    private Project project;
-    private Collection<JavaPackage> packages;
+    private Project project = new Project();
 
     @Before
     public void analyze() throws IOException {
-        project = new Project(
-                new FileManager().withDirectory("target/test-classes/guru/nidi/codeassert/dependency"),
-                PackageFilter.all().excluding("java.").excluding("org"));
-        packages = project.read();
+        project.fromCode("target/test-classes/guru/nidi/codeassert/dependency")
+                .readPackages(all().excluding("java.", "org"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -68,7 +62,7 @@ public class DependencyRulesTest {
         final Set<String> undefined = new HashSet<>(UNDEFINED);
         undefined.addAll(set(base("b"), base("c")));
 
-        final RuleResult result = rules.analyzeRules(packages);
+        final RuleResult result = rules.analyzeRules(project.getPackages());
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap(),
@@ -114,8 +108,8 @@ public class DependencyRulesTest {
         }
         final DependencyRules rules2 = DependencyRules.allowAll().withRules(new GuruNidiCodeassertDependency());
 
-        final RuleResult result = rules.analyzeRules(packages);
-        assertEquals(result, rules2.analyzeRules(packages));
+        final RuleResult result = rules.analyzeRules(project.getPackages());
+        assertEquals(result, rules2.analyzeRules(project.getPackages()));
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap().with(base("a"), set(), base("b")),
@@ -144,7 +138,7 @@ public class DependencyRulesTest {
         a.mustDependUpon(b);
         b.mayDependUpon(a, c).mustNotDependUpon(a);
 
-        final RuleResult result = rules.analyzeRules(packages);
+        final RuleResult result = rules.analyzeRules(project.getPackages());
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap().with(base("a"), set(), base("b")),
@@ -183,7 +177,7 @@ public class DependencyRulesTest {
         a.mustDependUpon(b);
         b.mustNotDependUpon(a, c).mayDependUpon(a1);
 
-        final RuleResult result = rules.analyzeRules(packages);
+        final RuleResult result = rules.analyzeRules(project.getPackages());
         final DependencyRules rules2 = DependencyRules.allowAll().withRules("guru.nidi.codeassert.dependency", new RuleDefiner() {
             PackageRule aA, a_, b_, c_;
 
@@ -193,7 +187,7 @@ public class DependencyRulesTest {
                 b_.mustNotDependUpon(a_, c_).mayDependUpon(aA);
             }
         });
-        assertEquals(result, rules2.analyzeRules(packages));
+        assertEquals(result, rules2.analyzeRules(project.getPackages()));
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap()
@@ -239,7 +233,7 @@ public class DependencyRulesTest {
         a.mustDependUpon(b);
         b.mayDependUpon(a, c).mustNotDependUpon(a1);
 
-        final RuleResult result = rules.analyzeRules(packages);
+        final RuleResult result = rules.analyzeRules(project.getPackages());
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap()

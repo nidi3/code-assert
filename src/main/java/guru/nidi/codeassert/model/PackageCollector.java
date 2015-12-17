@@ -32,38 +32,38 @@ import java.util.Collection;
  * @author Clarkware Consulting, Inc.
  */
 
-public class PackageFilter {
-    private final Collection<Filter> filters;
+public class PackageCollector {
+    private final Collection<Collector> collectors;
 
-    private PackageFilter(Collection<Filter> filters) {
-        this.filters = filters;
+    private PackageCollector(Collection<Collector> collectors) {
+        this.collectors = collectors;
     }
 
-    private PackageFilter() {
-        this(new ArrayList<Filter>());
+    private PackageCollector() {
+        this(new ArrayList<Collector>());
     }
 
-    public static PackageFilter all() {
-        return new PackageFilter();
+    public static PackageCollector all() {
+        return new PackageCollector();
     }
 
-    public PackageFilter excluding(String... packageNames) {
+    public PackageCollector excluding(String... packageNames) {
         return add(Arrays.asList(packageNames), false);
     }
 
-    public PackageFilter excluding(Collection<String> packageNames) {
+    public PackageCollector excluding(Collection<String> packageNames) {
         return add(packageNames, false);
     }
 
-    public PackageFilter excludingRest() {
+    public PackageCollector excludingRest() {
         return excluding("");
     }
 
-    public PackageFilter including(String... packageNames) {
+    public PackageCollector including(String... packageNames) {
         return add(Arrays.asList(packageNames), true);
     }
 
-    public PackageFilter including(Collection<String> packageNames) {
+    public PackageCollector including(Collection<String> packageNames) {
         return add(packageNames, true);
     }
 
@@ -75,38 +75,38 @@ public class PackageFilter {
      * <code>false</code> otherwise.
      */
     public boolean accept(String packageName) {
-        for (Filter filter : filters) {
-            if (packageName.startsWith(filter.name)) {
-                return filter.include;
+        for (Collector collector : collectors) {
+            if (packageName.startsWith(collector.name)) {
+                return collector.include;
             }
         }
         return true;
     }
 
-    private PackageFilter add(Collection<String> packageNames, boolean include) {
+    private PackageCollector add(Collection<String> packageNames, boolean include) {
         for (final String packageName : packageNames) {
             add(packageName, include);
         }
         return this;
     }
 
-    private PackageFilter add(String packageName, boolean include) {
+    private PackageCollector add(String packageName, boolean include) {
         if (packageName.endsWith("*")) {
             packageName = packageName.substring(0, packageName.length() - 1);
         }
-        filters.add(new Filter(packageName, include));
+        collectors.add(new Collector(packageName, include));
         return this;
     }
 
-    public Collection<Filter> getFilters() {
-        return filters;
+    public Collection<Collector> getCollectors() {
+        return collectors;
     }
 
-    public static class Filter {
+    public static class Collector {
         public final String name;
         public final boolean include;
 
-        public Filter(String name, boolean include) {
+        public Collector(String name, boolean include) {
             this.name = name;
             this.include = include;
         }
