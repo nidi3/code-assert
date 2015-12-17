@@ -5,4 +5,4 @@ Assert that the java code of a project satisfies certain checks.
 
 Built on the base of [JDepend](https://github.com/clarkware/jdepend).
 
-# Dependency checks
+## Dependency checks
