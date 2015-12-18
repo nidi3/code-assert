@@ -76,10 +76,47 @@ public class DependencyRule {
     public RuleResult analyze(Collection<JavaPackage> packages) {
         final RuleResult result = new RuleResult();
         final List<JavaPackage> thisPackages = JavaPackage.allMatchesBy(packages, name);
-        if (thisPackages.isEmpty()) {
-            result.notExisting.add(name);
+
+        analyzeNotExisting(result, thisPackages);
+        analyzeMissing(result, thisPackages, packages);
+
+        if (allowAll) {
+            analyzeAllowAll(result, thisPackages, packages);
+        } else {
+            analyzeDenyAll(result, thisPackages);
         }
 
+        return result;
+    }
+
+    private void analyzeDenyAll(RuleResult result, List<JavaPackage> thisPackages) {
+        for (JavaPackage thisPack : thisPackages) {
+            for (JavaPackage dep : thisPack.getEfferents()) {
+                final boolean allowed = dep.isMatchedByAny(mustDepend) || dep.isMatchedByAny(mayDepend);
+                final boolean mustNot = dep.isMatchedByAny(mustNotDepend);
+                if (!mustNot && allowed) {
+                    result.allowed.with(thisPack, dep);
+                }
+                if (mustNot || !allowed) {
+                    result.denied.with(thisPack, dep);
+                }
+            }
+        }
+    }
+
+    private void analyzeAllowAll(RuleResult result, List<JavaPackage> thisPackages, Collection<JavaPackage> packages) {
+        for (String mustNot : mustNotDepend) {
+            for (JavaPackage mustNotPack : JavaPackage.allMatchesBy(packages, mustNot)) {
+                for (JavaPackage thisPack : thisPackages) {
+                    if (thisPack.hasEfferentsMatchedBy(mustNotPack.getName()) && !mustNotPack.isMatchedByAny(mayDepend)) {
+                        result.denied.with(thisPack, mustNotPack);
+                    }
+                }
+            }
+        }
+    }
+
+    private void analyzeMissing(RuleResult result, List<JavaPackage> thisPackages, Collection<JavaPackage> packages) {
         for (String must : mustDepend) {
             for (JavaPackage mustPack : JavaPackage.allMatchesBy(packages, must)) {
                 for (JavaPackage thisPack : thisPackages) {
@@ -89,32 +126,12 @@ public class DependencyRule {
                 }
             }
         }
-        if (allowAll) {
-            for (String mustNot : mustNotDepend) {
-                for (JavaPackage mustNotPack : JavaPackage.allMatchesBy(packages, mustNot)) {
-                    for (JavaPackage thisPack : thisPackages) {
-                        if (thisPack.hasEfferentsMatchedBy(mustNotPack.getName()) && !mustNotPack.isMatchedByAny(mayDepend)) {
-                            result.denied.with(thisPack, mustNotPack);
-                        }
-                    }
-                }
-            }
-        } else {
-            for (JavaPackage thisPack : thisPackages) {
-                for (JavaPackage dep : thisPack.getEfferents()) {
-                    final boolean allowed = dep.isMatchedByAny(mustDepend) || dep.isMatchedByAny(mayDepend);
-                    final boolean mustNot = dep.isMatchedByAny(mustNotDepend);
-                    if (!mustNot && allowed) {
-                        result.allowed.with(thisPack, dep);
-                    }
-                    if (mustNot || !allowed) {
-                        result.denied.with(thisPack, dep);
-                    }
-                }
-            }
-        }
+    }
 
-        return result;
+    private void analyzeNotExisting(RuleResult result, List<JavaPackage> thisPackages) {
+        if (thisPackages.isEmpty()) {
+            result.notExisting.add(name);
+        }
     }
 
 }

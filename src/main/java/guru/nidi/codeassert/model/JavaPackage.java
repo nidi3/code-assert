@@ -68,10 +68,8 @@ public class JavaPackage {
      * @param jPackage Java package.
      */
     private void addAfferent(JavaPackage jPackage) {
-        if (!jPackage.getName().equals(getName())) {
-            if (!afferents.contains(jPackage)) {
-                afferents.add(jPackage);
-            }
+        if (!jPackage.getName().equals(getName()) && !afferents.contains(jPackage)) {
+            afferents.add(jPackage);
         }
     }
 
@@ -80,10 +78,8 @@ public class JavaPackage {
     }
 
     private void addEfferent(JavaPackage jPackage) {
-        if (!jPackage.getName().equals(getName())) {
-            if (!efferents.contains(jPackage)) {
-                efferents.add(jPackage);
-            }
+        if (!jPackage.getName().equals(getName()) && !efferents.contains(jPackage)) {
+            efferents.add(jPackage);
         }
     }
 

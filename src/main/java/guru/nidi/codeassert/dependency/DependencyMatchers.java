@@ -80,23 +80,13 @@ public class DependencyMatchers {
 
         @Override
         protected void describeMismatchSafely(ModelAnalyzer item, Description description) {
-            if (nonExisting && !result.getNotExisting().isEmpty()) {
-                description.appendText("\nDefined, but not existing packages:\n");
-                description.appendText(join(sorted(result.getNotExisting())) + "\n");
-            }
-            if (undefined && !result.getUndefined().isEmpty()) {
-                description.appendText("\nFound packages which are not defined:\n");
-                description.appendText(join(sorted(result.getUndefined())) + "\n");
-            }
-            if (!result.getMissing().isEmpty()) {
-                description.appendText("\nFound missing dependencies:\n");
-                for (String pack : sorted(result.getMissing().getPackages())) {
-                    description.appendText(pack + " ->\n");
-                    for (final String dep : sorted(result.getMissing().getDependencies(pack).keySet())) {
-                        description.appendText("  " + dep + "\n");
-                    }
-                }
-            }
+            describeNotExisting(description);
+            describeUndefined(description);
+            describeMissing(description);
+            describeForbidden(description);
+        }
+
+        private void describeForbidden(Description description) {
             if (!result.getDenied().isEmpty()) {
                 description.appendText("\nFound forbidden dependencies:\n");
                 for (String pack : sorted(result.getDenied().getPackages())) {
@@ -106,6 +96,32 @@ public class DependencyMatchers {
                         description.appendText("  " + dep + " (by " + join(deps.get(dep)) + ")\n");
                     }
                 }
+            }
+        }
+
+        private void describeMissing(Description description) {
+            if (!result.getMissing().isEmpty()) {
+                description.appendText("\nFound missing dependencies:\n");
+                for (String pack : sorted(result.getMissing().getPackages())) {
+                    description.appendText(pack + " ->\n");
+                    for (final String dep : sorted(result.getMissing().getDependencies(pack).keySet())) {
+                        description.appendText("  " + dep + "\n");
+                    }
+                }
+            }
+        }
+
+        private void describeUndefined(Description description) {
+            if (undefined && !result.getUndefined().isEmpty()) {
+                description.appendText("\nFound packages which are not defined:\n");
+                description.appendText(join(sorted(result.getUndefined())) + "\n");
+            }
+        }
+
+        private void describeNotExisting(Description description) {
+            if (nonExisting && !result.getNotExisting().isEmpty()) {
+                description.appendText("\nDefined, but not existing packages:\n");
+                description.appendText(join(sorted(result.getNotExisting())) + "\n");
             }
         }
     }

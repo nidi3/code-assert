@@ -121,25 +121,23 @@ public class DependencyRules {
             if (c == '_' && i == s.length() - 1) {
                 res.append(res.charAt(res.length() - 1) == '.' ? "*" : ".*");
             } else {
-                if (dollarMode) {
-                    if (c == '$' && i > 0) {
-                        res.append(".");
-                    } else {
-                        res.append(c);
-                    }
-                } else {
-                    if (Character.isUpperCase(c)) {
-                        if (i > 0) {
-                            res.append(".");
-                        }
-                        res.append(Character.toLowerCase(c));
-                    } else {
-                        res.append(c);
-                    }
-                }
+                res.append(processChar(dollarMode, i == 0, c));
             }
         }
         return res.toString();
+    }
+
+    private static String processChar(boolean dollarMode, boolean firstChar, char c) {
+        if (dollarMode) {
+            if (c == '$' && !firstChar) {
+                return ".";
+            }
+            return "" + c;
+        }
+        if (Character.isUpperCase(c)) {
+            return (firstChar ? "" : ".") + Character.toLowerCase(c);
+        }
+        return "" + c;
     }
 
     public RuleResult analyzeRules(Collection<JavaPackage> packs) {
@@ -199,12 +197,28 @@ public class DependencyRules {
         }
 
         private void strongConnect(JavaPackage pack) {
+            final Node v = init(pack);
+            processEfferents(pack, v);
+
+            if (v.lowlink == v.index) {
+                final Set<JavaPackage> group = createGroup(pack);
+                if (group.size() > 1) {
+                    addCycle(group);
+                }
+            }
+        }
+
+        private Node init(JavaPackage pack) {
             final Node v = node(pack);
             v.index = index;
             v.lowlink = index;
             index++;
             s.push(pack);
             v.onStack = true;
+            return v;
+        }
+
+        private void processEfferents(JavaPackage pack, Node v) {
             for (JavaPackage dep : pack.getEfferents()) {
                 final Node w = node(dep);
                 if (w.index < 0) {
@@ -214,27 +228,29 @@ public class DependencyRules {
                     v.lowlink = Math.min(v.lowlink, w.index);
                 }
             }
+        }
 
-            if (v.lowlink == v.index) {
-                final Set<JavaPackage> group = new HashSet<>();
-                JavaPackage w;
-                do {
-                    w = s.pop();
-                    node(w).onStack = false;
-                    group.add(w);
-                } while (!pack.equals(w));
-                if (group.size() > 1) {
-                    final DependencyMap g = new DependencyMap();
-                    for (JavaPackage elem : group) {
-                        for (JavaPackage dep : elem.getEfferents()) {
-                            if (group.contains(dep)) {
-                                g.with(elem, dep);
-                            }
-                        }
+        private Set<JavaPackage> createGroup(JavaPackage pack) {
+            final Set<JavaPackage> group = new HashSet<>();
+            JavaPackage w;
+            do {
+                w = s.pop();
+                node(w).onStack = false;
+                group.add(w);
+            } while (!pack.equals(w));
+            return group;
+        }
+
+        private void addCycle(Set<JavaPackage> group) {
+            final DependencyMap g = new DependencyMap();
+            for (JavaPackage elem : group) {
+                for (JavaPackage dep : elem.getEfferents()) {
+                    if (group.contains(dep)) {
+                        g.with(elem, dep);
                     }
-                    result.cycles.add(g);
                 }
             }
+            result.cycles.add(g);
         }
     }
 }

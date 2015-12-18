@@ -36,6 +36,12 @@
             <version>3.0.1</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>net.sourceforge.pmd</groupId>
+            <artifactId>pmd-java</artifactId>
+            <version>5.4.1</version>
+            <optional>true</optional>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

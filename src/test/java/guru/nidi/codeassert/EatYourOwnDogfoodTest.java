@@ -69,7 +69,9 @@ public class EatYourOwnDogfoodTest {
                 .andIgnore("ClassFileParser$Constant", "SIC_INNER_SHOULD_BE_STATIC")
                 .andIgnore("DependencyMatchers$CycleMatcher", "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
                 .andIgnore("DependencyMatchers$RuleMatcher", "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-                .andIgnore("DependencyRules#withRules", "DP_DO_INSIDE_DO_PRIVILEGED");
+                .andIgnore("DependencyRules#withRules", "DP_DO_INSIDE_DO_PRIVILEGED")
+                .andIgnore("ClassFileParser$FieldOrMethodInfo", "URF_UNREAD_FIELD")
+                .andIgnore("ClassFileParser$Constant", "URF_UNREAD_FIELD");
         assertThat(new FindBugsAnalyzer(config, bugCollector), hasNoIssues());
     }
 }
