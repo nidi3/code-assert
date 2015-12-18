@@ -23,7 +23,6 @@ import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,9 +45,9 @@ public class DependencyRulesTest {
 
     @Before
     public void analyze() {
-        analyzer = new ModelAnalyzer(new AnalyzerConfig(
-                "target/test-classes/guru/nidi/codeassert/dependency",
-                all().excluding("java.", "org")));
+        analyzer = new ModelAnalyzer(
+                AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/dependency")
+                        .collecting(all().excluding("java.", "org")));
         packages = analyzer.analyze();
     }
 

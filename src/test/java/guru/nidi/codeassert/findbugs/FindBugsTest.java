@@ -22,9 +22,7 @@ import org.hamcrest.StringDescription;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 
-import static guru.nidi.codeassert.PackageCollector.all;
 import static guru.nidi.codeassert.findbugs.FindBugsMatchers.hasNoIssues;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,7 +31,7 @@ import static org.junit.Assert.assertFalse;
  *
  */
 public class FindBugsTest {
-    private final AnalyzerConfig config = new AnalyzerConfig(Arrays.asList("target/classes", "target/test-classes"), all());
+    private final AnalyzerConfig config =AnalyzerConfig.mavenMainAndTestClasses();
     private final BugCollector bugCollector = BugCollector.simple(null, Priorities.NORMAL_PRIORITY, "UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD", "UUF_UNUSED_FIELD", "DLS_DEAD_LOCAL_STORE", "SIC_INNER_SHOULD_BE_STATIC", "UC_USELESS_OBJECT", "OBL_UNSATISFIED_OBLIGATION");
 
     @Test

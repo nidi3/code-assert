@@ -40,7 +40,7 @@ public class EatYourOwnDogfoodTest {
 
     @Before
     public void setup() throws IOException {
-        config = new AnalyzerConfig("target/classes", all().excluding("java.*", "org.*", "edu.*"));
+        config = AnalyzerConfig.mavenMainClasses().collecting(all().excluding("java.*", "org.*", "edu.*"));
     }
 
     @Test
