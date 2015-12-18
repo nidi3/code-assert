@@ -36,8 +36,8 @@ public class ModelAnalyzer implements Analyzer<Collection<JavaPackage>> {
     public Collection<JavaPackage> analyze() {
         try {
             final Collection<JavaClass> classes = new JavaClassBuilder(
-                    new ClassFileParser(config.getPackageCollector()),
-                    new FileManager().withDirectories(config.getCodeLocations())).build();
+                    new ClassFileParser(config.getCollector()),
+                    new FileManager().withDirectories(config.getClasses())).build();
             final Map<String, JavaPackage> packages = new HashMap<>();
             for (JavaClass aClass : classes) {
                 readClass(packages, aClass);
@@ -51,7 +51,7 @@ public class ModelAnalyzer implements Analyzer<Collection<JavaPackage>> {
     private void readClass(Map<String, JavaPackage> packages, JavaClass clazz) {
         String packageName = clazz.getPackageName();
 
-        if (!config.getPackageCollector().accept(packageName)) {
+        if (!config.getCollector().accept(packageName)) {
             return;
         }
 

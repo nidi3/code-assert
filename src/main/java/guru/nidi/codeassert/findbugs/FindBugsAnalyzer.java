@@ -64,8 +64,11 @@ public class FindBugsAnalyzer implements Analyzer<Collection<BugInstance>> {
 
     private Project createProject() {
         final Project project = new Project();
-        for (final String loc : config.getCodeLocations()) {
-            project.addFile(loc);
+        for (final String clazz : config.getClasses()) {
+            project.addFile(clazz);
+        }
+        for (final String source : config.getSources()) {
+            project.addSourceDir(source);
         }
         final String pathSeparator = System.getProperty("path.separator");
         final String classPath = System.getProperty("java.class.path");
@@ -97,7 +100,7 @@ public class FindBugsAnalyzer implements Analyzer<Collection<BugInstance>> {
         Collections.sort(sorted, BUG_SORTER);
         List<BugInstance> filtered = new ArrayList<>();
         for (BugInstance bug : sorted) {
-            if (bugCollector.accept(bug) && config.getPackageCollector().accept(bug.getPrimaryClass().getPackageName())) {
+            if (bugCollector.accept(bug) && config.getCollector().accept(bug.getPrimaryClass().getPackageName())) {
                 filtered.add(bug);
             }
         }
