@@ -15,6 +15,8 @@
  */
 package guru.nidi.codeassert.model;
 
+import guru.nidi.codeassert.PackageCollector;
+
 import java.io.*;
 
 /**

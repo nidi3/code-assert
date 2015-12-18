@@ -17,28 +17,28 @@ package guru.nidi.codeassert;
 
 import guru.nidi.codeassert.dependency.DependencyRule;
 import guru.nidi.codeassert.dependency.DependencyRuler;
-import guru.nidi.codeassert.model.Project;
+import guru.nidi.codeassert.model.ModelProject;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 
+import static guru.nidi.codeassert.PackageCollector.all;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
-import static guru.nidi.codeassert.model.PackageCollector.all;
 import static org.junit.Assert.assertThat;
 
 /**
  *
  */
 public class DependencyTest {
-    private Project project;
+    private ModelProject project;
 
     @Before
     public void setup() throws IOException {
-        project = new Project();
-        project.fromCode("target/classes").readPackages(all().excluding("java.*", "org.*"));
+        project = new ModelProject("target/classes", all().excluding("java.*", "org.*", "edu.*"));
+        project.analyze();
     }
 
     @Test
@@ -49,11 +49,13 @@ public class DependencyTest {
     @Test
     public void dependency() {
         class GuruNidiCodeassert implements DependencyRuler {
-            DependencyRule dependency, model;
+            DependencyRule self, dependency, findbugs, model;
 
             @Override
             public void defineRules() {
-                dependency.mayDependUpon(model);
+                dependency.mayDependUpon(model, self);
+                findbugs.mayDependUpon(self);
+                model.mayDependUpon(self);
             }
         }
         assertThat(project, matchesExactly(denyAll().withRules(new GuruNidiCodeassert())));

@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -44,8 +45,8 @@ public class FileManagerTest {
 
     @Test
     public void buildDirectory() throws IOException {
-        fileManager.withDirectories(Path.CLASSES, Path.TEST_CLASSES);
-        assertEquals(42, fileManager.extractFiles().size());
+        fileManager.withDirectories(Arrays.asList(Path.CLASSES, Path.TEST_CLASSES));
+        assertEquals(38, fileManager.extractFiles().size());
     }
 
     @Test(expected = IOException.class)
@@ -60,7 +61,7 @@ public class FileManagerTest {
 
     @Test
     public void classFile() throws IOException {
-        assertTrue(new FileManager().acceptClassFile(Path.clazz("Project")));
+        assertTrue(new FileManager().acceptClassFile(Path.clazz("ModelProject")));
     }
 
     @Test

@@ -18,9 +18,10 @@ package guru.nidi.codeassert.model;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 
-import static guru.nidi.codeassert.model.PackageCollector.all;
+import static guru.nidi.codeassert.PackageCollector.all;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -29,17 +30,17 @@ import static org.junit.Assert.assertEquals;
 public class ProjectTest {
     @Test
     public void simple() throws IOException {
-        final Collection<JavaPackage> packs = new Project()
-                .fromCode(Path.TEST_CLASSES, Path.CLASSES)
-                .readPackages(all());
-        assertEquals(35, packs.size());
+        final Collection<JavaPackage> packs = new ModelProject(
+                Arrays.asList(Path.TEST_CLASSES, Path.CLASSES),
+                all()).analyze();
+        assertEquals(36, packs.size());
     }
 
     @Test
     public void filter() throws IOException {
-        final Collection<JavaPackage> packs = new Project()
-                .fromCode(Path.TEST_CLASSES, Path.CLASSES)
-                .readPackages(all().excluding("java.*", "javax.*", "org.*"));
-        assertEquals(15, packs.size());
+        final Collection<JavaPackage> packs = new ModelProject(
+                Arrays.asList(Path.TEST_CLASSES, Path.CLASSES),
+                all().excluding("java.*", "javax.*", "org.*")).analyze();
+        assertEquals(16, packs.size());
     }
 }

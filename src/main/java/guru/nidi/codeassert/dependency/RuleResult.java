@@ -98,7 +98,6 @@ public class RuleResult {
             return false;
         }
         return undefined.equals(that.undefined);
-
     }
 
     @Override

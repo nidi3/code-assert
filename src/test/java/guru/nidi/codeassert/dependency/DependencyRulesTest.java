@@ -15,7 +15,7 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.Project;
+import guru.nidi.codeassert.model.ModelProject;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.Before;
@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import static guru.nidi.codeassert.PackageCollector.all;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.*;
-import static guru.nidi.codeassert.model.PackageCollector.all;
 import static org.junit.Assert.*;
 
 /**
@@ -34,14 +34,16 @@ import static org.junit.Assert.*;
  */
 public class DependencyRulesTest {
     private static final String BASE = "guru.nidi.codeassert.dependency.";
-    private static final Set<String> WILDCARD_UNDEFINED = set("guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", base("a"), base("b"), base("c"));
-    private static final Set<String> UNDEFINED = set("guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", base("a.a"), base("a.b"), base("b.a"), base("b.b"), base("c.a"), base("c.b"));
-    private Project project = new Project();
+    private static final Set<String> WILDCARD_UNDEFINED = set("guru.nidi.codeassert", "guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", base("a"), base("b"), base("c"));
+    private static final Set<String> UNDEFINED = set("guru.nidi.codeassert", "guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", base("a.a"), base("a.b"), base("b.a"), base("b.b"), base("c.a"), base("c.b"));
+    private ModelProject project;
 
     @Before
     public void analyze() throws IOException {
-        project.fromCode("target/test-classes/guru/nidi/codeassert/dependency")
-                .readPackages(all().excluding("java.", "org"));
+        project = new ModelProject(
+                "target/test-classes/guru/nidi/codeassert/dependency",
+                all().excluding("java.", "org"));
+        project.analyze();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -76,11 +78,11 @@ public class DependencyRulesTest {
         assertMatcher("\nDefined, but not existing packages:\n" +
                         "guru.nidi.codeassert.dependency.d\n" +
                         "\nFound packages which are not defined:\n" +
-                        "guru.nidi.codeassert.dependency, guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.a.b, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, guru.nidi.codeassert.model\n",
+                        "guru.nidi.codeassert, guru.nidi.codeassert.dependency, guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.a.b, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, guru.nidi.codeassert.model\n",
                 matchesExactly(rules));
 
         assertMatcher("\nFound packages which are not defined:\n" +
-                        "guru.nidi.codeassert.dependency, guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.a.b, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, guru.nidi.codeassert.model\n",
+                        "guru.nidi.codeassert, guru.nidi.codeassert.dependency, guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.a.b, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, guru.nidi.codeassert.model\n",
                 matchesIgnoringNonExisting(rules));
 
         assertMatcher("\nDefined, but not existing packages:\n" +
@@ -277,7 +279,7 @@ public class DependencyRulesTest {
         return res;
     }
 
-    private void assertMatcher(String message, Matcher<Project> matcher) {
+    private void assertMatcher(String message, Matcher<ModelProject> matcher) {
         assertFalse(matcher.matches(project));
         final StringDescription sd = new StringDescription();
         matcher.describeMismatch(project, sd);

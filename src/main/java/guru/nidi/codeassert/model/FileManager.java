@@ -34,7 +34,7 @@ import java.util.TreeSet;
 public class FileManager {
     private final List<File> directories = new ArrayList<>();
 
-    public FileManager withDirectories(String... names) throws IOException {
+    public FileManager withDirectories(List<String> names) throws IOException {
         for (final String name : names) {
             withDirectory(name);
         }
