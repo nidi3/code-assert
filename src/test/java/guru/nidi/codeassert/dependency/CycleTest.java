@@ -39,7 +39,7 @@ public class CycleTest {
     private ModelAnalyzer project;
 
     @Before
-    public void analyze() throws IOException {
+    public void analyze() {
         project = new ModelAnalyzer(new AnalyzerConfig(
                 "target/test-classes/guru/nidi/codeassert/dependency",
                 all().excluding("java.", "org")));
@@ -47,7 +47,7 @@ public class CycleTest {
     }
 
     @Test
-    public void cycles() throws IOException {
+    public void cycles() {
         final Matcher<ModelAnalyzer> matcher = hasNoCycles();
         assertMatcher("Found these cyclic groups:\n" +
                         "\n" +
@@ -74,7 +74,7 @@ public class CycleTest {
     }
 
     @Test
-    public void cyclesWithExceptions() throws IOException {
+    public void cyclesWithExceptions() {
         final Matcher<ModelAnalyzer> matcher = hasNoCyclesExcept(
                 packages(base("a"), base("b"), base("c")),
                 packages(base("a.a")),

@@ -17,10 +17,7 @@ package guru.nidi.codeassert.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * The <code>FileManager</code> class is responsible for extracting
@@ -60,7 +57,7 @@ public class FileManager {
     }
 
     public boolean acceptClassFileName(String name) {
-        return name.toLowerCase().endsWith(".class");
+        return name.toLowerCase(Locale.ENGLISH).endsWith(".class");
     }
 
     public boolean acceptJarFile(File file) {
@@ -80,12 +77,14 @@ public class FileManager {
             addFile(directory, files);
         } else {
             String[] directoryFiles = directory.list();
-            for (String directoryFile : directoryFiles) {
-                File file = new File(directory, directoryFile);
-                if (acceptFile(file)) {
-                    addFile(file, files);
-                } else if (file.isDirectory()) {
-                    collectFiles(file, files);
+            if (directoryFiles != null) {
+                for (String directoryFile : directoryFiles) {
+                    File file = new File(directory, directoryFile);
+                    if (acceptFile(file)) {
+                        addFile(file, files);
+                    } else if (file.isDirectory()) {
+                        collectFiles(file, files);
+                    }
                 }
             }
         }
@@ -110,7 +109,7 @@ public class FileManager {
     }
 
     private boolean existsWithExtension(File file, String extension) {
-        return file.isFile() && file.getName().toLowerCase().endsWith(extension);
+        return file.isFile() && file.getName().toLowerCase(Locale.ENGLISH).endsWith(extension);
     }
 
 }

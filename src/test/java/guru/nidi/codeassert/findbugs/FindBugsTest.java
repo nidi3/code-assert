@@ -22,6 +22,7 @@ import org.hamcrest.StringDescription;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static guru.nidi.codeassert.PackageCollector.all;
 import static guru.nidi.codeassert.findbugs.FindBugsMatchers.hasNoIssues;
@@ -32,15 +33,75 @@ import static org.junit.Assert.assertFalse;
  *
  */
 public class FindBugsTest {
+    private final AnalyzerConfig config = new AnalyzerConfig(Arrays.asList("target/classes", "target/test-classes"), all());
+    private final BugCollector bugCollector = BugCollector.simple(null, Priorities.NORMAL_PRIORITY, "UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD", "UUF_UNUSED_FIELD", "DLS_DEAD_LOCAL_STORE", "SIC_INNER_SHOULD_BE_STATIC", "UC_USELESS_OBJECT", "OBL_UNSATISFIED_OBLIGATION");
+
     @Test
     public void simple() throws IOException, InterruptedException {
-        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(
-                new AnalyzerConfig("target/classes", all()),
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config,
                 BugCollector.simple(17, Priorities.NORMAL_PRIORITY));
+        assertEquals(25, analyzer.analyze().size());
+    }
 
-        assertMatcher("" +
-                        "17 M DLS_DEAD_LOCAL_STORE                     Dead store to accessFlags in guru.nidi.codeassert.model.ClassFileParser.parseAccessFlags()  At ClassFileParser.java:[line 159]\n" +
-                        "13 M NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE   Possible null pointer dereference in guru.nidi.codeassert.model.FileManager.collectFiles(File, Collection) due to return value of called method  Dereferenced at FileManager.java:[line 83]\n",
+    @Test
+    public void globalIgnore() throws IOException, InterruptedException {
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector);
+
+        assertMatcher("\n" +
+                        "15 H UC_USELESS_VOID_METHOD                   Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless  At ExampleConcreteClass.java:[line 51]\n" +
+                        "18 M DM_NUMBER_CTOR                           guru.nidi.codeassert.Bugs.bugs() invokes inefficient new Integer(int) constructor; use Integer.valueOf(int) instead  At Bugs.java:[line 8]\n" +
+                        "18 M DM_NUMBER_CTOR                           guru.nidi.codeassert.Bugs.more() invokes inefficient new Integer(int) constructor; use Integer.valueOf(int) instead  At Bugs.java:[line 12]\n" +
+                        "18 M DM_NUMBER_CTOR                           guru.nidi.codeassert.Bugs$InnerBugs.bugs() invokes inefficient new Integer(int) constructor; use Integer.valueOf(int) instead  At Bugs.java:[line 17]\n" +
+                        "18 M URF_UNREAD_FIELD                         Unread field: guru.nidi.codeassert.model.p4.GenericParameters.l2  At GenericParameters.java:[line 37]",
+                analyzer, hasNoIssues());
+    }
+
+    @Test
+    public void classNameIgnore() throws IOException, InterruptedException {
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config,
+                bugCollector.andIgnore("Bugs", "DM_NUMBER_CTOR"));
+
+        assertMatcher("\n" +
+                        "15 H UC_USELESS_VOID_METHOD                   Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless  At ExampleConcreteClass.java:[line 51]\n" +
+                        "18 M DM_NUMBER_CTOR                           guru.nidi.codeassert.Bugs$InnerBugs.bugs() invokes inefficient new Integer(int) constructor; use Integer.valueOf(int) instead  At Bugs.java:[line 17]\n" +
+                        "18 M URF_UNREAD_FIELD                         Unread field: guru.nidi.codeassert.model.p4.GenericParameters.l2  At GenericParameters.java:[line 37]",
+                analyzer, hasNoIssues());
+    }
+
+    @Test
+    public void fullClassIgnore() throws IOException, InterruptedException {
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config,
+                bugCollector.andIgnore("guru.nidi.codeassert.Bugs", "DM_NUMBER_CTOR"));
+
+        assertMatcher("\n" +
+                        "15 H UC_USELESS_VOID_METHOD                   Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless  At ExampleConcreteClass.java:[line 51]\n" +
+                        "18 M DM_NUMBER_CTOR                           guru.nidi.codeassert.Bugs$InnerBugs.bugs() invokes inefficient new Integer(int) constructor; use Integer.valueOf(int) instead  At Bugs.java:[line 17]\n" +
+                        "18 M URF_UNREAD_FIELD                         Unread field: guru.nidi.codeassert.model.p4.GenericParameters.l2  At GenericParameters.java:[line 37]",
+                analyzer, hasNoIssues());
+    }
+
+    @Test
+    public void fullClassMethodIgnore() throws IOException, InterruptedException {
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config,
+                bugCollector.andIgnore("guru.nidi.codeassert.Bugs#bugs", "DM_NUMBER_CTOR"));
+
+        assertMatcher("\n" +
+                        "15 H UC_USELESS_VOID_METHOD                   Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless  At ExampleConcreteClass.java:[line 51]\n" +
+                        "18 M DM_NUMBER_CTOR                           guru.nidi.codeassert.Bugs.more() invokes inefficient new Integer(int) constructor; use Integer.valueOf(int) instead  At Bugs.java:[line 12]\n" +
+                        "18 M DM_NUMBER_CTOR                           guru.nidi.codeassert.Bugs$InnerBugs.bugs() invokes inefficient new Integer(int) constructor; use Integer.valueOf(int) instead  At Bugs.java:[line 17]\n" +
+                        "18 M URF_UNREAD_FIELD                         Unread field: guru.nidi.codeassert.model.p4.GenericParameters.l2  At GenericParameters.java:[line 37]",
+                analyzer, hasNoIssues());
+    }
+
+    @Test
+    public void methodIgnore() throws IOException, InterruptedException {
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config,
+                bugCollector.andIgnore("#bugs", "DM_NUMBER_CTOR"));
+
+        assertMatcher("\n" +
+                        "15 H UC_USELESS_VOID_METHOD                   Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless  At ExampleConcreteClass.java:[line 51]\n" +
+                        "18 M DM_NUMBER_CTOR                           guru.nidi.codeassert.Bugs.more() invokes inefficient new Integer(int) constructor; use Integer.valueOf(int) instead  At Bugs.java:[line 12]\n" +
+                        "18 M URF_UNREAD_FIELD                         Unread field: guru.nidi.codeassert.model.p4.GenericParameters.l2  At GenericParameters.java:[line 37]",
                 analyzer, hasNoIssues());
     }
 

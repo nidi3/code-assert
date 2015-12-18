@@ -15,7 +15,6 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.JavaPackage;
 import guru.nidi.codeassert.model.ModelAnalyzer;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -149,11 +148,11 @@ public class DependencyMatchers {
     }
 
     private static String join(Collection<String> packs) {
-        String s = "";
+        final StringBuilder s = new StringBuilder();
         for (String pack : sorted(packs)) {
-            s += ", " + pack;
+            s.append(", " + pack);
         }
-        return s.length() > 0 ? s.substring(2) : s;
+        return s.length() > 0 ? s.substring(2) : s.toString();
     }
 
     private static List<String> sorted(Collection<String> ss) {

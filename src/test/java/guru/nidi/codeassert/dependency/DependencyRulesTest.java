@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,7 +45,7 @@ public class DependencyRulesTest {
     private Collection<JavaPackage> packages;
 
     @Before
-    public void analyze() throws IOException {
+    public void analyze() {
         analyzer = new ModelAnalyzer(new AnalyzerConfig(
                 "target/test-classes/guru/nidi/codeassert/dependency",
                 all().excluding("java.", "org")));
@@ -278,9 +279,7 @@ public class DependencyRulesTest {
 
     private static Set<String> set(String... ss) {
         final Set<String> res = new HashSet<>();
-        for (String s : ss) {
-            res.add(s);
-        }
+        Collections.addAll(res, ss);
         return res;
     }
 

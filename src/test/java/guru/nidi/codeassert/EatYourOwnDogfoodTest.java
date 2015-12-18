@@ -17,6 +17,8 @@ package guru.nidi.codeassert;
 
 import guru.nidi.codeassert.dependency.DependencyRule;
 import guru.nidi.codeassert.dependency.DependencyRuler;
+import guru.nidi.codeassert.findbugs.BugCollector;
+import guru.nidi.codeassert.findbugs.FindBugsAnalyzer;
 import guru.nidi.codeassert.model.ModelAnalyzer;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,22 +29,23 @@ import static guru.nidi.codeassert.PackageCollector.all;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
+import static guru.nidi.codeassert.findbugs.FindBugsMatchers.hasNoIssues;
 import static org.junit.Assert.assertThat;
 
 /**
  *
  */
-public class DependencyTest {
-    private ModelAnalyzer analyzer;
+public class EatYourOwnDogfoodTest {
+    private AnalyzerConfig config;
 
     @Before
     public void setup() throws IOException {
-        analyzer = new ModelAnalyzer(new AnalyzerConfig("target/classes", all().excluding("java.*", "org.*", "edu.*")));
+        config = new AnalyzerConfig("target/classes", all().excluding("java.*", "org.*", "edu.*"));
     }
 
     @Test
     public void noCycles() {
-        assertThat(analyzer, hasNoCycles());
+        assertThat(new ModelAnalyzer(config), hasNoCycles());
     }
 
     @Test
@@ -57,6 +60,16 @@ public class DependencyTest {
                 model.mayDependUpon(self);
             }
         }
-        assertThat(analyzer, matchesExactly(denyAll().withRules(new GuruNidiCodeassert())));
+        assertThat(new ModelAnalyzer(config), matchesExactly(denyAll().withRules(new GuruNidiCodeassert())));
+    }
+
+    @Test
+    public void findBugs() {
+        final BugCollector bugCollector = BugCollector.simple(null, null)
+                .andIgnore("ClassFileParser$Constant", "SIC_INNER_SHOULD_BE_STATIC")
+                .andIgnore("DependencyMatchers$CycleMatcher", "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
+                .andIgnore("DependencyMatchers$RuleMatcher", "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
+                .andIgnore("DependencyRules#withRules", "DP_DO_INSIDE_DO_PRIVILEGED");
+        assertThat(new FindBugsAnalyzer(config, bugCollector), hasNoIssues());
     }
 }

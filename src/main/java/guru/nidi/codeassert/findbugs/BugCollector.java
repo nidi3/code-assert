@@ -16,6 +16,7 @@
 package guru.nidi.codeassert.findbugs;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.MethodAnnotation;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +34,48 @@ public class BugCollector {
                 return (maxRank == null || bug.getBugRank() <= maxRank) &&
                         (minPriority == null || bug.getPriority() <= minPriority) &&
                         !ignored.contains(bug.getType());
+            }
+        };
+    }
+
+    /**
+     * @param loc   the class/method for which the ignore should be applied.
+     *              Has the form [package.][class][#method]
+     * @param types
+     * @return
+     */
+    public BugCollector andIgnore(final String loc, final String... types) {
+        return new BugCollector() {
+            private List<String> ignored = Arrays.asList(types);
+
+            @Override
+            public boolean accept(BugInstance bug) {
+                return BugCollector.this.accept(bug) &&
+                        (!matches(bug) || !ignored.contains(bug.getType()));
+            }
+
+            private boolean matches(BugInstance bug) {
+                final int methodPos = loc.indexOf('#');
+                if (methodPos < 0) {
+                    return matchClass(bug, loc);
+                } else if (methodPos == 0) {
+                    return matchMethod(bug, loc.substring(1));
+                } else {
+                    return matchClass(bug, loc.substring(0, methodPos)) && matchMethod(bug, loc.substring(methodPos + 1));
+                }
+            }
+
+            private boolean matchMethod(BugInstance bug, String method) {
+                final MethodAnnotation meth = bug.getPrimaryMethod();
+                return meth != null && method.equals(meth.getMethodName());
+            }
+
+            private boolean matchClass(BugInstance bug, String clazz) {
+                final String className = bug.getPrimaryClass().getClassName();
+                final int pos = className.lastIndexOf('.');
+                return clazz.contains(".") || pos < 0
+                        ? clazz.equals(className)
+                        : clazz.equals(className.substring(pos + 1));
             }
         };
     }

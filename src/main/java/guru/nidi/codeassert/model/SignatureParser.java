@@ -126,10 +126,8 @@ class SignatureParser {
         if (is('<')) {
             typeArguments();
         }
-        if (is('.')) {
-            while (is('.')) {
-                classTypeSignatureSuffix();
-            }
+        while (is('.')) {
+            classTypeSignatureSuffix();
         }
         final int pos = id.lastIndexOf('.');
         packages.add(pos < 0 ? id : id.substring(0, pos));

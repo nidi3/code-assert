@@ -54,7 +54,7 @@ public class FindBugsMatchers {
         @Override
         protected void describeMismatchSafely(FindBugsAnalyzer item, Description description) {
             for (final BugInstance bug : bugs) {
-                description.appendText(printBug(bug)).appendText("\n");
+                description.appendText("\n").appendText(printBug(bug));
             }
         }
 

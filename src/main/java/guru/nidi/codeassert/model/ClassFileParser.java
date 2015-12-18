@@ -156,7 +156,7 @@ class ClassFileParser {
     }
 
     private void parseAccessFlags() throws IOException {
-        int accessFlags = in.readUnsignedShort();
+        in.readUnsignedShort();
     }
 
     private String parseClassName() throws IOException {
@@ -225,41 +225,31 @@ class ClassFileParser {
         byte tag = in.readByte();
 
         switch (tag) {
-            case (ClassFileParser.CONSTANT_CLASS):
-            case (ClassFileParser.CONSTANT_STRING):
-            case (ClassFileParser.CONSTANT_METHOD_TYPE):
-                result = new Constant(tag, in.readUnsignedShort());
-                break;
-            case (ClassFileParser.CONSTANT_FIELD):
-            case (ClassFileParser.CONSTANT_METHOD):
-            case (ClassFileParser.CONSTANT_INTERFACEMETHOD):
-            case (ClassFileParser.CONSTANT_NAMEANDTYPE):
-            case (ClassFileParser.CONSTANT_INVOKEDYNAMIC):
-                result = new Constant(tag, in.readUnsignedShort(), in.readUnsignedShort());
-                break;
-            case (ClassFileParser.CONSTANT_INTEGER):
-                result = new Constant(tag, new Integer(in.readInt()));
-                break;
-            case (ClassFileParser.CONSTANT_FLOAT):
-                result = new Constant(tag, in.readFloat());
-                break;
-            case (ClassFileParser.CONSTANT_LONG):
-                result = new Constant(tag, in.readLong());
-                break;
-            case (ClassFileParser.CONSTANT_DOUBLE):
-                result = new Constant(tag, in.readDouble());
-                break;
-            case (ClassFileParser.CONSTANT_UTF8):
-                result = new Constant(tag, in.readUTF());
-                break;
-            case (ClassFileParser.CONSTANT_METHOD_HANDLE):
-                result = new Constant(tag, in.readByte(), in.readUnsignedShort());
-                break;
+            case CONSTANT_CLASS:
+            case CONSTANT_STRING:
+            case CONSTANT_METHOD_TYPE:
+                return new Constant(tag, in.readUnsignedShort());
+            case CONSTANT_FIELD:
+            case CONSTANT_METHOD:
+            case CONSTANT_INTERFACEMETHOD:
+            case CONSTANT_NAMEANDTYPE:
+            case CONSTANT_INVOKEDYNAMIC:
+                return new Constant(tag, in.readUnsignedShort(), in.readUnsignedShort());
+            case CONSTANT_INTEGER:
+                return new Constant(tag, in.readInt());
+            case CONSTANT_FLOAT:
+                return new Constant(tag, in.readFloat());
+            case CONSTANT_LONG:
+                return new Constant(tag, in.readLong());
+            case CONSTANT_DOUBLE:
+                return new Constant(tag, in.readDouble());
+            case CONSTANT_UTF8:
+                return new Constant(tag, in.readUTF());
+            case CONSTANT_METHOD_HANDLE:
+                return new Constant(tag, in.readByte(), in.readUnsignedShort());
             default:
                 throw new IOException("Unknown constant: " + tag);
         }
-
-        return result;
     }
 
     private FieldOrMethodInfo parseFieldOrMethodInfo() throws IOException {
@@ -645,7 +635,7 @@ class ClassFileParser {
         }
     }
 
-    class AttributeInfo {
+    static class AttributeInfo {
 
         private String name;
 
@@ -675,11 +665,8 @@ class ClassFileParser {
      */
     @Override
     public String toString() {
-
         StringBuilder s = new StringBuilder();
-
         try {
-
             s.append("\n" + className + ":\n");
 
             s.append("\nConstants:\n");
@@ -714,7 +701,7 @@ class ClassFileParser {
                 s.append("    " + jPackage.getName() + "\n");
             }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
