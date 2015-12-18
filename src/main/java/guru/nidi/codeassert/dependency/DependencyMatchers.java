@@ -15,7 +15,8 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.ModelProject;
+import guru.nidi.codeassert.model.JavaPackage;
+import guru.nidi.codeassert.model.ModelAnalyzer;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -29,32 +30,32 @@ public class DependencyMatchers {
     private DependencyMatchers() {
     }
 
-    public static Matcher<ModelProject> matchesRules(final DependencyRules rules) {
+    public static Matcher<ModelAnalyzer> matchesRules(final DependencyRules rules) {
         return new RuleMatcher(rules, false, false);
     }
 
-    public static Matcher<ModelProject> matchesExactly(final DependencyRules rules) {
+    public static Matcher<ModelAnalyzer> matchesExactly(final DependencyRules rules) {
         return new RuleMatcher(rules, true, true);
     }
 
-    public static Matcher<ModelProject> matchesIgnoringNonExisting(final DependencyRules rules) {
+    public static Matcher<ModelAnalyzer> matchesIgnoringNonExisting(final DependencyRules rules) {
         return new RuleMatcher(rules, false, true);
     }
 
-    public static Matcher<ModelProject> matchesIgnoringUndefined(final DependencyRules rules) {
+    public static Matcher<ModelAnalyzer> matchesIgnoringUndefined(final DependencyRules rules) {
         return new RuleMatcher(rules, true, false);
     }
 
-    public static Matcher<ModelProject> hasNoCycles() {
+    public static Matcher<ModelAnalyzer> hasNoCycles() {
         return new CycleMatcher();
     }
 
     @SafeVarargs
-    public static Matcher<ModelProject> hasNoCyclesExcept(Set<String>... cyclicGroups) {
+    public static Matcher<ModelAnalyzer> hasNoCyclesExcept(Set<String>... cyclicGroups) {
         return new CycleMatcher(cyclicGroups);
     }
 
-    private static class RuleMatcher extends TypeSafeMatcher<ModelProject> {
+    private static class RuleMatcher extends TypeSafeMatcher<ModelAnalyzer> {
         private final DependencyRules rules;
         private final boolean nonExisting;
         private final boolean undefined;
@@ -67,8 +68,8 @@ public class DependencyMatchers {
         }
 
         @Override
-        protected boolean matchesSafely(ModelProject item) {
-            result = rules.analyzeRules(item.getPackages());
+        protected boolean matchesSafely(ModelAnalyzer item) {
+            result = rules.analyzeRules(item.analyze());
             return result.getMissing().isEmpty() && result.getDenied().isEmpty() &&
                     (result.getNotExisting().isEmpty() || !nonExisting) &&
                     (result.getUndefined().isEmpty() || !undefined);
@@ -79,7 +80,7 @@ public class DependencyMatchers {
         }
 
         @Override
-        protected void describeMismatchSafely(ModelProject item, Description description) {
+        protected void describeMismatchSafely(ModelAnalyzer item, Description description) {
             if (nonExisting && !result.getNotExisting().isEmpty()) {
                 description.appendText("\nDefined, but not existing packages:\n");
                 description.appendText(join(sorted(result.getNotExisting())) + "\n");
@@ -110,7 +111,7 @@ public class DependencyMatchers {
         }
     }
 
-    private static class CycleMatcher extends TypeSafeMatcher<ModelProject> {
+    private static class CycleMatcher extends TypeSafeMatcher<ModelAnalyzer> {
         private final Set<String>[] exceptions;
         private CycleResult result;
 
@@ -120,8 +121,8 @@ public class DependencyMatchers {
         }
 
         @Override
-        protected boolean matchesSafely(ModelProject item) {
-            result = DependencyRules.analyzeCycles(item.getPackages());
+        protected boolean matchesSafely(ModelAnalyzer item) {
+            result = DependencyRules.analyzeCycles(item.analyze());
             return result.isEmptyExcept(exceptions);
         }
 
@@ -130,7 +131,7 @@ public class DependencyMatchers {
         }
 
         @Override
-        protected void describeMismatchSafely(ModelProject item, Description description) {
+        protected void describeMismatchSafely(ModelAnalyzer item, Description description) {
             if (!result.isEmptyExcept(exceptions)) {
                 description.appendText("Found these cyclic groups:\n");
                 for (DependencyMap cycle : result.getCyclesExcept(exceptions)) {

@@ -17,8 +17,8 @@ package guru.nidi.codeassert.findbugs;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.config.UserPreferences;
-import guru.nidi.codeassert.BaseProject;
-import guru.nidi.codeassert.PackageCollector;
+import guru.nidi.codeassert.Analyzer;
+import guru.nidi.codeassert.AnalyzerConfig;
 
 import java.io.IOException;
 import java.util.*;
@@ -26,7 +26,7 @@ import java.util.*;
 /**
  *
  */
-public class FindBugsProject extends BaseProject<Collection<BugInstance>> {
+public class FindBugsAnalyzer implements Analyzer<Collection<BugInstance>> {
     private static final Comparator<BugInstance> BUG_SORTER = new Comparator<BugInstance>() {
         @Override
         public int compare(BugInstance b1, BugInstance b2) {
@@ -42,38 +42,29 @@ public class FindBugsProject extends BaseProject<Collection<BugInstance>> {
         }
     };
 
+    private final AnalyzerConfig config;
     private final BugCollector bugCollector;
 
-    public FindBugsProject(String codeLocation, PackageCollector packageCollector, BugCollector bugCollector) {
-        super(codeLocation, packageCollector);
+    public FindBugsAnalyzer(AnalyzerConfig config, BugCollector bugCollector) {
+        this.config = config;
         this.bugCollector = bugCollector;
     }
 
-    public FindBugsProject(List<String> codeLocations, PackageCollector packageCollector, BugCollector bugCollector) {
-        super(codeLocations, packageCollector);
-        this.bugCollector = bugCollector;
-    }
-
-    public FindBugsProject(BaseProject project, BugCollector bugCollector) {
-        super(project);
-        this.bugCollector = bugCollector;
-    }
-
-    public Collection<BugInstance> analyze() throws IOException {
+    public Collection<BugInstance> analyze() {
         final Project project = createProject();
         final BugCollectionBugReporter bugReporter = createReporter(project);
         final FindBugs2 findBugs = createFindBugs(project, bugReporter);
         try {
             findBugs.execute();
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Execution of FindBugs has been interrupted.", e);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Problem executing FindBugs.", e);
         }
         return createBugList(bugReporter);
     }
 
     private Project createProject() {
         final Project project = new Project();
-        for (final String loc : codeLocations) {
+        for (final String loc : config.getCodeLocations()) {
             project.addFile(loc);
         }
         final String pathSeparator = System.getProperty("path.separator");
@@ -106,7 +97,7 @@ public class FindBugsProject extends BaseProject<Collection<BugInstance>> {
         Collections.sort(sorted, BUG_SORTER);
         List<BugInstance> filtered = new ArrayList<>();
         for (BugInstance bug : sorted) {
-            if (bugCollector.accept(bug)) {
+            if (bugCollector.accept(bug) && config.getPackageCollector().accept(bug.getPrimaryClass().getPackageName())) {
                 filtered.add(bug);
             }
         }

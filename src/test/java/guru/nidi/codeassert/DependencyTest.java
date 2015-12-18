@@ -17,7 +17,7 @@ package guru.nidi.codeassert;
 
 import guru.nidi.codeassert.dependency.DependencyRule;
 import guru.nidi.codeassert.dependency.DependencyRuler;
-import guru.nidi.codeassert.model.ModelProject;
+import guru.nidi.codeassert.model.ModelAnalyzer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,17 +33,16 @@ import static org.junit.Assert.assertThat;
  *
  */
 public class DependencyTest {
-    private ModelProject project;
+    private ModelAnalyzer analyzer;
 
     @Before
     public void setup() throws IOException {
-        project = new ModelProject("target/classes", all().excluding("java.*", "org.*", "edu.*"));
-        project.analyze();
+        analyzer = new ModelAnalyzer(new AnalyzerConfig("target/classes", all().excluding("java.*", "org.*", "edu.*")));
     }
 
     @Test
     public void noCycles() {
-        assertThat(project, hasNoCycles());
+        assertThat(analyzer, hasNoCycles());
     }
 
     @Test
@@ -58,6 +57,6 @@ public class DependencyTest {
                 model.mayDependUpon(self);
             }
         }
-        assertThat(project, matchesExactly(denyAll().withRules(new GuruNidiCodeassert())));
+        assertThat(analyzer, matchesExactly(denyAll().withRules(new GuruNidiCodeassert())));
     }
 }

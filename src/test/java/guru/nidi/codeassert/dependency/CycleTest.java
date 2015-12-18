@@ -15,7 +15,8 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.ModelProject;
+import guru.nidi.codeassert.AnalyzerConfig;
+import guru.nidi.codeassert.model.ModelAnalyzer;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.Before;
@@ -25,6 +26,8 @@ import java.io.IOException;
 
 import static guru.nidi.codeassert.PackageCollector.all;
 import static guru.nidi.codeassert.dependency.CycleResult.packages;
+import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
+import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCyclesExcept;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -33,19 +36,19 @@ import static org.junit.Assert.assertFalse;
  */
 public class CycleTest {
     private static final String BASE = "guru.nidi.codeassert.dependency.";
-    private ModelProject project;
+    private ModelAnalyzer project;
 
     @Before
     public void analyze() throws IOException {
-        project = new ModelProject(
+        project = new ModelAnalyzer(new AnalyzerConfig(
                 "target/test-classes/guru/nidi/codeassert/dependency",
-                all().excluding("java.", "org"));
+                all().excluding("java.", "org")));
         project.analyze();
     }
 
     @Test
     public void cycles() throws IOException {
-        final Matcher<ModelProject> matcher = DependencyMatchers.hasNoCycles();
+        final Matcher<ModelAnalyzer> matcher = hasNoCycles();
         assertMatcher("Found these cyclic groups:\n" +
                         "\n" +
                         "- Group of 3: guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.c.a\n" +
@@ -72,7 +75,7 @@ public class CycleTest {
 
     @Test
     public void cyclesWithExceptions() throws IOException {
-        final Matcher<ModelProject> matcher = DependencyMatchers.hasNoCyclesExcept(
+        final Matcher<ModelAnalyzer> matcher = hasNoCyclesExcept(
                 packages(base("a"), base("b"), base("c")),
                 packages(base("a.a")),
                 packages(base("b.a"), base("c.a")));
@@ -90,7 +93,7 @@ public class CycleTest {
                 matcher);
     }
 
-    private void assertMatcher(String message, Matcher<ModelProject> matcher) {
+    private void assertMatcher(String message, Matcher<ModelAnalyzer> matcher) {
         assertFalse("Should not match", matcher.matches(project));
         final StringDescription sd = new StringDescription();
         matcher.describeMismatch(project, sd);

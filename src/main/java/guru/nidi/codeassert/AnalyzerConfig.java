@@ -15,29 +15,34 @@
  */
 package guru.nidi.codeassert;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 /**
  *
  */
-public abstract class BaseProject<T> {
-    protected final List<String> codeLocations;
-    protected final PackageCollector packageCollector;
+public class AnalyzerConfig {
+    private final List<String> codeLocations;
+    private final PackageCollector packageCollector;
 
-    public BaseProject(String codeLocation, PackageCollector collector) {
+    public AnalyzerConfig(String codeLocation, PackageCollector collector) {
         this(Collections.singletonList(codeLocation), collector);
     }
 
-    public BaseProject(BaseProject<T> project) {
-        this(project.codeLocations, project.packageCollector);
+    public AnalyzerConfig(AnalyzerConfig config) {
+        this(config.codeLocations, config.packageCollector);
     }
 
-    public BaseProject(List<String> codeLocations, PackageCollector collector) {
+    public AnalyzerConfig(List<String> codeLocations, PackageCollector collector) {
         this.codeLocations = codeLocations;
         this.packageCollector = collector;
     }
 
-    public abstract T analyze() throws IOException;
+    public List<String> getCodeLocations() {
+        return codeLocations;
+    }
+
+    public PackageCollector getPackageCollector() {
+        return packageCollector;
+    }
 }

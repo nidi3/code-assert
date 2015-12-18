@@ -23,7 +23,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -35,21 +34,17 @@ public class FindBugsMatchers {
     private FindBugsMatchers() {
     }
 
-    public static Matcher<FindBugsProject> hasNoIssues() {
+    public static Matcher<FindBugsAnalyzer> hasNoIssues() {
         return new FindBugsMatcher();
     }
 
-    private static class FindBugsMatcher extends TypeSafeMatcher<FindBugsProject> {
+    private static class FindBugsMatcher extends TypeSafeMatcher<FindBugsAnalyzer> {
         private Collection<BugInstance> bugs;
 
         @Override
-        protected boolean matchesSafely(FindBugsProject item) {
-            try {
-                bugs = item.analyze();
-                return bugs.isEmpty();
-            } catch (IOException e) {
-                throw new RuntimeException("Problem executing FindBugs", e);
-            }
+        protected boolean matchesSafely(FindBugsAnalyzer item) {
+            bugs = item.analyze();
+            return bugs.isEmpty();
         }
 
         public void describeTo(Description description) {
@@ -57,7 +52,7 @@ public class FindBugsMatchers {
         }
 
         @Override
-        protected void describeMismatchSafely(FindBugsProject item, Description description) {
+        protected void describeMismatchSafely(FindBugsAnalyzer item, Description description) {
             for (final BugInstance bug : bugs) {
                 description.appendText(printBug(bug)).appendText("\n");
             }

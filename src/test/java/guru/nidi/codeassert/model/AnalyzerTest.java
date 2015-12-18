@@ -15,6 +15,7 @@
  */
 package guru.nidi.codeassert.model;
 
+import guru.nidi.codeassert.AnalyzerConfig;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -27,20 +28,20 @@ import static org.junit.Assert.assertEquals;
 /**
  *
  */
-public class ProjectTest {
+public class AnalyzerTest {
     @Test
     public void simple() throws IOException {
-        final Collection<JavaPackage> packs = new ModelProject(
+        final Collection<JavaPackage> packs = new ModelAnalyzer(new AnalyzerConfig(
                 Arrays.asList(Path.TEST_CLASSES, Path.CLASSES),
-                all()).analyze();
+                all())).analyze();
         assertEquals(36, packs.size());
     }
 
     @Test
     public void filter() throws IOException {
-        final Collection<JavaPackage> packs = new ModelProject(
+        final Collection<JavaPackage> packs = new ModelAnalyzer(new AnalyzerConfig(
                 Arrays.asList(Path.TEST_CLASSES, Path.CLASSES),
-                all().excluding("java.*", "javax.*", "org.*")).analyze();
+                all().excluding("java.*", "javax.*", "org.*"))).analyze();
         assertEquals(16, packs.size());
     }
 }
