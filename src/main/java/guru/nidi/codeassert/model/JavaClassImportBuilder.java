@@ -177,24 +177,26 @@ class JavaClassImportBuilder {
 
     private int addAnnotationReferences(byte[] data, int index, int numAnnotations) throws IOException {
         int visitedAnnotations = 0;
+        int i = index;
         while (visitedAnnotations < numAnnotations) {
-            int typeIndex = u2(data, index);
-            int numElementValuePairs = u2(data, index = index + 2);
+            int typeIndex = u2(data, i);
+            int numElementValuePairs = u2(data, i += 2);
             addImport(getPackageName(toUTF8(typeIndex).substring(1)));
             int visitedElementValuePairs = 0;
-            index += 2;
+            i += 2;
             while (visitedElementValuePairs < numElementValuePairs) {
-                index = addAnnotationElementValueReferences(data, index + 2);
+                i = addAnnotationElementValueReferences(data, i + 2);
                 visitedElementValuePairs++;
             }
             visitedAnnotations++;
         }
-        return index;
+        return i;
     }
 
     private int addAnnotationElementValueReferences(byte[] data, int index) throws IOException {
-        byte tag = data[index];
-        index += 1;
+        int i = index;
+        byte tag = data[i];
+        i++;
         switch (tag) {
             case 'B':
             case 'C':
@@ -205,34 +207,37 @@ class JavaClassImportBuilder {
             case 'S':
             case 'Z':
             case 's':
-                index += 2;
+                i += 2;
                 break;
 
             case 'e':
-                int enumTypeIndex = u2(data, index);
+                int enumTypeIndex = u2(data, i);
                 addImport(getPackageName(toUTF8(enumTypeIndex).substring(1)));
-                index += 4;
+                i += 4;
                 break;
 
             case 'c':
-                int classInfoIndex = u2(data, index);
+                int classInfoIndex = u2(data, i);
                 addImport(getPackageName(toUTF8(classInfoIndex).substring(1)));
-                index += 2;
+                i += 2;
                 break;
 
             case '@':
-                index = addAnnotationReferences(data, index, 1);
+                i = addAnnotationReferences(data, i, 1);
                 break;
 
             case '[':
-                int numValues = u2(data, index);
-                index = index + 2;
-                for (int i = 0; i < numValues; i++) {
-                    index = addAnnotationElementValueReferences(data, index);
+                int numValues = u2(data, i);
+                i += 2;
+                for (int j = 0; j < numValues; j++) {
+                    i = addAnnotationElementValueReferences(data, i);
                 }
                 break;
+
+            default:
+                assert false;
         }
-        return index;
+        return i;
     }
 
     private int u2(byte[] data, int index) {
@@ -259,18 +264,21 @@ class JavaClassImportBuilder {
     }
 
     private String getPackageName(String s) {
-        if ((s.length() > 0) && (s.charAt(0) == '[')) {
+        final String typed;
+        if (s.length() > 0 && s.charAt(0) == '[') {
             String types[] = descriptorToTypes(s);
             if (types.length == 0) {
                 return null; // primitives
             }
-            s = types[0];
+            typed = types[0];
+        } else {
+            typed = s;
         }
 
-        s = slashesToDots(s);
-        int index = s.lastIndexOf(".");
-        if (index > 0) {
-            return s.substring(0, index);
+        final String dotted = slashesToDots(typed);
+        final int pos = dotted.lastIndexOf(".");
+        if (pos > 0) {
+            return dotted.substring(0, pos);
         }
 
         return "Default";
@@ -278,8 +286,8 @@ class JavaClassImportBuilder {
 
     private String[] descriptorToTypes(String descriptor) {
         int typesCount = 0;
-        for (int index = 0; index < descriptor.length(); index++) {
-            if (descriptor.charAt(index) == ';') {
+        for (int i = 0; i < descriptor.length(); i++) {
+            if (descriptor.charAt(i) == ';') {
                 typesCount++;
             }
         }

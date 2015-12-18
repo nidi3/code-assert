@@ -30,7 +30,7 @@ import java.util.Map;
 public class JavaClass {
     private String className;
     private String packageName;
-    private Map<String, JavaPackage> imports;
+    private final Map<String, JavaPackage> imports;
     private String sourceFile;
 
     public JavaClass(String name) {

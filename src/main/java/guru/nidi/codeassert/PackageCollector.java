@@ -91,10 +91,10 @@ public class PackageCollector {
     }
 
     private PackageCollector add(String packageName, boolean include) {
-        if (packageName.endsWith("*")) {
-            packageName = packageName.substring(0, packageName.length() - 1);
-        }
-        collectors.add(new Collector(packageName, include));
+        final String name = packageName.endsWith("*")
+                ? packageName.substring(0, packageName.length() - 1)
+                : packageName;
+        collectors.add(new Collector(name, include));
         return this;
     }
 

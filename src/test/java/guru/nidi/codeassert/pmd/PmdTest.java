@@ -36,7 +36,7 @@ public class PmdTest {
             }
         };
         config.setInputPaths("src/main/java");
-        config.setRuleSets("rulesets/java/basic.xml,rulesets/java/codesize.xml");
+        config.setRuleSets("rulesets/java/basic.xml,rulesets/java/codesize.xml,rulesets/java/empty.xml,rulesets/java/design.xml,rulesets/java/coupling.xml,rulesets/java/optimizations.xml");
         config.setReportFormat("csv");
         config.setDebug(true);
         config.setThreads(1);

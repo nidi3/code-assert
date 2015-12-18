@@ -22,7 +22,7 @@ import java.util.Set;
 /**
  * see https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3.4
  */
-class SignatureParser {
+final class SignatureParser {
     private static final char EOF = (char) -1;
     private static final String NOT_IDENT = ".;[/<>:";
     private static final String BASE_TYPES = "BCDFIJSZ";
@@ -30,7 +30,7 @@ class SignatureParser {
     private final String s;
     private char c;
     private int pos;
-    private Set<String> packages = new HashSet<>();
+    private final Set<String> packages = new HashSet<>();
 
     private SignatureParser(String s) {
         this.s = s;

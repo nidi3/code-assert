@@ -26,9 +26,6 @@ import java.util.*;
 public class DependencyMap {
     private final Map<String, Map<String, Set<String>>> map = new LinkedHashMap<>();
 
-    public DependencyMap() {
-    }
-
     public void with(JavaPackage from, JavaPackage to) {
         with(from.getName(), from.classesWithImportsFrom(to), to.getName());
     }
