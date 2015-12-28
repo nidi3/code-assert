@@ -38,6 +38,10 @@ public class BugCollector {
         };
     }
 
+    public BugCollector andIgnore(final Class<?> clazz, final String... types) {
+        return andIgnore(clazz.getName(), types);
+    }
+
     /**
      * @param loc   the class/method for which the ignore should be applied.
      *              Has the form [package.][class][#method]

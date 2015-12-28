@@ -15,10 +15,12 @@
  */
 package guru.nidi.codeassert;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static guru.nidi.codeassert.model.Utils.merge;
+import static guru.nidi.codeassert.model.Utils.prepend;
 
 /**
  *
@@ -61,24 +63,6 @@ public class AnalyzerConfig {
                 merge(prepend("src/main/java/", Arrays.asList(packages)), prepend("src/test/java/", Arrays.asList(packages))),
                 merge(prepend("target/classes/", Arrays.asList(packages)), prepend("target/test-classes/", Arrays.asList(packages))),
                 PackageCollector.all());
-    }
-
-    private static List<String> prepend(String prefix, List<String> ss) {
-        if (ss.isEmpty()) {
-            return Collections.singletonList(prefix);
-        }
-        final List<String> res = new ArrayList<>();
-        for (String s : ss) {
-            res.add(prefix + s);
-        }
-        return res;
-    }
-
-    private static List<String> merge(List<String> ss1, List<String> ss2) {
-        final List<String> res = new ArrayList<>();
-        res.addAll(ss1);
-        res.addAll(ss2);
-        return res;
     }
 
     public AnalyzerConfig withSources(String... sources) {
