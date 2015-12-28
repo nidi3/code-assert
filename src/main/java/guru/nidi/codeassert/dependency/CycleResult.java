@@ -41,9 +41,9 @@ public class CycleResult {
     @SafeVarargs
     public final Set<DependencyMap> getCyclesExcept(Set<String>... exceptions) {
         final Set<DependencyMap> res = new HashSet<>();
-        for (DependencyMap cycle : cycles) {
+        for (final DependencyMap cycle : cycles) {
             boolean excepted = false;
-            for (Set<String> exception : exceptions) {
+            for (final Set<String> exception : exceptions) {
                 if (exception.containsAll(cycle.getPackages())) {
                     excepted = true;
                     break;

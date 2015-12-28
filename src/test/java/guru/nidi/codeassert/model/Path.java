@@ -20,7 +20,7 @@ import java.io.File;
 /**
  *
  */
-public class Path {
+public final class Path {
     private static final String PACKAGE = "guru/nidi/codeassert/model/";
     private static final String TEST_RESOURCES = "src/test/resources/";
     private static final String TEST_JAVAS = "src/test/java/" + PACKAGE;

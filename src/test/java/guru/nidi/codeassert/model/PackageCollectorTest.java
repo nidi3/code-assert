@@ -28,7 +28,7 @@ import static org.junit.Assert.*;
  * @author Clarkware Consulting, Inc.
  */
 
-public class CollectorTest {
+public class PackageCollectorTest {
 
     @Test
     public void collection() throws IOException {

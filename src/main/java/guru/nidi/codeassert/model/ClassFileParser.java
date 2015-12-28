@@ -86,12 +86,12 @@ class ClassFileParser {
 
         parseAccessFlags();
 
-        String className = parseClassName();
-        String superClassName = parseSuperClassName();
-        String[] interfaceNames = parseInterfaces();
-        FieldOrMethodInfo[] fields = parseFields();
-        FieldOrMethodInfo[] methods = parseMethods();
-        AttributeInfo[] attributes = parseAttributes();
+        final String className = parseClassName();
+        final String superClassName = parseSuperClassName();
+        final String[] interfaceNames = parseInterfaces();
+        final FieldOrMethodInfo[] fields = parseFields();
+        final FieldOrMethodInfo[] methods = parseMethods();
+        final AttributeInfo[] attributes = parseAttributes();
 
         final JavaClassImportBuilder adder = new JavaClassImportBuilder(jClass, collector, constantPool);
         adder.addClassName(className);
@@ -106,7 +106,7 @@ class ClassFileParser {
     }
 
     private int parseMagic() throws IOException {
-        int magic = in.readInt();
+        final int magic = in.readInt();
         if (magic != JAVA_MAGIC) {
             throw new IOException("Invalid class file");
         }
@@ -122,10 +122,10 @@ class ClassFileParser {
     }
 
     private Constant[] parseConstantPool() throws IOException {
-        int constantPoolSize = in.readUnsignedShort();
-        Constant[] pool = new Constant[constantPoolSize];
+        final int constantPoolSize = in.readUnsignedShort();
+        final Constant[] pool = new Constant[constantPoolSize];
         for (int i = 1; i < constantPoolSize; i++) {
-            Constant constant = parseNextConstant();
+            final Constant constant = parseNextConstant();
             pool[i] = constant;
 
             // 8-byte constants use two constant pool entries
@@ -142,31 +142,31 @@ class ClassFileParser {
     }
 
     private String parseClassName() throws IOException {
-        int entryIndex = in.readUnsignedShort();
-        String className = getClassConstantName(entryIndex);
+        final int entryIndex = in.readUnsignedShort();
+        final String className = getClassConstantName(entryIndex);
         jClass.setName(className);
 
         return className;
     }
 
     private String parseSuperClassName() throws IOException {
-        int entryIndex = in.readUnsignedShort();
+        final int entryIndex = in.readUnsignedShort();
         return getClassConstantName(entryIndex);
     }
 
     private String[] parseInterfaces() throws IOException {
-        int interfacesCount = in.readUnsignedShort();
-        String[] interfaceNames = new String[interfacesCount];
+        final int interfacesCount = in.readUnsignedShort();
+        final String[] interfaceNames = new String[interfacesCount];
         for (int i = 0; i < interfacesCount; i++) {
-            int entryIndex = in.readUnsignedShort();
+            final int entryIndex = in.readUnsignedShort();
             interfaceNames[i] = getClassConstantName(entryIndex);
         }
         return interfaceNames;
     }
 
     private FieldOrMethodInfo[] parseFields() throws IOException {
-        int fieldsCount = in.readUnsignedShort();
-        FieldOrMethodInfo[] fields = new FieldOrMethodInfo[fieldsCount];
+        final int fieldsCount = in.readUnsignedShort();
+        final FieldOrMethodInfo[] fields = new FieldOrMethodInfo[fieldsCount];
         for (int i = 0; i < fieldsCount; i++) {
             fields[i] = parseFieldOrMethodInfo();
         }
@@ -175,8 +175,8 @@ class ClassFileParser {
     }
 
     private FieldOrMethodInfo[] parseMethods() throws IOException {
-        int methodsCount = in.readUnsignedShort();
-        FieldOrMethodInfo[] methods = new FieldOrMethodInfo[methodsCount];
+        final int methodsCount = in.readUnsignedShort();
+        final FieldOrMethodInfo[] methods = new FieldOrMethodInfo[methodsCount];
         for (int i = 0; i < methodsCount; i++) {
             methods[i] = parseFieldOrMethodInfo();
         }
@@ -185,8 +185,7 @@ class ClassFileParser {
     }
 
     private Constant parseNextConstant() throws IOException {
-        byte tag = in.readByte();
-
+        final byte tag = in.readByte();
         switch (tag) {
             case CONSTANT_CLASS:
             case CONSTANT_STRING:
@@ -216,11 +215,10 @@ class ClassFileParser {
     }
 
     private FieldOrMethodInfo parseFieldOrMethodInfo() throws IOException {
-        FieldOrMethodInfo result = new FieldOrMethodInfo(in.readUnsignedShort(), in.readUnsignedShort(), in.readUnsignedShort());
-
-        int attributesCount = in.readUnsignedShort();
+        final FieldOrMethodInfo result = new FieldOrMethodInfo(in.readUnsignedShort(), in.readUnsignedShort(), in.readUnsignedShort());
+        final int attributesCount = in.readUnsignedShort();
         for (int a = 0; a < attributesCount; a++) {
-            AttributeInfo attribute = parseAttribute();
+            final AttributeInfo attribute = parseAttribute();
             if (ATTR_ANNOTATIONS.equals(attribute.name)) {
                 result.runtimeVisibleAnnotations = attribute;
             }
@@ -233,36 +231,33 @@ class ClassFileParser {
     }
 
     private AttributeInfo[] parseAttributes() throws IOException {
-        int attributesCount = in.readUnsignedShort();
-        AttributeInfo[] attributes = new AttributeInfo[attributesCount];
-
+        final int attributesCount = in.readUnsignedShort();
+        final AttributeInfo[] attributes = new AttributeInfo[attributesCount];
         for (int i = 0; i < attributesCount; i++) {
             attributes[i] = parseAttribute();
 
             // Section 4.7.7 of VM Spec - Class File Format
             if (ATTR_SOURCE.equals(attributes[i].name)) {
-                byte[] b = attributes[i].value;
-                int b0 = b[0] < 0 ? b[0] + 256 : b[0];
-                int b1 = b[1] < 0 ? b[1] + 256 : b[1];
-                int pe = b0 * 256 + b1;
-
-                String descriptor = toUTF8(pe);
-                jClass.setSourceFile(descriptor);
+                final byte[] b = attributes[i].value;
+                final int b0 = b[0] < 0 ? b[0] + 256 : b[0];
+                final int b1 = b[1] < 0 ? b[1] + 256 : b[1];
+                final int pe = b0 * 256 + b1;
+                jClass.setSourceFile(toUTF8(pe));
             }
         }
         return attributes;
     }
 
     private AttributeInfo parseAttribute() throws IOException {
-        AttributeInfo result = new AttributeInfo();
+        final AttributeInfo result = new AttributeInfo();
 
-        int nameIndex = in.readUnsignedShort();
+        final int nameIndex = in.readUnsignedShort();
         if (nameIndex != -1) {
             result.name = toUTF8(nameIndex);
         }
 
-        int attributeLength = in.readInt();
-        byte[] value = new byte[attributeLength];
+        final int attributeLength = in.readInt();
+        final byte[] value = new byte[attributeLength];
         for (int b = 0; b < attributeLength; b++) {
             value[b] = in.readByte();
         }
@@ -280,7 +275,7 @@ class ClassFileParser {
     }
 
     private String getClassConstantName(int entryIndex) throws IOException {
-        Constant entry = getConstantPoolEntry(entryIndex);
+        final Constant entry = getConstantPoolEntry(entryIndex);
         if (entry == null) {
             return "";
         }
@@ -288,7 +283,7 @@ class ClassFileParser {
     }
 
     private String toUTF8(int entryIndex) throws IOException {
-        Constant entry = getConstantPoolEntry(entryIndex);
+        final Constant entry = getConstantPoolEntry(entryIndex);
         if (entry.tag == CONSTANT_UTF8) {
             return (String) entry.value;
         }

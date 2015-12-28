@@ -44,12 +44,12 @@ public class ClassFileParserTest {
 
     @Test
     public void validClass() throws IOException {
-        JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass"));
+        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass"));
 
         assertEquals("guru.nidi.codeassert.model.ExampleConcreteClass", clazz.getName());
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
 
-        Collection imports = clazz.getImports();
+        final Collection imports = clazz.getImports();
         assertEquals(19, imports.size());
 
         assertTrue(imports.contains(new JavaPackage("java.net")));
@@ -77,24 +77,24 @@ public class ClassFileParserTest {
 
     @Test
     public void innerClass() throws IOException {
-        JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
+        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
 
         assertEquals("guru.nidi.codeassert.model.ExampleConcreteClass$ExampleInnerClass", clazz.getName());
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
 
-        Collection imports = clazz.getImports();
+        final Collection imports = clazz.getImports();
         assertEquals(1, imports.size());
         assertTrue(imports.contains(new JavaPackage("java.lang")));
     }
 
     @Test
     public void packageClass() throws IOException {
-        JavaClass clazz = parser.parse(Path.testClass("ExamplePackageClass"));
+        final JavaClass clazz = parser.parse(Path.testClass("ExamplePackageClass"));
 
         assertEquals("guru.nidi.codeassert.model.ExamplePackageClass", clazz.getName());
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
 
-        Collection imports = clazz.getImports();
+        final Collection imports = clazz.getImports();
         assertEquals(1, imports.size());
         assertTrue(imports.contains(new JavaPackage("java.lang")));
     }

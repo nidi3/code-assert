@@ -98,8 +98,8 @@ public class FindBugsAnalyzer implements Analyzer<Collection<BugInstance>> {
         final Collection<BugInstance> bugs = bugReporter.getBugCollection().getCollection();
         final ArrayList<BugInstance> sorted = new ArrayList<>(bugs);
         Collections.sort(sorted, BUG_SORTER);
-        List<BugInstance> filtered = new ArrayList<>();
-        for (BugInstance bug : sorted) {
+        final List<BugInstance> filtered = new ArrayList<>();
+        for (final BugInstance bug : sorted) {
             if (bugCollector.accept(bug) && config.getCollector().accept(bug.getPrimaryClass().getPackageName())) {
                 filtered.add(bug);
             }

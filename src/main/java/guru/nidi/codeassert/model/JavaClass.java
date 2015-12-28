@@ -80,7 +80,7 @@ public class JavaClass {
 
     public boolean equals(Object other) {
         if (other instanceof JavaClass) {
-            JavaClass otherClass = (JavaClass) other;
+            final JavaClass otherClass = (JavaClass) other;
             return otherClass.getName().equals(getName());
         }
 

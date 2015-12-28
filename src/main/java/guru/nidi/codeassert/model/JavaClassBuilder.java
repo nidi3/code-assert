@@ -49,9 +49,8 @@ class JavaClassBuilder {
      * @return Collection of <code>JavaClass</code> instances.
      */
     public Collection<JavaClass> build() {
-        Collection<JavaClass> classes = new ArrayList<>();
-
-        for (File nextFile : fileManager.extractFiles()) {
+        final Collection<JavaClass> classes = new ArrayList<>();
+        for (final File nextFile : fileManager.extractFiles()) {
             try {
                 classes.addAll(buildClasses(nextFile));
             } catch (IOException ioe) {
@@ -71,14 +70,14 @@ class JavaClassBuilder {
      */
     public Collection<JavaClass> buildClasses(File file) throws IOException {
         if (fileManager.acceptClassFile(file)) {
-            try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
-                JavaClass parsedClass = parser.parse(is);
-                Collection<JavaClass> javaClasses = new ArrayList<>();
+            try (final InputStream is = new BufferedInputStream(new FileInputStream(file))) {
+                final JavaClass parsedClass = parser.parse(is);
+                final Collection<JavaClass> javaClasses = new ArrayList<>();
                 javaClasses.add(parsedClass);
                 return javaClasses;
             }
         } else if (fileManager.acceptJarFile(file)) {
-            try (JarFile jarFile = new JarFile(file)) {
+            try (final JarFile jarFile = new JarFile(file)) {
                 return buildClasses(jarFile);
             }
         } else {
@@ -94,15 +93,14 @@ class JavaClassBuilder {
      * @return Collection of <code>JavaClass</code> instances.
      */
     public Collection<JavaClass> buildClasses(JarFile file) throws IOException {
-        Collection<JavaClass> javaClasses = new ArrayList<>();
+        final Collection<JavaClass> javaClasses = new ArrayList<>();
 
-        Enumeration entries = file.entries();
+        final Enumeration entries = file.entries();
         while (entries.hasMoreElements()) {
-            ZipEntry e = (ZipEntry) entries.nextElement();
+            final ZipEntry e = (ZipEntry) entries.nextElement();
             if (fileManager.acceptClassFileName(e.getName())) {
-                try (InputStream is = new BufferedInputStream(file.getInputStream(e))) {
-                    JavaClass jc = parser.parse(is);
-                    javaClasses.add(jc);
+                try (final InputStream is = new BufferedInputStream(file.getInputStream(e))) {
+                    javaClasses.add(parser.parse(is));
                 }
             }
         }

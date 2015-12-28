@@ -19,8 +19,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static guru.nidi.codeassert.model.Utils.merge;
-import static guru.nidi.codeassert.model.Utils.prepend;
+import static guru.nidi.codeassert.util.ListUtils.merge;
+import static guru.nidi.codeassert.util.ListUtils.prepend;
 
 /**
  *

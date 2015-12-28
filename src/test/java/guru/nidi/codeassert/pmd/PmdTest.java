@@ -15,37 +15,65 @@
  */
 package guru.nidi.codeassert.pmd;
 
-import net.sourceforge.pmd.PMD;
-import net.sourceforge.pmd.PMDConfiguration;
-import net.sourceforge.pmd.PropertyDescriptor;
-import net.sourceforge.pmd.Rule;
-import net.sourceforge.pmd.renderers.Renderer;
+import guru.nidi.codeassert.Analyzer;
+import guru.nidi.codeassert.AnalyzerConfig;
+import guru.nidi.codeassert.dependency.DependencyRulesTest;
+import net.sourceforge.pmd.RulePriority;
+import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
 import org.junit.Test;
+
+import static guru.nidi.codeassert.pmd.Rulesets.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  *
  */
 public class PmdTest {
     @Test
-    public void simple() {
-        final PMDConfiguration config = new PMDConfiguration() {
-            @Override
-            public Renderer createRenderer() {
-                setProperty(this, "TooManyMethods", "maxmethods", "25");
-                return super.createRenderer();
-            }
-        };
-        config.setInputPaths("src/main/java");
-        config.setRuleSets("rulesets/java/basic.xml,rulesets/java/codesize.xml,rulesets/java/empty.xml,rulesets/java/design.xml,rulesets/java/coupling.xml,rulesets/java/optimizations.xml");
-        config.setReportFormat("csv");
-        config.setDebug(true);
-        config.setThreads(1);
-        PMD.doPMD(config);
+    public void priority() {
+        final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.mavenMainAndTestClasses(),
+                ViolationCollector.simple(RulePriority.MEDIUM_HIGH))
+                .withRuleSets(basic(), braces(), design(), optimizations(), codesize(), empty())
+                .withRuleSets("rulesets/java/coupling.xml");
+        assertMatcher("\n" +
+                        "High        ClassWithOnlyPrivateConstructorsShouldBeFinal guru.nidi.codeassert.Bugs2:21    A class which only has private constructors should be final\n" +
+                        "High        EmptyMethodInAbstractClassShouldBeAbstract    guru.nidi.codeassert.model.ExampleAbstractClass:37    An empty method in an abstract class should be abstract instead\n" +
+                        "High        EmptyMethodInAbstractClassShouldBeAbstract    guru.nidi.codeassert.model.ExampleAbstractClass:41    An empty method in an abstract class should be abstract instead",
+                analyzer, PmdMatchers.hasNoPmdViolations());
     }
 
-    private void setProperty(PMDConfiguration config, String rule, String property, Object value) {
-        final Rule r = config.getPmdRuleSets().getRuleByName(rule);
-        final PropertyDescriptor<Object> descriptor = (PropertyDescriptor<Object>) r.getPropertyDescriptor(property);
-        r.setProperty(descriptor, value);
+    @Test
+    public void ignore() {
+        final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.mavenMainAndTestClasses(),
+                ViolationCollector.simple(RulePriority.MEDIUM)
+                        .ignore("MethodArgumentCouldBeFinal", "LawOfDemeter", "LooseCoupling", "LocalVariableCouldBeFinal", "UncommentedEmptyConstructor", "GodClass")
+                        .ignore("ExcessiveMethodLength").in(DependencyRulesTest.class))
+                .withRuleSets(basic(), braces(), design(), optimizations(),
+                        codesize().excessiveMethodLength(50).tooManyMethods(30),
+                        empty().emptyCatchBlock.allowCommented(true))
+                .withRuleSets("rulesets/java/coupling.xml");
+        assertMatcher("\n" +
+                        "High        ClassWithOnlyPrivateConstructorsShouldBeFinal guru.nidi.codeassert.Bugs2:21    A class which only has private constructors should be final\n" +
+                        "High        EmptyMethodInAbstractClassShouldBeAbstract    guru.nidi.codeassert.model.ExampleAbstractClass:37    An empty method in an abstract class should be abstract instead\n" +
+                        "High        EmptyMethodInAbstractClassShouldBeAbstract    guru.nidi.codeassert.model.ExampleAbstractClass:41    An empty method in an abstract class should be abstract instead\n" +
+                        "Medium      AvoidInstantiatingObjectsInLoops              guru.nidi.codeassert.model.JavaClassBuilder:102    Avoid instantiating new objects inside loops\n" +
+                        "Medium      AvoidInstantiatingObjectsInLoops              guru.nidi.codeassert.pmd.PmdAnalyzer:66    Avoid instantiating new objects inside loops\n" +
+                        "Medium      ExcessiveMethodLength                         guru.nidi.codeassert.dependency.DependencyRulesTest:177    Avoid really long methods.\n" +
+                        "Medium      ImmutableField                                guru.nidi.codeassert.model.p4.GenericParameters:37    Private field 'l2' could be made final; it is only initialized in the declaration or constructor.\n" +
+                        "Medium      MissingStaticMethodInNonInstantiatableClass   guru.nidi.codeassert.Bugs2:21    Class cannot be instantiated and does not provide any static methods or fields\n" +
+                        "Medium      PrematureDeclaration                          guru.nidi.codeassert.model.ExampleConcreteClass:55    Avoid declaring a variable if it is unreferenced before a possible exit point.\n" +
+                        "Medium      UncommentedEmptyMethodBody                    guru.nidi.codeassert.model.ExampleAbstractClass:41    Document empty method body\n" +
+                        "Medium      UncommentedEmptyMethodBody                    guru.nidi.codeassert.model.ExampleConcreteClass:72    Document empty method body\n" +
+                        "Medium      UncommentedEmptyMethodBody                    guru.nidi.codeassert.model.p4.GenericParameters:47    Document empty method body",
+                analyzer, PmdMatchers.hasNoPmdViolations());
+    }
+
+    private <T extends Analyzer<?>> void assertMatcher(String message, T analyzer, Matcher<T> matcher) {
+        assertFalse(matcher.matches(analyzer));
+        final StringDescription sd = new StringDescription();
+        matcher.describeMismatch(analyzer, sd);
+        assertEquals(message, sd.toString());
     }
 }

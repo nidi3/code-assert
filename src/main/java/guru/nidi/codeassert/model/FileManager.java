@@ -39,7 +39,7 @@ public class FileManager {
     }
 
     public FileManager withDirectory(String name) throws IOException {
-        File directory = new File(name);
+        final File directory = new File(name);
         if (directory.isDirectory() || acceptJarFile(directory)) {
             directories.add(directory);
         } else {
@@ -65,8 +65,8 @@ public class FileManager {
     }
 
     public Collection<File> extractFiles() {
-        Collection<File> files = new TreeSet<>();
-        for (File directory : directories) {
+        final Collection<File> files = new TreeSet<>();
+        for (final File directory : directories) {
             collectFiles(directory, files);
         }
         return files;
@@ -76,10 +76,9 @@ public class FileManager {
         if (directory.isFile()) {
             addFile(directory, files);
         } else {
-            String[] directoryFiles = directory.list();
+            final File[] directoryFiles = directory.listFiles();
             if (directoryFiles != null) {
-                for (String directoryFile : directoryFiles) {
-                    File file = new File(directory, directoryFile);
+                for (final File file : directoryFiles) {
                     if (acceptFile(file)) {
                         addFile(file, files);
                     } else if (file.isDirectory()) {

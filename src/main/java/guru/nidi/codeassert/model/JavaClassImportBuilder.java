@@ -46,7 +46,7 @@ class JavaClassImportBuilder {
     }
 
     public void addInterfaces(String[] interfaceNames) {
-        for (String interfaceName : interfaceNames) {
+        for (final String interfaceName : interfaceNames) {
             addImport(getPackageName(interfaceName));
         }
     }
@@ -61,7 +61,7 @@ class JavaClassImportBuilder {
     public void addClassConstantReferences() throws IOException {
         for (int j = 1; j < constantPool.length; j++) {
             if (constantPool[j].tag == ClassFileParser.CONSTANT_CLASS) {
-                String name = toUTF8(constantPool[j].nameIndex);
+                final String name = toUTF8(constantPool[j].nameIndex);
                 addImport(getPackageName(name));
             }
 
@@ -78,10 +78,10 @@ class JavaClassImportBuilder {
     }
 
     private void addMethodTypes(FieldOrMethodInfo[] methods) throws IOException {
-        for (FieldOrMethodInfo method : methods) {
-            String descriptor = toUTF8(method.descriptorIndex);
-            String[] types = descriptorToTypes(descriptor);
-            for (String type : types) {
+        for (final FieldOrMethodInfo method : methods) {
+            final String descriptor = toUTF8(method.descriptorIndex);
+            final String[] types = descriptorToTypes(descriptor);
+            for (final String type : types) {
                 if (type.length() > 0) {
                     addImport(getPackageName(type));
                 }
@@ -90,9 +90,9 @@ class JavaClassImportBuilder {
     }
 
     private void addMethodSignatureRefs(FieldOrMethodInfo[] methods) throws IOException {
-        for (FieldOrMethodInfo info : methods) {
+        for (final FieldOrMethodInfo info : methods) {
             if (info.signature != null) {
-                String name = toUTF8(u2(info.signature.value, 0));
+                final String name = toUTF8(u2(info.signature.value, 0));
                 for (final String pack : SignatureParser.parseMethodSignature(name).getPackages()) {
                     addImport(pack);
                 }
@@ -115,9 +115,9 @@ class JavaClassImportBuilder {
     }
 
     private void addFieldSignatureRefs(FieldOrMethodInfo[] fields) throws IOException {
-        for (FieldOrMethodInfo info : fields) {
+        for (final FieldOrMethodInfo info : fields) {
             if (info.signature != null) {
-                String name = toUTF8(u2(info.signature.value, 0));
+                final String name = toUTF8(u2(info.signature.value, 0));
                 for (final String pack : SignatureParser.parseFieldSignature(name).getPackages()) {
                     addImport(pack);
                 }
@@ -134,10 +134,10 @@ class JavaClassImportBuilder {
     }
 
     private void addFieldTypes(FieldOrMethodInfo[] fields) throws IOException {
-        for (FieldOrMethodInfo field : fields) {
-            String descriptor = toUTF8(field.descriptorIndex);
-            String[] types = descriptorToTypes(descriptor);
-            for (String type : types) {
+        for (final FieldOrMethodInfo field : fields) {
+            final String descriptor = toUTF8(field.descriptorIndex);
+            final String[] types = descriptorToTypes(descriptor);
+            for (final String type : types) {
                 addImport(getPackageName(type));
             }
         }
@@ -149,9 +149,9 @@ class JavaClassImportBuilder {
     }
 
     private void addAttributeSignatureRefs(AttributeInfo[] attributes) throws IOException {
-        for (AttributeInfo attr : attributes) {
+        for (final AttributeInfo attr : attributes) {
             if (attr.name.equals(ATTR_SIGNATURE)) {
-                String name = toUTF8(u2(attr.value, 0));
+                final String name = toUTF8(u2(attr.value, 0));
                 for (final String pack : SignatureParser.parseClassSignature(name).getPackages()) {
                     addImport(pack);
                 }
@@ -169,9 +169,9 @@ class JavaClassImportBuilder {
 
     private void addAnnotationReferences(AttributeInfo annotation) throws IOException {
         // JVM Spec 4.8.15
-        byte[] data = annotation.value;
-        int numAnnotations = u2(data, 0);
-        int annotationIndex = 2;
+        final byte[] data = annotation.value;
+        final int numAnnotations = u2(data, 0);
+        final int annotationIndex = 2;
         addAnnotationReferences(data, annotationIndex, numAnnotations);
     }
 
@@ -179,8 +179,8 @@ class JavaClassImportBuilder {
         int visitedAnnotations = 0;
         int i = index;
         while (visitedAnnotations < numAnnotations) {
-            int typeIndex = u2(data, i);
-            int numElementValuePairs = u2(data, i += 2);
+            final int typeIndex = u2(data, i);
+            final int numElementValuePairs = u2(data, i += 2);
             addImport(getPackageName(toUTF8(typeIndex).substring(1)));
             int visitedElementValuePairs = 0;
             i += 2;
@@ -193,10 +193,8 @@ class JavaClassImportBuilder {
         return i;
     }
 
-    private int addAnnotationElementValueReferences(byte[] data, int index) throws IOException {
-        int i = index;
-        byte tag = data[i];
-        i++;
+    private int addAnnotationElementValueReferences(byte[] data, int i) throws IOException {
+        final byte tag = data[i];
         switch (tag) {
             case 'B':
             case 'C':
@@ -207,37 +205,27 @@ class JavaClassImportBuilder {
             case 'S':
             case 'Z':
             case 's':
-                i += 2;
-                break;
-
+                return i + 3;
             case 'e':
-                int enumTypeIndex = u2(data, i);
+                final int enumTypeIndex = u2(data, i + 1);
                 addImport(getPackageName(toUTF8(enumTypeIndex).substring(1)));
-                i += 4;
-                break;
-
+                return i + 5;
             case 'c':
-                int classInfoIndex = u2(data, i);
+                final int classInfoIndex = u2(data, i + 1);
                 addImport(getPackageName(toUTF8(classInfoIndex).substring(1)));
-                i += 2;
-                break;
-
+                return i + 3;
             case '@':
-                i = addAnnotationReferences(data, i, 1);
-                break;
-
+                return addAnnotationReferences(data, i + 1, 1);
             case '[':
-                int numValues = u2(data, i);
-                i += 2;
+                final int numValues = u2(data, i + 1);
+                int k = i + 3;
                 for (int j = 0; j < numValues; j++) {
-                    i = addAnnotationElementValueReferences(data, i);
+                    k = addAnnotationElementValueReferences(data, k);
                 }
-                break;
-
+                return k;
             default:
-                assert false;
+                throw new RuntimeException("Unknown tag '" + tag + "'");
         }
-        return i;
     }
 
     private int u2(byte[] data, int index) {
@@ -245,7 +233,7 @@ class JavaClassImportBuilder {
     }
 
     private String toUTF8(int entryIndex) throws IOException {
-        Constant entry = getConstantPoolEntry(entryIndex);
+        final Constant entry = getConstantPoolEntry(entryIndex);
         if (entry.tag == ClassFileParser.CONSTANT_UTF8) {
             return (String) entry.value;
         }
@@ -266,7 +254,7 @@ class JavaClassImportBuilder {
     private String getPackageName(String s) {
         final String typed;
         if (s.length() > 0 && s.charAt(0) == '[') {
-            String types[] = descriptorToTypes(s);
+            final String types[] = descriptorToTypes(s);
             if (types.length == 0) {
                 return null; // primitives
             }
@@ -292,11 +280,11 @@ class JavaClassImportBuilder {
             }
         }
 
-        String types[] = new String[typesCount];
+        final String types[] = new String[typesCount];
 
         int typeIndex = 0;
         for (int index = 0; index < descriptor.length(); index++) {
-            int startIndex = descriptor.indexOf(ClassFileParser.CLASS_DESCRIPTOR, index);
+            final int startIndex = descriptor.indexOf(ClassFileParser.CLASS_DESCRIPTOR, index);
             if (startIndex < 0) {
                 break;
             }

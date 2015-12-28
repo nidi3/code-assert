@@ -89,7 +89,7 @@ public class DependencyMatchers {
         private void describeForbidden(Description description) {
             if (!result.getDenied().isEmpty()) {
                 description.appendText("\nFound forbidden dependencies:\n");
-                for (String pack : sorted(result.getDenied().getPackages())) {
+                for (final String pack : sorted(result.getDenied().getPackages())) {
                     description.appendText(pack + " ->\n");
                     final Map<String, Set<String>> deps = result.getDenied().getDependencies(pack);
                     for (final String dep : sorted(deps.keySet())) {
@@ -102,7 +102,7 @@ public class DependencyMatchers {
         private void describeMissing(Description description) {
             if (!result.getMissing().isEmpty()) {
                 description.appendText("\nFound missing dependencies:\n");
-                for (String pack : sorted(result.getMissing().getPackages())) {
+                for (final String pack : sorted(result.getMissing().getPackages())) {
                     description.appendText(pack + " ->\n");
                     for (final String dep : sorted(result.getMissing().getDependencies(pack).keySet())) {
                         description.appendText("  " + dep + "\n");
@@ -149,9 +149,9 @@ public class DependencyMatchers {
         protected void describeMismatchSafely(ModelAnalyzer item, Description description) {
             if (!result.isEmptyExcept(exceptions)) {
                 description.appendText("Found these cyclic groups:\n");
-                for (DependencyMap cycle : result.getCyclesExcept(exceptions)) {
+                for (final DependencyMap cycle : result.getCyclesExcept(exceptions)) {
                     description.appendText("\n- Group of " + cycle.getPackages().size() + ": " + join(sorted(cycle.getPackages())) + "\n");
-                    for (String pack : sorted(cycle.getPackages())) {
+                    for (final String pack : sorted(cycle.getPackages())) {
                         description.appendText("  " + pack + " ->\n");
                         final Map<String, Set<String>> deps = cycle.getDependencies(pack);
                         for (final String dep : sorted(deps.keySet())) {
@@ -165,7 +165,7 @@ public class DependencyMatchers {
 
     private static String join(Collection<String> packs) {
         final StringBuilder s = new StringBuilder();
-        for (String pack : sorted(packs)) {
+        for (final String pack : sorted(packs)) {
             s.append(", " + pack);
         }
         return s.length() > 0 ? s.substring(2) : s.toString();

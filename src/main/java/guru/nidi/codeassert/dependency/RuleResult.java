@@ -83,7 +83,7 @@ public class RuleResult {
             return false;
         }
 
-        RuleResult that = (RuleResult) o;
+        final RuleResult that = (RuleResult) o;
 
         if (!allowed.equals(that.allowed)) {
             return false;

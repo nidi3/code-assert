@@ -49,21 +49,21 @@ public class DependencyRule {
     }
 
     public DependencyRule mustDependUpon(DependencyRule... rules) {
-        for (DependencyRule rule : rules) {
+        for (final DependencyRule rule : rules) {
             mustDepend.add(rule.name);
         }
         return this;
     }
 
     public DependencyRule mayDependUpon(DependencyRule... rules) {
-        for (DependencyRule rule : rules) {
+        for (final DependencyRule rule : rules) {
             mayDepend.add(rule.name);
         }
         return this;
     }
 
     public DependencyRule mustNotDependUpon(DependencyRule... rules) {
-        for (DependencyRule rule : rules) {
+        for (final DependencyRule rule : rules) {
             mustNotDepend.add(rule.name);
         }
         return this;
@@ -90,8 +90,8 @@ public class DependencyRule {
     }
 
     private void analyzeDenyAll(RuleResult result, List<JavaPackage> thisPackages) {
-        for (JavaPackage thisPack : thisPackages) {
-            for (JavaPackage dep : thisPack.getEfferents()) {
+        for (final JavaPackage thisPack : thisPackages) {
+            for (final JavaPackage dep : thisPack.getEfferents()) {
                 final boolean allowed = dep.isMatchedByAny(mustDepend) || dep.isMatchedByAny(mayDepend);
                 final boolean mustNot = dep.isMatchedByAny(mustNotDepend);
                 if (!mustNot && allowed) {
@@ -105,9 +105,9 @@ public class DependencyRule {
     }
 
     private void analyzeAllowAll(RuleResult result, List<JavaPackage> thisPackages, Collection<JavaPackage> packages) {
-        for (String mustNot : mustNotDepend) {
-            for (JavaPackage mustNotPack : JavaPackage.allMatchesBy(packages, mustNot)) {
-                for (JavaPackage thisPack : thisPackages) {
+        for (final String mustNot : mustNotDepend) {
+            for (final JavaPackage mustNotPack : JavaPackage.allMatchesBy(packages, mustNot)) {
+                for (final JavaPackage thisPack : thisPackages) {
                     if (thisPack.hasEfferentsMatchedBy(mustNotPack.getName()) && !mustNotPack.isMatchedByAny(mayDepend)) {
                         result.denied.with(thisPack, mustNotPack);
                     }
@@ -117,9 +117,9 @@ public class DependencyRule {
     }
 
     private void analyzeMissing(RuleResult result, List<JavaPackage> thisPackages, Collection<JavaPackage> packages) {
-        for (String must : mustDepend) {
-            for (JavaPackage mustPack : JavaPackage.allMatchesBy(packages, must)) {
-                for (JavaPackage thisPack : thisPackages) {
+        for (final String must : mustDepend) {
+            for (final JavaPackage mustPack : JavaPackage.allMatchesBy(packages, must)) {
+                for (final JavaPackage thisPack : thisPackages) {
                     if (!thisPack.hasEfferentsMatchedBy(mustPack.getName())) {
                         result.missing.with(thisPack, mustPack);
                     }

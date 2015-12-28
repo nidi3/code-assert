@@ -94,7 +94,7 @@ public class JavaPackage {
     }
 
     public boolean isMatchedByAny(List<String> names) {
-        for (String name : names) {
+        for (final String name : names) {
             if (isMatchedBy(name)) {
                 return true;
             }
@@ -104,7 +104,7 @@ public class JavaPackage {
 
     public static List<JavaPackage> allMatchesBy(Collection<JavaPackage> packages, String name) {
         final List<JavaPackage> res = new ArrayList<>();
-        for (JavaPackage pack : packages) {
+        for (final JavaPackage pack : packages) {
             if (pack.isMatchedBy(name)) {
                 res.add(pack);
             }
@@ -118,7 +118,7 @@ public class JavaPackage {
 
     public Set<String> classesWithImportsFrom(JavaPackage to) {
         final Set<String> res = new HashSet<>();
-        for (JavaClass jc : getClasses()) {
+        for (final JavaClass jc : getClasses()) {
             if (jc.hasImportsMatchedBy(to.getName())) {
                 res.add(jc.getName());
             }
@@ -128,7 +128,7 @@ public class JavaPackage {
 
     public boolean equals(Object other) {
         if (other instanceof JavaPackage) {
-            JavaPackage otherPackage = (JavaPackage) other;
+            final  JavaPackage otherPackage = (JavaPackage) other;
             return otherPackage.getName().equals(getName());
         }
         return false;

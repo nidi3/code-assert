@@ -75,7 +75,7 @@ public class PackageCollector {
      * <code>false</code> otherwise.
      */
     public boolean accept(String packageName) {
-        for (Collector collector : collectors) {
+        for (final Collector collector : collectors) {
             if (packageName.startsWith(collector.name)) {
                 return collector.include;
             }

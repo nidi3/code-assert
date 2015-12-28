@@ -18,23 +18,7 @@ package guru.nidi.codeassert;
 /**
  *
  */
-public class Bugs {
-    public void bugs() {
-        Object a = new Integer(5);
-    }
-
-    public void more() {
-        Object a = new Integer(5);
-    }
-
-    public static class InnerBugs {
-        private InnerBugs() {
-//            not seen by PMD?
-        }
-
-        public void bugs() {
-            Object a = new Integer(5);
-        }
+public class Bugs2 {
+    private Bugs2() {
     }
 }
-

@@ -87,7 +87,7 @@ public class DependencyRules {
      */
     public DependencyRules withRules(String basePackage, DependencyRuler ruler) {
         try {
-            for (Field f : ruler.getClass().getDeclaredFields()) {
+            for (final Field f : ruler.getClass().getDeclaredFields()) {
                 f.setAccessible(true);
                 if (f.getType() == DependencyRule.class) {
                     final String name = ruler.getClass().isAnonymousClass()
@@ -117,7 +117,7 @@ public class DependencyRules {
         final StringBuilder res = new StringBuilder();
         final boolean dollarMode = s.contains("$");
         for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
+            final char c = s.charAt(i);
             if (c == '_' && i == s.length() - 1) {
                 res.append(res.charAt(res.length() - 1) == '.' ? "*" : ".*");
             } else {
@@ -132,12 +132,12 @@ public class DependencyRules {
             if (c == '$' && !firstChar) {
                 return ".";
             }
-            return "" + c;
+            return Character.toString(c);
         }
         if (Character.isUpperCase(c)) {
             return (firstChar ? "" : ".") + Character.toLowerCase(c);
         }
-        return "" + c;
+        return Character.toString(c);
     }
 
     public RuleResult analyzeRules(Collection<JavaPackage> packs) {
@@ -179,7 +179,7 @@ public class DependencyRules {
 
         public CycleResult analyzeCycles(Collection<JavaPackage> packs) {
             index = 0;
-            for (JavaPackage pack : packs) {
+            for (final JavaPackage pack : packs) {
                 if (node(pack).index < 0) {
                     strongConnect(pack);
                 }
@@ -219,7 +219,7 @@ public class DependencyRules {
         }
 
         private void processEfferents(JavaPackage pack, Node v) {
-            for (JavaPackage dep : pack.getEfferents()) {
+            for (final JavaPackage dep : pack.getEfferents()) {
                 final Node w = node(dep);
                 if (w.index < 0) {
                     strongConnect(dep);
@@ -243,8 +243,8 @@ public class DependencyRules {
 
         private void addCycle(Set<JavaPackage> group) {
             final DependencyMap g = new DependencyMap();
-            for (JavaPackage elem : group) {
-                for (JavaPackage dep : elem.getEfferents()) {
+            for (final JavaPackage elem : group) {
+                for (final JavaPackage dep : elem.getEfferents()) {
                     if (group.contains(dep)) {
                         g.with(elem, dep);
                     }

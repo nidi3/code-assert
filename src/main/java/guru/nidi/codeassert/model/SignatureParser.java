@@ -122,7 +122,7 @@ final class SignatureParser {
                 s.append(classIdentifier());
             }
         }
-        String id = s.toString();
+        final String id = s.toString();
         if (is('<')) {
             typeArguments();
         }
@@ -229,7 +229,7 @@ final class SignatureParser {
     }
 
     private String identifier(boolean clazz) {
-        StringBuilder s = new StringBuilder();
+        final StringBuilder s = new StringBuilder();
         do {
             s.append(c);
             read();

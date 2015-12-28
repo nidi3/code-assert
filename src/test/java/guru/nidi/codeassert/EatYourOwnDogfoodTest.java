@@ -20,6 +20,9 @@ import guru.nidi.codeassert.dependency.DependencyRuler;
 import guru.nidi.codeassert.findbugs.BugCollector;
 import guru.nidi.codeassert.findbugs.FindBugsAnalyzer;
 import guru.nidi.codeassert.model.ModelAnalyzer;
+import guru.nidi.codeassert.pmd.PmdAnalyzer;
+import guru.nidi.codeassert.pmd.ViolationCollector;
+import net.sourceforge.pmd.RulePriority;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +32,9 @@ import static guru.nidi.codeassert.PackageCollector.all;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
-import static guru.nidi.codeassert.findbugs.FindBugsMatchers.hasNoIssues;
+import static guru.nidi.codeassert.findbugs.FindBugsMatchers.findsNoBugs;
+import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoPmdViolations;
+import static guru.nidi.codeassert.pmd.Rulesets.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -40,7 +45,7 @@ public class EatYourOwnDogfoodTest {
 
     @Before
     public void setup() throws IOException {
-        config = AnalyzerConfig.mavenMainClasses().collecting(all().excluding("java.*", "org.*", "edu.*"));
+        config = AnalyzerConfig.mavenMainClasses().collecting(all().excluding("java.*", "org.*", "edu.*", "net.*"));
     }
 
     @Test
@@ -51,13 +56,15 @@ public class EatYourOwnDogfoodTest {
     @Test
     public void dependency() {
         class GuruNidiCodeassert implements DependencyRuler {
-            DependencyRule self, dependency, findbugs, model;
+            DependencyRule self, dependency, findbugs, model, pmd, util;
 
             @Override
             public void defineRules() {
+                self.mayDependUpon(util);
                 dependency.mayDependUpon(model, self);
-                findbugs.mayDependUpon(self);
-                model.mayDependUpon(self);
+                findbugs.mayDependUpon(self, util);
+                model.mayDependUpon(self, util);
+                pmd.mayDependUpon(self, util);
             }
         }
         assertThat(new ModelAnalyzer(config), matchesExactly(denyAll().withRules(new GuruNidiCodeassert())));
@@ -66,12 +73,25 @@ public class EatYourOwnDogfoodTest {
     @Test
     public void findBugs() {
         final BugCollector bugCollector = BugCollector.simple(null, null)
-                .andIgnore("ClassFileParser$Constant", "SIC_INNER_SHOULD_BE_STATIC")
-                .andIgnore("DependencyMatchers$CycleMatcher", "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-                .andIgnore("DependencyMatchers$RuleMatcher", "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-                .andIgnore("DependencyRules#withRules", "DP_DO_INSIDE_DO_PRIVILEGED")
-                .andIgnore("ClassFileParser$FieldOrMethodInfo", "URF_UNREAD_FIELD")
-                .andIgnore("ClassFileParser$Constant", "URF_UNREAD_FIELD");
-        assertThat(new FindBugsAnalyzer(config, bugCollector), hasNoIssues());
+                .ignore("SIC_INNER_SHOULD_BE_STATIC").in("ClassFileParser$Constant")
+                .ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR").in("DependencyMatchers$CycleMatcher", "DependencyMatchers$RuleMatcher")
+                .ignore("DP_DO_INSIDE_DO_PRIVILEGED").in("DependencyRules#withRules", "RuleDescriptor", "Ruleset")
+                .ignore("URF_UNREAD_FIELD").in("ClassFileParser$FieldOrMethodInfo", "ClassFileParser$Constant", "Rulesets$Codesize", "Rulesets$Empty$EmptyCatchBlock")
+                .ignore("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD").in("Rulesets$Empty");
+
+        assertThat(new FindBugsAnalyzer(config, bugCollector), findsNoBugs());
     }
+
+    @Test
+    public void pmd() {
+        final ViolationCollector collector = ViolationCollector.simple(RulePriority.MEDIUM)
+                .ignore("MethodArgumentCouldBeFinal")
+                .ignore("MissingBreakInSwitch").in("JavaClassImportBuilder")
+                .ignore("AvoidInstantiatingObjectsInLoops").in("JavaClassBuilder", "PmdAnalyzer")
+                .ignore("GodClass").in("DependencyRules", "ClassFileParser", "JavaClassImportBuilder");
+        final PmdAnalyzer analyzer = new PmdAnalyzer(config, collector)
+                .withRuleSets(basic(), braces(), codesize().excessiveMethodLength(40).tooManyMethods(30), design(), empty(), optimizations());
+        assertThat(analyzer, hasNoPmdViolations());
+    }
+
 }

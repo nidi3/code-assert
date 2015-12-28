@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert;
+package guru.nidi.codeassert.pmd;
+
+import net.sourceforge.pmd.RuleViolation;
 
 /**
  *
  */
-public class Bugs {
-    public void bugs() {
-        Object a = new Integer(5);
+final class PmdUtils {
+    private PmdUtils() {
     }
 
-    public void more() {
-        Object a = new Integer(5);
-    }
-
-    public static class InnerBugs {
-        private InnerBugs() {
-//            not seen by PMD?
+    public static String className(RuleViolation violation) {
+        if (violation.getClassName().length() > 0) {
+            return violation.getClassName();
         }
-
-        public void bugs() {
-            Object a = new Integer(5);
+        if (violation.getFilename().length() > 0) {
+            final int start = violation.getFilename().lastIndexOf('/');
+            return violation.getFilename().substring(start + 1, violation.getFilename().length() - 5);
         }
+        return "?";
     }
 }
-

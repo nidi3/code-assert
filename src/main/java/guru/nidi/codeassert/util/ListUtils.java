@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.model;
+package guru.nidi.codeassert.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,8 +22,8 @@ import java.util.List;
 /**
  *
  */
-public class Utils {
-    private Utils() {
+public final class ListUtils {
+    private ListUtils() {
     }
 
     public static List<String> prepend(String prefix, List<String> ss) {
@@ -31,7 +31,7 @@ public class Utils {
             return Collections.singletonList(prefix);
         }
         final List<String> res = new ArrayList<>();
-        for (String s : ss) {
+        for (final String s : ss) {
             res.add(prefix + s);
         }
         return res;

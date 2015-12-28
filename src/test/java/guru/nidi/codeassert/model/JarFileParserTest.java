@@ -32,15 +32,15 @@ import static org.junit.Assert.assertTrue;
 public class JarFileParserTest {
     @Test(expected = IOException.class)
     public void invalidJarFile() throws IOException {
-        JavaClassBuilder builder = new JavaClassBuilder();
-        File bogusFile = Path.testResource("bogus.jar");
+        final JavaClassBuilder builder = new JavaClassBuilder();
+        final File bogusFile = Path.testResource("bogus.jar");
         builder.buildClasses(bogusFile);
     }
 
     @Test(expected = IOException.class)
     public void testInvalidZipFile() throws IOException {
-        JavaClassBuilder builder = new JavaClassBuilder();
-        File bogusFile = Path.testResource("bogus.zip");
+        final JavaClassBuilder builder = new JavaClassBuilder();
+        final File bogusFile = Path.testResource("bogus.zip");
         builder.buildClasses(bogusFile);
     }
 
@@ -55,9 +55,9 @@ public class JarFileParserTest {
     }
 
     private void archive(File archive) throws IOException {
-        JavaClassBuilder builder = new JavaClassBuilder();
+        final JavaClassBuilder builder = new JavaClassBuilder();
 
-        Collection classes = builder.buildClasses(archive);
+        final Collection classes = builder.buildClasses(archive);
         assertEquals(5, classes.size());
 
         assertClassesExist(classes);

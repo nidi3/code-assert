@@ -13,28 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert;
+package guru.nidi.codeassert.util;
 
 /**
  *
  */
-public class Bugs {
-    public void bugs() {
-        Object a = new Integer(5);
-    }
-
-    public void more() {
-        Object a = new Integer(5);
-    }
-
-    public static class InnerBugs {
-        private InnerBugs() {
-//            not seen by PMD?
-        }
-
-        public void bugs() {
-            Object a = new Integer(5);
-        }
-    }
+public interface IgnoreSource<S extends IgnoreSource<S>> {
+    BaseIgnores<S> ignore(String... names);
 }
-

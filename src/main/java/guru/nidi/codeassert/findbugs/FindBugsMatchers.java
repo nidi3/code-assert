@@ -23,8 +23,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Collection;
 
 /**
@@ -34,7 +32,7 @@ public class FindBugsMatchers {
     private FindBugsMatchers() {
     }
 
-    public static Matcher<FindBugsAnalyzer> hasNoIssues() {
+    public static Matcher<FindBugsAnalyzer> findsNoBugs() {
         return new FindBugsMatcher();
     }
 
@@ -59,35 +57,27 @@ public class FindBugsMatchers {
         }
 
         private String printBug(BugInstance bug) {
-            final StringWriter sw = new StringWriter();
-            final PrintWriter out = new PrintWriter(sw);
-            int rank = BugRanker.findRank(bug);
-            out.printf("%2d ", rank);
-
-            switch (bug.getPriority()) {
-                case Priorities.EXP_PRIORITY:
-                    out.print("E");
-                    break;
-                case Priorities.LOW_PRIORITY:
-                    out.print("L");
-                    break;
-                case Priorities.NORMAL_PRIORITY:
-                    out.print("M");
-                    break;
-                case Priorities.HIGH_PRIORITY:
-                    out.print("H");
-                    break;
-                default:
-                    assert false;
-            }
-
-            out.printf(" %-40s ", bug.getType());
-
-            SourceLineAnnotation line = bug.getPrimarySourceLineAnnotation();
+            final int rank = BugRanker.findRank(bug);
+            final SourceLineAnnotation line = bug.getPrimarySourceLineAnnotation();
             final String msg = bug.getMessage();
             final int pos = msg.indexOf(':');
-            out.print(msg.substring(pos + 2).replace('\n', ' ') + "  " + line.toString());
-            return sw.toString();
+            final String message = msg.substring(pos + 2).replace('\n', ' ');
+            return String.format("%-2d %-8s %-45s %s:%d    %s", rank, priority(bug), bug.getType(), line.getClassName(), line.getStartLine(), message);
+        }
+
+        private String priority(BugInstance bug) {
+            switch (bug.getPriority()) {
+                case Priorities.EXP_PRIORITY:
+                    return "E";
+                case Priorities.LOW_PRIORITY:
+                    return "L";
+                case Priorities.NORMAL_PRIORITY:
+                    return "M";
+                case Priorities.HIGH_PRIORITY:
+                    return "H";
+                default:
+                    return "?";
+            }
         }
     }
 

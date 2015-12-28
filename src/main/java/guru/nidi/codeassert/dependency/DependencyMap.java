@@ -36,7 +36,7 @@ public class DependencyMap {
             deps = new HashMap<>();
             map.put(from, deps);
         }
-        Set<String> existingFromClasses = deps.get(to);
+        final Set<String> existingFromClasses = deps.get(to);
         if (existingFromClasses == null) {
             deps.put(to, new HashSet<>(fromClasses));
         } else {
@@ -46,7 +46,7 @@ public class DependencyMap {
     }
 
     public DependencyMap without(String from, String to) {
-        Map<String, Set<String>> deps = map.get(from);
+        final Map<String, Set<String>> deps = map.get(from);
         if (deps != null) {
             deps.remove(to);
             if (deps.isEmpty()) {
@@ -57,8 +57,8 @@ public class DependencyMap {
     }
 
     public DependencyMap without(DependencyMap other) {
-        for (Map.Entry<String, Map<String, Set<String>>> entry : other.map.entrySet()) {
-            for (String to : entry.getValue().keySet()) {
+        for (final Map.Entry<String, Map<String, Set<String>>> entry : other.map.entrySet()) {
+            for (final String to : entry.getValue().keySet()) {
                 without(entry.getKey(), to);
             }
         }
@@ -66,7 +66,7 @@ public class DependencyMap {
     }
 
     public void merge(DependencyMap deps) {
-        for (Map.Entry<String, Map<String, Set<String>>> entry : deps.map.entrySet()) {
+        for (final Map.Entry<String, Map<String, Set<String>>> entry : deps.map.entrySet()) {
             final Map<String, Set<String>> ds = map.get(entry.getKey());
             if (ds == null) {
                 map.put(entry.getKey(), entry.getValue());
@@ -106,7 +106,7 @@ public class DependencyMap {
             return false;
         }
 
-        DependencyMap that = (DependencyMap) o;
+        final DependencyMap that = (DependencyMap) o;
 
         return map.equals(that.map);
 

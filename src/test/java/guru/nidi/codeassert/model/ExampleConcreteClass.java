@@ -38,6 +38,7 @@ public class ExampleConcreteClass extends ExampleAbstractClass {
         try {
             java.net.URL url = new java.net.URL("http://www.clarkware.com");
         } catch (Exception e) {
+            //ignore
         }
     }
 
