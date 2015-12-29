@@ -38,18 +38,14 @@ public class Ruleset {
                     if (RuleDescriptor.class.isAssignableFrom(descField.getType())) {
                         ((RuleDescriptor) value).apply(config, descField.getType().getSimpleName());
                     } else {
-                        final String name = descField.getName();
-                        final int separator = name.indexOf('_');
-                        if (separator > 0 && RuleDescriptor.isAllowedPropertyType(descField.getType())) {
-                            final String rule = Character.toUpperCase(name.charAt(0)) + name.substring(1, separator);
-                            final String property = name.substring(separator + 1);
-                            RuleDescriptor.setProperty(config, rule, property, value);
+                        final PropertyField propertyField = descField.getAnnotation(PropertyField.class);
+                        if (propertyField != null) {
+                            RuleDescriptor.setProperty(config, propertyField.rule(), propertyField.value(), value);
                         }
                     }
                 }
             } catch (IllegalAccessException e) {
-                //TODO
-                e.printStackTrace();
+                throw new RuntimeException("Could not read property " + descField.getName() + " from class " + getClass(), e);
             }
         }
     }

@@ -66,7 +66,7 @@ public class PmdTest {
                         "Medium      AvoidFinalLocalVariable                       guru.nidi.codeassert.model.JavaClassImportBuilder:254    Avoid using final local variables, turn them into fields\n" +
                         "Medium      AvoidLiteralsInIfCondition                    guru.nidi.codeassert.dependency.DependencyRules$Tarjan:205    Avoid using Literals in Conditional Statements\n" +
                         "Medium      AvoidLiteralsInIfCondition                    guru.nidi.codeassert.model.JavaClassImportBuilder:277    Avoid using Literals in Conditional Statements\n" +
-                        "Medium      CommentRequired                               guru.nidi.codeassert.pmd.Rulesets$Comments:107    enumCommentRequirement Required\n" +
+                        "Medium      CommentRequired                               guru.nidi.codeassert.pmd.Rulesets$Comments:110    enumCommentRequirement Required\n" +
                         "Medium      CommentRequired                               guru.nidi.codeassert.model.p2.ExampleEnum:18    enumCommentRequirement Required\n" +
                         "Medium      CommentRequired                               guru.nidi.codeassert.model.p3.ExampleSecondEnum:18    enumCommentRequirement Required\n" +
                         "Medium      CommentSize                                   guru.nidi.codeassert.dependency.DependencyMap:93    Comment is too large: Line too long\n" +

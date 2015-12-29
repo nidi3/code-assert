@@ -64,20 +64,22 @@ public class Rulesets {
     }
 
     public static class Codesize extends Ruleset {
-        private Double excessiveMethodLength_minimum;
-        private Integer tooManyMethods_maxmethods;
+        @PropertyField(rule = "ExcessiveMethodLength", value = "minimum")
+        private Double methodLength;
+        @PropertyField(rule = "TooManyMethods", value = "maxmethods")
+        private Integer methodCount;
 
         public Codesize() {
             super("rulesets/java/codesize.xml");
         }
 
         public Codesize excessiveMethodLength(int limit) {
-            excessiveMethodLength_minimum = (double) limit;
+            methodLength = (double) limit;
             return this;
         }
 
         public Codesize tooManyMethods(int limit) {
-            tooManyMethods_maxmethods = limit;
+            methodCount = limit;
             return this;
         }
     }
@@ -90,14 +92,15 @@ public class Rulesets {
         }
 
         public static class EmptyCatchBlock extends RuleDescriptor<Empty> {
-            private Boolean allowCommentedBlocks;
+            @PropertyField("allowCommentedBlocks")
+            private Boolean allowCommented;
 
             public EmptyCatchBlock(Empty ruleset) {
                 super(ruleset);
             }
 
             public Empty allowCommented(boolean allow) {
-                this.allowCommentedBlocks = allow;
+                this.allowCommented = allow;
                 return ruleset;
             }
         }
@@ -108,14 +111,22 @@ public class Rulesets {
             Required, Ignored, Unwanted
         }
 
-        private Requirement commentRequired_headerCommentRequirement;
-        private Requirement commentRequired_fieldCommentRequirement;
-        private Requirement commentRequired_publicMethodCommentRequirement;
-        private Requirement commentRequired_protectedMethodCommentRequirement;
-        private Requirement commentRequired_enumCommentRequirement;
-        private Requirement commentRequired_serialVersionUIDCommentRequired;
-        private Integer commentSize_maxLines;
-        private Integer commentSize_maxLineLength;
+        @PropertyField(rule = "CommentRequired", value = "headerCommentRequirement")
+        private Requirement header;
+        @PropertyField(rule = "CommentRequired", value = "fieldCommentRequirement")
+        private Requirement field;
+        @PropertyField(rule = "CommentRequired", value = "publicMethodCommentRequirement")
+        private Requirement publicMethod;
+        @PropertyField(rule = "CommentRequired", value = "protectedMethodCommentRequirement")
+        private Requirement protectedMethod;
+        @PropertyField(rule = "CommentRequired", value = "enumCommentRequirement")
+        private Requirement enums;
+        @PropertyField(rule = "CommentRequired", value = "serialVersionUIDCommentRequired")
+        private Requirement serialVersionUID;
+        @PropertyField(rule = "CommentSize", value = "maxLines")
+        private Integer maxLines;
+        @PropertyField(rule = "CommentSize", value = "maxLineLength")
+        private Integer maxLineLength;
 
         public Comments() {
             super("rulesets/java/comments.xml");
@@ -132,42 +143,42 @@ public class Rulesets {
         }
 
         public Comments header(Requirement requirement) {
-            commentRequired_headerCommentRequirement = requirement;
+            header = requirement;
             return this;
         }
 
         public Comments field(Requirement requirement) {
-            commentRequired_fieldCommentRequirement = requirement;
+            field = requirement;
             return this;
         }
 
         public Comments publicMethod(Requirement requirement) {
-            commentRequired_publicMethodCommentRequirement = requirement;
+            publicMethod = requirement;
             return this;
         }
 
         public Comments protectedMethod(Requirement requirement) {
-            commentRequired_protectedMethodCommentRequirement = requirement;
+            protectedMethod = requirement;
             return this;
         }
 
         public Comments enums(Requirement requirement) {
-            commentRequired_enumCommentRequirement = requirement;
+            enums = requirement;
             return this;
         }
 
         public Comments serialVersionUID(Requirement requirement) {
-            commentRequired_serialVersionUIDCommentRequired = requirement;
+            serialVersionUID = requirement;
             return this;
         }
 
         public Comments maxLines(int lines) {
-            commentSize_maxLines = lines;
+            maxLines = lines;
             return this;
         }
 
         public Comments maxLineLength(int maxLen) {
-            commentSize_maxLineLength = maxLen;
+            maxLineLength = maxLen;
             return this;
         }
     }

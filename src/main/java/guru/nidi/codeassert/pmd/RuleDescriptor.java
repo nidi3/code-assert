@@ -37,28 +37,30 @@ public class RuleDescriptor<T extends Ruleset> {
 
     public void apply(PMDConfiguration config, String rule) {
         for (final Field prop : getClass().getDeclaredFields()) {
-            if (isAllowedPropertyType(prop.getType())) {
+            final PropertyField propertyField = prop.getAnnotation(PropertyField.class);
+            if (propertyField != null) {
                 prop.setAccessible(true);
                 try {
                     final Object value = prop.get(this);
                     if (value != null) {
-                        setProperty(config, rule, prop.getName(), value);
+                        setProperty(config, rule, propertyField.value(), value);
                     }
                 } catch (IllegalAccessException e) {
-                    //TODO
-                    e.printStackTrace();
+                    throw new RuntimeException("Could not read property " + prop.getName() + " from class " + getClass(), e);
                 }
             }
         }
     }
 
-    static boolean isAllowedPropertyType(Class<?> clazz) {
-        return Number.class.isAssignableFrom(clazz) || clazz == Boolean.class || clazz.isEnum();
-    }
-
     static void setProperty(PMDConfiguration config, String rule, String property, Object value) {
         final Rule r = config.getPmdRuleSets().getRuleByName(rule);
+        if (r == null) {
+            throw new RuntimeException("Rule '" + rule + "' not existing.");
+        }
         final PropertyDescriptor<Object> descriptor = (PropertyDescriptor<Object>) r.getPropertyDescriptor(property);
+        if (descriptor == null) {
+            throw new RuntimeException("Property '" + property + "' for rule '" + rule + "' not existing.");
+        }
         r.setProperty(descriptor, value);
     }
 }
