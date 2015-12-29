@@ -27,7 +27,10 @@ import net.sourceforge.pmd.renderers.Renderer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import static guru.nidi.codeassert.util.ListUtils.join;
 

@@ -31,7 +31,7 @@ public class LocationMatcher {
 
     public boolean matches(String name, String className, String method) {
         if (locs.isEmpty()) {
-            return names.contains(name);
+            return matchesName(name);
         }
         for (final String loc : locs) {
             if (matches(loc, name, className, method)) {
@@ -42,24 +42,28 @@ public class LocationMatcher {
     }
 
     private boolean matches(String loc, String name, String className, String method) {
-        if (!names.contains(name)) {
+        if (!matchesName(name)) {
             return false;
         }
         final int methodPos = loc.indexOf('#');
         if (methodPos < 0) {
-            return matchClass(className, loc);
+            return matchesClass(className, loc);
         }
         if (methodPos == 0) {
-            return matchMethod(method, loc.substring(1));
+            return matchesMethod(method, loc.substring(1));
         }
-        return matchClass(className, loc.substring(0, methodPos)) && matchMethod(method, loc.substring(methodPos + 1));
+        return matchesClass(className, loc.substring(0, methodPos)) && matchesMethod(method, loc.substring(methodPos + 1));
     }
 
-    private boolean matchMethod(String testMethod, String method) {
+    private boolean matchesName(String name) {
+        return names.isEmpty() || names.contains(name);
+    }
+
+    private boolean matchesMethod(String testMethod, String method) {
         return method.equals(testMethod);
     }
 
-    private boolean matchClass(String testClass, String clazz) {
+    private boolean matchesClass(String testClass, String clazz) {
         final int pos = testClass.lastIndexOf('.');
         return clazz.contains(".") || pos < 0
                 ? clazz.equals(testClass)

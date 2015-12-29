@@ -53,7 +53,7 @@ public class RuleDescriptor<T extends Ruleset> {
     }
 
     static boolean isAllowedPropertyType(Class<?> clazz) {
-        return Number.class.isAssignableFrom(clazz) || clazz == Boolean.class;
+        return Number.class.isAssignableFrom(clazz) || clazz == Boolean.class || clazz.isEnum();
     }
 
     static void setProperty(PMDConfiguration config, String rule, String property, Object value) {

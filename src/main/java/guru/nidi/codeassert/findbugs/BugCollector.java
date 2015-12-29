@@ -35,6 +35,18 @@ public class BugCollector implements IgnoreSource<BugCollector> {
         };
     }
 
+    public Ignores ignore(String... types) {
+        return new Ignores(types);
+    }
+
+    public Ignores ignoreAll() {
+        return new Ignores(new String[0]);
+    }
+
+    public boolean accept(BugInstance bug) {
+        return true;
+    }
+
     public class Ignores extends BaseIgnores<BugCollector> {
         protected Ignores(String[] ignores) {
             super(ignores);
@@ -51,13 +63,5 @@ public class BugCollector implements IgnoreSource<BugCollector> {
                 }
             };
         }
-    }
-
-    public Ignores ignore(String... types) {
-        return new Ignores(types);
-    }
-
-    public boolean accept(BugInstance bug) {
-        return true;
     }
 }

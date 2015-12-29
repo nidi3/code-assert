@@ -38,6 +38,10 @@ public class ViolationCollector implements IgnoreSource<ViolationCollector> {
         return new Ignores(names);
     }
 
+    public Ignores ignoreAll() {
+        return new Ignores(new String[0]);
+    }
+
     public boolean accept(RuleViolation violation) {
         return true;
     }

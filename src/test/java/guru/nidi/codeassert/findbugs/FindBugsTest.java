@@ -36,7 +36,7 @@ public class FindBugsTest {
     private final AnalyzerConfig config = AnalyzerConfig.mavenMainAndTestClasses();
     private final BugCollector bugCollector = BugCollector.simple(null, Priorities.NORMAL_PRIORITY)
             .ignore("UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD", "UUF_UNUSED_FIELD", "DLS_DEAD_LOCAL_STORE", "SIC_INNER_SHOULD_BE_STATIC", "UC_USELESS_OBJECT", "OBL_UNSATISFIED_OBLIGATION")
-            .ignore("URF_UNREAD_FIELD").in("Rulesets$Codesize", "Rulesets$Empty$EmptyCatchBlock");
+            .ignore("URF_UNREAD_FIELD").in("Rulesets$Comments", "Rulesets$Codesize", "Rulesets$Empty$EmptyCatchBlock");
 
     @Test
     public void simple() throws IOException, InterruptedException {

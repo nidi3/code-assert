@@ -171,8 +171,7 @@ class JavaClassImportBuilder {
         // JVM Spec 4.8.15
         final byte[] data = annotation.value;
         final int numAnnotations = u2(data, 0);
-        final int annotationIndex = 2;
-        addAnnotationReferences(data, annotationIndex, numAnnotations);
+        addAnnotationReferences(data, 2, numAnnotations);
     }
 
     private int addAnnotationReferences(byte[] data, int index, int numAnnotations) throws IOException {

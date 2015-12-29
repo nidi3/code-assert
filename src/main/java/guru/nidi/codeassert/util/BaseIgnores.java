@@ -47,4 +47,8 @@ public abstract class BaseIgnores<T extends IgnoreSource<T>> {
     public BaseIgnores<T> ignore(String... types) {
         return generally().ignore(types);
     }
+
+    public BaseIgnores<T> ignoreAll() {
+        return generally().ignoreAll();
+    }
 }
