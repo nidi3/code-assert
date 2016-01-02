@@ -56,7 +56,7 @@ public class CycleResult {
         return res;
     }
 
-    public static Set<String> packages(String... packs){
+    public static Set<String> packages(String... packs) {
         final HashSet<String> res = new HashSet<>();
         Collections.addAll(res, packs);
         return res;

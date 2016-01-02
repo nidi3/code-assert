@@ -91,10 +91,7 @@ public class DependencyMatchers {
                 description.appendText("\nFound forbidden dependencies:\n");
                 for (final String pack : sorted(result.getDenied().getPackages())) {
                     description.appendText(pack + " ->\n");
-                    final Map<String, Set<String>> deps = result.getDenied().getDependencies(pack);
-                    for (final String dep : sorted(deps.keySet())) {
-                        description.appendText("  " + dep + " (by " + join(deps.get(dep)) + ")\n");
-                    }
+                    description.appendText(deps("  ", result.getDenied().getDependencies(pack)));
                 }
             }
         }
@@ -153,14 +150,19 @@ public class DependencyMatchers {
                     description.appendText("\n- Group of " + cycle.getPackages().size() + ": " + join(sorted(cycle.getPackages())) + "\n");
                     for (final String pack : sorted(cycle.getPackages())) {
                         description.appendText("  " + pack + " ->\n");
-                        final Map<String, Set<String>> deps = cycle.getDependencies(pack);
-                        for (final String dep : sorted(deps.keySet())) {
-                            description.appendText("    " + dep + " (by " + join(deps.get(dep)) + ")\n");
-                        }
+                        description.appendText(deps("    ", cycle.getDependencies(pack)));
                     }
                 }
             }
         }
+    }
+
+    private static String deps(String prefix, Map<String, Set<String>> deps) {
+        final StringBuilder s = new StringBuilder();
+        for (final String dep : sorted(deps.keySet())) {
+            s.append(prefix).append(dep).append(" (by ").append(join(deps.get(dep))).append(")\n");
+        }
+        return s.toString();
     }
 
     private static String join(Collection<String> packs) {

@@ -128,7 +128,7 @@ public class JavaPackage {
 
     public boolean equals(Object other) {
         if (other instanceof JavaPackage) {
-            final  JavaPackage otherPackage = (JavaPackage) other;
+            final JavaPackage otherPackage = (JavaPackage) other;
             return otherPackage.getName().equals(getName());
         }
         return false;

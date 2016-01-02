@@ -64,6 +64,8 @@ public class DependencyRulesTest {
     @Test
     public void matcherFlags() {
         final DependencyRules rules = DependencyRules.allowAll();
+        final DependencyRule a = rules.addRule(base("a"));
+        final DependencyRule d = rules.addRule(base("d"));
         final Set<String> undefined = new HashSet<>(UNDEFINED);
         undefined.addAll(set(base("b"), base("c")));
 

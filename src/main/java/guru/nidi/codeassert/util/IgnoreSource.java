@@ -20,5 +20,6 @@ package guru.nidi.codeassert.util;
  */
 public interface IgnoreSource<S extends IgnoreSource<S>> {
     BaseIgnores<S> ignore(String... names);
+
     BaseIgnores<S> ignoreAll();
 }

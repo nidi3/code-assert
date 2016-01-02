@@ -23,7 +23,9 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.io.File;
 import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -52,17 +54,27 @@ public class FindBugsMatchers {
         @Override
         protected void describeMismatchSafely(FindBugsAnalyzer item, Description description) {
             for (final BugInstance bug : bugs) {
-                description.appendText("\n").appendText(printBug(bug));
+                description.appendText("\n").appendText(printBug(bug, item.config.getSources()));
             }
         }
 
-        private String printBug(BugInstance bug) {
+        private String printBug(BugInstance bug, List<String> sources) {
             final int rank = BugRanker.findRank(bug);
             final SourceLineAnnotation line = bug.getPrimarySourceLineAnnotation();
             final String msg = bug.getMessage();
             final int pos = msg.indexOf(':');
             final String message = msg.substring(pos + 2).replace('\n', ' ');
-            return String.format("%-2d %-8s %-45s %s:%d    %s", rank, priority(bug), bug.getType(), line.getClassName(), line.getStartLine(), message);
+            return String.format("%-2d %-8s %-45s %s:%d    %s", rank, priority(bug), bug.getType(), completeSourcePath(line.getSourcePath(), sources), line.getStartLine(), message);
+        }
+
+        private String completeSourcePath(String sourcePath, List<String> sources) {
+            for (final String source : sources) {
+                final File file = new File(source, sourcePath);
+                if (file.exists()) {
+                    return file.getAbsolutePath();
+                }
+            }
+            return sourcePath;
         }
 
         private String priority(BugInstance bug) {

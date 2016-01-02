@@ -16,8 +16,6 @@
 package guru.nidi.codeassert.model;
 
 import guru.nidi.codeassert.PackageCollector;
-import guru.nidi.codeassert.model.ClassFileParser.AttributeInfo;
-import guru.nidi.codeassert.model.ClassFileParser.Constant;
 import guru.nidi.codeassert.model.ClassFileParser.FieldOrMethodInfo;
 
 import java.io.IOException;
@@ -27,9 +25,9 @@ class JavaClassImportBuilder {
 
     private final PackageCollector collector;
     private final JavaClass jClass;
-    private final Constant[] constantPool;
+    private final ConstantPool constantPool;
 
-    public JavaClassImportBuilder(JavaClass jClass, PackageCollector collector, Constant[] constantPool) {
+    public JavaClassImportBuilder(JavaClass jClass, PackageCollector collector, ConstantPool constantPool) {
         this.jClass = jClass;
         this.collector = collector;
         this.constantPool = constantPool;
@@ -49,93 +47,54 @@ class JavaClassImportBuilder {
         }
     }
 
-    private Constant getConstantPoolEntry(int entryIndex) throws IOException {
-        if (entryIndex < 0 || entryIndex >= constantPool.length) {
-            throw new IOException("Illegal constant pool index : " + entryIndex);
-        }
-        return constantPool[entryIndex];
-    }
-
     public void addClassConstantReferences() throws IOException {
-        for (int j = 1; j < constantPool.length; j++) {
-            if (constantPool[j].tag == Constant.CLASS) {
-                final String name = toUTF8(constantPool[j].nameIndex);
+        for (final Constant constant : constantPool) {
+            if (constant.tag == Constant.CLASS) {
+                final String name = constantPool.getUtf8(constant.nameIndex);
                 addImport(getPackageName(name));
-            }
-            if (constantPool[j].isBig()) {
-                j++;
             }
         }
     }
 
     public void addMethodRefs(FieldOrMethodInfo[] methods) throws IOException {
-        addMethodAnnotationRefs(methods);
-        addMethodSignatureRefs(methods);
-        addMethodTypes(methods);
+        addFieldOrMethodAnnotationRefs(methods);
+        addFieldOrMethodSignatureRefs(SignatureParser.Source.METHOD, methods);
+        addFieldOrMethodTypes(methods);
     }
 
-    private void addMethodTypes(FieldOrMethodInfo[] methods) throws IOException {
-        for (final FieldOrMethodInfo method : methods) {
-            final String descriptor = toUTF8(method.descriptorIndex);
+    public void addFieldRefs(FieldOrMethodInfo[] fields) throws IOException {
+        addFieldOrMethodAnnotationRefs(fields);
+        addFieldOrMethodSignatureRefs(SignatureParser.Source.FIELD, fields);
+        addFieldOrMethodTypes(fields);
+    }
+
+    private void addFieldOrMethodAnnotationRefs(FieldOrMethodInfo[] info) throws IOException {
+        for (int j = 1; j < info.length; j++) {
+            if (info[j].annotations != null) {
+                addAnnotationReferences(info[j].annotations);
+            }
+        }
+    }
+
+    private void addFieldOrMethodSignatureRefs(SignatureParser.Source source, FieldOrMethodInfo[] infos) throws IOException {
+        for (final FieldOrMethodInfo info : infos) {
+            if (info.signature != null) {
+                final String name = constantPool.getUtf8(u2(info.signature.value, 0));
+                for (final String pack : SignatureParser.parseSignature(source, name).getPackages()) {
+                    addImport(pack);
+                }
+            }
+        }
+    }
+
+    private void addFieldOrMethodTypes(FieldOrMethodInfo[] infos) throws IOException {
+        for (final FieldOrMethodInfo info : infos) {
+            final String descriptor = constantPool.getUtf8(info.descriptorIndex);
             final String[] types = descriptorToTypes(descriptor);
             for (final String type : types) {
                 if (type.length() > 0) {
                     addImport(getPackageName(type));
                 }
-            }
-        }
-    }
-
-    private void addMethodSignatureRefs(FieldOrMethodInfo[] methods) throws IOException {
-        for (final FieldOrMethodInfo info : methods) {
-            if (info.signature != null) {
-                final String name = toUTF8(u2(info.signature.value, 0));
-                for (final String pack : SignatureParser.parseMethodSignature(name).getPackages()) {
-                    addImport(pack);
-                }
-            }
-        }
-    }
-
-    private void addMethodAnnotationRefs(FieldOrMethodInfo[] methods) throws IOException {
-        for (int j = 1; j < methods.length; j++) {
-            if (methods[j].runtimeVisibleAnnotations != null) {
-                addAnnotationReferences(methods[j].runtimeVisibleAnnotations);
-            }
-        }
-    }
-
-    public void addFieldRefs(FieldOrMethodInfo[] fields) throws IOException {
-        addFieldAnnotationRefs(fields);
-        addFieldSignatureRefs(fields);
-        addFieldTypes(fields);
-    }
-
-    private void addFieldSignatureRefs(FieldOrMethodInfo[] fields) throws IOException {
-        for (final FieldOrMethodInfo info : fields) {
-            if (info.signature != null) {
-                final String name = toUTF8(u2(info.signature.value, 0));
-                for (final String pack : SignatureParser.parseFieldSignature(name).getPackages()) {
-                    addImport(pack);
-                }
-            }
-        }
-    }
-
-    private void addFieldAnnotationRefs(FieldOrMethodInfo[] fields) throws IOException {
-        for (int j = 1; j < fields.length; j++) {
-            if (fields[j].runtimeVisibleAnnotations != null) {
-                addAnnotationReferences(fields[j].runtimeVisibleAnnotations);
-            }
-        }
-    }
-
-    private void addFieldTypes(FieldOrMethodInfo[] fields) throws IOException {
-        for (final FieldOrMethodInfo field : fields) {
-            final String descriptor = toUTF8(field.descriptorIndex);
-            final String[] types = descriptorToTypes(descriptor);
-            for (final String type : types) {
-                addImport(getPackageName(type));
             }
         }
     }
@@ -148,8 +107,8 @@ class JavaClassImportBuilder {
     private void addAttributeSignatureRefs(AttributeInfo[] attributes) throws IOException {
         for (final AttributeInfo attr : attributes) {
             if (attr.isSignature()) {
-                final String name = toUTF8(u2(attr.value, 0));
-                for (final String pack : SignatureParser.parseClassSignature(name).getPackages()) {
+                final String name = constantPool.getUtf8(u2(attr.value, 0));
+                for (final String pack : SignatureParser.parseSignature(SignatureParser.Source.CLASS, name).getPackages()) {
                     addImport(pack);
                 }
             }
@@ -177,7 +136,7 @@ class JavaClassImportBuilder {
         while (visitedAnnotations < numAnnotations) {
             final int typeIndex = u2(data, i);
             final int numElementValuePairs = u2(data, i += 2);
-            addImport(getPackageName(toUTF8(typeIndex).substring(1)));
+            addImport(getPackageName(constantPool.getUtf8(typeIndex).substring(1)));
             int visitedElementValuePairs = 0;
             i += 2;
             while (visitedElementValuePairs < numElementValuePairs) {
@@ -204,11 +163,11 @@ class JavaClassImportBuilder {
                 return i + 3;
             case 'e':
                 final int enumTypeIndex = u2(data, i + 1);
-                addImport(getPackageName(toUTF8(enumTypeIndex).substring(1)));
+                addImport(getPackageName(constantPool.getUtf8(enumTypeIndex).substring(1)));
                 return i + 5;
             case 'c':
                 final int classInfoIndex = u2(data, i + 1);
-                addImport(getPackageName(toUTF8(classInfoIndex).substring(1)));
+                addImport(getPackageName(constantPool.getUtf8(classInfoIndex).substring(1)));
                 return i + 3;
             case '@':
                 return addAnnotationReferences(data, i + 1, 1);
@@ -226,15 +185,6 @@ class JavaClassImportBuilder {
 
     private int u2(byte[] data, int index) {
         return (data[index] << 8 & 0xFF00) | (data[index + 1] & 0xFF);
-    }
-
-    private String toUTF8(int entryIndex) throws IOException {
-        final Constant entry = getConstantPoolEntry(entryIndex);
-        if (entry.tag == Constant.UTF8) {
-            return (String) entry.value;
-        }
-
-        throw new IOException("Constant pool entry is not a UTF8 type: " + entryIndex);
     }
 
     private void addImport(String importPackage) {

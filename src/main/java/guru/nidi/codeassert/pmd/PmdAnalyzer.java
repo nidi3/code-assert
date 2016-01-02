@@ -84,32 +84,41 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
         System.setOut(new NonCloseablePrintStream(originalSysOut));
         try {
             final PmdRenderer renderer = new PmdRenderer();
-            final PMDConfiguration pmdConfig = new PMDConfiguration() {
-                @Override
-                public Renderer createRenderer() {
-                    for (Ruleset ruleset : rulesets) {
-                        ruleset.apply(this);
-                    }
-                    return renderer;
-                }
-            };
-            pmdConfig.setInputPaths(join(config.getSources()));
-            pmdConfig.setRuleSets(ruleSetNames());
-            pmdConfig.setThreads(0);
+            final PMDConfiguration pmdConfig = createPmdConfig(renderer);
             PMD.doPMD(pmdConfig);
-            final List<RuleViolation> violations = new ArrayList<>();
-            if (renderer.getReport() != null) {
-                for (final RuleViolation violation : renderer.getReport()) {
-                    if (collector.accept(violation)) {
-                        violations.add(violation);
-                    }
-                }
-            }
-            Collections.sort(violations, VIOLATION_SORTER);
-            return violations;
+            return processViolations(renderer);
         } finally {
             System.setOut(originalSysOut);
         }
+    }
+
+    private List<RuleViolation> processViolations(PmdRenderer renderer) {
+        final List<RuleViolation> violations = new ArrayList<>();
+        if (renderer.getReport() != null) {
+            for (final RuleViolation violation : renderer.getReport()) {
+                if (collector.accept(violation)) {
+                    violations.add(violation);
+                }
+            }
+        }
+        Collections.sort(violations, VIOLATION_SORTER);
+        return violations;
+    }
+
+    private PMDConfiguration createPmdConfig(final PmdRenderer renderer) {
+        final PMDConfiguration pmdConfig = new PMDConfiguration() {
+            @Override
+            public Renderer createRenderer() {
+                for (Ruleset ruleset : rulesets) {
+                    ruleset.apply(this);
+                }
+                return renderer;
+            }
+        };
+        pmdConfig.setInputPaths(join(config.getSources()));
+        pmdConfig.setRuleSets(ruleSetNames());
+        pmdConfig.setThreads(0);
+        return pmdConfig;
     }
 
     private String ruleSetNames() {

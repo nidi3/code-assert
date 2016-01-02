@@ -42,7 +42,7 @@ public class FindBugsAnalyzer implements Analyzer<Collection<BugInstance>> {
         }
     };
 
-    private final AnalyzerConfig config;
+    final AnalyzerConfig config;
     private final BugCollector bugCollector;
 
     public FindBugsAnalyzer(AnalyzerConfig config, BugCollector bugCollector) {

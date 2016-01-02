@@ -23,6 +23,10 @@ import java.util.Set;
  * see https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3.4
  */
 final class SignatureParser {
+    public enum Source {
+        CLASS, FIELD, METHOD
+    }
+
     private static final char EOF = (char) -1;
     private static final String NOT_IDENT = ".;[/<>:";
     private static final String BASE_TYPES = "BCDFIJSZ";
@@ -38,22 +42,19 @@ final class SignatureParser {
         read();
     }
 
-    public static SignatureParser parseClassSignature(String signature) {
+    public static SignatureParser parseSignature(Source source, String signature) {
         final SignatureParser parser = new SignatureParser(signature);
-        parser.classSignature();
-        return parser;
-    }
-
-
-    public static SignatureParser parseFieldSignature(String signature) {
-        final SignatureParser parser = new SignatureParser(signature);
-        parser.fieldTypeSignature(false);
-        return parser;
-    }
-
-    public static SignatureParser parseMethodSignature(String signature) {
-        final SignatureParser parser = new SignatureParser(signature);
-        parser.methodTypeSignature();
+        switch (source) {
+            case CLASS:
+                parser.classSignature();
+                break;
+            case FIELD:
+                parser.fieldTypeSignature(false);
+                break;
+            case METHOD:
+                parser.methodTypeSignature();
+                break;
+        }
         return parser;
     }
 

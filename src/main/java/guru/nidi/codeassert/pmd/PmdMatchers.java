@@ -17,10 +17,13 @@ package guru.nidi.codeassert.pmd;
 
 import net.sourceforge.pmd.Rule;
 import net.sourceforge.pmd.RuleViolation;
+import net.sourceforge.pmd.cpd.Mark;
+import net.sourceforge.pmd.cpd.Match;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -32,6 +35,10 @@ public class PmdMatchers {
 
     public static Matcher<PmdAnalyzer> hasNoPmdViolations() {
         return new PmdMatcher();
+    }
+
+    public static Matcher<CpdAnalyzer> hasNoDuplications() {
+        return new CpdMatcher();
     }
 
     private static class PmdMatcher extends TypeSafeMatcher<PmdAnalyzer> {
@@ -56,8 +63,41 @@ public class PmdMatchers {
 
         private String printViolation(RuleViolation violation) {
             final Rule rule = violation.getRule();
-            return String.format("%-11s %-45s %s.%s:%d    %s",
-                    rule.getPriority(), rule.getName(), violation.getPackageName(), PmdUtils.className(violation), violation.getBeginLine(), violation.getDescription());
+            return String.format("%-11s %-45s %s:%d    %s",
+                    rule.getPriority(), rule.getName(), violation.getFilename(), violation.getBeginLine(), violation.getDescription());
+        }
+    }
+
+    private static class CpdMatcher extends TypeSafeMatcher<CpdAnalyzer> {
+        private List<Match> matches;
+
+        @Override
+        protected boolean matchesSafely(CpdAnalyzer item) {
+            matches = item.analyze();
+            return matches.isEmpty();
+        }
+
+        public void describeTo(Description description) {
+            description.appendText("Has no code duplications");
+        }
+
+        @Override
+        protected void describeMismatchSafely(CpdAnalyzer item, Description description) {
+            for (final Match match : matches) {
+                description.appendText("\n").appendText(printMatch(match));
+            }
+        }
+
+        private String printMatch(Match match) {
+            final StringBuilder s = new StringBuilder();
+            boolean first = true;
+            for (final Iterator<Mark> marks = match.iterator(); marks.hasNext(); ) {
+                final Mark mark = marks.next();
+                s.append(first ? String.format("%-4d ", match.getTokenCount()) : "     ");
+                first = false;
+                s.append(String.format("%s:%d-%d%n", mark.getFilename(), mark.getBeginLine(), mark.getEndLine()));
+            }
+            return s.substring(0, s.length() - 1);
         }
     }
 

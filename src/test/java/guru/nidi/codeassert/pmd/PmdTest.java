@@ -40,9 +40,9 @@ public class PmdTest {
                 ViolationCollector.simple(RulePriority.MEDIUM_HIGH))
                 .withRuleSets(basic(), braces(), design(), optimizations(), codesize(), empty(), coupling());
         assertMatcher("\n" +
-                        "High        ClassWithOnlyPrivateConstructorsShouldBeFinal guru.nidi.codeassert.Bugs2:21    A class which only has private constructors should be final\n" +
-                        "High        EmptyMethodInAbstractClassShouldBeAbstract    guru.nidi.codeassert.model.ExampleAbstractClass:37    An empty method in an abstract class should be abstract instead\n" +
-                        "High        EmptyMethodInAbstractClassShouldBeAbstract    guru.nidi.codeassert.model.ExampleAbstractClass:41    An empty method in an abstract class should be abstract instead",
+                        "High        ClassWithOnlyPrivateConstructorsShouldBeFinal /Users/nidi/idea/code-assert/src/test/java/guru/nidi/codeassert/Bugs2.java:21    A class which only has private constructors should be final\n" +
+                        "High        EmptyMethodInAbstractClassShouldBeAbstract    /Users/nidi/idea/code-assert/src/test/java/guru/nidi/codeassert/model/ExampleAbstractClass.java:37    An empty method in an abstract class should be abstract instead\n" +
+                        "High        EmptyMethodInAbstractClassShouldBeAbstract    /Users/nidi/idea/code-assert/src/test/java/guru/nidi/codeassert/model/ExampleAbstractClass.java:41    An empty method in an abstract class should be abstract instead",
                 analyzer, PmdMatchers.hasNoPmdViolations());
     }
 
@@ -53,7 +53,7 @@ public class PmdTest {
                         .ignore("MethodArgumentCouldBeFinal", "LawOfDemeter", "LooseCoupling", "LocalVariableCouldBeFinal",
                                 "UncommentedEmptyConstructor", "GodClass", "CommentDefaultAccessModifier", "AtLeastOneConstructor",
                                 "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming", "AvoidFieldNameMatchingMethodName",
-                                "BeanMembersShouldSerialize","JUnitAssertionsShouldIncludeMessage","JUnitSpelling")
+                                "BeanMembersShouldSerialize", "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling")
                         .ignore("ExcessiveMethodLength").in(DependencyRulesTest.class)
                         .ignore("AvoidInstantiatingObjectsInLoops").in("JavaClassBuilder", "PmdAnalyzer")
                         .ignore("AvoidDuplicateLiterals").in(DependencyRulesTest.class, FindBugsTest.class)
@@ -82,6 +82,13 @@ public class PmdTest {
                         "Medium      UseConcurrentHashMap                          guru.nidi.codeassert.model.ModelAnalyzer:41    If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation\n" +
                         "Medium      UseObjectForClearerAPI                        guru.nidi.codeassert.util.LocationMatcher:44    Rather than using a lot of String arguments, consider using a container object for those values.",
                 analyzer, PmdMatchers.hasNoPmdViolations());
+    }
+
+    @Test
+    public void cpd() {
+        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.mavenMainClasses(), 20);
+        assertMatcher("",
+                analyzer, PmdMatchers.hasNoDuplications());
     }
 
     private <T extends Analyzer<?>> void assertMatcher(String message, T analyzer, Matcher<T> matcher) {
