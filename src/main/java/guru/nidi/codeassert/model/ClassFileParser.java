@@ -29,36 +29,11 @@ import java.io.*;
  */
 class ClassFileParser {
     private static final int JAVA_MAGIC = 0xCAFEBABE;
-    static final int CONSTANT_UTF8 = 1;
-    private static final int CONSTANT_UNICODE = 2;
-    private static final int CONSTANT_INTEGER = 3;
-    private static final int CONSTANT_FLOAT = 4;
-    static final int CONSTANT_LONG = 5;
-    static final int CONSTANT_DOUBLE = 6;
-    static final int CONSTANT_CLASS = 7;
-    private static final int CONSTANT_STRING = 8;
-    private static final int CONSTANT_FIELD = 9;
-    private static final int CONSTANT_METHOD = 10;
-    private static final int CONSTANT_INTERFACEMETHOD = 11;
-    private static final int CONSTANT_NAMEANDTYPE = 12;
-
-    private static final int CONSTANT_METHOD_HANDLE = 15;
-    private static final int CONSTANT_METHOD_TYPE = 16;
-    private static final int CONSTANT_INVOKEDYNAMIC = 18;
-
-    static final char CLASS_DESCRIPTOR = 'L';
-    private static final int ACC_INTERFACE = 0x200;
-    private static final int ACC_ABSTRACT = 0x400;
-
-    private static final String ATTR_ANNOTATIONS = "RuntimeVisibleAnnotations";
-    private static final String ATTR_SIGNATURE = "Signature";
-    private static final String ATTR_SOURCE = "SourceFile";
 
     private final PackageCollector collector;
     private JavaClass jClass;
     private Constant[] constantPool;
     private DataInputStream in;
-
 
     public ClassFileParser() {
         this(PackageCollector.all());
@@ -125,11 +100,11 @@ class ClassFileParser {
         final int constantPoolSize = in.readUnsignedShort();
         final Constant[] pool = new Constant[constantPoolSize];
         for (int i = 1; i < constantPoolSize; i++) {
-            final Constant constant = parseNextConstant();
+            final Constant constant = Constant.fromData(in);
             pool[i] = constant;
 
             // 8-byte constants use two constant pool entries
-            if (constant.tag == CONSTANT_DOUBLE || constant.tag == CONSTANT_LONG) {
+            if (constant.isBig()) {
                 i++;
             }
         }
@@ -184,45 +159,15 @@ class ClassFileParser {
         return methods;
     }
 
-    private Constant parseNextConstant() throws IOException {
-        final byte tag = in.readByte();
-        switch (tag) {
-            case CONSTANT_CLASS:
-            case CONSTANT_STRING:
-            case CONSTANT_METHOD_TYPE:
-                return new Constant(tag, in.readUnsignedShort());
-            case CONSTANT_FIELD:
-            case CONSTANT_METHOD:
-            case CONSTANT_INTERFACEMETHOD:
-            case CONSTANT_NAMEANDTYPE:
-            case CONSTANT_INVOKEDYNAMIC:
-                return new Constant(tag, in.readUnsignedShort(), in.readUnsignedShort());
-            case CONSTANT_INTEGER:
-                return new Constant(tag, in.readInt());
-            case CONSTANT_FLOAT:
-                return new Constant(tag, in.readFloat());
-            case CONSTANT_LONG:
-                return new Constant(tag, in.readLong());
-            case CONSTANT_DOUBLE:
-                return new Constant(tag, in.readDouble());
-            case CONSTANT_UTF8:
-                return new Constant(tag, in.readUTF());
-            case CONSTANT_METHOD_HANDLE:
-                return new Constant(tag, in.readByte(), in.readUnsignedShort());
-            default:
-                throw new IOException("Unknown constant: " + tag);
-        }
-    }
-
     private FieldOrMethodInfo parseFieldOrMethodInfo() throws IOException {
         final FieldOrMethodInfo result = new FieldOrMethodInfo(in.readUnsignedShort(), in.readUnsignedShort(), in.readUnsignedShort());
         final int attributesCount = in.readUnsignedShort();
         for (int a = 0; a < attributesCount; a++) {
             final AttributeInfo attribute = parseAttribute();
-            if (ATTR_ANNOTATIONS.equals(attribute.name)) {
+            if (attribute.isAnnotation()) {
                 result.runtimeVisibleAnnotations = attribute;
             }
-            if (ATTR_SIGNATURE.equals(attribute.name)) {
+            if (attribute.isSignature()) {
                 result.signature = attribute;
             }
         }
@@ -237,7 +182,7 @@ class ClassFileParser {
             attributes[i] = parseAttribute();
 
             // Section 4.7.7 of VM Spec - Class File Format
-            if (ATTR_SOURCE.equals(attributes[i].name)) {
+            if (attributes[i].isSource()) {
                 final byte[] b = attributes[i].value;
                 final int b0 = b[0] < 0 ? b[0] + 256 : b[0];
                 final int b1 = b[1] < 0 ? b[1] + 256 : b[1];
@@ -284,7 +229,7 @@ class ClassFileParser {
 
     private String toUTF8(int entryIndex) throws IOException {
         final Constant entry = getConstantPoolEntry(entryIndex);
-        if (entry.tag == CONSTANT_UTF8) {
+        if (entry.tag == Constant.UTF8) {
             return (String) entry.value;
         }
 
@@ -296,10 +241,57 @@ class ClassFileParser {
     }
 
     static class Constant {
+        public static final int
+                UTF8 = 1,
+                UNICODE = 2,
+                INTEGER = 3,
+                FLOAT = 4,
+                LONG = 5,
+                DOUBLE = 6,
+                CLASS = 7,
+                STRING = 8,
+                FIELD = 9,
+                METHOD = 10,
+                INTERFACEMETHOD = 11,
+                NAMEANDTYPE = 12,
+                METHOD_HANDLE = 15,
+                METHOD_TYPE = 16,
+                INVOKEDYNAMIC = 18;
+
         final byte tag;
         final int nameIndex;
         final int typeIndex;
         final Object value;
+
+        public static Constant fromData(DataInputStream in) throws IOException {
+            final byte tag = in.readByte();
+            switch (tag) {
+                case Constant.CLASS:
+                case Constant.STRING:
+                case Constant.METHOD_TYPE:
+                    return new Constant(tag, in.readUnsignedShort());
+                case Constant.FIELD:
+                case Constant.METHOD:
+                case Constant.INTERFACEMETHOD:
+                case Constant.NAMEANDTYPE:
+                case Constant.INVOKEDYNAMIC:
+                    return new Constant(tag, in.readUnsignedShort(), in.readUnsignedShort());
+                case Constant.INTEGER:
+                    return new Constant(tag, in.readInt());
+                case Constant.FLOAT:
+                    return new Constant(tag, in.readFloat());
+                case Constant.LONG:
+                    return new Constant(tag, in.readLong());
+                case Constant.DOUBLE:
+                    return new Constant(tag, in.readDouble());
+                case Constant.UTF8:
+                    return new Constant(tag, in.readUTF());
+                case Constant.METHOD_HANDLE:
+                    return new Constant(tag, in.readByte(), in.readUnsignedShort());
+                default:
+                    throw new IOException("Unknown constant: " + tag);
+            }
+        }
 
         Constant(byte tag, int nameIndex) {
             this(tag, nameIndex, -1, null);
@@ -318,6 +310,10 @@ class ClassFileParser {
             this.nameIndex = nameIndex;
             this.typeIndex = typeIndex;
             this.value = value;
+        }
+
+        public boolean isBig() {
+            return tag == DOUBLE || tag == LONG;
         }
     }
 
@@ -339,6 +335,18 @@ class ClassFileParser {
     static class AttributeInfo {
         String name;
         byte[] value;
+
+        public boolean isAnnotation() {
+            return "RuntimeVisibleAnnotations".equals(name);
+        }
+
+        public boolean isSignature() {
+            return "Signature".equals(name);
+        }
+
+        public boolean isSource() {
+            return "SourceFile".equals(name);
+        }
     }
 
 }

@@ -47,7 +47,7 @@ public final class ListUtils {
     public static String join(List<String> ss) {
         final StringBuilder res = new StringBuilder();
         for (final String s : ss) {
-            res.append(",").append(s);
+            res.append(',').append(s);
         }
         return ss.isEmpty() ? "" : res.substring(1);
     }

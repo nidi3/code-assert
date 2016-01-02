@@ -32,7 +32,7 @@ public class DependencyRule {
     private final List<String> mustNotDepend = new ArrayList<>();
 
     DependencyRule(String name, boolean allowAll) {
-        final int starPos = name.indexOf("*");
+        final int starPos = name.indexOf('*');
         if (starPos >= 0 && (starPos != name.length() - 1 || !name.endsWith(".*"))) {
             throw new IllegalArgumentException("Wildcard * is only allowed at the end (e.g. java.*)");
         }

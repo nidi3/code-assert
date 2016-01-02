@@ -16,6 +16,8 @@
 package guru.nidi.codeassert.pmd;
 
 import net.sourceforge.pmd.PMDConfiguration;
+import net.sourceforge.pmd.PropertyDescriptor;
+import net.sourceforge.pmd.Rule;
 
 import java.lang.reflect.Field;
 
@@ -31,22 +33,30 @@ public class Ruleset {
 
     public void apply(PMDConfiguration config) {
         for (final Field descField : getClass().getDeclaredFields()) {
-            try {
-                descField.setAccessible(true);
-                final Object value = descField.get(this);
-                if (value != null) {
-                    if (RuleDescriptor.class.isAssignableFrom(descField.getType())) {
-                        ((RuleDescriptor) value).apply(config, descField.getType().getSimpleName());
-                    } else {
-                        final PropertyField propertyField = descField.getAnnotation(PropertyField.class);
-                        if (propertyField != null) {
-                            RuleDescriptor.setProperty(config, propertyField.rule(), propertyField.value(), value);
-                        }
+            final PropertyField propertyField = descField.getAnnotation(PropertyField.class);
+            if (propertyField != null) {
+                try {
+                    descField.setAccessible(true);
+                    final Object value = descField.get(this);
+                    if (value != null) {
+                        setProperty(config, propertyField.rule(), propertyField.property(), value);
                     }
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Could not read property " + descField.getName() + " from class " + getClass(), e);
                 }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Could not read property " + descField.getName() + " from class " + getClass(), e);
             }
         }
+    }
+
+    private void setProperty(PMDConfiguration config, String rule, String property, Object value) {
+        final Rule r = config.getPmdRuleSets().getRuleByName(rule);
+        if (r == null) {
+            throw new RuntimeException("Rule '" + rule + "' not existing.");
+        }
+        final PropertyDescriptor<Object> descriptor = (PropertyDescriptor<Object>) r.getPropertyDescriptor(property);
+        if (descriptor == null) {
+            throw new RuntimeException("Property '" + property + "' for rule '" + rule + "' not existing.");
+        }
+        r.setProperty(descriptor, value);
     }
 }

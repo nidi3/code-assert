@@ -50,23 +50,74 @@ public class Rulesets {
         return new Ruleset("rulesets/java/controversial.xml");
     }
 
+    public static Ruleset coupling() {
+        return new Ruleset("rulesets/java/coupling.xml");
+    }
+
     public static Ruleset design() {
         return new Ruleset("rulesets/java/design.xml");
+    }
+
+    public static Empty empty() {
+        return new Empty();
+    }
+
+    public static Ruleset finalizers() {
+        return new Ruleset("rulesets/java/finalizers.xml");
+    }
+
+    public static Ruleset imports() {
+        return new Ruleset("rulesets/java/imports.xml");
+    }
+
+    public static Ruleset j2ee() {
+        return new Ruleset("rulesets/java/j2ee.xml");
+    }
+
+    public static Ruleset javabeans() {
+        return new Ruleset("rulesets/java/javabeans.xml");
+    }
+
+    public static Ruleset junit() {
+        return new Ruleset("rulesets/java/junit.xml");
+    }
+
+    public static Naming naming() {
+        return new Naming();
     }
 
     public static Ruleset optimizations() {
         return new Ruleset("rulesets/java/optimizations.xml");
     }
 
+    public static Ruleset exceptions() {
+        return new Ruleset("rulesets/java/strictexception.xml");
+    }
 
-    public static Empty empty() {
-        return new Empty();
+    public static Ruleset strings() {
+        return new Ruleset("rulesets/java/strings.xml");
+    }
+
+    public static Ruleset sunSecure() {
+        return new Ruleset("rulesets/java/sunsecure.xml");
+    }
+
+    public static Ruleset typeResolution() {
+        return new Ruleset("rulesets/java/typeresolution.xml");
+    }
+
+    public static Ruleset unnecessary() {
+        return new Ruleset("rulesets/java/unnecessary.xml");
+    }
+
+    public static Ruleset unused() {
+        return new Ruleset("rulesets/java/unusedcode.xml");
     }
 
     public static class Codesize extends Ruleset {
-        @PropertyField(rule = "ExcessiveMethodLength", value = "minimum")
+        @PropertyField(rule = "ExcessiveMethodLength", property = "minimum")
         private Double methodLength;
-        @PropertyField(rule = "TooManyMethods", value = "maxmethods")
+        @PropertyField(rule = "TooManyMethods", property = "maxmethods")
         private Integer methodCount;
 
         public Codesize() {
@@ -85,24 +136,16 @@ public class Rulesets {
     }
 
     public static class Empty extends Ruleset {
-        public EmptyCatchBlock emptyCatchBlock = new EmptyCatchBlock(this);
+        @PropertyField(rule = "EmptyCatchBlock", property = "allowCommentedBlocks")
+        private Boolean allowCommentedEmptyCatch;
 
         public Empty() {
             super("rulesets/java/empty.xml");
         }
 
-        public static class EmptyCatchBlock extends RuleDescriptor<Empty> {
-            @PropertyField("allowCommentedBlocks")
-            private Boolean allowCommented;
-
-            public EmptyCatchBlock(Empty ruleset) {
-                super(ruleset);
-            }
-
-            public Empty allowCommented(boolean allow) {
-                this.allowCommented = allow;
-                return ruleset;
-            }
+        public Empty allowCommentedEmptyCatch(boolean allow) {
+            this.allowCommentedEmptyCatch = allow;
+            return this;
         }
     }
 
@@ -111,21 +154,21 @@ public class Rulesets {
             Required, Ignored, Unwanted
         }
 
-        @PropertyField(rule = "CommentRequired", value = "headerCommentRequirement")
+        @PropertyField(rule = "CommentRequired", property = "headerCommentRequirement")
         private Requirement header;
-        @PropertyField(rule = "CommentRequired", value = "fieldCommentRequirement")
+        @PropertyField(rule = "CommentRequired", property = "fieldCommentRequirement")
         private Requirement field;
-        @PropertyField(rule = "CommentRequired", value = "publicMethodCommentRequirement")
+        @PropertyField(rule = "CommentRequired", property = "publicMethodCommentRequirement")
         private Requirement publicMethod;
-        @PropertyField(rule = "CommentRequired", value = "protectedMethodCommentRequirement")
+        @PropertyField(rule = "CommentRequired", property = "protectedMethodCommentRequirement")
         private Requirement protectedMethod;
-        @PropertyField(rule = "CommentRequired", value = "enumCommentRequirement")
+        @PropertyField(rule = "CommentRequired", property = "enumCommentRequirement")
         private Requirement enums;
-        @PropertyField(rule = "CommentRequired", value = "serialVersionUIDCommentRequired")
+        @PropertyField(rule = "CommentRequired", property = "serialVersionUIDCommentRequired")
         private Requirement serialVersionUID;
-        @PropertyField(rule = "CommentSize", value = "maxLines")
+        @PropertyField(rule = "CommentSize", property = "maxLines")
         private Integer maxLines;
-        @PropertyField(rule = "CommentSize", value = "maxLineLength")
+        @PropertyField(rule = "CommentSize", property = "maxLineLength")
         private Integer maxLineLength;
 
         public Comments() {
@@ -177,8 +220,39 @@ public class Rulesets {
             return this;
         }
 
-        public Comments maxLineLength(int maxLen) {
+        public Comments maxLineLen(int maxLen) {
             maxLineLength = maxLen;
+            return this;
+        }
+    }
+
+    public static class Naming extends Ruleset {
+        @PropertyField(rule = "ShortVariable", property = "minimum")
+        private Integer varMinLen;
+        @PropertyField(rule = "LongVariable", property = "minimum")
+        private Integer varMaxLen;
+        @PropertyField(rule = "ShortMethodName", property = "minimum")
+        private Integer methodMinLen;
+        @PropertyField(rule = "ShortClassName", property = "minimum")
+        private Integer classMinLen;
+
+        public Naming() {
+            super("rulesets/java/naming.xml");
+        }
+
+        public Naming variableLen(int min, int max) {
+            varMinLen = min;
+            varMaxLen = max;
+            return this;
+        }
+
+        public Naming methodLen(int min) {
+            methodMinLen = min;
+            return this;
+        }
+
+        public Naming classLen(int min) {
+            classMinLen = min;
             return this;
         }
     }

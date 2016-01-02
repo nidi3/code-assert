@@ -23,9 +23,7 @@ import guru.nidi.codeassert.model.ClassFileParser.FieldOrMethodInfo;
 import java.io.IOException;
 
 class JavaClassImportBuilder {
-    private static final String ATTR_ANNOTATIONS = "RuntimeVisibleAnnotations";
-    private static final String ATTR_SIGNATURE = "Signature";
-    private static final String ATTR_SOURCE = "SourceFile";
+    private static final char CLASS_DESCRIPTOR = 'L';
 
     private final PackageCollector collector;
     private final JavaClass jClass;
@@ -60,12 +58,11 @@ class JavaClassImportBuilder {
 
     public void addClassConstantReferences() throws IOException {
         for (int j = 1; j < constantPool.length; j++) {
-            if (constantPool[j].tag == ClassFileParser.CONSTANT_CLASS) {
+            if (constantPool[j].tag == Constant.CLASS) {
                 final String name = toUTF8(constantPool[j].nameIndex);
                 addImport(getPackageName(name));
             }
-
-            if (constantPool[j].tag == ClassFileParser.CONSTANT_DOUBLE || constantPool[j].tag == ClassFileParser.CONSTANT_LONG) {
+            if (constantPool[j].isBig()) {
                 j++;
             }
         }
@@ -150,7 +147,7 @@ class JavaClassImportBuilder {
 
     private void addAttributeSignatureRefs(AttributeInfo[] attributes) throws IOException {
         for (final AttributeInfo attr : attributes) {
-            if (attr.name.equals(ATTR_SIGNATURE)) {
+            if (attr.isSignature()) {
                 final String name = toUTF8(u2(attr.value, 0));
                 for (final String pack : SignatureParser.parseClassSignature(name).getPackages()) {
                     addImport(pack);
@@ -161,7 +158,7 @@ class JavaClassImportBuilder {
 
     private void addAttributeAnnotationRefs(AttributeInfo[] attributes) throws IOException {
         for (int j = 1; j < attributes.length; j++) {
-            if (ATTR_ANNOTATIONS.equals(attributes[j].name)) {
+            if (attributes[j].isAnnotation()) {
                 addAnnotationReferences(attributes[j]);
             }
         }
@@ -233,7 +230,7 @@ class JavaClassImportBuilder {
 
     private String toUTF8(int entryIndex) throws IOException {
         final Constant entry = getConstantPoolEntry(entryIndex);
-        if (entry.tag == ClassFileParser.CONSTANT_UTF8) {
+        if (entry.tag == Constant.UTF8) {
             return (String) entry.value;
         }
 
@@ -263,7 +260,7 @@ class JavaClassImportBuilder {
         }
 
         final String dotted = slashesToDots(typed);
-        final int pos = dotted.lastIndexOf(".");
+        final int pos = dotted.lastIndexOf('.');
         if (pos > 0) {
             return dotted.substring(0, pos);
         }
@@ -283,7 +280,7 @@ class JavaClassImportBuilder {
 
         int typeIndex = 0;
         for (int index = 0; index < descriptor.length(); index++) {
-            final int startIndex = descriptor.indexOf(ClassFileParser.CLASS_DESCRIPTOR, index);
+            final int startIndex = descriptor.indexOf(CLASS_DESCRIPTOR, index);
             if (startIndex < 0) {
                 break;
             }

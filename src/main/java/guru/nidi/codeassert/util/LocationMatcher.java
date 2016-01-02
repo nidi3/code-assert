@@ -64,9 +64,10 @@ public class LocationMatcher {
     }
 
     private boolean matchesClass(String testClass, String clazz) {
-        final int pos = testClass.lastIndexOf('.');
-        return clazz.contains(".") || pos < 0
-                ? clazz.equals(testClass)
-                : clazz.equals(testClass.substring(pos + 1));
+        final int testPos = testClass.lastIndexOf('.');
+        final int pos = clazz.lastIndexOf('.');
+        return testPos < 0 || pos < 0
+                ? clazz.substring(pos + 1).equals(testClass.substring(testPos + 1))
+                : clazz.equals(testClass);
     }
 }

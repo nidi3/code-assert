@@ -115,7 +115,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     private String ruleSetNames() {
         final StringBuilder s = new StringBuilder();
         for (final Ruleset ruleset : rulesets) {
-            s.append(",").append(ruleset.name);
+            s.append(',').append(ruleset.name);
         }
         return rulesets.isEmpty() ? "" : s.substring(1);
     }

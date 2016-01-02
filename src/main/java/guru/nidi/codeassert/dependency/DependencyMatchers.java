@@ -166,7 +166,7 @@ public class DependencyMatchers {
     private static String join(Collection<String> packs) {
         final StringBuilder s = new StringBuilder();
         for (final String pack : sorted(packs)) {
-            s.append(", " + pack);
+            s.append(", ").append(pack);
         }
         return s.length() > 0 ? s.substring(2) : s.toString();
     }

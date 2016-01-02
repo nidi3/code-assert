@@ -18,6 +18,7 @@ package guru.nidi.codeassert.pmd;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerConfig;
 import guru.nidi.codeassert.dependency.DependencyRulesTest;
+import guru.nidi.codeassert.findbugs.FindBugsTest;
 import net.sourceforge.pmd.RulePriority;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -37,8 +38,7 @@ public class PmdTest {
     public void priority() {
         final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.mavenMainAndTestClasses(),
                 ViolationCollector.simple(RulePriority.MEDIUM_HIGH))
-                .withRuleSets(basic(), braces(), design(), optimizations(), codesize(), empty())
-                .withRuleSets("rulesets/java/coupling.xml");
+                .withRuleSets(basic(), braces(), design(), optimizations(), codesize(), empty(), coupling());
         assertMatcher("\n" +
                         "High        ClassWithOnlyPrivateConstructorsShouldBeFinal guru.nidi.codeassert.Bugs2:21    A class which only has private constructors should be final\n" +
                         "High        EmptyMethodInAbstractClassShouldBeAbstract    guru.nidi.codeassert.model.ExampleAbstractClass:37    An empty method in an abstract class should be abstract instead\n" +
@@ -52,15 +52,19 @@ public class PmdTest {
                 ViolationCollector.simple(RulePriority.MEDIUM)
                         .ignore("MethodArgumentCouldBeFinal", "LawOfDemeter", "LooseCoupling", "LocalVariableCouldBeFinal",
                                 "UncommentedEmptyConstructor", "GodClass", "CommentDefaultAccessModifier", "AtLeastOneConstructor",
-                                "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor")
+                                "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming", "AvoidFieldNameMatchingMethodName",
+                                "BeanMembersShouldSerialize","JUnitAssertionsShouldIncludeMessage","JUnitSpelling")
                         .ignore("ExcessiveMethodLength").in(DependencyRulesTest.class)
                         .ignore("AvoidInstantiatingObjectsInLoops").in("JavaClassBuilder", "PmdAnalyzer")
-                        .ignoreAll().in("ExampleConcreteClass", "ExampleAbstractClass"))
-                .withRuleSets(android(), basic(), braces(), cloning(), design(), optimizations(), controversial(),
+                        .ignore("AvoidDuplicateLiterals").in(DependencyRulesTest.class, FindBugsTest.class)
+                        .ignoreAll().in("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters"))
+                .withRuleSets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
+                        finalizers(), imports(), j2ee(), javabeans(), junit(), optimizations(),
+                        exceptions(), strings(), sunSecure(), typeResolution(), unnecessary(), unused(),
                         codesize().excessiveMethodLength(50).tooManyMethods(30),
-                        empty().emptyCatchBlock.allowCommented(true),
-                        comments().requirement(Ignored).enums(Required).maxLines(15).maxLineLength(100))
-                .withRuleSets("rulesets/java/coupling.xml");
+                        comments().requirement(Ignored).enums(Required).maxLines(15).maxLineLen(100),
+                        empty().allowCommentedEmptyCatch(true),
+                        naming().variableLen(1, 15).methodLen(3));
         assertMatcher("\n" +
                         "High        ClassWithOnlyPrivateConstructorsShouldBeFinal guru.nidi.codeassert.Bugs2:21    A class which only has private constructors should be final\n" +
                         "Medium      AvoidFinalLocalVariable                       guru.nidi.codeassert.model.JavaClassImportBuilder:254    Avoid using final local variables, turn them into fields\n" +
@@ -72,9 +76,7 @@ public class PmdTest {
                         "Medium      CommentSize                                   guru.nidi.codeassert.dependency.DependencyMap:93    Comment is too large: Line too long\n" +
                         "Medium      CommentSize                                   guru.nidi.codeassert.dependency.DependencyRules:54    Comment is too large: Too many lines\n" +
                         "Medium      ExcessiveMethodLength                         guru.nidi.codeassert.dependency.DependencyRulesTest:177    Avoid really long methods.\n" +
-                        "Medium      ImmutableField                                guru.nidi.codeassert.model.p4.GenericParameters:37    Private field 'l2' could be made final; it is only initialized in the declaration or constructor.\n" +
                         "Medium      MissingStaticMethodInNonInstantiatableClass   guru.nidi.codeassert.Bugs2:21    Class cannot be instantiated and does not provide any static methods or fields\n" +
-                        "Medium      UncommentedEmptyMethodBody                    guru.nidi.codeassert.model.p4.GenericParameters:47    Document empty method body\n" +
                         "Medium      UseConcurrentHashMap                          guru.nidi.codeassert.dependency.DependencyMap:27    If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation\n" +
                         "Medium      UseConcurrentHashMap                          guru.nidi.codeassert.dependency.DependencyRules$Tarjan:171    If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation\n" +
                         "Medium      UseConcurrentHashMap                          guru.nidi.codeassert.model.ModelAnalyzer:41    If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation\n" +
