@@ -16,7 +16,39 @@
 package guru.nidi.codeassert.dependency;
 
 /**
+ * Define the dependency rules for a package and sub packages thereof.
+ * A typical example looks as follows:
+ * <pre>
+ *     class OrgMyProject implements DependencyRuler {
+ *         DependencyRule $self, util, core_
  *
+ *         public void defineRules() {
+ *             $self.mayDependUpon(util, core_);
+ *             util.mustNotDependUpon($self, core_);
+ *         }
+ *     }
+ * </pre>
+ * This class defines dependency rules for the package org.my.project.
+ * All Fields of type DependencyRule refer to one or multiple packages:
+ * <table>
+ * <tr>
+ * <th>Field</th>
+ * <th>Package</th>
+ * </tr>
+ * <tr>
+ * <td>$self</td>
+ * <td>org.my.project</td>
+ * </tr>
+ * <tr>
+ * <td>util</td>
+ * <td>org.my.project.util</td>
+ * </tr>
+ * <tr>
+ * <td>core_</td>
+ * <td>org.my.project.core and all sub packages</td>
+ * </tr>
+ * </table>
+ * The method #defineRules defines upon which packages a package may, must or must not depend.
  */
 public interface DependencyRuler {
     void defineRules();

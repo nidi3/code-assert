@@ -86,6 +86,7 @@ public class PmdTest {
                         pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", 21, "A class which only has private constructors should be final") +
                         pmd(MEDIUM, "ArrayIsStoredDirectly", MAIN, "model/AttributeInfo", 28, "The user-supplied array 'value' is stored directly.") +
                         pmd(MEDIUM, "ArrayIsStoredDirectly", MAIN, "model/ConstantPool", 29, "The user-supplied array 'pool' is stored directly.") +
+                        pmd(MEDIUM, "AvoidDollarSigns", TEST, "EatYourOwnDogfoodTest", 61, "Avoid using dollar signs in variable/method/class/interface names") +
                         pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", 118, "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 118") +
                         pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", 160, "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 160") +
                         pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", 198, "Avoid using final local variables, turn them into fields") +
@@ -94,7 +95,9 @@ public class PmdTest {
                         pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "dependency/DependencyRules", 205, "Avoid using Literals in Conditional Statements") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p2/ExampleEnum", 18, "enumCommentRequirement Required") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", 18, "enumCommentRequirement Required") +
+                        pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRuler", 18, "Comment is too large: Too many lines") +
                         pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRules", 54, "Comment is too large: Too many lines") +
+                        pmd(MEDIUM, "ExcessiveMethodLength", TEST, "pmd/PmdTest", 61, "Avoid really long methods.") +
                         pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", 40, "JUnit tests should not contain more than 1 assert(s).") +
                         pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", 50, "JUnit tests should not contain more than 1 assert(s).") +
                         pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", 21, "Class cannot be instantiated and does not provide any static methods or fields") +
