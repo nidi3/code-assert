@@ -10,9 +10,11 @@ This way, they are asserted automatically and regularly.
 Violations of rules break the build and therefore, one is forced to either 
 adjust the code to comply with the rules or to adapt the rules in a reasonable way.
 
-Built on the base of [JDepend](https://github.com/clarkware/jdepend).
 
 ## Dependency checks
+
+This is based on code from [JDepend](https://github.com/clarkware/jdepend).
+It can be checked if the package structure contains cycles and/or follows the defined rules.
 
 ```java
 public class DependencyTest {
@@ -56,6 +58,8 @@ public class DependencyTest {
 
 ## FindBugs checks
 
+Runs [FindBugs](http://findbugs.sourceforge.net/) on the code and finds questionable constructs.
+ 
 ```java
 public class FindBugsTest {
     
@@ -82,6 +86,8 @@ public class FindBugsTest {
 ```
 
 ## PmdChecks
+
+Runs [PMD](https://pmd.github.io/) on the code and finds questionable constructs and code duplications.
 
 ```java
 public class PmdTest {
