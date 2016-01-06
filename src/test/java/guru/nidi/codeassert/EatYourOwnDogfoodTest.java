@@ -58,15 +58,15 @@ public class EatYourOwnDogfoodTest {
     @Test
     public void dependency() {
         class GuruNidiCodeassert implements DependencyRuler {
-            DependencyRule self, dependency, findbugs, model, pmd, util;
+            DependencyRule $self, dependency, findbugs, model, pmd, util;
 
             @Override
             public void defineRules() {
-                self.mayDependUpon(util);
-                dependency.mayDependUpon(model, self);
-                findbugs.mayDependUpon(self, util);
-                model.mayDependUpon(self, util);
-                pmd.mayDependUpon(self, util);
+                $self.mayDependUpon(util);
+                dependency.mayDependUpon(model, $self);
+                findbugs.mayDependUpon($self, util);
+                model.mayDependUpon($self, util);
+                pmd.mayDependUpon($self, util);
             }
         }
         assertThat(new ModelAnalyzer(config), matchesExactly(denyAll().withRules(new GuruNidiCodeassert())));

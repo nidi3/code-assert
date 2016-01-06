@@ -96,7 +96,7 @@ public class DependencyRules {
                     final String start = basePackage.length() > 0 && !basePackage.endsWith(".") && name.length() > 0
                             ? basePackage + "." + name
                             : basePackage + name;
-                    f.set(ruler, addRule(start + (f.getName().equals("self") ? "" : ("." + camelCaseToDotCase(f.getName())))));
+                    f.set(ruler, addRule(start + (f.getName().equals("$self") ? "" : ("." + camelCaseToDotCase(f.getName())))));
                 }
             }
             ruler.defineRules();

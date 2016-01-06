@@ -26,21 +26,23 @@ public class DependencyTest {
 
     @Test
     public void dependency() {
-        // Defines the dependency rules for package guru.nidi.codeassert
-        class GuruNidiCodeassert implements DependencyRuler {
-            DependencyRule self, dependency, findbugs, model, pmd, util;
+        // Defines the dependency rules for package org.project
+        class OrgProject implements DependencyRuler {
+            // Rules for org.project, org.project.dependency (with sub packages), org.project.model, org.project.util
+            DependencyRule $self, dependency_, model, util;
 
             @Override
             public void defineRules() {
-                self.mayDependUpon(util);
-                dependency.mayDependUpon(model, self);
-                findbugs.mayDependUpon(self, util);
-                model.mayDependUpon(self, util);
-                pmd.mayDependUpon(self, util);
+                $self.mayDependUpon(util, dependency_);
+                dependency_.mustDependUpon(model);
+                model.mayDependUpon(util).mustNotDependUpon($self);
             }
         }
         
-        assertThat(new ModelAnalyzer(config), DependencyMatchers.matchesExactly(denyAll().withRules(new GuruNidiCodeassert())));
+        // All dependencies are forbidden, except the ones defined in OrgProject
+        DependencyRules rules = DependencyRules.denyAll().withRules(new OrgProject());
+        
+        assertThat(new ModelAnalyzer(config), DependencyMatchers.matchesExactly());
     }
 }
 ```
@@ -96,8 +98,9 @@ public class PmdTest {
             .ignore("TooManyStaticImports").in("*Test")
             
         // Define and configure the rule sets to be used
-        PmdAnalyzer analyzer = new PmdAnalyzer(config, collector)
-            .withRuleSets(basic(), braces(), codesize().excessiveMethodLength(40).tooManyMethods(30), design(), empty(), optimizations());
+        PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRuleSets(
+            basic(), braces(), design(), empty(), optimizations(),
+            codesize().excessiveMethodLength(40).tooManyMethods(30));
         
         assertThat(analyzer, PmdMatchers.hasNoPmdViolations());
     }
