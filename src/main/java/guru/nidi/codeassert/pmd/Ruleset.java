@@ -15,6 +15,7 @@
  */
 package guru.nidi.codeassert.pmd;
 
+import guru.nidi.codeassert.AnalyzerException;
 import net.sourceforge.pmd.PMDConfiguration;
 import net.sourceforge.pmd.PropertyDescriptor;
 import net.sourceforge.pmd.Rule;
@@ -42,7 +43,7 @@ public class Ruleset {
                         setProperty(config, propertyField.rule(), propertyField.property(), value);
                     }
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Could not read property " + descField.getName() + " from class " + getClass(), e);
+                    throw new AnalyzerException("Could not read property " + descField.getName() + " from class " + getClass(), e);
                 }
             }
         }
@@ -51,11 +52,11 @@ public class Ruleset {
     private void setProperty(PMDConfiguration config, String rule, String property, Object value) {
         final Rule r = config.getPmdRuleSets().getRuleByName(rule);
         if (r == null) {
-            throw new RuntimeException("Rule '" + rule + "' not existing.");
+            throw new AnalyzerException("Rule '" + rule + "' not existing.");
         }
         final PropertyDescriptor<Object> descriptor = (PropertyDescriptor<Object>) r.getPropertyDescriptor(property);
         if (descriptor == null) {
-            throw new RuntimeException("Property '" + property + "' for rule '" + rule + "' not existing.");
+            throw new AnalyzerException("Property '" + property + "' for rule '" + rule + "' not existing.");
         }
         r.setProperty(descriptor, value);
     }

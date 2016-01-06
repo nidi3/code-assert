@@ -21,7 +21,9 @@ import guru.nidi.codeassert.findbugs.BugCollector;
 import guru.nidi.codeassert.findbugs.FindBugsAnalyzer;
 import guru.nidi.codeassert.model.ModelAnalyzer;
 import guru.nidi.codeassert.pmd.PmdAnalyzer;
+import guru.nidi.codeassert.pmd.Rulesets;
 import guru.nidi.codeassert.pmd.ViolationCollector;
+import guru.nidi.codeassert.util.LocationMatcher;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,22 +75,22 @@ public class EatYourOwnDogfoodTest {
     @Test
     public void findBugs() {
         final BugCollector bugCollector = BugCollector.simple(null, null)
-                .ignore("SIC_INNER_SHOULD_BE_STATIC").in("ClassFileParser$Constant")
-                .ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR").in("DependencyMatchers$CycleMatcher", "DependencyMatchers$RuleMatcher")
-                .ignore("DP_DO_INSIDE_DO_PRIVILEGED").in("DependencyRules#withRules", "RuleDescriptor", "Ruleset")
-                .ignore("URF_UNREAD_FIELD").in("ClassFileParser$FieldOrMethodInfo", "ClassFileParser$Constant", "Rulesets$Comments", "Rulesets$Codesize", "Rulesets$Empty", "Rulesets$Empty$EmptyCatchBlock", "Rulesets$Naming")
-                .ignore("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD").in("Rulesets$Empty");
-
+                .ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR").in("DependencyMatchers$CycleMatcher")
+                .ignore("DP_DO_INSIDE_DO_PRIVILEGED").in("DependencyRules#withRules", "Ruleset")
+                .ignore("URF_UNREAD_FIELD").in("ClassFileParser", "Constant", "MemberInfo", "Rulesets$*");
         assertThat(new FindBugsAnalyzer(config, bugCollector), findsNoBugs());
     }
 
     @Test
     public void pmd() {
         final ViolationCollector collector = ViolationCollector.simple(RulePriority.MEDIUM)
-                .ignore("MethodArgumentCouldBeFinal")
-                .ignore("MissingBreakInSwitch").in("JavaClassImportBuilder")
-                .ignore("AvoidInstantiatingObjectsInLoops").in("JavaClassBuilder", "PmdAnalyzer")
-                .ignore("GodClass").in("DependencyRules", "ClassFileParser", "JavaClassImportBuilder");
+                .ignore("MethodArgumentCouldBeFinal").generally()
+                .ignore("AvoidInstantiatingObjectsInLoops").in("JavaClassBuilder", "PmdAnalyzer", "CpdAnalyzer", "FindBugsMatchers$*")
+                .ignore("SwitchStmtsShouldHaveDefault").in("SignatureParser")
+                .ignore("TooManyMethods").in(Rulesets.class)
+                .ignore("SimplifyStartsWith").in(LocationMatcher.class)
+                .ignore("TooManyStaticImports").in("*Test")
+                .ignore("GodClass").in("DependencyRules", "JavaClassImportBuilder");
         final PmdAnalyzer analyzer = new PmdAnalyzer(config, collector)
                 .withRuleSets(basic(), braces(), codesize().excessiveMethodLength(40).tooManyMethods(30), design(), empty(), optimizations());
         assertThat(analyzer, hasNoPmdViolations());

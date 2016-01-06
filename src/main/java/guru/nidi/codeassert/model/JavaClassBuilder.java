@@ -99,7 +99,7 @@ class JavaClassBuilder {
         while (entries.hasMoreElements()) {
             final ZipEntry e = (ZipEntry) entries.nextElement();
             if (fileManager.acceptClassFileName(e.getName())) {
-                try (final InputStream is = new BufferedInputStream(file.getInputStream(e))) {
+                try (final InputStream is = file.getInputStream(e)) {
                     javaClasses.add(parser.parse(is));
                 }
             }

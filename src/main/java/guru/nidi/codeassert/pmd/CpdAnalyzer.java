@@ -17,6 +17,7 @@ package guru.nidi.codeassert.pmd;
 
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerConfig;
+import guru.nidi.codeassert.AnalyzerException;
 import net.sourceforge.pmd.cpd.CPD;
 import net.sourceforge.pmd.cpd.CPDConfiguration;
 import net.sourceforge.pmd.cpd.Match;
@@ -33,10 +34,12 @@ import java.util.List;
 public class CpdAnalyzer implements Analyzer<List<Match>> {
     private final AnalyzerConfig config;
     private final int minTokens;
+    private final MatchCollector collector;
 
-    public CpdAnalyzer(AnalyzerConfig config, int minTokens) {
+    public CpdAnalyzer(AnalyzerConfig config, int minTokens, MatchCollector collector) {
         this.config = config;
         this.minTokens = minTokens;
+        this.collector = collector;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class CpdAnalyzer implements Analyzer<List<Match>> {
             try {
                 cpd.addRecursively(new File(source));
             } catch (IOException e) {
-                throw new RuntimeException("Problem reading directory '" + source + "'", e);
+                throw new AnalyzerException("Problem reading directory '" + source + "'", e);
             }
         }
         return cpd;
@@ -69,7 +72,9 @@ public class CpdAnalyzer implements Analyzer<List<Match>> {
         final List<Match> res = new ArrayList<>();
         while (matches.hasNext()) {
             final Match match = matches.next();
-            res.add(match);
+            if (collector.accept(match)) {
+                res.add(match);
+            }
         }
         return res;
     }

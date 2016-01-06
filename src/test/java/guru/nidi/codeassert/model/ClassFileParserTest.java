@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
@@ -43,60 +44,78 @@ public class ClassFileParserTest {
     }
 
     @Test
-    public void validClass() throws IOException {
+    public void className() throws IOException {
         final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass"));
-
         assertEquals("guru.nidi.codeassert.model.ExampleConcreteClass", clazz.getName());
-        assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
-
-        final Collection imports = clazz.getImports();
-        assertEquals(19, imports.size());
-
-        assertTrue(imports.contains(new JavaPackage("java.net")));
-        assertTrue(imports.contains(new JavaPackage("java.text")));
-        assertTrue(imports.contains(new JavaPackage("java.sql")));
-        assertTrue(imports.contains(new JavaPackage("java.lang")));
-        assertTrue(imports.contains(new JavaPackage("java.io")));
-        assertTrue(imports.contains(new JavaPackage("java.rmi")));
-        assertTrue(imports.contains(new JavaPackage("java.util")));
-        assertTrue(imports.contains(new JavaPackage("java.util.jar")));
-        assertTrue(imports.contains(new JavaPackage("java.math")));
-
-        // annotations
-        assertTrue(imports.contains(new JavaPackage("org.junit.runners")));
-        assertTrue(imports.contains(new JavaPackage("java.applet")));
-        assertTrue(imports.contains(new JavaPackage("org.junit")));
-        assertTrue(imports.contains(new JavaPackage("javax.crypto")));
-        assertTrue(imports.contains(new JavaPackage("java.awt.geom")));
-        assertTrue(imports.contains(new JavaPackage("java.awt.image.renderable")));
-        assertTrue(imports.contains(new JavaPackage("guru.nidi.codeassert.model.p1")));
-        assertTrue(imports.contains(new JavaPackage("guru.nidi.codeassert.model.p2")));
-        assertTrue(imports.contains(new JavaPackage("java.awt.im")));
-        assertTrue(imports.contains(new JavaPackage("java.awt.dnd.peer")));
     }
 
     @Test
-    public void innerClass() throws IOException {
+    public void classSource() throws IOException {
+        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass"));
+        assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
+    }
+
+    @Test
+    public void classImports() throws IOException {
+        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass"));
+        assertCollectionEquals(clazz.getImports(),
+                new JavaPackage("java.net"),
+                new JavaPackage("java.text"),
+                new JavaPackage("java.sql"),
+                new JavaPackage("java.lang"),
+                new JavaPackage("java.io"),
+                new JavaPackage("java.rmi"),
+                new JavaPackage("java.util"),
+                new JavaPackage("java.util.jar"),
+                new JavaPackage("java.math"),
+
+                // annotations
+                new JavaPackage("org.junit.runners"),
+                new JavaPackage("java.applet"),
+                new JavaPackage("org.junit"),
+                new JavaPackage("javax.crypto"),
+                new JavaPackage("java.awt.geom"),
+                new JavaPackage("java.awt.image.renderable"),
+                new JavaPackage("guru.nidi.codeassert.model.p1"),
+                new JavaPackage("guru.nidi.codeassert.model.p2"),
+                new JavaPackage("java.awt.im"),
+                new JavaPackage("java.awt.dnd.peer"));
+    }
+
+    @Test
+    public void innerClassName() throws IOException {
         final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
-
         assertEquals("guru.nidi.codeassert.model.ExampleConcreteClass$ExampleInnerClass", clazz.getName());
-        assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
-
-        final Collection imports = clazz.getImports();
-        assertEquals(1, imports.size());
-        assertTrue(imports.contains(new JavaPackage("java.lang")));
     }
 
     @Test
-    public void packageClass() throws IOException {
-        final JavaClass clazz = parser.parse(Path.testClass("ExamplePackageClass"));
-
-        assertEquals("guru.nidi.codeassert.model.ExamplePackageClass", clazz.getName());
+    public void innerClassSource() throws IOException {
+        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
+    }
 
-        final Collection imports = clazz.getImports();
-        assertEquals(1, imports.size());
-        assertTrue(imports.contains(new JavaPackage("java.lang")));
+    @Test
+    public void innerClassImports() throws IOException {
+        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
+        assertCollectionEquals(clazz.getImports(), new JavaPackage("java.lang"));
+    }
+
+    @Test
+    public void packageClassName() throws IOException {
+        final JavaClass clazz = parser.parse(Path.testClass("ExamplePackageClass"));
+        assertEquals("guru.nidi.codeassert.model.ExamplePackageClass", clazz.getName());
+    }
+
+    @Test
+    public void packageClassSource() throws IOException {
+        final JavaClass clazz = parser.parse(Path.testClass("ExamplePackageClass"));
+        assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
+    }
+
+    @Test
+    public void packageClassImports() throws IOException {
+        final JavaClass clazz = parser.parse(Path.testClass("ExamplePackageClass"));
+        assertCollectionEquals(clazz.getImports(), new JavaPackage("java.lang"));
     }
 
     @Test
@@ -112,10 +131,20 @@ public class ClassFileParserTest {
     @Test
     public void genericParameters() throws IOException {
         final JavaClass generic = parser.parse(Path.testClass("p4/GenericParameters"));
-        final JavaClass subGeneric = parser.parse(Path.testClass("p4/SubGenericParameters"));
-
         assertEquals(11, generic.getImports().size());
+    }
+
+    @Test
+    public void subGenericParameters() throws IOException {
+        final JavaClass subGeneric = parser.parse(Path.testClass("p4/SubGenericParameters"));
         assertEquals(1, subGeneric.getImports().size());
     }
+
+    @SafeVarargs
+    private static <T> void assertCollectionEquals(Collection<T> actual, T... expected) {
+        assertEquals(expected.length, actual.size());
+        assertTrue(actual.containsAll(Arrays.asList(expected)));
+    }
+
 }
 

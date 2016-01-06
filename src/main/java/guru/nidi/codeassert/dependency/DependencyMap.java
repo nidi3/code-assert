@@ -90,7 +90,8 @@ public class DependencyMap {
 
     /**
      * @param pack
-     * @return A map with all dependencies of a given package. Key: package, Value: A set of all classes importing the package
+     * @return A map with all dependencies of a given package.
+     * Key: package, Value: A set of all classes importing the package
      */
     public Map<String, Set<String>> getDependencies(String pack) {
         return map.get(pack);

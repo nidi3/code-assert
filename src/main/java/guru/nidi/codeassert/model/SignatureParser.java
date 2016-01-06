@@ -15,6 +15,8 @@
  */
 package guru.nidi.codeassert.model;
 
+import guru.nidi.codeassert.AnalyzerException;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +25,9 @@ import java.util.Set;
  * see https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3.4
  */
 final class SignatureParser {
+    /**
+     *
+     */
     public enum Source {
         CLASS, FIELD, METHOD
     }
@@ -105,7 +110,7 @@ final class SignatureParser {
         } else if (is('[')) {
             arrayTypeSignature();
         } else if (!opt) {
-            throw new RuntimeException("FieldTypeSignature expected [" + s + "]:" + pos);
+            throw new AnalyzerException("FieldTypeSignature expected [" + s + "]:" + pos);
         }
     }
 
@@ -209,7 +214,7 @@ final class SignatureParser {
         } else if (is('T')) {
             typeVariableSignature();
         } else {
-            throw new RuntimeException("ClassType or TypeVariable signature expected [" + s + "]:" + pos);
+            throw new AnalyzerException("ClassType or TypeVariable signature expected [" + s + "]:" + pos);
         }
     }
 
@@ -248,7 +253,7 @@ final class SignatureParser {
 
     private char read(char ch) {
         if (c != ch) {
-            throw new RuntimeException("'" + ch + "' expected in '" + s + "':" + pos);
+            throw new AnalyzerException("'" + ch + "' expected in '" + s + "':" + pos);
         }
         return read();
     }

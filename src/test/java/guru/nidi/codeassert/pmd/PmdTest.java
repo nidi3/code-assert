@@ -17,8 +17,12 @@ package guru.nidi.codeassert.pmd;
 
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerConfig;
+import guru.nidi.codeassert.Bugs;
+import guru.nidi.codeassert.dependency.DependencyMap;
 import guru.nidi.codeassert.dependency.DependencyRulesTest;
+import guru.nidi.codeassert.dependency.RuleResult;
 import guru.nidi.codeassert.findbugs.FindBugsTest;
+import guru.nidi.codeassert.model.*;
 import net.sourceforge.pmd.RulePriority;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -57,6 +61,11 @@ public class PmdTest {
                         .ignore("ExcessiveMethodLength").in(DependencyRulesTest.class)
                         .ignore("AvoidInstantiatingObjectsInLoops").in("JavaClassBuilder", "PmdAnalyzer")
                         .ignore("AvoidDuplicateLiterals").in(DependencyRulesTest.class, FindBugsTest.class)
+                        .ignore("ShortMethodName").in(ExampleInterface.class)
+                        .ignore("UnusedLocalVariable").in(Bugs.class)
+                        .ignore("TooManyStaticImports").in("*Test")
+                        .ignore("JUnitTestsShouldIncludeAssert").in(ClassFileParserTest.class, FileManagerTest.class, JarFileParserTest.class)
+                        .ignore("JUnitTestContainsTooManyAsserts").in(DependencyRulesTest.class)
                         .ignoreAll().in("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters"))
                 .withRuleSets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
                         finalizers(), imports(), j2ee(), javabeans(), junit(), optimizations(),
@@ -64,30 +73,48 @@ public class PmdTest {
                         codesize().excessiveMethodLength(50).tooManyMethods(30),
                         comments().requirement(Ignored).enums(Required).maxLines(15).maxLineLen(100),
                         empty().allowCommentedEmptyCatch(true),
-                        naming().variableLen(1, 15).methodLen(3));
+                        naming().variableLen(1, 20).methodLen(2));
         assertMatcher("\n" +
-                        "High        ClassWithOnlyPrivateConstructorsShouldBeFinal guru.nidi.codeassert.Bugs2:21    A class which only has private constructors should be final\n" +
-                        "Medium      AvoidFinalLocalVariable                       guru.nidi.codeassert.model.JavaClassImportBuilder:254    Avoid using final local variables, turn them into fields\n" +
-                        "Medium      AvoidLiteralsInIfCondition                    guru.nidi.codeassert.dependency.DependencyRules$Tarjan:205    Avoid using Literals in Conditional Statements\n" +
-                        "Medium      AvoidLiteralsInIfCondition                    guru.nidi.codeassert.model.JavaClassImportBuilder:277    Avoid using Literals in Conditional Statements\n" +
-                        "Medium      CommentRequired                               guru.nidi.codeassert.pmd.Rulesets$Comments:110    enumCommentRequirement Required\n" +
-                        "Medium      CommentRequired                               guru.nidi.codeassert.model.p2.ExampleEnum:18    enumCommentRequirement Required\n" +
-                        "Medium      CommentRequired                               guru.nidi.codeassert.model.p3.ExampleSecondEnum:18    enumCommentRequirement Required\n" +
-                        "Medium      CommentSize                                   guru.nidi.codeassert.dependency.DependencyMap:93    Comment is too large: Line too long\n" +
-                        "Medium      CommentSize                                   guru.nidi.codeassert.dependency.DependencyRules:54    Comment is too large: Too many lines\n" +
-                        "Medium      ExcessiveMethodLength                         guru.nidi.codeassert.dependency.DependencyRulesTest:177    Avoid really long methods.\n" +
-                        "Medium      MissingStaticMethodInNonInstantiatableClass   guru.nidi.codeassert.Bugs2:21    Class cannot be instantiated and does not provide any static methods or fields\n" +
-                        "Medium      UseConcurrentHashMap                          guru.nidi.codeassert.dependency.DependencyMap:27    If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation\n" +
-                        "Medium      UseConcurrentHashMap                          guru.nidi.codeassert.dependency.DependencyRules$Tarjan:171    If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation\n" +
-                        "Medium      UseConcurrentHashMap                          guru.nidi.codeassert.model.ModelAnalyzer:41    If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation\n" +
-                        "Medium      UseObjectForClearerAPI                        guru.nidi.codeassert.util.LocationMatcher:44    Rather than using a lot of String arguments, consider using a container object for those values.",
+                        "High        ClassWithOnlyPrivateConstructorsShouldBeFinal /Users/nidi/idea/code-assert/src/test/java/guru/nidi/codeassert/Bugs2.java:21    A class which only has private constructors should be final\n" +
+                        "Medium      ArrayIsStoredDirectly                         /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/model/AttributeInfo.java:28    The user-supplied array 'value' is stored directly.\n" +
+                        "Medium      ArrayIsStoredDirectly                         /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/model/ConstantPool.java:29    The user-supplied array 'pool' is stored directly.\n" +
+                        "Medium      AvoidDuplicateLiterals                        /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/pmd/Rulesets.java:118    The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 118\n" +
+                        "Medium      AvoidDuplicateLiterals                        /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/pmd/Rulesets.java:160    The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 160\n" +
+                        "Medium      AvoidFinalLocalVariable                       /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/model/JavaClassImportBuilder.java:198    Avoid using final local variables, turn them into fields\n" +
+                        "Medium      AvoidInstantiatingObjectsInLoops              /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/findbugs/FindBugsMatchers.java:72    Avoid instantiating new objects inside loops\n" +
+                        "Medium      AvoidInstantiatingObjectsInLoops              /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/pmd/CpdAnalyzer.java:56    Avoid instantiating new objects inside loops\n" +
+                        "Medium      AvoidLiteralsInIfCondition                    /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/dependency/DependencyRules.java:205    Avoid using Literals in Conditional Statements\n" +
+                        "Medium      CommentRequired                               /Users/nidi/idea/code-assert/src/test/java/guru/nidi/codeassert/model/p2/ExampleEnum.java:18    enumCommentRequirement Required\n" +
+                        "Medium      CommentRequired                               /Users/nidi/idea/code-assert/src/test/java/guru/nidi/codeassert/model/p3/ExampleSecondEnum.java:18    enumCommentRequirement Required\n" +
+                        "Medium      CommentSize                                   /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/dependency/DependencyRules.java:54    Comment is too large: Too many lines\n" +
+                        "Medium      JUnitTestContainsTooManyAsserts               /Users/nidi/idea/code-assert/src/test/java/guru/nidi/codeassert/model/PackageCollectorTest.java:40    JUnit tests should not contain more than 1 assert(s).\n" +
+                        "Medium      JUnitTestContainsTooManyAsserts               /Users/nidi/idea/code-assert/src/test/java/guru/nidi/codeassert/model/PackageCollectorTest.java:50    JUnit tests should not contain more than 1 assert(s).\n" +
+                        "Medium      MissingStaticMethodInNonInstantiatableClass   /Users/nidi/idea/code-assert/src/test/java/guru/nidi/codeassert/Bugs2.java:21    Class cannot be instantiated and does not provide any static methods or fields\n" +
+                        "Medium      SimplifyStartsWith                            /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/util/LocationMatcher.java:89    This call to String.startsWith can be rewritten using String.charAt(0)\n" +
+                        "Medium      SwitchStmtsShouldHaveDefault                  /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/model/SignatureParser.java:52    Switch statements should have a default label\n" +
+                        "Medium      TooManyMethods                                /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/pmd/Rulesets.java:21    This class has too many methods, consider refactoring it.\n" +
+                        "Medium      UnusedLocalVariable                           /Users/nidi/idea/code-assert/src/test/java/guru/nidi/codeassert/Bugs.java:36    Avoid unused local variables such as 'a'.\n" +
+                        "Medium      UseConcurrentHashMap                          /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/dependency/DependencyMap.java:27    If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation\n" +
+                        "Medium      UseConcurrentHashMap                          /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/dependency/DependencyRules.java:171    If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation\n" +
+                        "Medium      UseConcurrentHashMap                          /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/model/ModelAnalyzer.java:42    If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation\n" +
+                        "Medium      UseObjectForClearerAPI                        /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/util/LocationMatcher.java:58    Rather than using a lot of String arguments, consider using a container object for those values.",
                 analyzer, PmdMatchers.hasNoPmdViolations());
     }
 
     @Test
     public void cpd() {
-        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.mavenMainClasses(), 20);
-        assertMatcher("",
+        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.mavenMainClasses(), 20, new MatchCollector()
+                .ignore(DependencyMap.class, RuleResult.class)
+                .ignore(JavaClass.class, JavaPackage.class)
+                .ignore("SignatureParser")
+                .ignore(DependencyMap.class));
+        assertMatcher("\n" +
+                        "23   /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/findbugs/BugCollector.java:39-46\n" +
+                        "     /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/pmd/ViolationCollector.java:38-45\n" +
+                        "21   /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/dependency/DependencyRule.java:107-108\n" +
+                        "     /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/dependency/DependencyRule.java:119-120\n" +
+                        "20   /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/AnalyzerConfig.java:56-57\n" +
+                        "     /Users/nidi/idea/code-assert/src/main/java/guru/nidi/codeassert/AnalyzerConfig.java:64-64",
                 analyzer, PmdMatchers.hasNoDuplications());
     }
 

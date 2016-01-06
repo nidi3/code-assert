@@ -18,7 +18,12 @@ package guru.nidi.codeassert;
 /**
  *
  */
-public interface Analyzer<T> {
+public class AnalyzerException extends RuntimeException {
+    public AnalyzerException(String message) {
+        super(message);
+    }
 
-    T analyze();
+    public AnalyzerException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

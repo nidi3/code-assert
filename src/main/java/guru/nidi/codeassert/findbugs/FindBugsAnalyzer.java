@@ -19,6 +19,7 @@ import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerConfig;
+import guru.nidi.codeassert.AnalyzerException;
 
 import java.io.IOException;
 import java.util.*;
@@ -57,7 +58,7 @@ public class FindBugsAnalyzer implements Analyzer<Collection<BugInstance>> {
         try {
             findBugs.execute();
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Problem executing FindBugs.", e);
+            throw new AnalyzerException("Problem executing FindBugs.", e);
         }
         return createBugList(bugReporter);
     }

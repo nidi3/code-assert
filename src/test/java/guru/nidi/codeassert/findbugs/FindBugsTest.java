@@ -42,7 +42,7 @@ public class FindBugsTest {
     public void simple() throws IOException, InterruptedException {
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config,
                 BugCollector.simple(17, Priorities.NORMAL_PRIORITY));
-        assertEquals(18, analyzer.analyze().size());
+        assertEquals(16, analyzer.analyze().size());
     }
 
     @Test

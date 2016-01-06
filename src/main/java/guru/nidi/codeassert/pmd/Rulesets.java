@@ -137,19 +137,22 @@ public class Rulesets {
 
     public static class Empty extends Ruleset {
         @PropertyField(rule = "EmptyCatchBlock", property = "allowCommentedBlocks")
-        private Boolean allowCommentedEmptyCatch;
+        private Boolean allowCommented;
 
         public Empty() {
             super("rulesets/java/empty.xml");
         }
 
         public Empty allowCommentedEmptyCatch(boolean allow) {
-            this.allowCommentedEmptyCatch = allow;
+            this.allowCommented = allow;
             return this;
         }
     }
 
     public static class Comments extends Ruleset {
+        /**
+         *
+         */
         enum Requirement {
             Required, Ignored, Unwanted
         }

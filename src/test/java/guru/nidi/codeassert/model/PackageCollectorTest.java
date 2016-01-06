@@ -31,10 +31,19 @@ import static org.junit.Assert.*;
 public class PackageCollectorTest {
 
     @Test
-    public void collection() throws IOException {
+    public void collectors() throws IOException {
         PackageCollector collector = all().excluding("java.*", "javax.*", "sun.*", "com.sun.*", "com.xyz.tests.*");
         assertEquals(5, collector.getCollectors().size());
-        assertCollectorsExist(collector);
+    }
+
+    @Test
+    public void collection() throws IOException {
+        PackageCollector collector = all().excluding("java.*", "javax.*", "sun.*", "com.sun.*", "com.xyz.tests.*");
+        assertFalse(collector.accept("java.lang"));
+        assertFalse(collector.accept("javax.ejb"));
+        assertTrue(collector.accept("com.xyz.tests"));
+        assertFalse(collector.accept("com.xyz.tests.a"));
+        assertTrue(collector.accept("com.xyz.ejb"));
     }
 
     @Test
@@ -47,11 +56,4 @@ public class PackageCollectorTest {
         assertFalse(collector.accept("a.c"));
     }
 
-    private void assertCollectorsExist(PackageCollector collector) {
-        assertFalse(collector.accept("java.lang"));
-        assertFalse(collector.accept("javax.ejb"));
-        assertTrue(collector.accept("com.xyz.tests"));
-        assertFalse(collector.accept("com.xyz.tests.a"));
-        assertTrue(collector.accept("com.xyz.ejb"));
-    }
 }

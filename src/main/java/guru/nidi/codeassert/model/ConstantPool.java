@@ -31,9 +31,9 @@ final class ConstantPool implements Iterable<Constant> {
     }
 
     public static ConstantPool fromData(DataInputStream in) throws IOException {
-        final int constantPoolSize = in.readUnsignedShort();
-        final Constant[] pool = new Constant[constantPoolSize];
-        for (int i = 1; i < constantPoolSize; i++) {
+        final int size = in.readUnsignedShort();
+        final Constant[] pool = new Constant[size];
+        for (int i = 1; i < size; i++) {
             final Constant constant = Constant.fromData(in);
             pool[i] = constant;
 

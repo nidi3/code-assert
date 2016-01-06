@@ -64,8 +64,8 @@ class ClassFileParser {
         final String className = parseClassName();
         final String superClassName = parseSuperClassName();
         final String[] interfaceNames = parseInterfaces();
-        final FieldOrMethodInfo[] fields = parseFieldsOrMethods();
-        final FieldOrMethodInfo[] methods = parseFieldsOrMethods();
+        final MemberInfo[] fields = parseMembers();
+        final MemberInfo[] methods = parseMembers();
         final AttributeInfo[] attributes = parseAttributes();
 
         final JavaClassImportBuilder adder = new JavaClassImportBuilder(jClass, collector, constantPool);
@@ -114,28 +114,28 @@ class ClassFileParser {
     }
 
     private String[] parseInterfaces() throws IOException {
-        final int interfacesCount = in.readUnsignedShort();
-        final String[] interfaceNames = new String[interfacesCount];
-        for (int i = 0; i < interfacesCount; i++) {
+        final int count = in.readUnsignedShort();
+        final String[] names = new String[count];
+        for (int i = 0; i < count; i++) {
             final int entryIndex = in.readUnsignedShort();
-            interfaceNames[i] = constantPool.getClassConstantName(entryIndex);
+            names[i] = constantPool.getClassConstantName(entryIndex);
         }
-        return interfaceNames;
+        return names;
     }
 
-    private FieldOrMethodInfo[] parseFieldsOrMethods() throws IOException {
+    private MemberInfo[] parseMembers() throws IOException {
         final int count = in.readUnsignedShort();
-        final FieldOrMethodInfo[] infos = new FieldOrMethodInfo[count];
+        final MemberInfo[] infos = new MemberInfo[count];
         for (int i = 0; i < count; i++) {
-            infos[i] = FieldOrMethodInfo.fromData(in, constantPool);
+            infos[i] = MemberInfo.fromData(in, constantPool);
         }
         return infos;
     }
 
     private AttributeInfo[] parseAttributes() throws IOException {
-        final int attributesCount = in.readUnsignedShort();
-        final AttributeInfo[] attributes = new AttributeInfo[attributesCount];
-        for (int i = 0; i < attributesCount; i++) {
+        final int count = in.readUnsignedShort();
+        final AttributeInfo[] attributes = new AttributeInfo[count];
+        for (int i = 0; i < count; i++) {
             attributes[i] = AttributeInfo.fromData(in, constantPool);
 
             // Section 4.7.7 of VM Spec - Class File Format
@@ -144,41 +144,6 @@ class ClassFileParser {
             }
         }
         return attributes;
-    }
-
-    static class FieldOrMethodInfo {
-        final int accessFlags;
-        final int nameIndex;
-        final int descriptorIndex;
-        final AttributeInfo annotations;
-        final AttributeInfo signature;
-
-        private FieldOrMethodInfo(int accessFlags, int nameIndex, int descriptorIndex, AttributeInfo annotations, AttributeInfo signature) {
-            this.accessFlags = accessFlags;
-            this.nameIndex = nameIndex;
-            this.descriptorIndex = descriptorIndex;
-            this.annotations = annotations;
-            this.signature = signature;
-        }
-
-        public static FieldOrMethodInfo fromData(DataInputStream in, ConstantPool constantPool) throws IOException {
-            final int access = in.readUnsignedShort();
-            final int nameIndex = in.readUnsignedShort();
-            final int descriptorIndex = in.readUnsignedShort();
-            final int attributesCount = in.readUnsignedShort();
-            AttributeInfo annotations = null;
-            AttributeInfo signature = null;
-            for (int a = 0; a < attributesCount; a++) {
-                final AttributeInfo attribute = AttributeInfo.fromData(in, constantPool);
-                if (attribute.isAnnotation()) {
-                    annotations = attribute;
-                }
-                if (attribute.isSignature()) {
-                    signature = attribute;
-                }
-            }
-            return new FieldOrMethodInfo(access, nameIndex, descriptorIndex, annotations, signature);
-        }
     }
 
 }

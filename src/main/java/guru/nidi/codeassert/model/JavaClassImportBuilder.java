@@ -15,13 +15,14 @@
  */
 package guru.nidi.codeassert.model;
 
+import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.PackageCollector;
-import guru.nidi.codeassert.model.ClassFileParser.FieldOrMethodInfo;
 
 import java.io.IOException;
 
 class JavaClassImportBuilder {
     private static final char CLASS_DESCRIPTOR = 'L';
+    private static final char TYPE_END = ';';
 
     private final PackageCollector collector;
     private final JavaClass jClass;
@@ -56,19 +57,19 @@ class JavaClassImportBuilder {
         }
     }
 
-    public void addMethodRefs(FieldOrMethodInfo[] methods) throws IOException {
-        addFieldOrMethodAnnotationRefs(methods);
-        addFieldOrMethodSignatureRefs(SignatureParser.Source.METHOD, methods);
-        addFieldOrMethodTypes(methods);
+    public void addMethodRefs(MemberInfo[] methods) throws IOException {
+        addMemberAnnotationRefs(methods);
+        addMemberSignatureRefs(SignatureParser.Source.METHOD, methods);
+        addMemberTypes(methods);
     }
 
-    public void addFieldRefs(FieldOrMethodInfo[] fields) throws IOException {
-        addFieldOrMethodAnnotationRefs(fields);
-        addFieldOrMethodSignatureRefs(SignatureParser.Source.FIELD, fields);
-        addFieldOrMethodTypes(fields);
+    public void addFieldRefs(MemberInfo[] fields) throws IOException {
+        addMemberAnnotationRefs(fields);
+        addMemberSignatureRefs(SignatureParser.Source.FIELD, fields);
+        addMemberTypes(fields);
     }
 
-    private void addFieldOrMethodAnnotationRefs(FieldOrMethodInfo[] info) throws IOException {
+    private void addMemberAnnotationRefs(MemberInfo[] info) throws IOException {
         for (int j = 1; j < info.length; j++) {
             if (info[j].annotations != null) {
                 addAnnotationReferences(info[j].annotations);
@@ -76,8 +77,8 @@ class JavaClassImportBuilder {
         }
     }
 
-    private void addFieldOrMethodSignatureRefs(SignatureParser.Source source, FieldOrMethodInfo[] infos) throws IOException {
-        for (final FieldOrMethodInfo info : infos) {
+    private void addMemberSignatureRefs(SignatureParser.Source source, MemberInfo[] infos) throws IOException {
+        for (final MemberInfo info : infos) {
             if (info.signature != null) {
                 final String name = constantPool.getUtf8(u2(info.signature.value, 0));
                 for (final String pack : SignatureParser.parseSignature(source, name).getPackages()) {
@@ -87,8 +88,8 @@ class JavaClassImportBuilder {
         }
     }
 
-    private void addFieldOrMethodTypes(FieldOrMethodInfo[] infos) throws IOException {
-        for (final FieldOrMethodInfo info : infos) {
+    private void addMemberTypes(MemberInfo[] infos) throws IOException {
+        for (final MemberInfo info : infos) {
             final String descriptor = constantPool.getUtf8(info.descriptorIndex);
             final String[] types = descriptorToTypes(descriptor);
             for (final String type : types) {
@@ -131,19 +132,15 @@ class JavaClassImportBuilder {
     }
 
     private int addAnnotationReferences(byte[] data, int index, int numAnnotations) throws IOException {
-        int visitedAnnotations = 0;
         int i = index;
-        while (visitedAnnotations < numAnnotations) {
+        for (int a = 0; a < numAnnotations; a++) {
             final int typeIndex = u2(data, i);
-            final int numElementValuePairs = u2(data, i += 2);
+            final int elements = u2(data, i += 2);
             addImport(getPackageName(constantPool.getUtf8(typeIndex).substring(1)));
-            int visitedElementValuePairs = 0;
             i += 2;
-            while (visitedElementValuePairs < numElementValuePairs) {
+            for (int e = 0; e < elements; e++) {
                 i = addAnnotationElementValueReferences(data, i + 2);
-                visitedElementValuePairs++;
             }
-            visitedAnnotations++;
         }
         return i;
     }
@@ -179,7 +176,7 @@ class JavaClassImportBuilder {
                 }
                 return k;
             default:
-                throw new RuntimeException("Unknown tag '" + tag + "'");
+                throw new AnalyzerException("Unknown tag '" + tag + "'");
         }
     }
 
@@ -221,7 +218,7 @@ class JavaClassImportBuilder {
     private String[] descriptorToTypes(String descriptor) {
         int typesCount = 0;
         for (int i = 0; i < descriptor.length(); i++) {
-            if (descriptor.charAt(i) == ';') {
+            if (descriptor.charAt(i) == TYPE_END) {
                 typesCount++;
             }
         }
@@ -234,7 +231,7 @@ class JavaClassImportBuilder {
             if (startIndex < 0) {
                 break;
             }
-            index = descriptor.indexOf(';', startIndex + 1);
+            index = descriptor.indexOf(TYPE_END, startIndex + 1);
             types[typeIndex++] = descriptor.substring(startIndex + 1, index);
         }
 

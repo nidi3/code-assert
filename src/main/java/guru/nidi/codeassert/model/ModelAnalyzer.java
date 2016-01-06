@@ -17,6 +17,7 @@ package guru.nidi.codeassert.model;
 
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerConfig;
+import guru.nidi.codeassert.AnalyzerException;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -44,7 +45,7 @@ public class ModelAnalyzer implements Analyzer<Collection<JavaPackage>> {
             }
             return packages.values();
         } catch (IOException e) {
-            throw new RuntimeException("Problem executing ModelAnalyzer", e);
+            throw new AnalyzerException("Problem executing ModelAnalyzer", e);
         }
     }
 
