@@ -7,7 +7,8 @@ Nobody follows rules that are not checked.
 If they are only checked periodically / manually by an "architect", it's often too late because there are already too many violations.   
 A better way is to define coding rules in JUnit tests. 
 This way, they are asserted automatically and regularly. 
-They break the build and therefore force the compliance to the rules or the adaption of a rule.
+Violations of rules break the build and therefore, one is forced to either 
+adjust the code to comply with the rules or to adapt the rules in a reasonable way.
 
 Built on the base of [JDepend](https://github.com/clarkware/jdepend).
 
