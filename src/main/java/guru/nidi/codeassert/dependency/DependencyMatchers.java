@@ -124,6 +124,7 @@ public class DependencyMatchers {
     }
 
     private static class CycleMatcher extends TypeSafeMatcher<ModelAnalyzer> {
+        private static final Comparator<DependencyMap> DEPENDENCY_MAP_COMPARATOR = new DependencyMapComparator();
         private final Set<String>[] exceptions;
         private CycleResult result;
 
@@ -146,13 +147,42 @@ public class DependencyMatchers {
         protected void describeMismatchSafely(ModelAnalyzer item, Description description) {
             if (!result.isEmptyExcept(exceptions)) {
                 description.appendText("Found these cyclic groups:\n");
-                for (final DependencyMap cycle : result.getCyclesExcept(exceptions)) {
+                for (final DependencyMap cycle : sortedDepMaps(result.getCyclesExcept(exceptions))) {
                     description.appendText("\n- Group of " + cycle.getPackages().size() + ": " + join(sorted(cycle.getPackages())) + "\n");
                     for (final String pack : sorted(cycle.getPackages())) {
                         description.appendText("  " + pack + " ->\n");
                         description.appendText(deps("    ", cycle.getDependencies(pack)));
                     }
                 }
+            }
+        }
+
+        private static List<DependencyMap> sortedDepMaps(Collection<DependencyMap> maps) {
+            final List<DependencyMap> sorted = new ArrayList<>(maps);
+            Collections.sort(sorted, DEPENDENCY_MAP_COMPARATOR);
+            return sorted;
+        }
+
+        private static class DependencyMapComparator implements Comparator<DependencyMap> {
+            @Override
+            public int compare(DependencyMap d1, DependencyMap d2) {
+                final Iterator<String> i1 = sorted(d1.getPackages()).iterator();
+                final Iterator<String> i2 = sorted(d2.getPackages()).iterator();
+                while (i1.hasNext() && i2.hasNext()) {
+                    final String s1 = i1.next();
+                    final String s2 = i2.next();
+                    final int c = s1.compareTo(s2);
+                    if (c != 0) {
+                        return c;
+                    }
+                }
+                if (i1.hasNext()) {
+                    return 1;
+                }
+                if (i2.hasNext()) {
+                    return -1;
+                }
+                return 0;
             }
         }
     }
@@ -178,5 +208,4 @@ public class DependencyMatchers {
         Collections.sort(sorted);
         return sorted;
     }
-
 }

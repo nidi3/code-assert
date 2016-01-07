@@ -49,16 +49,6 @@ public class CycleTest {
         final Matcher<ModelAnalyzer> matcher = hasNoCycles();
         assertMatcher("Found these cyclic groups:\n" +
                         "\n" +
-                        "- Group of 3: guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.c.a\n" +
-                        "  guru.nidi.codeassert.dependency.a.a ->\n" +
-                        "    guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.a.a.Aa1)\n" +
-                        "  guru.nidi.codeassert.dependency.b.a ->\n" +
-                        "    guru.nidi.codeassert.dependency.a.a (by guru.nidi.codeassert.dependency.b.a.Ba1)\n" +
-                        "    guru.nidi.codeassert.dependency.c.a (by guru.nidi.codeassert.dependency.b.a.Ba2)\n" +
-                        "  guru.nidi.codeassert.dependency.c.a ->\n" +
-                        "    guru.nidi.codeassert.dependency.a.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n" +
-                        "    guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n" +
-                        "\n" +
                         "- Group of 3: guru.nidi.codeassert.dependency.a, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.c\n" +
                         "  guru.nidi.codeassert.dependency.a ->\n" +
                         "    guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.a.A1)\n" +
@@ -67,7 +57,17 @@ public class CycleTest {
                         "    guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.b.B1)\n" +
                         "  guru.nidi.codeassert.dependency.c ->\n" +
                         "    guru.nidi.codeassert.dependency.a (by guru.nidi.codeassert.dependency.c.C1)\n" +
-                        "    guru.nidi.codeassert.dependency.b (by guru.nidi.codeassert.dependency.c.C1, guru.nidi.codeassert.dependency.c.C2)\n",
+                        "    guru.nidi.codeassert.dependency.b (by guru.nidi.codeassert.dependency.c.C1, guru.nidi.codeassert.dependency.c.C2)\n" +
+                        "\n" +
+                        "- Group of 3: guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.c.a\n" +
+                        "  guru.nidi.codeassert.dependency.a.a ->\n" +
+                        "    guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.a.a.Aa1)\n" +
+                        "  guru.nidi.codeassert.dependency.b.a ->\n" +
+                        "    guru.nidi.codeassert.dependency.a.a (by guru.nidi.codeassert.dependency.b.a.Ba1)\n" +
+                        "    guru.nidi.codeassert.dependency.c.a (by guru.nidi.codeassert.dependency.b.a.Ba2)\n" +
+                        "  guru.nidi.codeassert.dependency.c.a ->\n" +
+                        "    guru.nidi.codeassert.dependency.a.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n" +
+                        "    guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n",
                 matcher);
     }
 
