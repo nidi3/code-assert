@@ -89,7 +89,7 @@ public class DependencyMap {
     }
 
     /**
-     * @param pack
+     * @param pack the package name
      * @return A map with all dependencies of a given package.
      * Key: package, Value: A set of all classes importing the package
      */

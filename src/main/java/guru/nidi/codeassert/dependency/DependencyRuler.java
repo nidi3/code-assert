@@ -30,7 +30,7 @@ package guru.nidi.codeassert.dependency;
  * </pre>
  * This class defines dependency rules for the package org.my.project.
  * All Fields of type DependencyRule refer to one or multiple packages:
- * <table>
+ * <table summary="">
  * <tr>
  * <th>Field</th>
  * <th>Package</th>

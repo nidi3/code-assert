@@ -29,7 +29,7 @@ public class BugCollector implements IgnoreSource<BugCollector> {
     /**
      * @param maxRank     maximum rank for a bug to be collected.
      * @param minPriority minimum priority for a bug to be collected.
-     * @return
+     * @return A new BugCollector with the given configuration.
      * @see edu.umd.cs.findbugs.Priorities
      */
     public static BugCollector simple(final Integer maxRank, final Integer minPriority) {

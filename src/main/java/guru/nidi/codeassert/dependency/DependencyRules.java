@@ -81,9 +81,9 @@ public class DependencyRules {
      * });
      * </pre>
      *
-     * @param basePackage
-     * @param ruler
-     * @return
+     * @param basePackage the package to be prepended in front of the ruler's name
+     * @param ruler defines the dependency rules
+     * @return DependencyRules including the new rules.
      */
     public DependencyRules withRules(String basePackage, DependencyRuler ruler) {
         try {
