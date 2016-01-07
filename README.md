@@ -77,7 +77,7 @@ public class FindBugsTest {
         // Ignore the given bug types in the given classes / methods.
         BugCollector collector = BugCollector.simple(17, Priorities.NORMAL_PRIORITY)
             .just(In.everywhere().ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"))
-            .because("It's checked an OK like this",
+            .because("It's checked and OK like this",
                 In.classes(DependencyRules.class, Ruleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
                 In.locs("ClassFileParser#parse", "*Test", "Rulesets$*").ignore("URF_UNREAD_FIELD"));    
                 
@@ -111,7 +111,7 @@ public class PmdTest {
                 In.locs("JavaClassBuilder#build", "FindBugsMatchers$*").ignore("AvoidInstantiatingObjectsInLoops"))
             .because("it'a an enum",
                 In.clazz(SignatureParser.class).ignore("SwitchStmtsShouldHaveDefault"))
-            just(In.loc("*Test").ignore("TooManyStaticImports"));
+            .just(In.loc("*Test").ignore("TooManyStaticImports"));
             
         // Define and configure the rule sets to be used
         PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRuleSets(
