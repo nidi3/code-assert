@@ -77,7 +77,7 @@ public class EatYourOwnDogfoodTest {
         final BugCollector bugCollector = BugCollector.simple(null, null)
                 .ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR").in("DependencyMatchers$CycleMatcher")
                 .ignore("DP_DO_INSIDE_DO_PRIVILEGED").in("DependencyRules#withRules", "Ruleset")
-                .ignore("URF_UNREAD_FIELD").in("ClassFileParser", "Constant", "MemberInfo", "Rulesets$*");
+                .ignore("URF_UNREAD_FIELD").in("ClassFileParser", "Constant", "MemberInfo", "Rulesets$*","Reason");
         assertThat(new FindBugsAnalyzer(config, bugCollector), findsNoBugs());
     }
 
@@ -90,6 +90,7 @@ public class EatYourOwnDogfoodTest {
                 .ignore("TooManyMethods").in(Rulesets.class)
                 .ignore("SimplifyStartsWith").in(LocationMatcher.class)
                 .ignore("TooManyStaticImports").in("*Test")
+                .ignore("SingularField").in("Reason")
                 .ignore("GodClass").in("DependencyRules", "JavaClassImportBuilder");
         final PmdAnalyzer analyzer = new PmdAnalyzer(config, collector)
                 .withRuleSets(basic(), braces(), codesize().excessiveMethodLength(40).tooManyMethods(30), design(), empty(), optimizations());

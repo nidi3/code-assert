@@ -63,8 +63,8 @@ public class PmdTest {
                 ViolationCollector.simple(RulePriority.MEDIUM)
                         .because("is not useful").ignore("MethodArgumentCouldBeFinal", "LawOfDemeter", "LooseCoupling", "LocalVariableCouldBeFinal",
                         "UncommentedEmptyConstructor", "GodClass", "CommentDefaultAccessModifier", "AtLeastOneConstructor",
-                        "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming", "AvoidFieldNameMatchingMethodName",
-                        "BeanMembersShouldSerialize", "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling").generally()
+                        "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming", "AvoidFieldNameMatchingMethodName", "AvoidFieldNameMatchingTypeName",
+                        "BeanMembersShouldSerialize", "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith").generally()
                         .ignore("ExcessiveMethodLength").in(DependencyRulesTest.class)
                         .ignore("AvoidInstantiatingObjectsInLoops").in("JavaClassBuilder", "PmdAnalyzer")
                         .ignore("AvoidDuplicateLiterals").in(DependencyRulesTest.class, FindBugsTest.class)
@@ -101,10 +101,11 @@ public class PmdTest {
                         pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", 40, "JUnit tests should not contain more than 1 assert(s).") +
                         pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", 50, "JUnit tests should not contain more than 1 assert(s).") +
                         pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", 21, "Class cannot be instantiated and does not provide any static methods or fields") +
-                        pmd(MEDIUM, "SimplifyStartsWith", MAIN, "util/LocationMatcher", 89, "This call to String.startsWith can be rewritten using String.charAt(0)") +
+                        pmd(MEDIUM, "SingularField", MAIN, "util/Reason", 20, "Perhaps 'reason' could be replaced by a local variable.") +
                         pmd(MEDIUM, "SwitchStmtsShouldHaveDefault", MAIN, "model/SignatureParser", 52, "Switch statements should have a default label") +
                         pmd(MEDIUM, "TooManyMethods", MAIN, "pmd/Rulesets", 21, "This class has too many methods, consider refactoring it.") +
                         pmd(MEDIUM, "UnusedLocalVariable", TEST, "Bugs", 36, "Avoid unused local variables such as 'a'.") +
+                        pmd(MEDIUM, "UnusedPrivateField", MAIN, "util/Reason", 20, "Avoid unused private fields such as 'reason'.") +
                         pmd(MEDIUM, "UseConcurrentHashMap", MAIN, "dependency/DependencyMap", 27, "If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation") +
                         pmd(MEDIUM, "UseConcurrentHashMap", MAIN, "dependency/DependencyRules", 171, "If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation") +
                         pmd(MEDIUM, "UseConcurrentHashMap", MAIN, "model/ModelAnalyzer", 42, "If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation") +
@@ -120,8 +121,10 @@ public class PmdTest {
                 .ignore("SignatureParser")
                 .ignore(DependencyMap.class));
         assertMatcher("" +
-                        cpd(23, "findbugs/BugCollector", 39, 46) +
-                        cpd("pmd/ViolationCollector", 38, 45) +
+                        cpd(24, "findbugs/BugCollector", 45, 49) +
+                        cpd("pmd/ViolationCollector", 38, 42) +
+                        cpd(23, "findbugs/BugCollector", 50, 57) +
+                        cpd("pmd/ViolationCollector", 43, 50) +
                         cpd(21, "dependency/DependencyRule", 107, 108) +
                         cpd("dependency/DependencyRule", 119, 120) +
                         cpd(20, "AnalyzerConfig", 56, 57) +
