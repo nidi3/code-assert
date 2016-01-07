@@ -15,55 +15,37 @@
  */
 package guru.nidi.codeassert.pmd;
 
-import guru.nidi.codeassert.util.BaseIgnores;
-import guru.nidi.codeassert.util.IgnoreSource;
-import guru.nidi.codeassert.util.LocationMatcher;
-import guru.nidi.codeassert.util.Reason;
+import guru.nidi.codeassert.config.Action;
+import guru.nidi.codeassert.config.BaseCollector;
+import guru.nidi.codeassert.config.CollectorConfig;
 import net.sourceforge.pmd.RulePriority;
 import net.sourceforge.pmd.RuleViolation;
 
 /**
  *
  */
-public class ViolationCollector implements IgnoreSource<ViolationCollector> {
+public abstract class ViolationCollector extends BaseCollector<RuleViolation, ViolationCollector> {
     public static ViolationCollector simple(final RulePriority minPriority) {
         return new ViolationCollector() {
             @Override
-            public boolean accept(RuleViolation violation) {
-                return (minPriority == null || violation.getRule().getPriority().getPriority() <= minPriority.getPriority());
+            public boolean accept(RuleViolation issue) {
+                return (minPriority == null || issue.getRule().getPriority().getPriority() <= minPriority.getPriority());
             }
         };
     }
 
-    public Reason<ViolationCollector> because(String reason) {
-        return new Reason<>(this, reason);
+    @Override
+    public ViolationCollector config(final CollectorConfig... configs) {
+        return new ViolationCollector() {
+            @Override
+            public boolean accept(RuleViolation issue) {
+                return accept(issue, ViolationCollector.this, configs);
+            }
+        };
     }
 
-    public Ignores ignore(String... names) {
-        return new Ignores(names);
-    }
-
-    public Ignores ignoreAll() {
-        return new Ignores(new String[0]);
-    }
-
-    public boolean accept(RuleViolation violation) {
-        return true;
-    }
-
-    public class Ignores extends BaseIgnores<ViolationCollector> {
-        protected Ignores(String[] ignores) {
-            super(ignores);
-        }
-
-        public ViolationCollector in(final LocationMatcher matcher) {
-            return new ViolationCollector() {
-                @Override
-                public boolean accept(RuleViolation violation) {
-                    return ViolationCollector.this.accept(violation) &&
-                            !matcher.matches(violation.getRule().getName(), PmdUtils.className(violation), violation.getMethodName());
-                }
-            };
-        }
+    @Override
+    protected boolean matches(Action action, RuleViolation issue) {
+        return action.matches(issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName());
     }
 }

@@ -15,57 +15,50 @@
  */
 package guru.nidi.codeassert.pmd;
 
-import guru.nidi.codeassert.util.LocationMatcher;
+import guru.nidi.codeassert.config.Action;
+import guru.nidi.codeassert.config.BaseCollector;
+import guru.nidi.codeassert.config.CollectorConfig;
 import net.sourceforge.pmd.cpd.Mark;
 import net.sourceforge.pmd.cpd.Match;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 
 /**
  *
  */
-public class MatchCollector {
-    public MatchCollector because(String reason) {
-        return this;
-    }
-
-    public MatchCollector ignore(final Class<?>... classes) {
-        final String[] cs = new String[classes.length];
-        for (int i = 0; i < classes.length; i++) {
-            cs[i] = classes[i].getName();
-        }
-        return ignore(cs);
-    }
-
-    public MatchCollector ignore(final String... locations) {
+public abstract class MatchCollector extends BaseCollector<Match, MatchCollector> {
+    public static MatchCollector simple() {
         return new MatchCollector() {
-            private final LocationMatcher matcher = new LocationMatcher(Arrays.asList(locations), Collections.<String>emptyList());
-
             @Override
-            public boolean accept(Match match) {
-                return MatchCollector.this.accept(match) && !matchAll(match);
-            }
-
-            private boolean matchAll(Match match) {
-                for (final Iterator<Mark> it = match.iterator(); it.hasNext(); ) {
-                    final Mark mark = it.next();
-                    if (!matcher.matches("", className(mark.getFilename()), "")) {
-                        return false;
-                    }
-                }
+            public boolean accept(Match issue) {
                 return true;
-            }
-
-            private String className(String filename) {
-                final int pos = filename.lastIndexOf('/');
-                return filename.substring(pos + 1, filename.length() - 5);
             }
         };
     }
 
-    public boolean accept(Match match) {
+    @Override
+    public MatchCollector config(final CollectorConfig... configs) {
+        return new MatchCollector() {
+            @Override
+            public boolean accept(Match issue) {
+                return accept(issue, MatchCollector.this, configs);
+            }
+        };
+    }
+
+    @Override
+    protected boolean matches(Action action, Match issue) {
+        for (final Iterator<Mark> it = issue.iterator(); it.hasNext(); ) {
+            final Mark mark = it.next();
+            if (!action.matches("", className(mark.getFilename()), "")) {
+                return false;
+            }
+        }
         return true;
+    }
+
+    private String className(String filename) {
+        final int pos = filename.lastIndexOf('/');
+        return filename.substring(pos + 1, filename.length() - 5);
     }
 }

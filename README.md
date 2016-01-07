@@ -76,9 +76,10 @@ public class FindBugsTest {
         // Only treat bugs with rank < 17 and with NORMAL_PRIORITY or higher
         // Ignore the given bug types in the given classes / methods.
         BugCollector collector = BugCollector.simple(17, Priorities.NORMAL_PRIORITY)
-                .ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-                .ignore("DP_DO_INSIDE_DO_PRIVILEGED").in(DependencyRules.class, Ruleset.class)
-                .ignore("URF_UNREAD_FIELD").in("ClassFileParser#parse", "*Test", "Rulesets$*");
+            .just(In.everywhere().ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"))
+            .because("It's checked an OK like this",
+                In.classes(DependencyRules.class, Ruleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
+                In.locs("ClassFileParser#parse", "*Test", "Rulesets$*").ignore("URF_UNREAD_FIELD"));    
                 
         assertThat(new FindBugsAnalyzer(config, collector), FindBugsMatchers.findsNoBugs());
     }
@@ -105,10 +106,12 @@ public class PmdTest {
         // Only treat violations with MEDIUM priority or higher
         // Ignore the given violations in the given classes / methods
         ViolationCollector collector = ViolationCollector.simple(RulePriority.MEDIUM)
-            .ignore("MethodArgumentCouldBeFinal", "GodClass").generally()
-            .ignore("AvoidInstantiatingObjectsInLoops").in("JavaClassBuilder#build", "FindBugsMatchers$*")
-            .ignore("SwitchStmtsShouldHaveDefault").in(SignatureParser.class)
-            .ignore("TooManyStaticImports").in("*Test")
+            .because("It's not severe and occurs very often",
+                In.everywhere().ignore("MethodArgumentCouldBeFinal"),
+                In.locs("JavaClassBuilder#build", "FindBugsMatchers$*").ignore("AvoidInstantiatingObjectsInLoops"))
+            .because("it'a an enum",
+                In.clazz(SignatureParser.class).ignore("SwitchStmtsShouldHaveDefault"))
+            just(In.loc("*Test").ignore("TooManyStaticImports"));
             
         // Define and configure the rule sets to be used
         PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRuleSets(
@@ -121,11 +124,11 @@ public class PmdTest {
     @Test
     public void cpd() {
         // Ignore duplications in the given classes
-        MatchCollector collector = new MatchCollector()
-            .ignore(DependencyMap.class, RuleResult.class)
-            .ignore(JavaClass.class, JavaPackage.class)
-            .ignore("SignatureParser")
-            .ignore(DependencyMap.class);
+        MatchCollector collector = MatchCollector.simple().just(
+            In.classes(DependencyMap.class, RuleResult.class).ignoreAll(),
+            In.classes(JavaClass.class, JavaPackage.class).ignoreAll(),
+            In.loc("SignatureParser").ignoreAll(),
+            In.clazz(DependencyMap.class).ignoreAll());
             
         // Only treat duplications with at least 20 tokens
         CpdAnalyzer analyzer = new CpdAnalyzer(config, 20, collector);

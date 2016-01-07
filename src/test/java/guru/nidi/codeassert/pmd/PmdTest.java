@@ -15,14 +15,15 @@
  */
 package guru.nidi.codeassert.pmd;
 
-import guru.nidi.codeassert.Analyzer;
-import guru.nidi.codeassert.AnalyzerConfig;
+import guru.nidi.codeassert.config.Analyzer;
+import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.Bugs;
 import guru.nidi.codeassert.dependency.DependencyMap;
 import guru.nidi.codeassert.dependency.DependencyRulesTest;
 import guru.nidi.codeassert.dependency.RuleResult;
 import guru.nidi.codeassert.findbugs.FindBugsTest;
 import guru.nidi.codeassert.model.*;
+import guru.nidi.codeassert.config.In;
 import net.sourceforge.pmd.RulePriority;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -61,20 +62,21 @@ public class PmdTest {
     public void ignore() {
         final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.mavenMainAndTestClasses(),
                 ViolationCollector.simple(RulePriority.MEDIUM)
-                        .because("is not useful").ignore("MethodArgumentCouldBeFinal", "LawOfDemeter", "LooseCoupling", "LocalVariableCouldBeFinal",
-                        "UncommentedEmptyConstructor", "GodClass", "CommentDefaultAccessModifier", "AtLeastOneConstructor",
-                        "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming", "AvoidFieldNameMatchingMethodName", "AvoidFieldNameMatchingTypeName",
-                        "BeanMembersShouldSerialize", "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith").generally()
-                        .ignore("ExcessiveMethodLength").in(DependencyRulesTest.class)
-                        .ignore("AvoidInstantiatingObjectsInLoops").in("JavaClassBuilder", "PmdAnalyzer")
-                        .ignore("AvoidDuplicateLiterals").in(DependencyRulesTest.class, FindBugsTest.class)
-                        .ignore("ShortMethodName").in(ExampleInterface.class)
-                        .ignore("UnusedLocalVariable").in(Bugs.class)
-                        .ignore("TooManyStaticImports").in("*Test")
-                        .ignore("JUnitTestsShouldIncludeAssert").in(ClassFileParserTest.class, FileManagerTest.class, JarFileParserTest.class)
-                        .ignore("JUnitTestContainsTooManyAsserts").in(DependencyRulesTest.class)
-                        .ignore("AddEmptyString", "UseObjectForClearerAPI").in(PmdTest.class, FindBugsTest.class)
-                        .ignoreAll().in("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters"))
+                        .because("it's not useful", In.everywhere().ignore(
+                                "MethodArgumentCouldBeFinal", "LawOfDemeter", "LooseCoupling", "LocalVariableCouldBeFinal",
+                                "UncommentedEmptyConstructor", "GodClass", "CommentDefaultAccessModifier", "AtLeastOneConstructor",
+                                "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming", "AvoidFieldNameMatchingMethodName", "AvoidFieldNameMatchingTypeName",
+                                "BeanMembersShouldSerialize", "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith"))
+                        .just(In.clazz(DependencyRulesTest.class).ignore("ExcessiveMethodLength"),
+                                In.locs("JavaClassBuilder", "PmdAnalyzer").ignore("AvoidInstantiatingObjectsInLoops"),
+                                In.classes(DependencyRulesTest.class, FindBugsTest.class).ignore("AvoidDuplicateLiterals"),
+                                In.clazz(ExampleInterface.class).ignore("ShortMethodName"),
+                                In.clazz(Bugs.class).ignore("UnusedLocalVariable"),
+                                In.loc("*Test").ignore("TooManyStaticImports"),
+                                In.classes(ClassFileParserTest.class, FileManagerTest.class, JarFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert"),
+                                In.clazz(DependencyRulesTest.class).ignore("JUnitTestContainsTooManyAsserts"),
+                                In.classes(PmdTest.class, FindBugsTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
+                                In.locs("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))
                 .withRuleSets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
                         finalizers(), imports(), j2ee(), javabeans(), junit(), optimizations(),
                         exceptions(), strings(), sunSecure(), typeResolution(), unnecessary(), unused(),
@@ -86,7 +88,7 @@ public class PmdTest {
                         pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", 21, "A class which only has private constructors should be final") +
                         pmd(MEDIUM, "ArrayIsStoredDirectly", MAIN, "model/AttributeInfo", 28, "The user-supplied array 'value' is stored directly.") +
                         pmd(MEDIUM, "ArrayIsStoredDirectly", MAIN, "model/ConstantPool", 29, "The user-supplied array 'pool' is stored directly.") +
-                        pmd(MEDIUM, "AvoidDollarSigns", TEST, "EatYourOwnDogfoodTest", 61, "Avoid using dollar signs in variable/method/class/interface names") +
+                        pmd(MEDIUM, "AvoidDollarSigns", TEST, "EatYourOwnDogfoodTest", 64, "Avoid using dollar signs in variable/method/class/interface names") +
                         pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", 118, "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 118") +
                         pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", 160, "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 160") +
                         pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", 198, "Avoid using final local variables, turn them into fields") +
@@ -97,15 +99,13 @@ public class PmdTest {
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", 18, "enumCommentRequirement Required") +
                         pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRuler", 18, "Comment is too large: Too many lines") +
                         pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRules", 54, "Comment is too large: Too many lines") +
-                        pmd(MEDIUM, "ExcessiveMethodLength", TEST, "pmd/PmdTest", 61, "Avoid really long methods.") +
+                        pmd(MEDIUM, "ExcessiveMethodLength", TEST, "pmd/PmdTest", 62, "Avoid really long methods.") +
                         pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", 40, "JUnit tests should not contain more than 1 assert(s).") +
                         pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", 50, "JUnit tests should not contain more than 1 assert(s).") +
                         pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", 21, "Class cannot be instantiated and does not provide any static methods or fields") +
-                        pmd(MEDIUM, "SingularField", MAIN, "util/Reason", 20, "Perhaps 'reason' could be replaced by a local variable.") +
                         pmd(MEDIUM, "SwitchStmtsShouldHaveDefault", MAIN, "model/SignatureParser", 52, "Switch statements should have a default label") +
                         pmd(MEDIUM, "TooManyMethods", MAIN, "pmd/Rulesets", 21, "This class has too many methods, consider refactoring it.") +
                         pmd(MEDIUM, "UnusedLocalVariable", TEST, "Bugs", 36, "Avoid unused local variables such as 'a'.") +
-                        pmd(MEDIUM, "UnusedPrivateField", MAIN, "util/Reason", 20, "Avoid unused private fields such as 'reason'.") +
                         pmd(MEDIUM, "UseConcurrentHashMap", MAIN, "dependency/DependencyMap", 27, "If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation") +
                         pmd(MEDIUM, "UseConcurrentHashMap", MAIN, "dependency/DependencyRules", 171, "If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation") +
                         pmd(MEDIUM, "UseConcurrentHashMap", MAIN, "model/ModelAnalyzer", 42, "If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation") +
@@ -115,20 +115,17 @@ public class PmdTest {
 
     @Test
     public void cpd() {
-        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.mavenMainClasses(), 20, new MatchCollector()
-                .because("blaj").ignore(DependencyMap.class, RuleResult.class)
-                .ignore(JavaClass.class, JavaPackage.class)
-                .ignore("SignatureParser")
-                .ignore(DependencyMap.class));
+        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.mavenMainClasses(), 20, MatchCollector.simple()
+                .because("blaj",
+                        In.classes(DependencyMap.class, RuleResult.class).ignoreAll())
+                .just(In.classes(JavaClass.class, JavaPackage.class).ignoreAll(),
+                        In.loc("SignatureParser").ignoreAll(),
+                        In.clazz(DependencyMap.class).ignoreAll()));
         assertMatcher("" +
-                        cpd(24, "findbugs/BugCollector", 45, 49) +
-                        cpd("pmd/ViolationCollector", 38, 42) +
-                        cpd(23, "findbugs/BugCollector", 50, 57) +
-                        cpd("pmd/ViolationCollector", 43, 50) +
                         cpd(21, "dependency/DependencyRule", 107, 108) +
                         cpd("dependency/DependencyRule", 119, 120) +
-                        cpd(20, "AnalyzerConfig", 56, 57) +
-                        cpd("AnalyzerConfig", 64, 64),
+                        cpd(20, "config/AnalyzerConfig", 56, 57) +
+                        cpd("config/AnalyzerConfig", 64, 64),
                 analyzer, PmdMatchers.hasNoDuplications());
     }
 

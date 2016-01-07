@@ -15,13 +15,13 @@
  */
 package guru.nidi.codeassert.model;
 
-import guru.nidi.codeassert.AnalyzerConfig;
+import guru.nidi.codeassert.config.AnalyzerConfig;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Collection;
 
-import static guru.nidi.codeassert.PackageCollector.all;
+import static guru.nidi.codeassert.config.PackageCollector.all;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -32,7 +32,7 @@ public class AnalyzerTest {
     public void simple() throws IOException {
         final Collection<JavaPackage> packs = new ModelAnalyzer(
                 AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/model")).analyze();
-        assertEquals(36, packs.size());
+        assertEquals(37, packs.size());
     }
 
     @Test
@@ -41,6 +41,6 @@ public class AnalyzerTest {
                 AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/model")
                         .collecting(all().excluding("java.*", "javax.*", "org.*")))
                 .analyze();
-        assertEquals(16, packs.size());
+        assertEquals(17, packs.size());
     }
 }

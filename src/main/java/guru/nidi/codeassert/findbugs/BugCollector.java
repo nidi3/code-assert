@@ -17,15 +17,14 @@ package guru.nidi.codeassert.findbugs;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import guru.nidi.codeassert.util.BaseIgnores;
-import guru.nidi.codeassert.util.IgnoreSource;
-import guru.nidi.codeassert.util.LocationMatcher;
-import guru.nidi.codeassert.util.Reason;
+import guru.nidi.codeassert.config.Action;
+import guru.nidi.codeassert.config.BaseCollector;
+import guru.nidi.codeassert.config.CollectorConfig;
 
 /**
  *
  */
-public class BugCollector implements IgnoreSource<BugCollector> {
+public abstract class BugCollector extends BaseCollector<BugInstance, BugCollector> {
     /**
      * @param maxRank     maximum rank for a bug to be collected.
      * @param minPriority minimum priority for a bug to be collected.
@@ -35,44 +34,28 @@ public class BugCollector implements IgnoreSource<BugCollector> {
     public static BugCollector simple(final Integer maxRank, final Integer minPriority) {
         return new BugCollector() {
             @Override
-            public boolean accept(BugInstance bug) {
-                return (maxRank == null || bug.getBugRank() <= maxRank) &&
-                        (minPriority == null || bug.getPriority() <= minPriority);
+            public boolean accept(BugInstance issue) {
+                return (maxRank == null || issue.getBugRank() <= maxRank) &&
+                        (minPriority == null || issue.getPriority() <= minPriority);
             }
         };
     }
 
-    public Reason<BugCollector> because(String reason) {
-        return new Reason<>(this, reason);
+    @Override
+    public BugCollector config(final CollectorConfig... configs) {
+        return new BugCollector() {
+            @Override
+            public boolean accept(BugInstance issue) {
+                return accept(issue, BugCollector.this, configs);
+            }
+        };
     }
 
-    public Ignores ignore(String... types) {
-        return new Ignores(types);
-    }
-
-    public Ignores ignoreAll() {
-        return new Ignores(new String[0]);
-    }
-
-    public boolean accept(BugInstance bug) {
-        return true;
-    }
-
-    public class Ignores extends BaseIgnores<BugCollector> {
-        protected Ignores(String[] ignores) {
-            super(ignores);
-        }
-
-        public BugCollector in(final LocationMatcher matcher) {
-            return new BugCollector() {
-                @Override
-                public boolean accept(BugInstance bug) {
-                    final MethodAnnotation method = bug.getPrimaryMethod();
-                    final String className = bug.getPrimaryClass().getClassName();
-                    final String methodName = method == null ? null : method.getMethodName();
-                    return BugCollector.this.accept(bug) && !matcher.matches(bug.getType(), className, methodName);
-                }
-            };
-        }
+    @Override
+    protected boolean matches(Action action, BugInstance issue) {
+        final MethodAnnotation method = issue.getPrimaryMethod();
+        final String className = issue.getPrimaryClass().getClassName();
+        final String methodName = method == null ? null : method.getMethodName();
+        return action.matches(issue.getType(), className, methodName);
     }
 }

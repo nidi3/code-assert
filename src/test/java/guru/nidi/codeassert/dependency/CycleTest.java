@@ -15,14 +15,14 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.AnalyzerConfig;
+import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.model.ModelAnalyzer;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 
-import static guru.nidi.codeassert.PackageCollector.all;
+import static guru.nidi.codeassert.config.PackageCollector.all;
 import static guru.nidi.codeassert.dependency.CycleResult.packages;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCyclesExcept;

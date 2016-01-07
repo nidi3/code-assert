@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.util;
+package guru.nidi.codeassert.config;
 
-public class Reason<T extends IgnoreSource<T>> implements IgnoreSource<T> {
-    private final T ignoreSource;
-    private final String reason;
+import java.util.Arrays;
+import java.util.List;
 
-    public Reason(T ignoreSource, String reason) {
-        this.ignoreSource = ignoreSource;
+/**
+ *
+ */
+public final class CollectorConfig {
+    public final String reason;
+    public final List<Action> actions;
+
+    private CollectorConfig(String reason, List<Action> actions) {
         this.reason = reason;
+        this.actions = actions;
     }
 
-    public BaseIgnores<T> ignore(String... types) {
-        return ignoreSource.ignore(types);
+    public static CollectorConfig because(String reason, Action... actions) {
+        return new CollectorConfig(reason, Arrays.asList(actions));
     }
 
-    public BaseIgnores<T> ignoreAll() {
-        return ignoreSource.ignoreAll();
+    public static CollectorConfig just(Action... actions) {
+        return because(null, actions);
     }
 }

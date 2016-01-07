@@ -15,8 +15,8 @@
  */
 package guru.nidi.codeassert.model;
 
-import guru.nidi.codeassert.Analyzer;
-import guru.nidi.codeassert.AnalyzerConfig;
+import guru.nidi.codeassert.config.Analyzer;
+import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.AnalyzerException;
 
 import java.io.IOException;

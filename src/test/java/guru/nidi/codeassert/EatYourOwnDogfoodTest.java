@@ -15,6 +15,9 @@
  */
 package guru.nidi.codeassert;
 
+import guru.nidi.codeassert.config.AnalyzerConfig;
+import guru.nidi.codeassert.config.CollectorConfig;
+import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.DependencyRule;
 import guru.nidi.codeassert.dependency.DependencyRuler;
 import guru.nidi.codeassert.findbugs.BugCollector;
@@ -30,7 +33,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static guru.nidi.codeassert.PackageCollector.all;
+import static guru.nidi.codeassert.config.PackageCollector.all;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
@@ -58,15 +61,15 @@ public class EatYourOwnDogfoodTest {
     @Test
     public void dependency() {
         class GuruNidiCodeassert implements DependencyRuler {
-            DependencyRule $self, dependency, findbugs, model, pmd, util;
+            DependencyRule $self, config, dependency, findbugs, model, pmd, util;
 
             @Override
             public void defineRules() {
-                $self.mayDependUpon(util);
-                dependency.mayDependUpon(model, $self);
-                findbugs.mayDependUpon($self, util);
-                model.mayDependUpon($self, util);
-                pmd.mayDependUpon($self, util);
+                config.mayDependUpon(util);
+                dependency.mayDependUpon(model, $self, config);
+                findbugs.mayDependUpon($self, util, config);
+                model.mayDependUpon($self, util, config);
+                pmd.mayDependUpon($self, util, config);
             }
         }
         assertThat(new ModelAnalyzer(config), matchesExactly(denyAll().withRules(new GuruNidiCodeassert())));
@@ -74,25 +77,26 @@ public class EatYourOwnDogfoodTest {
 
     @Test
     public void findBugs() {
-        final BugCollector bugCollector = BugCollector.simple(null, null)
-                .ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR").in("DependencyMatchers$CycleMatcher")
-                .ignore("DP_DO_INSIDE_DO_PRIVILEGED").in("DependencyRules#withRules", "Ruleset")
-                .ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE").in("*Comparator")
-                .ignore("URF_UNREAD_FIELD").in("ClassFileParser", "Constant", "MemberInfo", "Rulesets$*", "Reason");
+        final BugCollector bugCollector = BugCollector.simple(null, null).just(
+                In.loc("DependencyMatchers$CycleMatcher").ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"),
+                In.locs("DependencyRules#withRules", "Ruleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
+                In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
+                In.clazz(CollectorConfig.class).ignore("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"),
+                In.locs("ClassFileParser", "Constant", "MemberInfo", "Rulesets$*", "Reason").ignore("URF_UNREAD_FIELD"));
         assertThat(new FindBugsAnalyzer(config, bugCollector), findsNoBugs());
     }
 
     @Test
     public void pmd() {
-        final ViolationCollector collector = ViolationCollector.simple(RulePriority.MEDIUM)
-                .ignore("MethodArgumentCouldBeFinal").generally()
-                .ignore("AvoidInstantiatingObjectsInLoops").in("JavaClassBuilder", "PmdAnalyzer", "CpdAnalyzer", "FindBugsMatchers$*")
-                .ignore("SwitchStmtsShouldHaveDefault").in("SignatureParser")
-                .ignore("TooManyMethods").in(Rulesets.class)
-                .ignore("SimplifyStartsWith").in(LocationMatcher.class)
-                .ignore("TooManyStaticImports").in("*Test")
-                .ignore("SingularField").in("Reason")
-                .ignore("GodClass").in("DependencyRules", "JavaClassImportBuilder");
+        final ViolationCollector collector = ViolationCollector.simple(RulePriority.MEDIUM).just(
+                In.everywhere().ignore("MethodArgumentCouldBeFinal"),
+                In.locs("JavaClassBuilder", "PmdAnalyzer", "CpdAnalyzer", "FindBugsMatchers$*").ignore("AvoidInstantiatingObjectsInLoops"),
+                In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),
+                In.clazz(Rulesets.class).ignore("TooManyMethods"),
+                In.clazz(LocationMatcher.class).ignore("SimplifyStartsWith"),
+                In.loc("*Test").ignore("TooManyStaticImports"),
+                In.loc("Reason").ignore("SingularField"),
+                In.locs("DependencyRules", "JavaClassImportBuilder").ignore("GodClass"));
         final PmdAnalyzer analyzer = new PmdAnalyzer(config, collector)
                 .withRuleSets(basic(), braces(), codesize().excessiveMethodLength(40).tooManyMethods(30), design(), empty(), optimizations());
         assertThat(analyzer, hasNoPmdViolations());

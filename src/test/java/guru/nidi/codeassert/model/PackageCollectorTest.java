@@ -15,12 +15,12 @@
  */
 package guru.nidi.codeassert.model;
 
-import guru.nidi.codeassert.PackageCollector;
+import guru.nidi.codeassert.config.PackageCollector;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import static guru.nidi.codeassert.PackageCollector.all;
+import static guru.nidi.codeassert.config.PackageCollector.all;
 import static org.junit.Assert.*;
 
 /**

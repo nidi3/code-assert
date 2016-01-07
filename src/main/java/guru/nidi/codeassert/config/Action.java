@@ -13,13 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.util;
+package guru.nidi.codeassert.config;
+
+import guru.nidi.codeassert.util.LocationMatcher;
+
+import java.util.List;
 
 /**
+ * Actions are created using the In class.
  *
+ * @see In
  */
-public interface IgnoreSource<S extends IgnoreSource<S>> {
-    BaseIgnores<S> ignore(String... names);
+public class Action {
+    private final LocationMatcher matcher;
 
-    BaseIgnores<S> ignoreAll();
+    protected Action(List<String> locs, List<String> names) {
+        matcher = new LocationMatcher(locs, names);
+    }
+
+    public boolean matches(String name, String className, String method) {
+        return matcher.matches(name, className, method);
+    }
 }
