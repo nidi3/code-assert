@@ -61,10 +61,11 @@ public class FindBugsMatchers {
         private String printBug(BugInstance bug, List<String> sources) {
             final int rank = BugRanker.findRank(bug);
             final SourceLineAnnotation line = bug.getPrimarySourceLineAnnotation();
+            final int startLine = line.getStartLine() <= 0 ? 0 : line.getStartLine();
             final String msg = bug.getMessage();
             final int pos = msg.indexOf(':');
             final String message = msg.substring(pos + 2).replace('\n', ' ');
-            return String.format("%-2d %-8s %-45s %s:%d    %s", rank, priority(bug), bug.getType(), completeSourcePath(line.getSourcePath(), sources), line.getStartLine(), message);
+            return String.format("%-2d %-8s %-45s %s:%d    %s", rank, priority(bug), bug.getType(), completeSourcePath(line.getSourcePath(), sources), startLine, message);
         }
 
         private String completeSourcePath(String sourcePath, List<String> sources) {

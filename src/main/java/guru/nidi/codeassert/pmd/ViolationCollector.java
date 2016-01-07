@@ -18,6 +18,7 @@ package guru.nidi.codeassert.pmd;
 import guru.nidi.codeassert.util.BaseIgnores;
 import guru.nidi.codeassert.util.IgnoreSource;
 import guru.nidi.codeassert.util.LocationMatcher;
+import guru.nidi.codeassert.util.Reason;
 import net.sourceforge.pmd.RulePriority;
 import net.sourceforge.pmd.RuleViolation;
 
@@ -32,6 +33,10 @@ public class ViolationCollector implements IgnoreSource<ViolationCollector> {
                 return (minPriority == null || violation.getRule().getPriority().getPriority() <= minPriority.getPriority());
             }
         };
+    }
+
+    public Reason<ViolationCollector> because(String reason) {
+        return new Reason<>(this, reason);
     }
 
     public Ignores ignore(String... names) {

@@ -86,6 +86,9 @@ public class LocationMatcher {
     }
 
     private boolean wildcardMatch(String pattern, String test) {
+        if (pattern.startsWith("*") && pattern.endsWith("*")) {
+            return test.contains(pattern.substring(1, pattern.length() - 1));
+        }
         if (pattern.startsWith("*")) {
             return test.endsWith(pattern.substring(1));
         }

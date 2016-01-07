@@ -27,6 +27,10 @@ import java.util.Iterator;
  *
  */
 public class MatchCollector {
+    public MatchCollector because(String reason) {
+        return this;
+    }
+
     public MatchCollector ignore(final Class<?>... classes) {
         final String[] cs = new String[classes.length];
         for (int i = 0; i < classes.length; i++) {

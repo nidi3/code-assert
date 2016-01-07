@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class BaseIgnores<T extends IgnoreSource<T>> {
+public abstract class BaseIgnores<T> {
     private final List<String> ignores;
 
     protected BaseIgnores(String[] ignores) {
@@ -42,13 +42,5 @@ public abstract class BaseIgnores<T extends IgnoreSource<T>> {
 
     public T generally() {
         return in(new String[0]);
-    }
-
-    public BaseIgnores<T> ignore(String... types) {
-        return generally().ignore(types);
-    }
-
-    public BaseIgnores<T> ignoreAll() {
-        return generally().ignoreAll();
     }
 }

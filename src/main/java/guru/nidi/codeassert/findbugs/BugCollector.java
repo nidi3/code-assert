@@ -20,11 +20,18 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import guru.nidi.codeassert.util.BaseIgnores;
 import guru.nidi.codeassert.util.IgnoreSource;
 import guru.nidi.codeassert.util.LocationMatcher;
+import guru.nidi.codeassert.util.Reason;
 
 /**
  *
  */
 public class BugCollector implements IgnoreSource<BugCollector> {
+    /**
+     * @param maxRank     maximum rank for a bug to be collected.
+     * @param minPriority minimum priority for a bug to be collected.
+     * @return
+     * @see edu.umd.cs.findbugs.Priorities
+     */
     public static BugCollector simple(final Integer maxRank, final Integer minPriority) {
         return new BugCollector() {
             @Override
@@ -33,6 +40,10 @@ public class BugCollector implements IgnoreSource<BugCollector> {
                         (minPriority == null || bug.getPriority() <= minPriority);
             }
         };
+    }
+
+    public Reason<BugCollector> because(String reason) {
+        return new Reason<>(this, reason);
     }
 
     public Ignores ignore(String... types) {
