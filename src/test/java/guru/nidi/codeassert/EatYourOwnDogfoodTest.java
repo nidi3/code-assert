@@ -77,7 +77,8 @@ public class EatYourOwnDogfoodTest {
         final BugCollector bugCollector = BugCollector.simple(null, null)
                 .ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR").in("DependencyMatchers$CycleMatcher")
                 .ignore("DP_DO_INSIDE_DO_PRIVILEGED").in("DependencyRules#withRules", "Ruleset")
-                .ignore("URF_UNREAD_FIELD").in("ClassFileParser", "Constant", "MemberInfo", "Rulesets$*","Reason");
+                .ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE").in("*Comparator")
+                .ignore("URF_UNREAD_FIELD").in("ClassFileParser", "Constant", "MemberInfo", "Rulesets$*", "Reason");
         assertThat(new FindBugsAnalyzer(config, bugCollector), findsNoBugs());
     }
 

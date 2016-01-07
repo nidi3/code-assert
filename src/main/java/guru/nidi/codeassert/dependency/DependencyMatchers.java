@@ -124,7 +124,7 @@ public class DependencyMatchers {
     }
 
     private static class CycleMatcher extends TypeSafeMatcher<ModelAnalyzer> {
-        private static final Comparator<DependencyMap> DEPENDENCY_MAP_COMPARATOR = new DependencyMapComparator();
+        private static final Comparator<DependencyMap> DEP_MAP_COMPARATOR = new DependencyMapComparator();
         private final Set<String>[] exceptions;
         private CycleResult result;
 
@@ -159,7 +159,7 @@ public class DependencyMatchers {
 
         private static List<DependencyMap> sortedDepMaps(Collection<DependencyMap> maps) {
             final List<DependencyMap> sorted = new ArrayList<>(maps);
-            Collections.sort(sorted, DEPENDENCY_MAP_COMPARATOR);
+            Collections.sort(sorted, DEP_MAP_COMPARATOR);
             return sorted;
         }
 
