@@ -31,6 +31,18 @@ public class Action {
         matcher = new LocationMatcher(locs, names);
     }
 
+    public static In in(final Class<?>... classes) {
+        return In.classes(classes);
+    }
+
+    public static In in(final String... locs) {
+        return In.locs(locs);
+    }
+
+    public static In everywhere() {
+        return In.everywhere();
+    }
+
     public boolean matches(String name, String className, String method) {
         return matcher.matches(name, className, method);
     }
