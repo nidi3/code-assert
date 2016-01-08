@@ -27,35 +27,35 @@
         <java.version>1.7</java.version>
     </properties>
 
-    <!--<build>-->
-        <!--<plugins>-->
-            <!--<plugin>-->
-                <!--<groupId>guru.nidi.maven.plugins</groupId>-->
-                <!--<artifactId>snippets-maven-plugin</artifactId>-->
-                <!--<version>0.0.1-SNAPSHOT</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<phase>generate-resources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>snippets</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<inputs>-->
-                                <!--<input>-->
-                                    <!--src/test/java/guru/nidi/codeassert/snippets-->
-                                <!--</input>-->
-                            <!--</inputs>-->
-                            <!--<outputs>-->
-                                <!--<output>README.md</output>-->
-                            <!--</outputs>-->
-                            <!--<prefix>\n```java</prefix>-->
-                            <!--<postfix>```\n</postfix>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
-        <!--</plugins>-->
-    <!--</build>-->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>guru.nidi.maven.plugins</groupId>
+                <artifactId>snippets-maven-plugin</artifactId>
+                <version>0.0.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>snippets</goal>
+                        </goals>
+                        <configuration>
+                            <inputs>
+                                <input>
+                                    src/test/java/guru/nidi/codeassert/snippets
+                                </input>
+                            </inputs>
+                            <outputs>
+                                <output>README.md</output>
+                            </outputs>
+                            <prefix>\n```java</prefix>
+                            <postfix>```\n</postfix>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
