@@ -15,9 +15,9 @@
  */
 package guru.nidi.codeassert.pmd;
 
+import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.AnalyzerException;
 import net.sourceforge.pmd.PMD;
 import net.sourceforge.pmd.PMDConfiguration;
 import net.sourceforge.pmd.Report;
@@ -80,7 +80,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
 
     @Override
     public List<RuleViolation> analyze() {
-        if (rulesets.isEmpty()){
+        if (rulesets.isEmpty()) {
             throw new AnalyzerException("No rulesets defined. Use the withRuleSets methods to define some. See Rulesets class for predefined rule sets.");
         }
         //avoid System.out from being closed

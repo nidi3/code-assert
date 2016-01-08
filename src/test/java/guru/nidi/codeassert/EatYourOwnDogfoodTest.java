@@ -77,7 +77,7 @@ public class EatYourOwnDogfoodTest {
 
     @Test
     public void findBugs() {
-        final BugCollector bugCollector = BugCollector.simple(null, null).just(
+        final BugCollector bugCollector = new BugCollector().just(
                 In.loc("DependencyMatchers$CycleMatcher").ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"),
                 In.locs("DependencyRules#withRules", "Ruleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
                 In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
@@ -88,7 +88,7 @@ public class EatYourOwnDogfoodTest {
 
     @Test
     public void pmd() {
-        final ViolationCollector collector = ViolationCollector.simple(RulePriority.MEDIUM).just(
+        final ViolationCollector collector =new ViolationCollector().minPriority(RulePriority.MEDIUM).just(
                 In.everywhere().ignore("MethodArgumentCouldBeFinal"),
                 In.locs("JavaClassBuilder", "PmdAnalyzer", "CpdAnalyzer", "FindBugsMatchers$*").ignore("AvoidInstantiatingObjectsInLoops"),
                 In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),

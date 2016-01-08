@@ -24,26 +24,41 @@ import guru.nidi.codeassert.config.CollectorConfig;
 /**
  *
  */
-public abstract class BugCollector extends BaseCollector<BugInstance, BugCollector> {
+public class BugCollector extends BaseCollector<BugInstance, BugCollector> {
+    private final Integer maxRank;
+    private final Integer minPriority;
+
+    public BugCollector() {
+        this(null, null);
+    }
+
+    private BugCollector(Integer maxRank, Integer minPriority) {
+        this.maxRank = maxRank;
+        this.minPriority = minPriority;
+    }
+
+    public BugCollector maxRank(int maxRank) {
+        return new BugCollector(maxRank, minPriority);
+    }
+
     /**
-     * @param maxRank     maximum rank for a bug to be collected.
      * @param minPriority minimum priority for a bug to be collected.
      * @return A new BugCollector with the given configuration.
      * @see edu.umd.cs.findbugs.Priorities
      */
-    public static BugCollector simple(final Integer maxRank, final Integer minPriority) {
-        return new BugCollector() {
-            @Override
-            public boolean accept(BugInstance issue) {
-                return (maxRank == null || issue.getBugRank() <= maxRank) &&
-                        (minPriority == null || issue.getPriority() <= minPriority);
-            }
-        };
+    public BugCollector minPriority(int minPriority) {
+        return new BugCollector(maxRank, minPriority);
+    }
+
+    @Override
+    public boolean accept(BugInstance issue) {
+        return (maxRank == null || issue.getBugRank() <= maxRank) &&
+                (minPriority == null || issue.getPriority() <= minPriority);
     }
 
     @Override
     public BugCollector config(final CollectorConfig... configs) {
-        return new BugCollector() {
+        return new BugCollector(maxRank, minPriority) {
             @Override
             public boolean accept(BugInstance issue) {
                 return accept(issue, BugCollector.this, configs);

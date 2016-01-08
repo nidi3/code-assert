@@ -16,9 +16,9 @@
 package guru.nidi.codeassert.findbugs;
 
 import edu.umd.cs.findbugs.Priorities;
+import guru.nidi.codeassert.Bugs;
 import guru.nidi.codeassert.config.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.Bugs;
 import guru.nidi.codeassert.config.In;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -36,7 +36,7 @@ import static org.junit.Assert.assertFalse;
  */
 public class FindBugsTest {
     private final AnalyzerConfig config = AnalyzerConfig.mavenMainAndTestClasses();
-    private final BugCollector bugCollector = BugCollector.simple(null, Priorities.NORMAL_PRIORITY)
+    private final BugCollector bugCollector = new BugCollector().minPriority(Priorities.NORMAL_PRIORITY)
             .because("is not useful",
                     In.everywhere().ignore("UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD", "UUF_UNUSED_FIELD", "DLS_DEAD_LOCAL_STORE", "SIC_INNER_SHOULD_BE_STATIC", "UC_USELESS_OBJECT", "OBL_UNSATISFIED_OBLIGATION"),
                     In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"))
@@ -45,7 +45,7 @@ public class FindBugsTest {
 
     @Test
     public void simple() throws IOException, InterruptedException {
-        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, BugCollector.simple(17, Priorities.NORMAL_PRIORITY));
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
         assertEquals(16, analyzer.analyze().size());
     }
 

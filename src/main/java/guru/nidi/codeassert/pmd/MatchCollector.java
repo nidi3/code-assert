@@ -26,16 +26,7 @@ import java.util.Iterator;
 /**
  *
  */
-public abstract class MatchCollector extends BaseCollector<Match, MatchCollector> {
-    public static MatchCollector simple() {
-        return new MatchCollector() {
-            @Override
-            public boolean accept(Match issue) {
-                return true;
-            }
-        };
-    }
-
+public class MatchCollector extends BaseCollector<Match, MatchCollector> {
     @Override
     public MatchCollector config(final CollectorConfig... configs) {
         return new MatchCollector() {
@@ -54,6 +45,11 @@ public abstract class MatchCollector extends BaseCollector<Match, MatchCollector
                 return false;
             }
         }
+        return true;
+    }
+
+    @Override
+    public boolean accept(Match issue) {
         return true;
     }
 

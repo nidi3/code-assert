@@ -15,15 +15,15 @@
  */
 package guru.nidi.codeassert.pmd;
 
+import guru.nidi.codeassert.Bugs;
 import guru.nidi.codeassert.config.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.Bugs;
+import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.DependencyMap;
 import guru.nidi.codeassert.dependency.DependencyRulesTest;
 import guru.nidi.codeassert.dependency.RuleResult;
 import guru.nidi.codeassert.findbugs.FindBugsTest;
 import guru.nidi.codeassert.model.*;
-import guru.nidi.codeassert.config.In;
 import net.sourceforge.pmd.RulePriority;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -49,7 +49,7 @@ public class PmdTest {
     @Test
     public void priority() {
         final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.mavenMainAndTestClasses(),
-                ViolationCollector.simple(RulePriority.MEDIUM_HIGH))
+                new ViolationCollector().minPriority(RulePriority.MEDIUM_HIGH))
                 .withRuleSets(basic(), braces(), design(), optimizations(), codesize(), empty(), coupling());
         assertMatcher("" +
                         pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", 21, "A class which only has private constructors should be final") +
@@ -61,7 +61,7 @@ public class PmdTest {
     @Test
     public void ignore() {
         final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.mavenMainAndTestClasses(),
-                ViolationCollector.simple(RulePriority.MEDIUM)
+                new ViolationCollector().minPriority(RulePriority.MEDIUM)
                         .because("it's not useful", In.everywhere().ignore(
                                 "MethodArgumentCouldBeFinal", "LawOfDemeter", "LooseCoupling", "LocalVariableCouldBeFinal",
                                 "UncommentedEmptyConstructor", "GodClass", "CommentDefaultAccessModifier", "AtLeastOneConstructor",
@@ -115,7 +115,7 @@ public class PmdTest {
 
     @Test
     public void cpd() {
-        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.mavenMainClasses(), 20, MatchCollector.simple()
+        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.mavenMainClasses(), 20, new MatchCollector()
                 .because("blaj",
                         In.classes(DependencyMap.class, RuleResult.class).ignoreAll())
                 .just(In.classes(JavaClass.class, JavaPackage.class).ignoreAll(),

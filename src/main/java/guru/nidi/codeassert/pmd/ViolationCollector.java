@@ -24,19 +24,29 @@ import net.sourceforge.pmd.RuleViolation;
 /**
  *
  */
-public abstract class ViolationCollector extends BaseCollector<RuleViolation, ViolationCollector> {
-    public static ViolationCollector simple(final RulePriority minPriority) {
-        return new ViolationCollector() {
-            @Override
-            public boolean accept(RuleViolation issue) {
-                return (minPriority == null || issue.getRule().getPriority().getPriority() <= minPriority.getPriority());
-            }
-        };
+public class ViolationCollector extends BaseCollector<RuleViolation, ViolationCollector> {
+    private final RulePriority minPriority;
+
+    public ViolationCollector() {
+        this(null);
+    }
+
+    private ViolationCollector(RulePriority minPriority) {
+        this.minPriority = minPriority;
+    }
+
+    public ViolationCollector minPriority(RulePriority minPriority) {
+        return new ViolationCollector(minPriority);
+    }
+
+    @Override
+    public boolean accept(RuleViolation issue) {
+        return (minPriority == null || issue.getRule().getPriority().getPriority() <= minPriority.getPriority());
     }
 
     @Override
     public ViolationCollector config(final CollectorConfig... configs) {
-        return new ViolationCollector() {
+        return new ViolationCollector(minPriority) {
             @Override
             public boolean accept(RuleViolation issue) {
                 return accept(issue, ViolationCollector.this, configs);

@@ -17,9 +17,9 @@ package guru.nidi.codeassert.findbugs;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.AnalyzerException;
 
 import java.io.IOException;
 import java.util.*;

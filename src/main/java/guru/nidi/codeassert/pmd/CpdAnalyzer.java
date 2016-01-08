@@ -15,9 +15,9 @@
  */
 package guru.nidi.codeassert.pmd;
 
+import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.AnalyzerException;
 import net.sourceforge.pmd.cpd.CPD;
 import net.sourceforge.pmd.cpd.CPDConfiguration;
 import net.sourceforge.pmd.cpd.Match;
