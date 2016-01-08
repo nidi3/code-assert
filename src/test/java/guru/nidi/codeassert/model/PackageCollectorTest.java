@@ -20,7 +20,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static guru.nidi.codeassert.config.PackageCollector.all;
+import static guru.nidi.codeassert.config.PackageCollector.allPackages;
 import static org.junit.Assert.*;
 
 /**
@@ -32,13 +32,13 @@ public class PackageCollectorTest {
 
     @Test
     public void collectors() throws IOException {
-        PackageCollector collector = all().excluding("java.*", "javax.*", "sun.*", "com.sun.*", "com.xyz.tests.*");
+        PackageCollector collector = allPackages().excluding("java.*", "javax.*", "sun.*", "com.sun.*", "com.xyz.tests.*");
         assertEquals(5, collector.getCollectors().size());
     }
 
     @Test
     public void collection() throws IOException {
-        PackageCollector collector = all().excluding("java.*", "javax.*", "sun.*", "com.sun.*", "com.xyz.tests.*");
+        PackageCollector collector = allPackages().excluding("java.*", "javax.*", "sun.*", "com.sun.*", "com.xyz.tests.*");
         assertFalse(collector.accept("java.lang"));
         assertFalse(collector.accept("javax.ejb"));
         assertTrue(collector.accept("com.xyz.tests"));
@@ -48,7 +48,7 @@ public class PackageCollectorTest {
 
     @Test
     public void accept() {
-        final PackageCollector collector = all().excluding("a.b.c").including("a.b").excluding("a");
+        final PackageCollector collector = allPackages().excluding("a.b.c").including("a.b").excluding("a");
         assertFalse(collector.accept("a"));
         assertTrue(collector.accept("a.b"));
         assertTrue(collector.accept("a.b.d"));

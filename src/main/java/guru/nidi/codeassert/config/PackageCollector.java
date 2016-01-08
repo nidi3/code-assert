@@ -23,7 +23,7 @@ import java.util.Collection;
  * The <code>PackageFilter</code> class is used to filter imported
  * package names.
  * A Package Filter is constructed like this:
- * <pre>PackageFilter filter = PackageFilter.all().excluding(...).including(...)...</pre>
+ * <pre>PackageFilter filter = PackageCollector.allPackages().excluding(...).including(...)...</pre>
  * The filter executes all excluding/including entries in the order they are defined.
  * The first one that matches is used as the result of the filter.
  * If no entry matches, the Filter accepts a package.
@@ -43,7 +43,7 @@ public class PackageCollector {
         this(new ArrayList<Collector>());
     }
 
-    public static PackageCollector all() {
+    public static PackageCollector allPackages() {
         return new PackageCollector();
     }
 

@@ -22,7 +22,7 @@ import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 
-import static guru.nidi.codeassert.config.PackageCollector.all;
+import static guru.nidi.codeassert.config.PackageCollector.allPackages;
 import static guru.nidi.codeassert.dependency.CycleResult.packages;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCyclesExcept;
@@ -40,7 +40,7 @@ public class CycleTest {
     public void analyze() {
         project = new ModelAnalyzer(
                 AnalyzerConfig.mavenTestClasses("guru/nidi/codeassert/dependency")
-                        .collecting(all().excluding("java.", "org")));
+                        .collecting(allPackages().excluding("java.", "org")));
         project.analyze();
     }
 

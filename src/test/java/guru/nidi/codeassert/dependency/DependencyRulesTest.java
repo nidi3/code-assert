@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static guru.nidi.codeassert.config.PackageCollector.all;
+import static guru.nidi.codeassert.config.PackageCollector.allPackages;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.*;
 import static org.junit.Assert.*;
 
@@ -47,7 +47,7 @@ public class DependencyRulesTest {
     public void analyze() {
         analyzer = new ModelAnalyzer(
                 AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/dependency")
-                        .collecting(all().excluding("java.", "org")));
+                        .collecting(allPackages().excluding("java.", "org")));
         packages = analyzer.analyze();
     }
 

@@ -36,7 +36,7 @@ class ClassFileParser {
     private DataInputStream in;
 
     public ClassFileParser() {
-        this(PackageCollector.all());
+        this(PackageCollector.allPackages());
     }
 
     public ClassFileParser(PackageCollector collector) {

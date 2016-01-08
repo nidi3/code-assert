@@ -21,7 +21,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Collection;
 
-import static guru.nidi.codeassert.config.PackageCollector.all;
+import static guru.nidi.codeassert.config.PackageCollector.allPackages;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -39,7 +39,7 @@ public class AnalyzerTest {
     public void filter() throws IOException {
         final Collection<JavaPackage> packs = new ModelAnalyzer(
                 AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/model")
-                        .collecting(all().excluding("java.*", "javax.*", "org.*")))
+                        .collecting(allPackages().excluding("java.*", "javax.*", "org.*")))
                 .analyze();
         assertEquals(17, packs.size());
     }

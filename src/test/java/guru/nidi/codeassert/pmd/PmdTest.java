@@ -67,6 +67,7 @@ public class PmdTest {
                                 "UncommentedEmptyConstructor", "GodClass", "CommentDefaultAccessModifier", "AtLeastOneConstructor",
                                 "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming", "AvoidFieldNameMatchingMethodName", "AvoidFieldNameMatchingTypeName",
                                 "BeanMembersShouldSerialize", "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith"))
+                        .because("They are snippets", In.loc("*.snippets.*").ignoreAll())
                         .just(In.clazz(DependencyRulesTest.class).ignore("ExcessiveMethodLength"),
                                 In.locs("JavaClassBuilder", "PmdAnalyzer").ignore("AvoidInstantiatingObjectsInLoops"),
                                 In.classes(DependencyRulesTest.class, FindBugsTest.class).ignore("AvoidDuplicateLiterals"),
@@ -95,6 +96,7 @@ public class PmdTest {
                         pmd(MEDIUM, "AvoidInstantiatingObjectsInLoops", MAIN, "findbugs/FindBugsMatchers", 73, "Avoid instantiating new objects inside loops") +
                         pmd(MEDIUM, "AvoidInstantiatingObjectsInLoops", MAIN, "pmd/CpdAnalyzer", 56, "Avoid instantiating new objects inside loops") +
                         pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "dependency/DependencyRules", 205, "Avoid using Literals in Conditional Statements") +
+                        pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "pmd/PmdUtils", 51, "Avoid using Literals in Conditional Statements") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p2/ExampleEnum", 18, "enumCommentRequirement Required") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", 18, "enumCommentRequirement Required") +
                         pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRuler", 18, "Comment is too large: Too many lines") +

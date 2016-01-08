@@ -31,7 +31,7 @@ public class AnalyzerConfig {
     private final PackageCollector collector;
 
     public AnalyzerConfig() {
-        this(Collections.<String>emptyList(), Collections.<String>emptyList(), PackageCollector.all());
+        this(Collections.<String>emptyList(), Collections.<String>emptyList(), PackageCollector.allPackages());
     }
 
     public AnalyzerConfig(AnalyzerConfig config) {
@@ -48,21 +48,21 @@ public class AnalyzerConfig {
         return new AnalyzerConfig(
                 prepend("src/main/java/", Arrays.asList(packages)),
                 prepend("target/classes/", Arrays.asList(packages)),
-                PackageCollector.all());
+                PackageCollector.allPackages());
     }
 
     public static AnalyzerConfig mavenTestClasses(String... packages) {
         return new AnalyzerConfig(
                 prepend("src/test/java/", Arrays.asList(packages)),
                 prepend("target/test-classes/", Arrays.asList(packages)),
-                PackageCollector.all());
+                PackageCollector.allPackages());
     }
 
     public static AnalyzerConfig mavenMainAndTestClasses(String... packages) {
         return new AnalyzerConfig(
                 merge(prepend("src/main/java/", Arrays.asList(packages)), prepend("src/test/java/", Arrays.asList(packages))),
                 merge(prepend("target/classes/", Arrays.asList(packages)), prepend("target/test-classes/", Arrays.asList(packages))),
-                PackageCollector.all());
+                PackageCollector.allPackages());
     }
 
     public AnalyzerConfig withSources(String... sources) {

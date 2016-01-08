@@ -33,7 +33,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static guru.nidi.codeassert.config.PackageCollector.all;
+import static guru.nidi.codeassert.config.PackageCollector.allPackages;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
@@ -50,7 +50,7 @@ public class EatYourOwnDogfoodTest {
 
     @Before
     public void setup() throws IOException {
-        config = AnalyzerConfig.mavenMainClasses().collecting(all().excluding("java.*", "org.*", "edu.*", "net.*"));
+        config = AnalyzerConfig.mavenMainClasses().collecting(allPackages().excluding("java.*", "org.*", "edu.*", "net.*"));
     }
 
     @Test

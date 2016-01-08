@@ -16,6 +16,7 @@
 package guru.nidi.codeassert.pmd;
 
 import net.sourceforge.pmd.RuleViolation;
+import net.sourceforge.pmd.cpd.Mark;
 
 /**
  *
@@ -24,13 +25,34 @@ final class PmdUtils {
     private PmdUtils() {
     }
 
+    public static String className(Mark mark) {
+        return className(null, mark.getFilename());
+    }
+
     public static String className(RuleViolation violation) {
         if (violation.getClassName().length() > 0) {
-            return violation.getClassName();
+            return (violation.getPackageName().length() > 0 ? (violation.getPackageName() + ".") : "") +
+                    violation.getClassName();
         }
-        if (violation.getFilename().length() > 0) {
-            final int start = violation.getFilename().lastIndexOf('/');
-            return violation.getFilename().substring(start + 1, violation.getFilename().length() - 5);
+        return className(violation.getPackageName(), violation.getFilename());
+    }
+
+    private static String className(String packageName, String filename) {
+        if (filename.length() > 0) {
+            final int last = filename.lastIndexOf('/');
+            String prefix = "";
+            if (packageName != null && packageName.length() > 0) {
+                prefix = packageName + ".";
+            } else {
+                //TODO can this heuristic be improved?
+                final int src = filename.indexOf("src/") + 3;
+                final int java = filename.indexOf("java/") + 4;
+                final int later = Math.max(src, java);
+                if (later >= 4) {
+                    prefix = filename.substring(later + 1, last + 1).replace('/', '.');
+                }
+            }
+            return prefix + filename.substring(last + 1, filename.length() - 5);
         }
         return "?";
     }

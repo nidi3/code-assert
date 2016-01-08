@@ -41,7 +41,7 @@ public class MatchCollector extends BaseCollector<Match, MatchCollector> {
     protected boolean matches(Action action, Match issue) {
         for (final Iterator<Mark> it = issue.iterator(); it.hasNext(); ) {
             final Mark mark = it.next();
-            if (!action.matches("", className(mark.getFilename()), "")) {
+            if (!action.matches("", PmdUtils.className(mark), "")) {
                 return false;
             }
         }
@@ -51,10 +51,5 @@ public class MatchCollector extends BaseCollector<Match, MatchCollector> {
     @Override
     public boolean accept(Match issue) {
         return true;
-    }
-
-    private String className(String filename) {
-        final int pos = filename.lastIndexOf('/');
-        return filename.substring(pos + 1, filename.length() - 5);
     }
 }
