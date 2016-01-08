@@ -16,6 +16,7 @@ adjust the code to comply with the rules or to adapt the rules in a reasonable w
 This is based on code from [JDepend](https://github.com/clarkware/jdepend).
 It can be checked if the package structure contains cycles and/or follows the defined rules.
 
+[//]: # (dependency)
 ```java
 public class DependencyTest {
 
@@ -25,7 +26,7 @@ public class DependencyTest {
     public void setup() throws IOException {
         // Analyze all sources in src/main/java
         // Ignore dependencies from/to java.*, org.*, net.*
-        config = AnalyzerConfig.mavenMainClasses().collecting(all().excluding("java.*", "org.*", "net.*"));
+        config = AnalyzerConfig.mavenMainClasses().collecting(allPackages().excluding("java.*", "org.*", "net.*"));
     }
 
     @Test
@@ -47,22 +48,24 @@ public class DependencyTest {
                 model.mayDependUpon(util).mustNotDependUpon($self);
             }
         }
-        
+
         // All dependencies are forbidden, except the ones defined in OrgProject
         DependencyRules rules = DependencyRules.denyAll().withRules(new OrgProject());
-        
-        assertThat(new ModelAnalyzer(config), DependencyMatchers.matchesExactly());
+
+        assertThat(new ModelAnalyzer(config), DependencyMatchers.matchesExactly(rules));
     }
 }
 ```
+[//]: # (end)
 
 ## FindBugs checks
 
 Runs [FindBugs](http://findbugs.sourceforge.net/) on the code and finds questionable constructs.
- 
+
+[//]: # (findBugs)
 ```java
 public class FindBugsTest {
-    
+
     private AnalyzerConfig config;
 
     @Before
@@ -75,24 +78,27 @@ public class FindBugsTest {
     public void findBugs() {
         // Only treat bugs with rank < 17 and with NORMAL_PRIORITY or higher
         // Ignore the given bug types in the given classes / methods.
-        BugCollector collector = BugCollector.simple(17, Priorities.NORMAL_PRIORITY)
-            .just(In.everywhere().ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"))
-            .because("It's checked and OK like this",
-                In.classes(DependencyRules.class, Ruleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
-                In.locs("ClassFileParser#parse", "*Test", "Rulesets$*").ignore("URF_UNREAD_FIELD"));    
-                
+        BugCollector collector = new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY)
+                .just(In.everywhere().ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"))
+                .because("It's checked and OK like this",
+                        In.classes(DependencyRules.class, Ruleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
+                        In.locs("ClassFileParser#parse", "*Test", "Rulesets$*").ignore("URF_UNREAD_FIELD"));
+
         assertThat(new FindBugsAnalyzer(config, collector), FindBugsMatchers.findsNoBugs());
     }
 }
 ```
+[//]: # (end)
+
 
 ## PmdChecks
 
 Runs [PMD](https://pmd.github.io/) on the code and finds questionable constructs and code duplications.
 
+[//]: # (pmd)
 ```java
 public class PmdTest {
-    
+
     private AnalyzerConfig config;
 
     @Before
@@ -105,36 +111,37 @@ public class PmdTest {
     public void pmd() {
         // Only treat violations with MEDIUM priority or higher
         // Ignore the given violations in the given classes / methods
-        ViolationCollector collector = ViolationCollector.simple(RulePriority.MEDIUM)
-            .because("It's not severe and occurs very often",
-                In.everywhere().ignore("MethodArgumentCouldBeFinal"),
-                In.locs("JavaClassBuilder#build", "FindBugsMatchers$*").ignore("AvoidInstantiatingObjectsInLoops"))
-            .because("it'a an enum",
-                In.clazz(SignatureParser.class).ignore("SwitchStmtsShouldHaveDefault"))
-            .just(In.loc("*Test").ignore("TooManyStaticImports"));
-            
+        ViolationCollector collector = new ViolationCollector().minPriority(RulePriority.MEDIUM)
+                .because("It's not severe and occurs very often",
+                        In.everywhere().ignore("MethodArgumentCouldBeFinal"),
+                        In.locs("JavaClassBuilder#build", "FindBugsMatchers$*").ignore("AvoidInstantiatingObjectsInLoops"))
+                .because("it'a an enum",
+                        In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"))
+                .just(In.loc("*Test").ignore("TooManyStaticImports"));
+
         // Define and configure the rule sets to be used
         PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRuleSets(
-            basic(), braces(), design(), empty(), optimizations(),
-            codesize().excessiveMethodLength(40).tooManyMethods(30));
-        
+                basic(), braces(), design(), empty(), optimizations(),
+                codesize().excessiveMethodLength(40).tooManyMethods(30));
+
         assertThat(analyzer, PmdMatchers.hasNoPmdViolations());
     }
-    
+
     @Test
     public void cpd() {
         // Ignore duplications in the given classes
-        MatchCollector collector = MatchCollector.simple().just(
-            In.classes(DependencyMap.class, RuleResult.class).ignoreAll(),
-            In.classes(JavaClass.class, JavaPackage.class).ignoreAll(),
-            In.loc("SignatureParser").ignoreAll(),
-            In.clazz(DependencyMap.class).ignoreAll());
-            
+        MatchCollector collector = new MatchCollector().just(
+                In.classes(DependencyMap.class, RuleResult.class).ignoreAll(),
+                In.classes(JavaClass.class, JavaPackage.class).ignoreAll(),
+                In.loc("SignatureParser").ignoreAll(),
+                In.clazz(DependencyMap.class).ignoreAll());
+
         // Only treat duplications with at least 20 tokens
         CpdAnalyzer analyzer = new CpdAnalyzer(config, 20, collector);
-            
+
         assertThat(analyzer, PmdMatchers.hasNoDuplications());
     }
 }
 ```
+[//]: # (end)
 
