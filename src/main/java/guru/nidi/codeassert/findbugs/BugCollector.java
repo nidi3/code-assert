@@ -17,9 +17,11 @@ package guru.nidi.codeassert.findbugs;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import guru.nidi.codeassert.config.Action;
-import guru.nidi.codeassert.config.BaseCollector;
-import guru.nidi.codeassert.config.CollectorConfig;
+import guru.nidi.codeassert.config.*;
+import guru.nidi.codeassert.util.ListUtils;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -51,26 +53,48 @@ public class BugCollector extends BaseCollector<BugInstance, BugCollector> {
     }
 
     @Override
-    public boolean accept(BugInstance issue) {
-        return (maxRank == null || issue.getBugRank() <= maxRank) &&
-                (minPriority == null || issue.getPriority() <= minPriority);
-    }
-
-    @Override
     public BugCollector config(final CollectorConfig... configs) {
         return new BugCollector(maxRank, minPriority) {
             @Override
-            public boolean accept(BugInstance issue) {
+            public boolean accept(Issue<BugInstance> issue) {
                 return accept(issue, BugCollector.this, configs);
+            }
+
+            public List<Action> unused(MatchCounter counter) {
+                return unused(counter, BugCollector.this, configs);
+            }
+
+            @Override
+            public String toString() {
+                return BugCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
             }
         };
     }
 
     @Override
-    protected boolean matches(Action action, BugInstance issue) {
+    public boolean matches(BugInstance issue) {
+        return (maxRank == null || issue.getBugRank() <= maxRank) &&
+                (minPriority == null || issue.getPriority() <= minPriority);
+    }
+
+    @Override
+    protected boolean matches(BugInstance issue, Action action) {
         final MethodAnnotation method = issue.getPrimaryMethod();
         final String className = issue.getPrimaryClass().getClassName();
         final String methodName = method == null ? null : method.getMethodName();
         return action.matches(issue.getType(), className, methodName);
+    }
+
+    @Override
+    public List<Action> unused(MatchCounter counter) {
+        return counter.getCount(null) != 0 || (maxRank == null && minPriority == null)
+                ? Collections.<Action>emptyList()
+                : Collections.<Action>singletonList(null);
+    }
+
+    @Override
+    public String toString() {
+        return (maxRank == null ? "" : ("Rank <= " + maxRank + " ")) +
+                (minPriority == null ? "" : ("Priority >= " + minPriority) + " ");
     }
 }

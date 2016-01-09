@@ -31,7 +31,7 @@ public class AnalyzerTest {
     @Test
     public void simple() throws IOException {
         final Collection<JavaPackage> packs = new ModelAnalyzer(
-                AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/model")).analyze();
+                AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/model")).analyze().findings();
         assertEquals(37, packs.size());
     }
 
@@ -40,7 +40,7 @@ public class AnalyzerTest {
         final Collection<JavaPackage> packs = new ModelAnalyzer(
                 AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/model")
                         .collecting(allPackages().excluding("java.*", "javax.*", "org.*")))
-                .analyze();
+                .analyze().findings();
         assertEquals(17, packs.size());
     }
 }

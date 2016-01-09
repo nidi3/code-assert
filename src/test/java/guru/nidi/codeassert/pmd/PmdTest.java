@@ -15,8 +15,8 @@
  */
 package guru.nidi.codeassert.pmd;
 
+import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
-import guru.nidi.codeassert.config.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.DependencyMap;
@@ -31,11 +31,12 @@ import org.junit.Test;
 
 import java.io.File;
 
+import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoPmdViolations;
+import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoUnusedActions;
 import static guru.nidi.codeassert.pmd.Rulesets.Comments.Requirement.Ignored;
 import static guru.nidi.codeassert.pmd.Rulesets.Comments.Requirement.Required;
 import static guru.nidi.codeassert.pmd.Rulesets.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -46,6 +47,9 @@ public class PmdTest {
     private static final String MAIN = "main";
     private static final String TEST = "test";
 
+    private final CpdResult cpdResult = cpdAnalyze();
+    private final PmdResult pmdResult = pmdAnalyze();
+
     @Test
     public void priority() {
         final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.mavenMainAndTestClasses(),
@@ -55,11 +59,58 @@ public class PmdTest {
                         pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", 21, "A class which only has private constructors should be final") +
                         pmd(HIGH, "EmptyMethodInAbstractClassShouldBeAbstract", TEST, "model/ExampleAbstractClass", 37, "An empty method in an abstract class should be abstract instead") +
                         pmd(HIGH, "EmptyMethodInAbstractClassShouldBeAbstract", TEST, "model/ExampleAbstractClass", 41, "An empty method in an abstract class should be abstract instead"),
-                analyzer, PmdMatchers.hasNoPmdViolations());
+                analyzer.analyze(), hasNoPmdViolations());
     }
 
     @Test
-    public void ignore() {
+    public void pmdIgnore() {
+        assertMatcher("" +
+                        pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", 21, "A class which only has private constructors should be final") +
+                        pmd(MEDIUM, "ArrayIsStoredDirectly", MAIN, "model/AttributeInfo", 28, "The user-supplied array 'value' is stored directly.") +
+                        pmd(MEDIUM, "ArrayIsStoredDirectly", MAIN, "model/ConstantPool", 29, "The user-supplied array 'pool' is stored directly.") +
+                        pmd(MEDIUM, "AvoidDollarSigns", TEST, "EatYourOwnDogfoodTest", 63, "Avoid using dollar signs in variable/method/class/interface names") +
+                        pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", 118, "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 118") +
+                        pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", 160, "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 160") +
+                        pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", 198, "Avoid using final local variables, turn them into fields") +
+                        pmd(MEDIUM, "AvoidInstantiatingObjectsInLoops", MAIN, "findbugs/FindBugsMatchers", 75, "Avoid instantiating new objects inside loops") +
+                        pmd(MEDIUM, "AvoidInstantiatingObjectsInLoops", MAIN, "pmd/CpdAnalyzer", 58, "Avoid instantiating new objects inside loops") +
+                        pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "dependency/DependencyRules", 206, "Avoid using Literals in Conditional Statements") +
+                        pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "pmd/PmdUtils", 51, "Avoid using Literals in Conditional Statements") +
+                        pmd(MEDIUM, "CommentRequired", TEST, "model/p2/ExampleEnum", 18, "enumCommentRequirement Required") +
+                        pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", 18, "enumCommentRequirement Required") +
+                        pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRuler", 18, "Comment is too large: Too many lines") +
+                        pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRules", 54, "Comment is too large: Too many lines") +
+                        pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", 40, "JUnit tests should not contain more than 1 assert(s).") +
+                        pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", 50, "JUnit tests should not contain more than 1 assert(s).") +
+                        pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", 21, "Class cannot be instantiated and does not provide any static methods or fields") +
+                        pmd(MEDIUM, "SwitchStmtsShouldHaveDefault", MAIN, "model/SignatureParser", 52, "Switch statements should have a default label") +
+                        pmd(MEDIUM, "TooManyMethods", MAIN, "pmd/Rulesets", 21, "This class has too many methods, consider refactoring it.") +
+                        pmd(MEDIUM, "UnusedLocalVariable", TEST, "Bugs", 36, "Avoid unused local variables such as 'a'.") +
+                        pmd(MEDIUM, "UseObjectForClearerAPI", MAIN, "util/LocationMatcher", 59, "Rather than using a lot of String arguments, consider using a container object for those values."),
+                pmdResult, hasNoPmdViolations());
+    }
+
+    @Test
+    public void pmdUnused() {
+        assertThat(pmdResult, hasNoUnusedActions());
+    }
+
+    @Test
+    public void duplications() {
+        assertMatcher("" +
+                        cpd(21, "dependency/DependencyRule", 107, 108) +
+                        cpd("dependency/DependencyRule", 119, 120) +
+                        cpd(20, "config/AnalyzerConfig", 56, 57) +
+                        cpd("config/AnalyzerConfig", 64, 64),
+                cpdResult, PmdMatchers.hasNoDuplications());
+    }
+
+    @Test
+    public void cpdUnused() {
+        assertThat(cpdResult, hasNoUnusedActions());
+    }
+
+    private PmdResult pmdAnalyze() {
         final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.mavenMainAndTestClasses(),
                 new ViolationCollector().minPriority(RulePriority.MEDIUM)
                         .because("it's not useful", In.everywhere().ignore(
@@ -77,6 +128,7 @@ public class PmdTest {
                                 In.classes(ClassFileParserTest.class, FileManagerTest.class, JarFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert"),
                                 In.clazz(DependencyRulesTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.classes(PmdTest.class, FindBugsTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
+                                In.everywhere().ignore("UseConcurrentHashMap"),
                                 In.locs("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))
                 .withRuleSets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
                         finalizers(), imports(), j2ee(), javabeans(), junit(), optimizations(),
@@ -85,56 +137,26 @@ public class PmdTest {
                         comments().requirement(Ignored).enums(Required).maxLines(15).maxLineLen(100),
                         empty().allowCommentedEmptyCatch(true),
                         naming().variableLen(1, 20).methodLen(2));
-        assertMatcher("" +
-                        pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", 21, "A class which only has private constructors should be final") +
-                        pmd(MEDIUM, "ArrayIsStoredDirectly", MAIN, "model/AttributeInfo", 28, "The user-supplied array 'value' is stored directly.") +
-                        pmd(MEDIUM, "ArrayIsStoredDirectly", MAIN, "model/ConstantPool", 29, "The user-supplied array 'pool' is stored directly.") +
-                        pmd(MEDIUM, "AvoidDollarSigns", TEST, "EatYourOwnDogfoodTest", 64, "Avoid using dollar signs in variable/method/class/interface names") +
-                        pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", 118, "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 118") +
-                        pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", 160, "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 160") +
-                        pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", 198, "Avoid using final local variables, turn them into fields") +
-                        pmd(MEDIUM, "AvoidInstantiatingObjectsInLoops", MAIN, "findbugs/FindBugsMatchers", 73, "Avoid instantiating new objects inside loops") +
-                        pmd(MEDIUM, "AvoidInstantiatingObjectsInLoops", MAIN, "pmd/CpdAnalyzer", 56, "Avoid instantiating new objects inside loops") +
-                        pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "dependency/DependencyRules", 205, "Avoid using Literals in Conditional Statements") +
-                        pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "pmd/PmdUtils", 51, "Avoid using Literals in Conditional Statements") +
-                        pmd(MEDIUM, "CommentRequired", TEST, "model/p2/ExampleEnum", 18, "enumCommentRequirement Required") +
-                        pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", 18, "enumCommentRequirement Required") +
-                        pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRuler", 18, "Comment is too large: Too many lines") +
-                        pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRules", 54, "Comment is too large: Too many lines") +
-                        pmd(MEDIUM, "ExcessiveMethodLength", TEST, "pmd/PmdTest", 62, "Avoid really long methods.") +
-                        pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", 40, "JUnit tests should not contain more than 1 assert(s).") +
-                        pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", 50, "JUnit tests should not contain more than 1 assert(s).") +
-                        pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", 21, "Class cannot be instantiated and does not provide any static methods or fields") +
-                        pmd(MEDIUM, "SwitchStmtsShouldHaveDefault", MAIN, "model/SignatureParser", 52, "Switch statements should have a default label") +
-                        pmd(MEDIUM, "TooManyMethods", MAIN, "pmd/Rulesets", 21, "This class has too many methods, consider refactoring it.") +
-                        pmd(MEDIUM, "UnusedLocalVariable", TEST, "Bugs", 36, "Avoid unused local variables such as 'a'.") +
-                        pmd(MEDIUM, "UseConcurrentHashMap", MAIN, "dependency/DependencyMap", 27, "If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation") +
-                        pmd(MEDIUM, "UseConcurrentHashMap", MAIN, "dependency/DependencyRules", 171, "If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation") +
-                        pmd(MEDIUM, "UseConcurrentHashMap", MAIN, "model/ModelAnalyzer", 42, "If you run in Java5 or newer and have concurrent access, you should use the ConcurrentHashMap implementation") +
-                        pmd(MEDIUM, "UseObjectForClearerAPI", MAIN, "util/LocationMatcher", 58, "Rather than using a lot of String arguments, consider using a container object for those values."),
-                analyzer, PmdMatchers.hasNoPmdViolations());
+        return analyzer.analyze();
     }
 
-    @Test
-    public void cpd() {
+    private CpdResult cpdAnalyze() {
         final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.mavenMainClasses(), 20, new MatchCollector()
                 .because("blaj",
                         In.classes(DependencyMap.class, RuleResult.class).ignoreAll())
                 .just(In.classes(JavaClass.class, JavaPackage.class).ignoreAll(),
                         In.loc("SignatureParser").ignoreAll(),
+                        In.loc("*Collector").ignoreAll(),
+                        In.loc("*Matchers").ignoreAll(),
+                        In.loc("*Result").ignoreAll(),
                         In.clazz(DependencyMap.class).ignoreAll()));
-        assertMatcher("" +
-                        cpd(21, "dependency/DependencyRule", 107, 108) +
-                        cpd("dependency/DependencyRule", 119, 120) +
-                        cpd(20, "config/AnalyzerConfig", 56, 57) +
-                        cpd("config/AnalyzerConfig", 64, 64),
-                analyzer, PmdMatchers.hasNoDuplications());
+        return analyzer.analyze();
     }
 
-    private <T extends Analyzer<?>> void assertMatcher(String message, T analyzer, Matcher<T> matcher) {
-        assertFalse(matcher.matches(analyzer));
+    private <T extends AnalyzerResult<?>> void assertMatcher(String message, T result, Matcher<T> matcher) {
+        assertFalse(matcher.matches(result));
         final StringDescription sd = new StringDescription();
-        matcher.describeMismatch(analyzer, sd);
+        matcher.describeMismatch(result, sd);
         assertEquals(message, sd.toString());
     }
 

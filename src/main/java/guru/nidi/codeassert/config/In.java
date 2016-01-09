@@ -66,5 +66,10 @@ public final class In {
         public Ignore(List<String> locs, List<String> names) {
             super(locs, names);
         }
+
+        @Override
+        public String toString() {
+            return "    ignore " + super.toString();
+        }
     }
 }

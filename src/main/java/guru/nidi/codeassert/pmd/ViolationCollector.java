@@ -15,11 +15,13 @@
  */
 package guru.nidi.codeassert.pmd;
 
-import guru.nidi.codeassert.config.Action;
-import guru.nidi.codeassert.config.BaseCollector;
-import guru.nidi.codeassert.config.CollectorConfig;
+import guru.nidi.codeassert.config.*;
+import guru.nidi.codeassert.util.ListUtils;
 import net.sourceforge.pmd.RulePriority;
 import net.sourceforge.pmd.RuleViolation;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -40,22 +42,39 @@ public class ViolationCollector extends BaseCollector<RuleViolation, ViolationCo
     }
 
     @Override
-    public boolean accept(RuleViolation issue) {
-        return (minPriority == null || issue.getRule().getPriority().getPriority() <= minPriority.getPriority());
-    }
-
-    @Override
     public ViolationCollector config(final CollectorConfig... configs) {
         return new ViolationCollector(minPriority) {
             @Override
-            public boolean accept(RuleViolation issue) {
+            public boolean accept(Issue<RuleViolation> issue) {
                 return accept(issue, ViolationCollector.this, configs);
+            }
+
+            @Override
+            public String toString() {
+                return ViolationCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
             }
         };
     }
 
     @Override
-    protected boolean matches(Action action, RuleViolation issue) {
+    protected boolean matches(RuleViolation issue) {
+        return (minPriority == null || issue.getRule().getPriority().getPriority() <= minPriority.getPriority());
+    }
+
+    @Override
+    protected boolean matches(RuleViolation issue, Action action) {
         return action.matches(issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName());
+    }
+
+    @Override
+    public List<Action> unused(MatchCounter counter) {
+        return counter.getCount(null) != 0 || minPriority == null
+                ? Collections.<Action>emptyList()
+                : Collections.<Action>singletonList(null);
+    }
+
+    @Override
+    public String toString() {
+        return (minPriority == null ? "" : ("Priority >= " + minPriority + " "));
     }
 }

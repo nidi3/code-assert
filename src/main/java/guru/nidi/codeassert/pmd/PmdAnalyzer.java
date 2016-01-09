@@ -15,9 +15,10 @@
  */
 package guru.nidi.codeassert.pmd;
 
+import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
-import guru.nidi.codeassert.config.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
+import guru.nidi.codeassert.config.MatchCounter;
 import net.sourceforge.pmd.PMD;
 import net.sourceforge.pmd.PMDConfiguration;
 import net.sourceforge.pmd.Report;
@@ -79,7 +80,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     }
 
     @Override
-    public List<RuleViolation> analyze() {
+    public PmdResult analyze() {
         if (rulesets.isEmpty()) {
             throw new AnalyzerException("No rulesets defined. Use the withRuleSets methods to define some. See Rulesets class for predefined rule sets.");
         }
@@ -96,17 +97,19 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
         }
     }
 
-    private List<RuleViolation> processViolations(PmdRenderer renderer) {
+    private PmdResult processViolations(PmdRenderer renderer) {
         final List<RuleViolation> violations = new ArrayList<>();
+        final MatchCounter counter = new MatchCounter();
         if (renderer.getReport() != null) {
             for (final RuleViolation violation : renderer.getReport()) {
-                if (collector.accept(violation)) {
+                if (collector.accept(counter.issue(violation))) {
                     violations.add(violation);
                 }
             }
         }
         Collections.sort(violations, VIOLATION_SORTER);
-        return violations;
+        collector.printUnusedWarning(counter);
+        return new PmdResult(this, violations, collector.unusedActions(counter));
     }
 
     private PMDConfiguration createPmdConfig(final PmdRenderer renderer) {
@@ -119,7 +122,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
                 return renderer;
             }
         };
-        pmdConfig.setInputPaths(join(config.getSources()));
+        pmdConfig.setInputPaths(join(",", config.getSources()));
         pmdConfig.setRuleSets(ruleSetNames());
         pmdConfig.setThreads(0);
         return pmdConfig;

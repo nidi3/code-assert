@@ -46,4 +46,9 @@ public class Action {
     public boolean matches(String name, String className, String method) {
         return matcher.matches(name, className, method);
     }
+
+    @Override
+    public String toString() {
+        return matcher.toString();
+    }
 }

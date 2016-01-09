@@ -15,8 +15,10 @@
  */
 package guru.nidi.codeassert.dependency;
 
+import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.model.ModelAnalyzer;
+import guru.nidi.codeassert.model.ModelResult;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.Before;
@@ -34,19 +36,19 @@ import static org.junit.Assert.assertFalse;
  */
 public class CycleTest {
     private static final String BASE = "guru.nidi.codeassert.dependency.";
-    private ModelAnalyzer project;
+    private ModelResult result;
 
     @Before
     public void analyze() {
-        project = new ModelAnalyzer(
+        final ModelAnalyzer analyzer = new ModelAnalyzer(
                 AnalyzerConfig.mavenTestClasses("guru/nidi/codeassert/dependency")
                         .collecting(allPackages().excluding("java.", "org")));
-        project.analyze();
+        result = analyzer.analyze();
     }
 
     @Test
     public void cycles() {
-        final Matcher<ModelAnalyzer> matcher = hasNoCycles();
+        final Matcher<ModelResult> matcher = hasNoCycles();
         assertMatcher("Found these cyclic groups:\n" +
                         "\n" +
                         "- Group of 3: guru.nidi.codeassert.dependency.a, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.c\n" +
@@ -73,7 +75,7 @@ public class CycleTest {
 
     @Test
     public void cyclesWithExceptions() {
-        final Matcher<ModelAnalyzer> matcher = hasNoCyclesExcept(
+        final Matcher<ModelResult> matcher = hasNoCyclesExcept(
                 packages(base("a"), base("b"), base("c")),
                 packages(base("a.a")),
                 packages(base("b.a"), base("c.a")));
@@ -91,10 +93,10 @@ public class CycleTest {
                 matcher);
     }
 
-    private void assertMatcher(String message, Matcher<ModelAnalyzer> matcher) {
-        assertFalse("Should not match", matcher.matches(project));
+    private <T> void assertMatcher(String message, Matcher<? extends AnalyzerResult<T>> matcher) {
+        assertFalse("Should not match", matcher.matches(result));
         final StringDescription sd = new StringDescription();
-        matcher.describeMismatch(project, sd);
+        matcher.describeMismatch(result, sd);
         assertEquals(message, sd.toString());
     }
 

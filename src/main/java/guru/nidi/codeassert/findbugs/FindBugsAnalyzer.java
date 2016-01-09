@@ -17,9 +17,10 @@ package guru.nidi.codeassert.findbugs;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
-import guru.nidi.codeassert.config.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
+import guru.nidi.codeassert.config.MatchCounter;
 
 import java.io.IOException;
 import java.util.*;
@@ -27,7 +28,7 @@ import java.util.*;
 /**
  *
  */
-public class FindBugsAnalyzer implements Analyzer<Collection<BugInstance>> {
+public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
     private static final Comparator<BugInstance> BUG_SORTER = new Comparator<BugInstance>() {
         @Override
         public int compare(BugInstance b1, BugInstance b2) {
@@ -44,14 +45,14 @@ public class FindBugsAnalyzer implements Analyzer<Collection<BugInstance>> {
     };
 
     final AnalyzerConfig config;
-    private final BugCollector bugCollector;
+    private final BugCollector collector;
 
-    public FindBugsAnalyzer(AnalyzerConfig config, BugCollector bugCollector) {
+    public FindBugsAnalyzer(AnalyzerConfig config, BugCollector collector) {
         this.config = config;
-        this.bugCollector = bugCollector;
+        this.collector = collector;
     }
 
-    public Collection<BugInstance> analyze() {
+    public FindBugsResult analyze() {
         final Project project = createProject();
         final BugCollectionBugReporter bugReporter = createReporter(project);
         final FindBugs2 findBugs = createFindBugs(project, bugReporter);
@@ -95,16 +96,18 @@ public class FindBugsAnalyzer implements Analyzer<Collection<BugInstance>> {
         return findBugs;
     }
 
-    private Collection<BugInstance> createBugList(BugCollectionBugReporter bugReporter) {
+    private FindBugsResult createBugList(BugCollectionBugReporter bugReporter) {
         final Collection<BugInstance> bugs = bugReporter.getBugCollection().getCollection();
         final ArrayList<BugInstance> sorted = new ArrayList<>(bugs);
         Collections.sort(sorted, BUG_SORTER);
         final List<BugInstance> filtered = new ArrayList<>();
+        final MatchCounter counter = new MatchCounter();
         for (final BugInstance bug : sorted) {
-            if (bugCollector.accept(bug) && config.getCollector().accept(bug.getPrimaryClass().getPackageName())) {
+            if (collector.accept(counter.issue(bug)) && config.getCollector().accept(bug.getPrimaryClass().getPackageName())) {
                 filtered.add(bug);
             }
         }
-        return filtered;
+        collector.printUnusedWarning(counter);
+        return new FindBugsResult(this, filtered, collector.unusedActions(counter));
     }
 }

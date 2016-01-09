@@ -153,7 +153,7 @@ public class Rulesets {
         /**
          *
          */
-        enum Requirement {
+        public enum Requirement {
             Required, Ignored, Unwanted
         }
 

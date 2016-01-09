@@ -19,12 +19,12 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import guru.nidi.codeassert.util.UnusedActionsMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,17 +34,18 @@ public class FindBugsMatchers {
     private FindBugsMatchers() {
     }
 
-    public static Matcher<FindBugsAnalyzer> findsNoBugs() {
+    public static Matcher<FindBugsResult> hasNoBugs() {
         return new FindBugsMatcher();
     }
 
-    private static class FindBugsMatcher extends TypeSafeMatcher<FindBugsAnalyzer> {
-        private Collection<BugInstance> bugs;
+    public static Matcher<FindBugsResult> hasNoUnusedActions() {
+        return new UnusedActionsMatcher<>();
+    }
 
+    private static class FindBugsMatcher extends TypeSafeMatcher<FindBugsResult> {
         @Override
-        protected boolean matchesSafely(FindBugsAnalyzer item) {
-            bugs = item.analyze();
-            return bugs.isEmpty();
+        protected boolean matchesSafely(FindBugsResult item) {
+            return item.findings().isEmpty();
         }
 
         public void describeTo(Description description) {
@@ -52,9 +53,9 @@ public class FindBugsMatchers {
         }
 
         @Override
-        protected void describeMismatchSafely(FindBugsAnalyzer item, Description description) {
-            for (final BugInstance bug : bugs) {
-                description.appendText("\n").appendText(printBug(bug, item.config.getSources()));
+        protected void describeMismatchSafely(FindBugsResult item, Description description) {
+            for (final BugInstance bug : item.findings()) {
+                description.appendText("\n").appendText(printBug(bug, ((FindBugsAnalyzer) item.analyzer()).config.getSources()));
             }
         }
 

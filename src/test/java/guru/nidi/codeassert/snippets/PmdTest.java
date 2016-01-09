@@ -61,7 +61,7 @@ public class PmdTest {
                 basic(), braces(), design(), empty(), optimizations(),
                 codesize().excessiveMethodLength(40).tooManyMethods(30));
 
-        assertThat(analyzer, PmdMatchers.hasNoPmdViolations());
+        assertThat(analyzer.analyze(), PmdMatchers.hasNoPmdViolations());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class PmdTest {
         // Only treat duplications with at least 20 tokens
         CpdAnalyzer analyzer = new CpdAnalyzer(config, 20, collector);
 
-        assertThat(analyzer, PmdMatchers.hasNoDuplications());
+        assertThat(analyzer.analyze(), PmdMatchers.hasNoDuplications());
     }
 }
 //##

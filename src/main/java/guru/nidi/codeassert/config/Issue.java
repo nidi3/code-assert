@@ -18,6 +18,19 @@ package guru.nidi.codeassert.config;
 /**
  *
  */
-public interface Analyzer<T> {
-    T analyze();
+public class Issue<S> {
+    private final MatchCounter counter;
+    private final S issue;
+
+    Issue(MatchCounter counter, S issue) {
+        this.counter = counter;
+        this.issue = issue;
+    }
+
+    boolean matches(BaseCollector<S, ?> collector, Action action) {
+        final boolean matches = action == null
+                ? collector.matches(issue)
+                : collector.matches(issue, action);
+        return counter.getCount(action, matches);
+    }
 }

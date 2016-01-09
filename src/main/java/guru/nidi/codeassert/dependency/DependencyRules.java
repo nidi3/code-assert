@@ -52,7 +52,8 @@ public class DependencyRules {
     }
 
     /**
-     * Add rules defined by a DependencyRuler class. The following DependencyRules are all equal:
+     * Add rules defined by a DependencyRuler class.
+     * The following DependencyRules are all equal:
      * <pre>
      * DependencyRules rules1 = DependencyRules.allowAll();
      * DependencyRule a = rules1.addRule("com.acme.a.*"));

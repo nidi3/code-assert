@@ -15,13 +15,14 @@
  */
 package guru.nidi.codeassert.pmd;
 
-import guru.nidi.codeassert.config.Action;
-import guru.nidi.codeassert.config.BaseCollector;
-import guru.nidi.codeassert.config.CollectorConfig;
+import guru.nidi.codeassert.config.*;
+import guru.nidi.codeassert.util.ListUtils;
 import net.sourceforge.pmd.cpd.Mark;
 import net.sourceforge.pmd.cpd.Match;
 
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -31,14 +32,20 @@ public class MatchCollector extends BaseCollector<Match, MatchCollector> {
     public MatchCollector config(final CollectorConfig... configs) {
         return new MatchCollector() {
             @Override
-            public boolean accept(Match issue) {
+            public boolean accept(Issue<Match> issue) {
                 return accept(issue, MatchCollector.this, configs);
             }
+
+            @Override
+            public String toString() {
+                return MatchCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
+            }
+
         };
     }
 
     @Override
-    protected boolean matches(Action action, Match issue) {
+    protected boolean matches(Match issue, Action action) {
         for (final Iterator<Mark> it = issue.iterator(); it.hasNext(); ) {
             final Mark mark = it.next();
             if (!action.matches("", PmdUtils.className(mark), "")) {
@@ -49,7 +56,18 @@ public class MatchCollector extends BaseCollector<Match, MatchCollector> {
     }
 
     @Override
-    public boolean accept(Match issue) {
+    public boolean matches(Match issue) {
         return true;
     }
+
+    @Override
+    public List<Action> unused(MatchCounter counter) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String toString() {
+        return "";
+    }
+
 }

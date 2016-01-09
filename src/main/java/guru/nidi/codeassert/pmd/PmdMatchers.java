@@ -15,6 +15,8 @@
  */
 package guru.nidi.codeassert.pmd;
 
+import guru.nidi.codeassert.AnalyzerResult;
+import guru.nidi.codeassert.util.UnusedActionsMatcher;
 import net.sourceforge.pmd.Rule;
 import net.sourceforge.pmd.RuleViolation;
 import net.sourceforge.pmd.cpd.Mark;
@@ -24,7 +26,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.util.Iterator;
-import java.util.List;
 
 /**
  *
@@ -33,21 +34,22 @@ public class PmdMatchers {
     private PmdMatchers() {
     }
 
-    public static Matcher<PmdAnalyzer> hasNoPmdViolations() {
+    public static Matcher<PmdResult> hasNoPmdViolations() {
         return new PmdMatcher();
     }
 
-    public static Matcher<CpdAnalyzer> hasNoDuplications() {
+    public static Matcher<CpdResult> hasNoDuplications() {
         return new CpdMatcher();
     }
 
-    private static class PmdMatcher extends TypeSafeMatcher<PmdAnalyzer> {
-        private List<RuleViolation> violations;
+    public static <T extends AnalyzerResult<?>> Matcher<T> hasNoUnusedActions() {
+        return new UnusedActionsMatcher<>();
+    }
 
+    private static class PmdMatcher extends TypeSafeMatcher<PmdResult> {
         @Override
-        protected boolean matchesSafely(PmdAnalyzer item) {
-            violations = item.analyze();
-            return violations.isEmpty();
+        protected boolean matchesSafely(PmdResult item) {
+            return item.findings().isEmpty();
         }
 
         public void describeTo(Description description) {
@@ -55,8 +57,8 @@ public class PmdMatchers {
         }
 
         @Override
-        protected void describeMismatchSafely(PmdAnalyzer item, Description description) {
-            for (final RuleViolation violation : violations) {
+        protected void describeMismatchSafely(PmdResult item, Description description) {
+            for (final RuleViolation violation : item.findings()) {
                 description.appendText("\n").appendText(printViolation(violation));
             }
         }
@@ -68,13 +70,10 @@ public class PmdMatchers {
         }
     }
 
-    private static class CpdMatcher extends TypeSafeMatcher<CpdAnalyzer> {
-        private List<Match> matches;
-
+    private static class CpdMatcher extends TypeSafeMatcher<CpdResult> {
         @Override
-        protected boolean matchesSafely(CpdAnalyzer item) {
-            matches = item.analyze();
-            return matches.isEmpty();
+        protected boolean matchesSafely(CpdResult item) {
+            return item.findings().isEmpty();
         }
 
         public void describeTo(Description description) {
@@ -82,8 +81,8 @@ public class PmdMatchers {
         }
 
         @Override
-        protected void describeMismatchSafely(CpdAnalyzer item, Description description) {
-            for (final Match match : matches) {
+        protected void describeMismatchSafely(CpdResult item, Description description) {
+            for (final Match match : item.findings()) {
                 description.appendText("\n").appendText(printMatch(match));
             }
         }

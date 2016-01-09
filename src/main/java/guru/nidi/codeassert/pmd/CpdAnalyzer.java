@@ -15,9 +15,10 @@
  */
 package guru.nidi.codeassert.pmd;
 
+import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
-import guru.nidi.codeassert.config.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
+import guru.nidi.codeassert.config.MatchCounter;
 import net.sourceforge.pmd.cpd.CPD;
 import net.sourceforge.pmd.cpd.CPDConfiguration;
 import net.sourceforge.pmd.cpd.Match;
@@ -43,7 +44,7 @@ public class CpdAnalyzer implements Analyzer<List<Match>> {
     }
 
     @Override
-    public List<Match> analyze() {
+    public CpdResult analyze() {
         final CPD cpd = createCpd();
         cpd.go();
         return processMatches(cpd.getMatches());
@@ -68,14 +69,16 @@ public class CpdAnalyzer implements Analyzer<List<Match>> {
         return cpdConfig;
     }
 
-    private List<Match> processMatches(Iterator<Match> matches) {
+    private CpdResult processMatches(Iterator<Match> matches) {
         final List<Match> res = new ArrayList<>();
+        final MatchCounter counter = new MatchCounter();
         while (matches.hasNext()) {
             final Match match = matches.next();
-            if (collector.accept(match)) {
+            if (collector.accept(counter.issue(match))) {
                 res.add(match);
             }
         }
-        return res;
+        collector.printUnusedWarning(counter);
+        return new CpdResult(this, res, collector.unusedActions(counter));
     }
 }

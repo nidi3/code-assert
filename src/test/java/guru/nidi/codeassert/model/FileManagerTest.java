@@ -46,7 +46,7 @@ public class FileManagerTest {
     @Test
     public void buildDirectory() throws IOException {
         fileManager.withDirectories(Arrays.asList(Path.CLASSES, Path.TEST_CLASSES));
-        assertEquals(43, fileManager.extractFiles().size());
+        assertEquals(44, fileManager.extractFiles().size());
     }
 
     @Test(expected = IOException.class)

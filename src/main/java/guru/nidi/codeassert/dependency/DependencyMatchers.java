@@ -15,7 +15,8 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.ModelAnalyzer;
+import guru.nidi.codeassert.model.ModelResult;
+import guru.nidi.codeassert.util.UnusedActionsMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -29,36 +30,39 @@ public class DependencyMatchers {
     private DependencyMatchers() {
     }
 
-    public static Matcher<ModelAnalyzer> matchesRules(final DependencyRules rules) {
+    public static Matcher<ModelResult> matchesRules(final DependencyRules rules) {
         return new RuleMatcher(rules, false, false);
     }
 
-    public static Matcher<ModelAnalyzer> matchesExactly(final DependencyRules rules) {
+    public static Matcher<ModelResult> matchesExactly(final DependencyRules rules) {
         return new RuleMatcher(rules, true, true);
     }
 
-    public static Matcher<ModelAnalyzer> matchesIgnoringNonExisting(final DependencyRules rules) {
+    public static Matcher<ModelResult> matchesIgnoringNonExisting(final DependencyRules rules) {
         return new RuleMatcher(rules, false, true);
     }
 
-    public static Matcher<ModelAnalyzer> matchesIgnoringUndefined(final DependencyRules rules) {
+    public static Matcher<ModelResult> matchesIgnoringUndefined(final DependencyRules rules) {
         return new RuleMatcher(rules, true, false);
     }
 
-    public static Matcher<ModelAnalyzer> hasNoCycles() {
+    public static Matcher<ModelResult> hasNoCycles() {
         return new CycleMatcher();
     }
 
     @SafeVarargs
-    public static Matcher<ModelAnalyzer> hasNoCyclesExcept(Set<String>... cyclicGroups) {
+    public static Matcher<ModelResult> hasNoCyclesExcept(Set<String>... cyclicGroups) {
         return new CycleMatcher(cyclicGroups);
     }
 
-    private static class RuleMatcher extends TypeSafeMatcher<ModelAnalyzer> {
+    public static Matcher<ModelResult> hasNoUnusedActions() {
+        return new UnusedActionsMatcher<>();
+    }
+
+    private static class RuleMatcher extends TypeSafeMatcher<ModelResult> {
         private final DependencyRules rules;
         private final boolean nonExisting;
         private final boolean undefined;
-        private RuleResult result;
 
         public RuleMatcher(DependencyRules rules, boolean nonExisting, boolean undefined) {
             this.rules = rules;
@@ -67,8 +71,8 @@ public class DependencyMatchers {
         }
 
         @Override
-        protected boolean matchesSafely(ModelAnalyzer item) {
-            result = rules.analyzeRules(item.analyze());
+        protected boolean matchesSafely(ModelResult item) {
+            final RuleResult result = rules.analyzeRules(item.findings());
             return result.getMissing().isEmpty() && result.getDenied().isEmpty() &&
                     (result.getNotExisting().isEmpty() || !nonExisting) &&
                     (result.getUndefined().isEmpty() || !undefined);
@@ -79,14 +83,15 @@ public class DependencyMatchers {
         }
 
         @Override
-        protected void describeMismatchSafely(ModelAnalyzer item, Description description) {
-            describeNotExisting(description);
-            describeUndefined(description);
-            describeMissing(description);
-            describeForbidden(description);
+        protected void describeMismatchSafely(ModelResult item, Description description) {
+            final RuleResult result = rules.analyzeRules(item.findings());
+            describeNotExisting(result, description);
+            describeUndefined(result, description);
+            describeMissing(result, description);
+            describeForbidden(result, description);
         }
 
-        private void describeForbidden(Description description) {
+        private void describeForbidden(RuleResult result, Description description) {
             if (!result.getDenied().isEmpty()) {
                 description.appendText("\nFound forbidden dependencies:\n");
                 for (final String pack : sorted(result.getDenied().getPackages())) {
@@ -96,7 +101,7 @@ public class DependencyMatchers {
             }
         }
 
-        private void describeMissing(Description description) {
+        private void describeMissing(RuleResult result, Description description) {
             if (!result.getMissing().isEmpty()) {
                 description.appendText("\nFound missing dependencies:\n");
                 for (final String pack : sorted(result.getMissing().getPackages())) {
@@ -108,14 +113,14 @@ public class DependencyMatchers {
             }
         }
 
-        private void describeUndefined(Description description) {
+        private void describeUndefined(RuleResult result, Description description) {
             if (undefined && !result.getUndefined().isEmpty()) {
                 description.appendText("\nFound packages which are not defined:\n");
                 description.appendText(join(sorted(result.getUndefined())) + "\n");
             }
         }
 
-        private void describeNotExisting(Description description) {
+        private void describeNotExisting(RuleResult result, Description description) {
             if (nonExisting && !result.getNotExisting().isEmpty()) {
                 description.appendText("\nDefined, but not existing packages:\n");
                 description.appendText(join(sorted(result.getNotExisting())) + "\n");
@@ -123,10 +128,9 @@ public class DependencyMatchers {
         }
     }
 
-    private static class CycleMatcher extends TypeSafeMatcher<ModelAnalyzer> {
+    private static class CycleMatcher extends TypeSafeMatcher<ModelResult> {
         private static final Comparator<DependencyMap> DEP_MAP_COMPARATOR = new DependencyMapComparator();
         private final Set<String>[] exceptions;
-        private CycleResult result;
 
         @SafeVarargs
         public CycleMatcher(Set<String>... exceptions) {
@@ -134,8 +138,8 @@ public class DependencyMatchers {
         }
 
         @Override
-        protected boolean matchesSafely(ModelAnalyzer item) {
-            result = DependencyRules.analyzeCycles(item.analyze());
+        protected boolean matchesSafely(ModelResult item) {
+            final CycleResult result = DependencyRules.analyzeCycles(item.findings());
             return result.isEmptyExcept(exceptions);
         }
 
@@ -144,7 +148,8 @@ public class DependencyMatchers {
         }
 
         @Override
-        protected void describeMismatchSafely(ModelAnalyzer item, Description description) {
+        protected void describeMismatchSafely(ModelResult item, Description description) {
+            final CycleResult result = DependencyRules.analyzeCycles(item.findings());
             if (!result.isEmptyExcept(exceptions)) {
                 description.appendText("Found these cyclic groups:\n");
                 for (final DependencyMap cycle : sortedDepMaps(result.getCyclesExcept(exceptions))) {

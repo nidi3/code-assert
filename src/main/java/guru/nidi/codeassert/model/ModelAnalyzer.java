@@ -15,12 +15,13 @@
  */
 package guru.nidi.codeassert.model;
 
+import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
-import guru.nidi.codeassert.config.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class ModelAnalyzer implements Analyzer<Collection<JavaPackage>> {
         this.config = config;
     }
 
-    public Collection<JavaPackage> analyze() {
+    public ModelResult analyze() {
         try {
             final Collection<JavaClass> classes = new JavaClassBuilder(
                     new ClassFileParser(config.getCollector()),
@@ -43,7 +44,7 @@ public class ModelAnalyzer implements Analyzer<Collection<JavaPackage>> {
             for (final JavaClass aClass : classes) {
                 readClass(packages, aClass);
             }
-            return packages.values();
+            return new ModelResult(this, packages.values(), Collections.<String>emptyList());
         } catch (IOException e) {
             throw new AnalyzerException("Problem executing ModelAnalyzer", e);
         }

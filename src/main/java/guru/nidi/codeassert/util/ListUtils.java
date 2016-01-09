@@ -16,6 +16,7 @@
 package guru.nidi.codeassert.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,11 +45,15 @@ public final class ListUtils {
         return res;
     }
 
-    public static String join(List<String> ss) {
+    public static String join(String sep, Object[] os) {
+        return join(sep, Arrays.asList(os));
+    }
+
+    public static String join(String sep, List<?> os) {
         final StringBuilder res = new StringBuilder();
-        for (final String s : ss) {
-            res.append(',').append(s);
+        for (final Object o : os) {
+            res.append(sep).append(o);
         }
-        return ss.isEmpty() ? "" : res.substring(1);
+        return os.isEmpty() ? "" : res.substring(sep.length());
     }
 }

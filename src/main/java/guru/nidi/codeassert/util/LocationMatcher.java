@@ -27,7 +27,8 @@ public class LocationMatcher {
     /**
      * Empty lists match any input.
      *
-     * @param locs  The locations to match against. Has the form [package.][class][#method].
+     * @param locs  The locations to match against.
+     *              Has the form [package.][class][#method].
      *              All three elements may start or end with a wildcard *.
      * @param names The names to match against.
      */
@@ -96,5 +97,11 @@ public class LocationMatcher {
             return test.startsWith(pattern.substring(0, pattern.length() - 1));
         }
         return test.equals(pattern);
+    }
+
+    @Override
+    public String toString() {
+        return (names.isEmpty() ? "all" : names) + " in " +
+                (locs.isEmpty() ? "everywhere" : locs);
     }
 }

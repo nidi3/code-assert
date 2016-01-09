@@ -15,6 +15,8 @@
  */
 package guru.nidi.codeassert.config;
 
+import guru.nidi.codeassert.util.ListUtils;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,5 +38,10 @@ public final class CollectorConfig {
 
     public static CollectorConfig just(Action... actions) {
         return because(null, actions);
+    }
+
+    @Override
+    public String toString() {
+        return "  " + (reason == null ? "just" : ("because " + reason)) + "\n" + ListUtils.join("\n", actions);
     }
 }
