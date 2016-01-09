@@ -29,6 +29,7 @@ import java.io.IOException;
 
 import static guru.nidi.codeassert.config.PackageCollector.allPackages;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
+import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
 import static org.junit.Assert.assertThat;
 
 @Ignore
@@ -67,7 +68,7 @@ public class DependencyTest {
         // All dependencies are forbidden, except the ones defined in OrgProject
         DependencyRules rules = DependencyRules.denyAll().withRules(new OrgProject());
 
-        assertThat(new ModelAnalyzer(config).analyze(), DependencyMatchers.matchesExactly(rules));
+        assertThat(new ModelAnalyzer(config).analyze(), matchesExactly(rules));
     }
 }
 //##

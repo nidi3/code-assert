@@ -29,6 +29,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoDuplications;
+import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoPmdViolations;
 import static guru.nidi.codeassert.pmd.Rulesets.*;
 import static org.junit.Assert.assertThat;
 
@@ -61,7 +63,7 @@ public class PmdTest {
                 basic(), braces(), design(), empty(), optimizations(),
                 codesize().excessiveMethodLength(40).tooManyMethods(30));
 
-        assertThat(analyzer.analyze(), PmdMatchers.hasNoPmdViolations());
+        assertThat(analyzer.analyze(), hasNoPmdViolations());
     }
 
     @Test
@@ -76,7 +78,7 @@ public class PmdTest {
         // Only treat duplications with at least 20 tokens
         CpdAnalyzer analyzer = new CpdAnalyzer(config, 20, collector);
 
-        assertThat(analyzer.analyze(), PmdMatchers.hasNoDuplications());
+        assertThat(analyzer.analyze(), hasNoDuplications());
     }
 }
 //##

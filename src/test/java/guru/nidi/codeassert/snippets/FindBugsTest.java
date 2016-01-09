@@ -27,6 +27,7 @@ import guru.nidi.codeassert.pmd.Ruleset;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static guru.nidi.codeassert.findbugs.FindBugsMatchers.hasNoBugs;
 import static org.junit.Assert.assertThat;
 
 @Ignore
@@ -46,7 +47,7 @@ public class FindBugsTest {
                         In.locs("ClassFileParser#parse", "*Test", "Rulesets$*").ignore("URF_UNREAD_FIELD"));
 
         FindBugsResult result = new FindBugsAnalyzer(config, collector).analyze();
-        assertThat(result, FindBugsMatchers.hasNoBugs());
+        assertThat(result, hasNoBugs());
     }
 }
 //##

@@ -31,7 +31,7 @@ public class DependencyTest {
 
     @Test
     public void noCycles() {
-        assertThat(new ModelAnalyzer(config), DependencyMatchers.hasNoCycles());
+        assertThat(new ModelAnalyzer(config).analyze(), hasNoCycles());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class DependencyTest {
         // All dependencies are forbidden, except the ones defined in OrgProject
         DependencyRules rules = DependencyRules.denyAll().withRules(new OrgProject());
 
-        assertThat(new ModelAnalyzer(config), DependencyMatchers.matchesExactly(rules));
+        assertThat(new ModelAnalyzer(config).analyze(), matchesExactly(rules));
     }
 }
 ```
@@ -65,17 +65,11 @@ Runs [FindBugs](http://findbugs.sourceforge.net/) on the code and finds question
 [//]: # (findBugs)
 ```java
 public class FindBugsTest {
-
-    private AnalyzerConfig config;
-
-    @Before
-    public void setup() throws IOException {
-        // Analyze all sources in src/main/java
-        config = AnalyzerConfig.mavenMainClasses();
-    }
-
     @Test
     public void findBugs() {
+        // Analyze all sources in src/main/java
+        AnalyzerConfig config = AnalyzerConfig.mavenMainClasses();
+
         // Only treat bugs with rank < 17 and with NORMAL_PRIORITY or higher
         // Ignore the given bug types in the given classes / methods.
         BugCollector collector = new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY)
@@ -84,7 +78,8 @@ public class FindBugsTest {
                         In.classes(DependencyRules.class, Ruleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
                         In.locs("ClassFileParser#parse", "*Test", "Rulesets$*").ignore("URF_UNREAD_FIELD"));
 
-        assertThat(new FindBugsAnalyzer(config, collector), FindBugsMatchers.findsNoBugs());
+        FindBugsResult result = new FindBugsAnalyzer(config, collector).analyze();
+        assertThat(result, hasNoBugs());
     }
 }
 ```
@@ -124,7 +119,7 @@ public class PmdTest {
                 basic(), braces(), design(), empty(), optimizations(),
                 codesize().excessiveMethodLength(40).tooManyMethods(30));
 
-        assertThat(analyzer, PmdMatchers.hasNoPmdViolations());
+        assertThat(analyzer.analyze(), hasNoPmdViolations());
     }
 
     @Test
@@ -139,7 +134,7 @@ public class PmdTest {
         // Only treat duplications with at least 20 tokens
         CpdAnalyzer analyzer = new CpdAnalyzer(config, 20, collector);
 
-        assertThat(analyzer, PmdMatchers.hasNoDuplications());
+        assertThat(analyzer.analyze(), hasNoDuplications());
     }
 }
 ```
