@@ -45,10 +45,10 @@ public class MatchCollector extends BaseCollector<Match, MatchCollector> {
     }
 
     @Override
-    protected boolean matches(Match issue, Action action) {
+    protected boolean doAccept(Match issue, Action action) {
         for (final Iterator<Mark> it = issue.iterator(); it.hasNext(); ) {
             final Mark mark = it.next();
-            if (!action.matches("", PmdUtils.className(mark), "")) {
+            if (!action.accept("", PmdUtils.className(mark), "")) {
                 return false;
             }
         }
@@ -56,12 +56,12 @@ public class MatchCollector extends BaseCollector<Match, MatchCollector> {
     }
 
     @Override
-    public boolean matches(Match issue) {
+    public boolean doAccept(Match issue) {
         return true;
     }
 
     @Override
-    public List<Action> unused(MatchCounter counter) {
+    public List<Action> unused(RejectCounter counter) {
         return Collections.emptyList();
     }
 

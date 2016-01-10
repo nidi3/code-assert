@@ -21,23 +21,23 @@ import java.util.Map;
 /**
  *
  */
-public class MatchCounter {
-    private final Map<Action, Integer> matchCount = new HashMap<>();
+public class RejectCounter {
+    private final Map<Action, Integer> rejects = new HashMap<>();
 
     public <S> Issue<S> issue(S rawIssue) {
         return new Issue<S>(this, rawIssue);
     }
 
     public int getCount(Action action) {
-        final Integer c = matchCount.get(action);
+        final Integer c = rejects.get(action);
         return c == null ? 0 : c;
     }
 
-    public boolean getCount(Action action, boolean matches) {
-        if (matches) {
-            final Integer count = matchCount.get(action);
-            matchCount.put(action, (count == null ? 0 : count) + 1);
+    public boolean count(Action action, boolean accept) {
+        if (!accept) {
+            final Integer count = rejects.get(action);
+            rejects.put(action, (count == null ? 0 : count) + 1);
         }
-        return matches;
+        return accept;
     }
 }

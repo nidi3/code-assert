@@ -57,17 +57,17 @@ public class ViolationCollector extends BaseCollector<RuleViolation, ViolationCo
     }
 
     @Override
-    protected boolean matches(RuleViolation issue) {
+    protected boolean doAccept(RuleViolation issue) {
         return (minPriority == null || issue.getRule().getPriority().getPriority() <= minPriority.getPriority());
     }
 
     @Override
-    protected boolean matches(RuleViolation issue, Action action) {
-        return action.matches(issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName());
+    protected boolean doAccept(RuleViolation issue, Action action) {
+        return action.accept(issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName());
     }
 
     @Override
-    public List<Action> unused(MatchCounter counter) {
+    public List<Action> unused(RejectCounter counter) {
         return counter.getCount(null) != 0 || minPriority == null
                 ? Collections.<Action>emptyList()
                 : Collections.<Action>singletonList(null);

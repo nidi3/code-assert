@@ -27,8 +27,8 @@ import java.util.Collection;
  *     PackageFilter filter = PackageCollector.allPackages().excluding(...).including(...)...
  * </pre>
  * The filter executes all excluding/including entries in the order they are defined.
- * The first one that matches is used as the result of the filter.
- * If no entry matches, the Filter accepts a package.
+ * The first one that accept is used as the result of the filter.
+ * If no entry accept, the Filter accepts a package.
  *
  * @author <b>Mike Clark</b>
  * @author Clarkware Consulting, Inc.

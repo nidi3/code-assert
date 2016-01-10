@@ -68,6 +68,11 @@ public final class In {
         }
 
         @Override
+        public boolean accept(String name, String className, String method) {
+            return !super.accept(name, className, method);
+        }
+
+        @Override
         public String toString() {
             return "    ignore " + super.toString();
         }

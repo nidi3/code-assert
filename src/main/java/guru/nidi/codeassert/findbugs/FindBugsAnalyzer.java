@@ -20,7 +20,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.MatchCounter;
+import guru.nidi.codeassert.config.RejectCounter;
 
 import java.io.IOException;
 import java.util.*;
@@ -101,7 +101,7 @@ public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
         final ArrayList<BugInstance> sorted = new ArrayList<>(bugs);
         Collections.sort(sorted, BUG_SORTER);
         final List<BugInstance> filtered = new ArrayList<>();
-        final MatchCounter counter = new MatchCounter();
+        final RejectCounter counter = new RejectCounter();
         for (final BugInstance bug : sorted) {
             if (collector.accept(counter.issue(bug)) && config.getCollector().accept(bug.getPrimaryClass().getPackageName())) {
                 filtered.add(bug);

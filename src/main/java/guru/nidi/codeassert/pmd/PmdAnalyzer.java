@@ -18,7 +18,7 @@ package guru.nidi.codeassert.pmd;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.MatchCounter;
+import guru.nidi.codeassert.config.RejectCounter;
 import net.sourceforge.pmd.PMD;
 import net.sourceforge.pmd.PMDConfiguration;
 import net.sourceforge.pmd.Report;
@@ -99,7 +99,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
 
     private PmdResult processViolations(PmdRenderer renderer) {
         final List<RuleViolation> violations = new ArrayList<>();
-        final MatchCounter counter = new MatchCounter();
+        final RejectCounter counter = new RejectCounter();
         if (renderer.getReport() != null) {
             for (final RuleViolation violation : renderer.getReport()) {
                 if (collector.accept(counter.issue(violation))) {

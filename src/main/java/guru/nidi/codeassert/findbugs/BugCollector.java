@@ -60,7 +60,7 @@ public class BugCollector extends BaseCollector<BugInstance, BugCollector> {
                 return accept(issue, BugCollector.this, configs);
             }
 
-            public List<Action> unused(MatchCounter counter) {
+            public List<Action> unused(RejectCounter counter) {
                 return unused(counter, BugCollector.this, configs);
             }
 
@@ -72,21 +72,21 @@ public class BugCollector extends BaseCollector<BugInstance, BugCollector> {
     }
 
     @Override
-    public boolean matches(BugInstance issue) {
+    public boolean doAccept(BugInstance issue) {
         return (maxRank == null || issue.getBugRank() <= maxRank) &&
                 (minPriority == null || issue.getPriority() <= minPriority);
     }
 
     @Override
-    protected boolean matches(BugInstance issue, Action action) {
+    protected boolean doAccept(BugInstance issue, Action action) {
         final MethodAnnotation method = issue.getPrimaryMethod();
         final String className = issue.getPrimaryClass().getClassName();
         final String methodName = method == null ? null : method.getMethodName();
-        return action.matches(issue.getType(), className, methodName);
+        return action.accept(issue.getType(), className, methodName);
     }
 
     @Override
-    public List<Action> unused(MatchCounter counter) {
+    public List<Action> unused(RejectCounter counter) {
         return counter.getCount(null) != 0 || (maxRank == null && minPriority == null)
                 ? Collections.<Action>emptyList()
                 : Collections.<Action>singletonList(null);

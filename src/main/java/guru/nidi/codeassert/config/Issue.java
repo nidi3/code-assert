@@ -19,18 +19,18 @@ package guru.nidi.codeassert.config;
  *
  */
 public class Issue<S> {
-    private final MatchCounter counter;
+    private final RejectCounter counter;
     private final S issue;
 
-    Issue(MatchCounter counter, S issue) {
+    Issue(RejectCounter counter, S issue) {
         this.counter = counter;
         this.issue = issue;
     }
 
-    boolean matches(BaseCollector<S, ?> collector, Action action) {
-        final boolean matches = action == null
-                ? collector.matches(issue)
-                : collector.matches(issue, action);
-        return counter.getCount(action, matches);
+    boolean accept(BaseCollector<S, ?> collector, Action action) {
+        final boolean accept = action == null
+                ? collector.doAccept(issue)
+                : collector.doAccept(issue, action);
+        return counter.count(action, accept);
     }
 }

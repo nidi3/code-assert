@@ -19,6 +19,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.util.UnusedActionsMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -38,7 +39,7 @@ public class FindBugsMatchers {
         return new FindBugsMatcher();
     }
 
-    public static Matcher<FindBugsResult> hasNoUnusedActions() {
+    public static <T extends AnalyzerResult<?>> Matcher<T> hasNoUnusedActions() {
         return new UnusedActionsMatcher<>();
     }
 

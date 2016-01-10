@@ -15,6 +15,7 @@
  */
 package guru.nidi.codeassert.dependency;
 
+import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.model.ModelResult;
 import guru.nidi.codeassert.util.UnusedActionsMatcher;
 import org.hamcrest.Description;
@@ -55,7 +56,7 @@ public class DependencyMatchers {
         return new CycleMatcher(cyclicGroups);
     }
 
-    public static Matcher<ModelResult> hasNoUnusedActions() {
+    public static <T extends AnalyzerResult<?>> Matcher<T>  hasNoUnusedActions() {
         return new UnusedActionsMatcher<>();
     }
 

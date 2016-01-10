@@ -35,19 +35,19 @@ public abstract class BaseCollector<S, T extends BaseCollector<S, T>> {
     public abstract T config(final CollectorConfig... configs);
 
     public boolean accept(Issue<S> issue) {
-        return issue.matches(this, null);
+        return issue.accept(this, null);
     }
 
-    protected abstract boolean matches(S issue, Action action);
+    protected abstract boolean doAccept(S issue, Action action);
 
-    protected abstract boolean matches(S issue);
+    protected abstract boolean doAccept(S issue);
 
-    public abstract List<Action> unused(MatchCounter counter);
+    public abstract List<Action> unused(RejectCounter counter);
 
     protected boolean accept(Issue<S> issue, T parent, CollectorConfig... configs) {
         for (final CollectorConfig config : configs) {
             for (final Action action : config.actions) {
-                if (issue.matches(this, action)) {
+                if (!issue.accept(this, action)) {
                     return false;
                 }
             }
@@ -55,7 +55,7 @@ public abstract class BaseCollector<S, T extends BaseCollector<S, T>> {
         return parent.accept(issue);
     }
 
-    protected List<Action> unused(MatchCounter counter, T parent, CollectorConfig... configs) {
+    protected List<Action> unused(RejectCounter counter, T parent, CollectorConfig... configs) {
         final List<Action> res = new ArrayList<>();
         for (final CollectorConfig config : configs) {
             for (final Action action : config.actions) {
@@ -68,7 +68,7 @@ public abstract class BaseCollector<S, T extends BaseCollector<S, T>> {
         return res;
     }
 
-    public List<String> unusedActions(MatchCounter counter) {
+    public List<String> unusedActions(RejectCounter counter) {
         final List<String> res = new ArrayList<>();
         for (final Action unused : unused(counter)) {
             res.add(unused == null ? "    Base filtering" : unused.toString());
@@ -76,7 +76,7 @@ public abstract class BaseCollector<S, T extends BaseCollector<S, T>> {
         return res;
     }
 
-    public void printUnusedWarning(MatchCounter counter) {
+    public void printUnusedWarning(RejectCounter counter) {
         final String s = ListUtils.join("\n", unusedActions(counter));
         if (s.length() > 0) {
             final StackTraceElement[] trace = new Exception().fillInStackTrace().getStackTrace();
