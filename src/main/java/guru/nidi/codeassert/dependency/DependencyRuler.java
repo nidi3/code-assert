@@ -23,8 +23,8 @@ package guru.nidi.codeassert.dependency;
  *         DependencyRule $self, util, core_
  *
  *         public void defineRules() {
- *             $self.mayDependUpon(util, core_);
- *             util.mustNotDependUpon($self, core_);
+ *             $self.mayUse(util, core_);
+ *             util.mustNotUse($self, core_);
  *         }
  *     }
  * </pre>

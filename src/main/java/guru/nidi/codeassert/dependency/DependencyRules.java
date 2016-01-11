@@ -26,6 +26,7 @@ import java.util.*;
  */
 public class DependencyRules {
     private final List<DependencyRule> rules = new ArrayList<>();
+    private final List<DependencyRule> externals = new ArrayList<>();
     private final boolean allowAll;
 
     private DependencyRules(boolean allowAll) {
@@ -41,14 +42,40 @@ public class DependencyRules {
     }
 
     public DependencyRule addRule(String pack) {
-        final DependencyRule rule = new DependencyRule(pack, allowAll);
-        rules.add(rule);
-        return rule;
+        return doAddRule(pack, rules);
     }
 
     public DependencyRule addRule(DependencyRule pack) {
         rules.add(pack);
         return pack;
+    }
+
+    /**
+     * An external package and usages thereof are ignored.
+     *
+     * @param pack
+     * @return
+     */
+    public DependencyRule addExternal(String pack) {
+        return doAddRule(pack, externals);
+    }
+
+    /**
+     * The package of an external rule is ignored,
+     * it must not contain "use" clauses, but its "beUsedBy" clauses are applied.
+     *
+     * @param pack
+     * @return
+     */
+    public DependencyRule addExternal(DependencyRule pack) {
+        externals.add(pack);
+        return pack;
+    }
+
+    private DependencyRule doAddRule(String pack, List<DependencyRule> rules) {
+        final DependencyRule rule = new DependencyRule(pack, allowAll);
+        rules.add(rule);
+        return rule;
     }
 
     /**
@@ -58,7 +85,7 @@ public class DependencyRules {
      * DependencyRules rules1 = DependencyRules.allowAll();
      * DependencyRule a = rules1.addRule("com.acme.a.*"));
      * DependencyRule b = rules1.addRule("com.acme.sub.b"));
-     * a.mustNotDependUpon(b);
+     * a.mustNotUse(b);
      * </pre>
      * ----
      * <pre>
@@ -66,7 +93,7 @@ public class DependencyRules {
      *     DependencyRule a_, subB;
      *
      *     public defineRules(){
-     *         a_.mustNotDependUpon(subB);
+     *         a_.mustNotUse(subB);
      *     }
      * }
      * DependencyRules rules2 = DependencyRules.allowAll().addRules(new ComAcme());
@@ -77,7 +104,7 @@ public class DependencyRules {
      *     DependencyRule a_, subB;
      *
      *     public defineRules(){
-     *         a_.mustNotDependUpon(subB);
+     *         a_.mustNotUse(subB);
      *     }
      * });
      * </pre>
@@ -87,17 +114,39 @@ public class DependencyRules {
      * @return DependencyRules including the new rules.
      */
     public DependencyRules withRules(String basePackage, DependencyRuler ruler) {
+        return doWithRules(addPackages(basePackage, ruler.getClass()), ruler, rules);
+    }
+
+
+    public DependencyRules withRules(DependencyRuler... rulers) {
+        return doWithRules(rules, true, rulers);
+    }
+
+    public DependencyRules withExternals(DependencyRuler... rulers) {
+        return doWithRules(externals, false, rulers);
+    }
+
+    public DependencyRules withExternals(String... externals) {
+        for (final String external : externals) {
+            addExternal(external);
+        }
+        return this;
+    }
+
+    private DependencyRules doWithRules(List<DependencyRule> rules, boolean withRulerName, DependencyRuler... rulers) {
+        for (final DependencyRuler ruler : rulers) {
+            doWithRules(addPackages("", withRulerName ? ruler.getClass() : null), ruler, rules);
+        }
+        return this;
+    }
+
+    private DependencyRules doWithRules(String basePackage, DependencyRuler ruler, List<DependencyRule> rules) {
         try {
             for (final Field f : ruler.getClass().getDeclaredFields()) {
                 f.setAccessible(true);
                 if (f.getType() == DependencyRule.class) {
-                    final String name = ruler.getClass().isAnonymousClass()
-                            ? ""
-                            : camelCaseToDotCase(ruler.getClass().getSimpleName());
-                    final String start = basePackage.length() > 0 && !basePackage.endsWith(".") && name.length() > 0
-                            ? basePackage + "." + name
-                            : basePackage + name;
-                    f.set(ruler, addRule(start + (f.getName().equals("$self") ? "" : ("." + camelCaseToDotCase(f.getName())))));
+                    final String pack = addPackages(basePackage, (f.getName().equals("$self") ? "" : camelCaseToDotCase(f.getName())));
+                    f.set(ruler, doAddRule(pack, rules));
                 }
             }
             ruler.defineRules();
@@ -107,11 +156,17 @@ public class DependencyRules {
         }
     }
 
-    public DependencyRules withRules(DependencyRuler... rulers) {
-        for (final DependencyRuler ruler : rulers) {
-            withRules("", ruler);
-        }
-        return this;
+    private String addPackages(String base, Class<?> clazz) {
+        final String name = clazz == null || clazz.isAnonymousClass()
+                ? ""
+                : camelCaseToDotCase(clazz.getSimpleName());
+        return addPackages(base, name);
+    }
+
+    private String addPackages(String p1, String p2) {
+        return p1.length() > 0 && !p1.endsWith(".") && p2.length() > 0
+                ? p1 + "." + p2
+                : p1 + p2;
     }
 
     private static String camelCaseToDotCase(String s) {
@@ -142,24 +197,64 @@ public class DependencyRules {
     }
 
     public RuleResult analyzeRules(Collection<JavaPackage> packs) {
+        checkRules();
         final RuleResult result = new RuleResult();
+        final Collection<JavaPackage> filtered = filterExternals(packs);
         for (final DependencyRule rule : rules) {
-            result.merge(rule.analyze(packs));
+            result.merge(rule.analyze(filtered, rules));
         }
-        for (final JavaPackage pack : packs) {
-            boolean defined = false;
-            for (final DependencyRule rule : rules) {
-                if (rule.matches(pack)) {
-                    defined = true;
-                    break;
-                }
-            }
-            if (!defined) {
+        for (final JavaPackage pack : filtered) {
+            if (!matchesAny(pack, rules)) {
                 result.undefined.add(pack.getName());
             }
         }
         result.normalize();
         return result;
+    }
+
+    private Collection<JavaPackage> filterExternals(Collection<JavaPackage> packs) {
+        final List<JavaPackage> filtered = new ArrayList<>();
+        for (final JavaPackage pack : packs) {
+            if (!matchesAny(pack, externals)) {
+                filtered.add(filterMatchingEfferents(pack, externals));
+            }
+        }
+        return filtered;
+    }
+
+    private JavaPackage filterMatchingEfferents(JavaPackage pack, List<DependencyRule> rules) {
+        final List<JavaPackage> filtered = new ArrayList<>(pack.getEfferents());
+        for (final DependencyRule rule : rules) {
+            for (final Iterator<JavaPackage> it = filtered.iterator(); it.hasNext(); ) {
+                final JavaPackage eff = it.next();
+                if (rule.matches(eff)) {
+                    it.remove();
+                }
+            }
+        }
+        return pack.copyWithEfferents(filtered);
+    }
+
+
+    private void checkRules() {
+        final List<DependencyRule> rs = new ArrayList<>();
+        for (final DependencyRule external : externals) {
+            if (external.hasUseClause()) {
+                rs.add(external);
+            }
+        }
+        if (!rs.isEmpty()) {
+            throw new ExternalDependencyWithUseClauseException(rs);
+        }
+    }
+
+    private boolean matchesAny(JavaPackage pack, List<DependencyRule> rules) {
+        for (final DependencyRule rule : rules) {
+            if (rule.matches(pack)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static CycleResult analyzeCycles(Collection<JavaPackage> packs) {

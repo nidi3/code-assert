@@ -16,7 +16,6 @@
 package guru.nidi.codeassert.snippets;
 
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.dependency.DependencyMatchers;
 import guru.nidi.codeassert.dependency.DependencyRule;
 import guru.nidi.codeassert.dependency.DependencyRuler;
 import guru.nidi.codeassert.dependency.DependencyRules;
@@ -27,7 +26,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static guru.nidi.codeassert.config.PackageCollector.allPackages;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
 import static org.junit.Assert.assertThat;
@@ -41,8 +39,7 @@ public class DependencyTest {
     @Before
     public void setup() throws IOException {
         // Analyze all sources in src/main/java
-        // Ignore dependencies from/to java.*, org.*, net.*
-        config = AnalyzerConfig.mavenMainClasses().collecting(allPackages().excluding("java.*", "org.*", "net.*"));
+        config = AnalyzerConfig.mavenMainClasses();
     }
 
     @Test
@@ -59,9 +56,9 @@ public class DependencyTest {
 
             @Override
             public void defineRules() {
-                $self.mayDependUpon(util, dependency_);
-                dependency_.mustDependUpon(model);
-                model.mayDependUpon(util).mustNotDependUpon($self);
+                $self.mayUse(util, dependency_);
+                dependency_.mustUse(model);
+                model.mayUse(util).mustNotUse($self);
             }
         }
 

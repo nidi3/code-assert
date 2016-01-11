@@ -16,7 +16,6 @@
 package guru.nidi.codeassert.model;
 
 import guru.nidi.codeassert.AnalyzerException;
-import guru.nidi.codeassert.config.PackageCollector;
 
 import java.io.IOException;
 
@@ -24,13 +23,11 @@ class JavaClassImportBuilder {
     private static final char CLASS_DESCRIPTOR = 'L';
     private static final char TYPE_END = ';';
 
-    private final PackageCollector collector;
     private final JavaClass jClass;
     private final ConstantPool constantPool;
 
-    public JavaClassImportBuilder(JavaClass jClass, PackageCollector collector, ConstantPool constantPool) {
+    public JavaClassImportBuilder(JavaClass jClass, ConstantPool constantPool) {
         this.jClass = jClass;
-        this.collector = collector;
         this.constantPool = constantPool;
     }
 
@@ -185,7 +182,7 @@ class JavaClassImportBuilder {
     }
 
     private void addImport(String importPackage) {
-        if (importPackage != null && collector.accept(importPackage)) {
+        if (importPackage != null) {
             jClass.addImport(new JavaPackage(importPackage));
         }
     }

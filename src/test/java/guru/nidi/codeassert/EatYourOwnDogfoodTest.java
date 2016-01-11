@@ -19,6 +19,7 @@ import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.DependencyRule;
 import guru.nidi.codeassert.dependency.DependencyRuler;
+import guru.nidi.codeassert.dependency.DependencyRules;
 import guru.nidi.codeassert.findbugs.BugCollector;
 import guru.nidi.codeassert.findbugs.FindBugsAnalyzer;
 import guru.nidi.codeassert.model.ModelAnalyzer;
@@ -32,7 +33,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static guru.nidi.codeassert.config.PackageCollector.allPackages;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
@@ -49,7 +49,7 @@ public class EatYourOwnDogfoodTest {
 
     @Before
     public void setup() throws IOException {
-        config = AnalyzerConfig.mavenMainClasses().collecting(allPackages().excluding("java.*", "org.*", "edu.*", "net.*"));
+        config = AnalyzerConfig.mavenMainClasses();
     }
 
     @Test
@@ -64,15 +64,16 @@ public class EatYourOwnDogfoodTest {
 
             @Override
             public void defineRules() {
-                config.mayDependUpon(util);
-                dependency.mayDependUpon($self, util, config, model);
-                findbugs.mayDependUpon($self, util, config);
-                model.mayDependUpon($self, util, config);
-                pmd.mayDependUpon($self, util, config);
-                util.mayDependUpon($self);
+                config.mayUse(util);
+                dependency.mayUse($self, util, config, model);
+                findbugs.mayUse($self, util, config);
+                model.mayUse($self, util, config);
+                pmd.mayUse($self, util, config);
+                util.mayUse($self);
             }
         }
-        assertThat(new ModelAnalyzer(config).analyze(), matchesExactly(denyAll().withRules(new GuruNidiCodeassert())));
+        final DependencyRules rules = denyAll().withExternals("edu*", "java*", "net*", "org*").withRules(new GuruNidiCodeassert());
+        assertThat(new ModelAnalyzer(config).analyze(), matchesExactly(rules));
     }
 
     @Test
@@ -80,6 +81,7 @@ public class EatYourOwnDogfoodTest {
         final BugCollector bugCollector = new BugCollector().just(
                 In.locs("DependencyRules#withRules", "Ruleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
                 In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
+                In.loc("*Exception").ignore("SE_BAD_FIELD"),
                 In.locs("ClassFileParser", "Constant", "MemberInfo", "Rulesets$*", "Reason").ignore("URF_UNREAD_FIELD"));
         assertThat(new FindBugsAnalyzer(config, bugCollector).analyze(), hasNoBugs());
     }
@@ -89,11 +91,10 @@ public class EatYourOwnDogfoodTest {
         final ViolationCollector collector = new ViolationCollector().minPriority(RulePriority.MEDIUM).just(
                 In.everywhere().ignore(
                         "MethodArgumentCouldBeFinal", "AvoidFieldNameMatchingMethodName",
-                        "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName"),
+                        "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName",
+                        "UncommentedEmptyConstructor", "AvoidInstantiatingObjectsInLoops"),
                 In.locs("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
                 In.loc("Rulesets$*").ignore("AvoidDuplicateLiterals"),
-                In.locs("JavaClassBuilder", "PmdAnalyzer", "CpdAnalyzer", "FindBugsMatchers$*").ignore(
-                        "AvoidInstantiatingObjectsInLoops"),
                 In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),
                 In.clazz(Rulesets.class).ignore("TooManyMethods"),
                 In.clazz(LocationMatcher.class).ignore("SimplifyStartsWith"),

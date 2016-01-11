@@ -15,8 +15,6 @@
  */
 package guru.nidi.codeassert.model;
 
-import guru.nidi.codeassert.config.PackageCollector;
-
 import java.io.*;
 
 /**
@@ -30,18 +28,9 @@ import java.io.*;
 class ClassFileParser {
     private static final int JAVA_MAGIC = 0xCAFEBABE;
 
-    private final PackageCollector collector;
     private JavaClass jClass;
     private ConstantPool constantPool;
     private DataInputStream in;
-
-    public ClassFileParser() {
-        this(PackageCollector.allPackages());
-    }
-
-    public ClassFileParser(PackageCollector collector) {
-        this.collector = collector;
-    }
 
     public JavaClass parse(File file) throws IOException {
         try (final InputStream in = new FileInputStream(file)) {
@@ -68,7 +57,7 @@ class ClassFileParser {
         final MemberInfo[] methods = parseMembers();
         final AttributeInfo[] attributes = parseAttributes();
 
-        final JavaClassImportBuilder adder = new JavaClassImportBuilder(jClass, collector, constantPool);
+        final JavaClassImportBuilder adder = new JavaClassImportBuilder(jClass, constantPool);
         adder.addClassName(className);
         adder.addClassConstantReferences();
         adder.addSuperClass(superClassName);

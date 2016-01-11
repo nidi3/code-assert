@@ -17,7 +17,6 @@ package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.model.JavaPackage;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,16 +24,15 @@ import java.util.List;
  *
  */
 public class DependencyRule {
-    private final String name;
+    final String name;
     private final boolean allowAll;
-    private final List<String> mustDepend = new ArrayList<>();
-    private final List<String> mayDepend = new ArrayList<>();
-    private final List<String> mustNotDepend = new ArrayList<>();
+    private final Usage use = new Usage();
+    private final Usage usedBy = new Usage();
 
     DependencyRule(String name, boolean allowAll) {
         final int starPos = name.indexOf('*');
-        if (starPos >= 0 && (starPos != name.length() - 1 || !name.endsWith(".*"))) {
-            throw new IllegalArgumentException("Wildcard * is only allowed at the end (e.g. java.*)");
+        if (starPos >= 0 && starPos != name.length() - 1) {
+            throw new IllegalArgumentException("Wildcard * is only allowed at the end (e.g. java*)");
         }
         this.name = name;
         this.allowAll = allowAll;
@@ -48,84 +46,70 @@ public class DependencyRule {
         return new DependencyRule(name, false);
     }
 
-    public DependencyRule mustDependUpon(DependencyRule... rules) {
-        for (final DependencyRule rule : rules) {
-            mustDepend.add(rule.name);
-        }
+    public DependencyRule mustUse(DependencyRule... rules) {
+        use.must(rules);
         return this;
     }
 
-    public DependencyRule mayDependUpon(DependencyRule... rules) {
-        for (final DependencyRule rule : rules) {
-            mayDepend.add(rule.name);
-        }
+    public DependencyRule mayUse(DependencyRule... rules) {
+        use.may(rules);
         return this;
     }
 
-    public DependencyRule mustNotDependUpon(DependencyRule... rules) {
-        for (final DependencyRule rule : rules) {
-            mustNotDepend.add(rule.name);
-        }
+    public DependencyRule mustNotUse(DependencyRule... rules) {
+        use.mustNot(rules);
         return this;
+    }
+
+    public DependencyRule mustBeUsedBy(DependencyRule... rules) {
+        usedBy.must(rules);
+        return this;
+    }
+
+    public DependencyRule mayBeUsedBy(DependencyRule... rules) {
+        usedBy.may(rules);
+        return this;
+    }
+
+    public DependencyRule mustNotBeUsedBy(DependencyRule... rules) {
+        usedBy.mustNot(rules);
+        return this;
+    }
+
+    public boolean hasUseClause() {
+        return !use.isEmpty();
     }
 
     public boolean matches(JavaPackage pack) {
         return pack.isMatchedBy(name);
     }
 
-    public RuleResult analyze(Collection<JavaPackage> packages) {
+    public RuleResult analyze(Collection<JavaPackage> packages, List<DependencyRule> rules) {
         final RuleResult result = new RuleResult();
         final List<JavaPackage> thisPackages = JavaPackage.allMatchesBy(packages, name);
 
         analyzeNotExisting(result, thisPackages);
-        analyzeMissing(result, thisPackages, packages);
+        final Usage usage = applyUsageBy(rules);
+        usage.analyzeMissing(result, thisPackages, packages);
 
         if (allowAll) {
-            analyzeAllowAll(result, thisPackages, packages);
+            usage.analyzeAllowAll(result, thisPackages, packages);
         } else {
-            analyzeDenyAll(result, thisPackages);
+            usage.analyzeDenyAll(result, thisPackages);
         }
 
         return result;
     }
 
-    private void analyzeDenyAll(RuleResult result, List<JavaPackage> thisPackages) {
-        for (final JavaPackage thisPack : thisPackages) {
-            for (final JavaPackage dep : thisPack.getEfferents()) {
-                final boolean allowed = dep.isMatchedByAny(mustDepend) || dep.isMatchedByAny(mayDepend);
-                final boolean mustNot = dep.isMatchedByAny(mustNotDepend);
-                if (!mustNot && allowed) {
-                    result.allowed.with(thisPack, dep);
-                }
-                if (mustNot || !allowed) {
-                    result.denied.with(thisPack, dep);
-                }
-            }
+    private Usage applyUsageBy(List<DependencyRule> rules) {
+        final Usage usage = use.copy();
+        for (final DependencyRule rule : rules) {
+            usage.applyUsageBy(name, rule.name, rule.usedBy);
         }
-    }
-
-    private void analyzeAllowAll(RuleResult result, List<JavaPackage> thisPackages, Collection<JavaPackage> packages) {
-        for (final String mustNot : mustNotDepend) {
-            for (final JavaPackage mustNotPack : JavaPackage.allMatchesBy(packages, mustNot)) {
-                for (final JavaPackage thisPack : thisPackages) {
-                    if (thisPack.hasEfferentsMatchedBy(mustNotPack.getName()) && !mustNotPack.isMatchedByAny(mayDepend)) {
-                        result.denied.with(thisPack, mustNotPack);
-                    }
-                }
-            }
+        if (!usage.isConsistent() || !this.usedBy.isConsistent()) {
+            throw new InconsistentDependencyRuleException(this, usage);
         }
-    }
-
-    private void analyzeMissing(RuleResult result, List<JavaPackage> thisPackages, Collection<JavaPackage> packages) {
-        for (final String must : mustDepend) {
-            for (final JavaPackage mustPack : JavaPackage.allMatchesBy(packages, must)) {
-                for (final JavaPackage thisPack : thisPackages) {
-                    if (!thisPack.hasEfferentsMatchedBy(mustPack.getName())) {
-                        result.missing.with(thisPack, mustPack);
-                    }
-                }
-            }
-        }
+        return usage;
     }
 
     private void analyzeNotExisting(RuleResult result, List<JavaPackage> thisPackages) {
@@ -134,4 +118,8 @@ public class DependencyRule {
         }
     }
 
+    @Override
+    public String toString() {
+        return "DependencyRule for " + name + "\n  use:      " + use + "\n  used by:  " + usedBy + "\n";
+    }
 }

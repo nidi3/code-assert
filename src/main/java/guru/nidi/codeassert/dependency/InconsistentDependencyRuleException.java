@@ -13,24 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.model;
-
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import org.junit.Test;
-
-import java.io.IOException;
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
+package guru.nidi.codeassert.dependency;
 
 /**
  *
  */
-public class AnalyzerTest {
-    @Test
-    public void simple() throws IOException {
-        final Collection<JavaPackage> packs = new ModelAnalyzer(
-                AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/model")).analyze().findings();
-        assertEquals(37, packs.size());
+public class InconsistentDependencyRuleException extends RuntimeException {
+    private final DependencyRule rule;
+    private final Usage use;
+
+    public InconsistentDependencyRuleException(DependencyRule rule, Usage use) {
+        this.rule = rule;
+        this.use = use;
     }
+
+    public DependencyRule getRule() {
+        return rule;
+    }
+
+    public Usage getUse() {
+        return use;
+    }
+
+    @Override
+    public String getMessage() {
+        return rule.toString() + "  real use: " + use;
+    }
+
 }

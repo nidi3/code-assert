@@ -27,14 +27,19 @@ import java.util.*;
 public class JavaPackage {
     private final String name;
     private final Set<JavaClass> classes;
-    private final List<JavaPackage> afferents;
     private final List<JavaPackage> efferents;
 
     public JavaPackage(String name) {
         this.name = name;
         classes = new HashSet<>();
-        afferents = new ArrayList<>();
         efferents = new ArrayList<>();
+    }
+
+    public JavaPackage copyWithEfferents(List<JavaPackage> efferents) {
+        final JavaPackage res = new JavaPackage(name);
+        res.classes.addAll(classes);
+        res.efferents.addAll(efferents);
+        return res;
     }
 
     public String getName() {
@@ -49,35 +54,7 @@ public class JavaPackage {
         return classes;
     }
 
-    /**
-     * Adds the specified Java package as an efferent of this package
-     * and adds this package as an afferent of it.
-     *
-     * @param imported Java package.
-     */
-    public void dependsUpon(JavaPackage... imported) {
-        for (final JavaPackage pack : imported) {
-            addEfferent(pack);
-            pack.addAfferent(this);
-        }
-    }
-
-    /**
-     * Adds the specified Java package as an afferent of this package.
-     *
-     * @param jPackage Java package.
-     */
-    private void addAfferent(JavaPackage jPackage) {
-        if (!jPackage.getName().equals(getName()) && !afferents.contains(jPackage)) {
-            afferents.add(jPackage);
-        }
-    }
-
-    public Collection<JavaPackage> getAfferents() {
-        return afferents;
-    }
-
-    private void addEfferent(JavaPackage jPackage) {
+    void addEfferent(JavaPackage jPackage) {
         if (!jPackage.getName().equals(getName()) && !efferents.contains(jPackage)) {
             efferents.add(jPackage);
         }
@@ -88,12 +65,12 @@ public class JavaPackage {
     }
 
     public boolean isMatchedBy(String name) {
-        return name.endsWith(".*")
+        return name.endsWith("*")
                 ? getName().startsWith(name.substring(0, name.length() - 1))
                 : getName().equals(name);
     }
 
-    public boolean isMatchedByAny(List<String> names) {
+    public boolean isMatchedByAny(Collection<String> names) {
         for (final String name : names) {
             if (isMatchedBy(name)) {
                 return true;

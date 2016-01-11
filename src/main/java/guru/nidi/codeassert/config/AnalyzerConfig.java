@@ -28,53 +28,44 @@ import static guru.nidi.codeassert.util.ListUtils.prepend;
 public class AnalyzerConfig {
     private final List<String> sources;
     private final List<String> classes;
-    private final PackageCollector collector;
 
     public AnalyzerConfig() {
-        this(Collections.<String>emptyList(), Collections.<String>emptyList(), PackageCollector.allPackages());
+        this(Collections.<String>emptyList(), Collections.<String>emptyList());
     }
 
     public AnalyzerConfig(AnalyzerConfig config) {
-        this(config.sources, config.classes, config.collector);
+        this(config.sources, config.classes);
     }
 
-    protected AnalyzerConfig(List<String> sources, List<String> classes, PackageCollector collector) {
+    protected AnalyzerConfig(List<String> sources, List<String> classes) {
         this.sources = sources;
         this.classes = classes;
-        this.collector = collector;
     }
 
     public static AnalyzerConfig mavenMainClasses(String... packages) {
         return new AnalyzerConfig(
                 prepend("src/main/java/", Arrays.asList(packages)),
-                prepend("target/classes/", Arrays.asList(packages)),
-                PackageCollector.allPackages());
+                prepend("target/classes/", Arrays.asList(packages)));
     }
 
     public static AnalyzerConfig mavenTestClasses(String... packages) {
         return new AnalyzerConfig(
                 prepend("src/test/java/", Arrays.asList(packages)),
-                prepend("target/test-classes/", Arrays.asList(packages)),
-                PackageCollector.allPackages());
+                prepend("target/test-classes/", Arrays.asList(packages)));
     }
 
     public static AnalyzerConfig mavenMainAndTestClasses(String... packages) {
         return new AnalyzerConfig(
                 merge(prepend("src/main/java/", Arrays.asList(packages)), prepend("src/test/java/", Arrays.asList(packages))),
-                merge(prepend("target/classes/", Arrays.asList(packages)), prepend("target/test-classes/", Arrays.asList(packages))),
-                PackageCollector.allPackages());
+                merge(prepend("target/classes/", Arrays.asList(packages)), prepend("target/test-classes/", Arrays.asList(packages))));
     }
 
     public AnalyzerConfig withSources(String... sources) {
-        return new AnalyzerConfig(Arrays.asList(sources), classes, collector);
+        return new AnalyzerConfig(Arrays.asList(sources), classes);
     }
 
     public AnalyzerConfig withClasses(String... classes) {
-        return new AnalyzerConfig(sources, Arrays.asList(classes), collector);
-    }
-
-    public AnalyzerConfig collecting(PackageCollector collector) {
-        return new AnalyzerConfig(sources, classes, collector);
+        return new AnalyzerConfig(sources, Arrays.asList(classes));
     }
 
     public List<String> getSources() {
@@ -83,9 +74,5 @@ public class AnalyzerConfig {
 
     public List<String> getClasses() {
         return classes;
-    }
-
-    public PackageCollector getCollector() {
-        return collector;
     }
 }

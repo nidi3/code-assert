@@ -32,11 +32,11 @@ public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
     private static final Comparator<BugInstance> BUG_SORTER = new Comparator<BugInstance>() {
         @Override
         public int compare(BugInstance b1, BugInstance b2) {
-            final int prio = b1.getPriority() - b2.getPriority();
+            final int prio = Integer.compare(b1.getPriority(), b2.getPriority());
             if (prio != 0) {
                 return prio;
             }
-            final int rank = b2.getBugRank() - b1.getBugRank();
+            final int rank = Integer.compare(b2.getBugRank(), b1.getBugRank());
             if (rank != 0) {
                 return rank;
             }
@@ -103,7 +103,7 @@ public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
         final List<BugInstance> filtered = new ArrayList<>();
         final RejectCounter counter = new RejectCounter();
         for (final BugInstance bug : sorted) {
-            if (collector.accept(counter.issue(bug)) && config.getCollector().accept(bug.getPrimaryClass().getPackageName())) {
+            if (collector.accept(counter.issue(bug))) {
                 filtered.add(bug);
             }
         }

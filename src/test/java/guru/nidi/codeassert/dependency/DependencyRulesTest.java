@@ -23,11 +23,11 @@ import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static guru.nidi.codeassert.config.PackageCollector.allPackages;
 import static guru.nidi.codeassert.dependency.DependencyMatchers.*;
 import static org.junit.Assert.*;
 
@@ -44,8 +44,7 @@ public class DependencyRulesTest {
     @Before
     public void analyze() {
         final ModelAnalyzer analyzer = new ModelAnalyzer(
-                AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/dependency")
-                        .collecting(allPackages().excluding("java.", "org")));
+                AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/dependency"));
         model = analyzer.analyze();
     }
 
@@ -54,18 +53,64 @@ public class DependencyRulesTest {
         DependencyRule.allowAll("a*b");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void wildcardWithoutPriorDot() {
-        DependencyRule.allowAll("a*");
+    @Test
+    public void externalsWithUseClause() {
+        final DependencyRules rules = DependencyRules.allowAll();
+        final DependencyRule java = rules.addExternal("java.*");
+        final DependencyRule hamcrest = rules.addExternal("org.hamcrest.*");
+        hamcrest.mayUse(java);
+        try {
+            rules.analyzeRules(model.findings());
+            fail();
+        } catch (ExternalDependencyWithUseClauseException e) {
+            assertEquals(Arrays.asList(hamcrest), e.getRules());
+        }
+    }
+
+    @Test
+    public void inconsistentUseRule() {
+        final DependencyRules rules = DependencyRules.allowAll();
+        final DependencyRule java = rules.addRule("java.*");
+        final DependencyRule hamcrest = rules.addRule("org.hamcrest.*").mustUse(java).mustNotUse(java);
+        try {
+            rules.analyzeRules(model.findings());
+            fail();
+        } catch (InconsistentDependencyRuleException e) {
+            assertEquals(hamcrest, e.getRule());
+        }
+    }
+
+    @Test(expected = InconsistentDependencyRuleException.class)
+    public void inconsistentUsedByRule() {
+        final DependencyRules rules = DependencyRules.allowAll();
+        final DependencyRule java = rules.addRule("java.*");
+        rules.addRule("org.hamcrest.*").mustBeUsedBy(java).mustNotBeUsedBy(java);
+        rules.analyzeRules(model.findings());
+    }
+
+    @Test
+    public void indirectInconsistentRule() {
+        final DependencyRules rules = DependencyRules.allowAll();
+        final DependencyRule java = rules.addRule("java.*").mustNotBeUsedBy(DependencyRule.allowAll("*"));
+        final DependencyRule hamcrest = rules.addRule("org.hamcrest.*").mustUse(java);
+        try {
+            rules.analyzeRules(model.findings());
+            fail();
+        } catch (InconsistentDependencyRuleException e) {
+            assertEquals(hamcrest, e.getRule());
+        }
     }
 
     @Test
     public void matcherFlags() {
         final DependencyRules rules = DependencyRules.allowAll();
+        rules.addExternal("java.*");
+        rules.addExternal("org.junit.*");
+        rules.addExternal("org.hamcrest*");
         rules.addRule(base("a"));
         rules.addRule(base("d"));
         final Set<String> undefined = new HashSet<>(UNDEFINED);
-        undefined.addAll(set(base("b"), base("c")));
+        undefined.addAll(set("org.junit", base("b"), base("c")));
 
         final RuleResult result = rules.analyzeRules(model.findings());
         assertEquals(new RuleResult(
@@ -81,11 +126,21 @@ public class DependencyRulesTest {
         assertMatcher("\nDefined, but not existing packages:\n" +
                         "guru.nidi.codeassert.dependency.d\n" +
                         "\nFound packages which are not defined:\n" +
-                        "guru.nidi.codeassert, guru.nidi.codeassert.config, guru.nidi.codeassert.dependency, guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.a.b, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, guru.nidi.codeassert.model, guru.nidi.codeassert.util\n",
+                        "guru.nidi.codeassert, guru.nidi.codeassert.config, guru.nidi.codeassert.dependency, " +
+                        "guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.a.b, " +
+                        "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, " +
+                        "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, " +
+                        "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, " +
+                        "guru.nidi.codeassert.model, guru.nidi.codeassert.util, org.junit\n",
                 matchesExactly(rules));
 
         assertMatcher("\nFound packages which are not defined:\n" +
-                        "guru.nidi.codeassert, guru.nidi.codeassert.config, guru.nidi.codeassert.dependency, guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.a.b, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, guru.nidi.codeassert.model, guru.nidi.codeassert.util\n",
+                        "guru.nidi.codeassert, guru.nidi.codeassert.config, guru.nidi.codeassert.dependency, " +
+                        "guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.a.b, " +
+                        "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, " +
+                        "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, " +
+                        "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, " +
+                        "guru.nidi.codeassert.model, guru.nidi.codeassert.util, org.junit\n",
                 matchesIgnoringNonExisting(rules));
 
         assertMatcher("\nDefined, but not existing packages:\n" +
@@ -99,19 +154,29 @@ public class DependencyRulesTest {
         final DependencyRule a = rules.addRule(base("a"));
         final DependencyRule b = rules.addRule(base("b"));
         final DependencyRule c = rules.addRule(base("c"));
+        rules.addExternal("java.*");
+        rules.addExternal("org*");
 
-        a.mustDependUpon(b);
-        b.mustNotDependUpon(a, c).mayDependUpon(a);
+        a.mustUse(b);
+        b.mustNotUse(a, c).mayUse(a);
 
         class GuruNidiCodeassertDependency implements DependencyRuler {
             DependencyRule a, b, c;
 
             public void defineRules() {
-                a.mustDependUpon(b);
-                b.mustNotDependUpon(a, c).mayDependUpon(a);
+                a.mustUse(b);
+                b.mustNotUse(a, c).mayUse(a);
             }
         }
-        final DependencyRules rules2 = DependencyRules.allowAll().withRules(new GuruNidiCodeassertDependency());
+        class Externals implements DependencyRuler {
+            DependencyRule java_, org_;
+
+            public void defineRules() {
+            }
+        }
+        final DependencyRules rules2 = DependencyRules.allowAll()
+                .withExternals(new Externals())
+                .withRules(new GuruNidiCodeassertDependency());
 
         final RuleResult result = rules.analyzeRules(model.findings());
         assertEquals(result, rules2.analyzeRules(model.findings()));
@@ -139,9 +204,11 @@ public class DependencyRulesTest {
         final DependencyRule a = rules.addRule(base("a"));
         final DependencyRule b = rules.addRule(base("b"));
         final DependencyRule c = rules.addRule(base("c"));
+        rules.addExternal("java*");
+        rules.addExternal("org*");
 
-        a.mustDependUpon(b);
-        b.mayDependUpon(a, c).mustNotDependUpon(a);
+        a.mustUse(b);
+        b.mayUse(a, c).mustNotUse(a);
 
         final RuleResult result = rules.analyzeRules(model.findings());
         assertEquals(new RuleResult(
@@ -178,20 +245,31 @@ public class DependencyRulesTest {
         final DependencyRule a = rules.addRule(base("a.*"));
         final DependencyRule b = rules.addRule(base("b.*"));
         final DependencyRule c = rules.addRule(base("c.*"));
+        rules.addExternal("java*");
+        rules.addExternal("org*");
 
-        a.mustDependUpon(b);
-        b.mustNotDependUpon(a, c).mayDependUpon(a1);
+        a.mustUse(b);
+        b.mustNotUse(a, c).mayUse(a1);
 
         final RuleResult result = rules.analyzeRules(model.findings());
-        final DependencyRules rules2 = DependencyRules.allowAll().withRules("guru.nidi.codeassert.dependency", new DependencyRuler() {
-            DependencyRule aA, a_, b_, c_;
+        final DependencyRules rules2 = DependencyRules.allowAll()
+                .withRules("guru.nidi.codeassert.dependency", new DependencyRuler() {
+                    DependencyRule aA, a_, b_, c_;
 
-            @Override
-            public void defineRules() {
-                a_.mustDependUpon(b_);
-                b_.mustNotDependUpon(a_, c_).mayDependUpon(aA);
-            }
-        });
+                    @Override
+                    public void defineRules() {
+                        a_.mustUse(b_);
+                        b_.mustNotUse(a_, c_).mayUse(aA);
+                    }
+                })
+                .withExternals(new DependencyRuler() {
+                    DependencyRule java_, org_;
+
+                    @Override
+                    public void defineRules() {
+
+                    }
+                });
 
         assertEquals(result, rules2.analyzeRules(model.findings()));
         assertEquals(new RuleResult(
@@ -235,9 +313,11 @@ public class DependencyRulesTest {
         final DependencyRule a = rules.addRule(base("a.*"));
         final DependencyRule b = rules.addRule(base("b.*"));
         final DependencyRule c = rules.addRule(base("c.*"));
+        rules.addExternal("java.*");
+        rules.addExternal("org*");
 
-        a.mustDependUpon(b);
-        b.mayDependUpon(a, c).mustNotDependUpon(a1);
+        a.mustUse(b);
+        b.mayUse(a, c).mustNotUse(a1);
 
         final RuleResult result = rules.analyzeRules(model.findings());
         assertEquals(new RuleResult(

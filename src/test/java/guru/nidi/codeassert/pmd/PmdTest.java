@@ -74,17 +74,14 @@ public class PmdTest {
                         pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 118") +
                         pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 160") +
                         pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", "Avoid using final local variables, turn them into fields") +
-                        pmd(MEDIUM, "AvoidInstantiatingObjectsInLoops", MAIN, "findbugs/FindBugsMatchers", "Avoid instantiating new objects inside loops") +
-                        pmd(MEDIUM, "AvoidInstantiatingObjectsInLoops", MAIN, "pmd/CpdAnalyzer", "Avoid instantiating new objects inside loops") +
                         pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "dependency/DependencyRules", "Avoid using Literals in Conditional Statements") +
                         pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "pmd/PmdUtils", "Avoid using Literals in Conditional Statements") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p2/ExampleEnum", "enumCommentRequirement Required") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", "enumCommentRequirement Required") +
                         pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRuler", "Comment is too large: Too many lines") +
                         pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRules", "Comment is too large: Too many lines") +
-                        pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", "JUnit tests should not contain more than 1 assert(s).") +
-                        pmd(MEDIUM, "JUnitTestContainsTooManyAsserts", TEST, "model/PackageCollectorTest", "JUnit tests should not contain more than 1 assert(s).") +
                         pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", "Class cannot be instantiated and does not provide any static methods or fields") +
+                        pmd(MEDIUM, "NullAssignment", MAIN, "dependency/DependencyRules", "Assigning an Object to null is a code smell.  Consider refactoring.") +
                         pmd(MEDIUM, "SwitchStmtsShouldHaveDefault", MAIN, "model/SignatureParser", "Switch statements should have a default label") +
                         pmd(MEDIUM, "TooManyMethods", MAIN, "pmd/Rulesets", "This class has too many methods, consider refactoring it.") +
                         pmd(MEDIUM, "UnusedLocalVariable", TEST, "Bugs", "Avoid unused local variables such as 'a'.") +
@@ -100,10 +97,10 @@ public class PmdTest {
     @Test
     public void duplications() {
         assertMatcher("" +
-                        cpd(21, "dependency/DependencyRule", 107, 108) +
-                        cpd("dependency/DependencyRule", 119, 120) +
-                        cpd(20, "config/AnalyzerConfig", 56, 57) +
-                        cpd("config/AnalyzerConfig", 64, 64),
+                        cpd(21, "config/AnalyzerConfig", 53, 54) +
+                        cpd("config/AnalyzerConfig", 60, 60) +
+                        cpd(21, "dependency/Usage", 109, 110) +
+                        cpd("dependency/Usage", 121, 122),
                 cpdResult, PmdMatchers.hasNoDuplications());
     }
 
@@ -117,18 +114,19 @@ public class PmdTest {
                 new ViolationCollector().minPriority(RulePriority.MEDIUM)
                         .because("it's not useful", In.everywhere().ignore(
                                 "MethodArgumentCouldBeFinal", "LawOfDemeter", "LooseCoupling", "LocalVariableCouldBeFinal",
-                                "UncommentedEmptyConstructor", "GodClass", "CommentDefaultAccessModifier", "AtLeastOneConstructor",
-                                "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming", "AvoidFieldNameMatchingMethodName", "AvoidFieldNameMatchingTypeName",
-                                "BeanMembersShouldSerialize", "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith"))
+                                "UncommentedEmptyConstructor", "UncommentedEmptyMethodBody", "GodClass", "CommentDefaultAccessModifier",
+                                "AtLeastOneConstructor", "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming",
+                                "AvoidFieldNameMatchingMethodName", "AvoidFieldNameMatchingTypeName", "BeanMembersShouldSerialize",
+                                "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith", "AvoidInstantiatingObjectsInLoops"))
                         .because("They are snippets", In.loc("*.snippets.*").ignoreAll())
                         .just(In.clazz(DependencyRulesTest.class).ignore("ExcessiveMethodLength"),
-                                In.locs("JavaClassBuilder", "PmdAnalyzer").ignore("AvoidInstantiatingObjectsInLoops"),
                                 In.classes(DependencyRulesTest.class, FindBugsTest.class).ignore("AvoidDuplicateLiterals"),
                                 In.clazz(ExampleInterface.class).ignore("ShortMethodName"),
                                 In.clazz(Bugs.class).ignore("UnusedLocalVariable"),
                                 In.loc("*Test").ignore("TooManyStaticImports"),
                                 In.classes(ClassFileParserTest.class, FileManagerTest.class, JarFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert"),
                                 In.clazz(DependencyRulesTest.class).ignore("JUnitTestContainsTooManyAsserts"),
+                                In.loc("DependencyRulesTest$*").ignore("VariableNamingConventions"),
                                 In.classes(PmdTest.class, FindBugsTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
                                 In.everywhere().ignore("UseConcurrentHashMap"),
                                 In.locs("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))

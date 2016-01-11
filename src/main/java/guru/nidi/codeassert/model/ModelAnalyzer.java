@@ -38,7 +38,7 @@ public class ModelAnalyzer implements Analyzer<Collection<JavaPackage>> {
     public ModelResult analyze() {
         try {
             final Collection<JavaClass> classes = new JavaClassBuilder(
-                    new ClassFileParser(config.getCollector()),
+                    new ClassFileParser(),
                     new FileManager().withDirectories(config.getClasses())).build();
             final Map<String, JavaPackage> packages = new HashMap<>();
             for (final JavaClass aClass : classes) {
@@ -53,16 +53,12 @@ public class ModelAnalyzer implements Analyzer<Collection<JavaPackage>> {
     private void readClass(Map<String, JavaPackage> packages, JavaClass clazz) {
         final String packageName = clazz.getPackageName();
 
-        if (!config.getCollector().accept(packageName)) {
-            return;
-        }
-
         final JavaPackage clazzPackage = addPackage(packages, packageName);
         clazzPackage.addClass(clazz);
 
         for (JavaPackage importedPackage : clazz.getImports()) {
             importedPackage = addPackage(packages, importedPackage.getName());
-            clazzPackage.dependsUpon(importedPackage);
+            clazzPackage.addEfferent(importedPackage);
         }
     }
 
