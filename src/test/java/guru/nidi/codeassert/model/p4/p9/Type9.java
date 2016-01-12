@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package guru.nidi.codeassert.model.p4.p9;
+
 /**
  *
  */

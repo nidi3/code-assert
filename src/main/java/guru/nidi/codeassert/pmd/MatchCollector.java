@@ -40,7 +40,6 @@ public class MatchCollector extends BaseCollector<Match, MatchCollector> {
             public String toString() {
                 return MatchCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
             }
-
         };
     }
 
@@ -48,7 +47,7 @@ public class MatchCollector extends BaseCollector<Match, MatchCollector> {
     protected boolean doAccept(Match issue, Action action) {
         for (final Iterator<Mark> it = issue.iterator(); it.hasNext(); ) {
             final Mark mark = it.next();
-            if (!action.accept("", PmdUtils.className(mark), "")) {
+            if (!action.accept(mark.getSourceCodeSlice(), PmdUtils.className(mark), "", false)) {
                 return false;
             }
         }

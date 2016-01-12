@@ -28,9 +28,7 @@ import java.io.File;
 
 import static guru.nidi.codeassert.findbugs.FindBugsMatchers.hasNoBugs;
 import static guru.nidi.codeassert.findbugs.FindBugsMatchers.hasNoUnusedActions;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 /**
  *

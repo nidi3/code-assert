@@ -68,8 +68,8 @@ public final class In {
         }
 
         @Override
-        public boolean accept(String name, String className, String method) {
-            return !super.accept(name, className, method);
+        public boolean accept(String name, String className, String method, boolean strictNameMatch) {
+            return !super.accept(name, className, method, strictNameMatch);
         }
 
         @Override

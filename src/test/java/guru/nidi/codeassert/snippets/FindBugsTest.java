@@ -21,7 +21,6 @@ import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.DependencyRules;
 import guru.nidi.codeassert.findbugs.BugCollector;
 import guru.nidi.codeassert.findbugs.FindBugsAnalyzer;
-import guru.nidi.codeassert.findbugs.FindBugsMatchers;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
 import guru.nidi.codeassert.pmd.Ruleset;
 import org.junit.Ignore;

@@ -20,7 +20,6 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.util.ListUtils;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -82,14 +81,12 @@ public class BugCollector extends BaseCollector<BugInstance, BugCollector> {
         final MethodAnnotation method = issue.getPrimaryMethod();
         final String className = issue.getPrimaryClass().getClassName();
         final String methodName = method == null ? null : method.getMethodName();
-        return action.accept(issue.getType(), className, methodName);
+        return action.accept(issue.getType(), className, methodName, true);
     }
 
     @Override
     public List<Action> unused(RejectCounter counter) {
-        return counter.getCount(null) != 0 || (maxRank == null && minPriority == null)
-                ? Collections.<Action>emptyList()
-                : Collections.<Action>singletonList(null);
+        return unusedNullAction(counter, maxRank != null || minPriority == null);
     }
 
     @Override

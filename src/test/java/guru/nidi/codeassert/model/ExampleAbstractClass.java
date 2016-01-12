@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package guru.nidi.codeassert.model;
+package guru.nidi.codeassert.model;
 
 
-        import java.math.BigDecimal;
+import java.math.BigDecimal;
 
 /**
  * @author <b>Mike Clark</b>

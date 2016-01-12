@@ -43,8 +43,8 @@ public class Action {
         return In.everywhere();
     }
 
-    public boolean accept(String name, String className, String method) {
-        return matcher.matches(name, className, method);
+    public boolean accept(String name, String className, String method, boolean strictNameMatch) {
+        return matcher.matches(name, className, method, strictNameMatch);
     }
 
     @Override

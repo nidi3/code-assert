@@ -56,7 +56,7 @@ public class DependencyMatchers {
         return new CycleMatcher(cyclicGroups);
     }
 
-    public static <T extends AnalyzerResult<?>> Matcher<T>  hasNoUnusedActions() {
+    public static <T extends AnalyzerResult<?>> Matcher<T> hasNoUnusedActions() {
         return new UnusedActionsMatcher<>();
     }
 

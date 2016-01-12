@@ -19,11 +19,12 @@ import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
-import guru.nidi.codeassert.dependency.DependencyMap;
 import guru.nidi.codeassert.dependency.DependencyRulesTest;
-import guru.nidi.codeassert.dependency.RuleResult;
 import guru.nidi.codeassert.findbugs.FindBugsTest;
-import guru.nidi.codeassert.model.*;
+import guru.nidi.codeassert.model.ClassFileParserTest;
+import guru.nidi.codeassert.model.ExampleInterface;
+import guru.nidi.codeassert.model.FileManagerTest;
+import guru.nidi.codeassert.model.JarFileParserTest;
 import net.sourceforge.pmd.RulePriority;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -97,8 +98,10 @@ public class PmdTest {
     @Test
     public void duplications() {
         assertMatcher("" +
-                        cpd(21, "dependency/Usage", 109, 110) +
-                        cpd("dependency/Usage", 121, 122),
+                        cpd(26, "model/SignatureParser") +
+                        cpd("model/SignatureParser") +
+                        cpd(26, "pmd/MatchCollector") +
+                        cpd("pmd/ViolationCollector"),
                 cpdResult, PmdMatchers.hasNoDuplications());
     }
 
@@ -115,7 +118,8 @@ public class PmdTest {
                                 "UncommentedEmptyConstructor", "UncommentedEmptyMethodBody", "GodClass", "CommentDefaultAccessModifier",
                                 "AtLeastOneConstructor", "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming",
                                 "AvoidFieldNameMatchingMethodName", "AvoidFieldNameMatchingTypeName", "BeanMembersShouldSerialize",
-                                "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith", "AvoidInstantiatingObjectsInLoops"))
+                                "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith", "AvoidInstantiatingObjectsInLoops",
+                                "UseStringBufferForStringAppends"))
                         .because("They are snippets", In.loc("*.snippets.*").ignoreAll())
                         .just(In.clazz(DependencyRulesTest.class).ignore("ExcessiveMethodLength"),
                                 In.classes(DependencyRulesTest.class, FindBugsTest.class).ignore("AvoidDuplicateLiterals"),
@@ -139,15 +143,16 @@ public class PmdTest {
     }
 
     private CpdResult cpdAnalyze() {
-        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.maven().main(), 20, new MatchCollector()
-                .because("blaj",
-                        In.classes(DependencyMap.class, RuleResult.class).ignoreAll())
-                .just(In.classes(JavaClass.class, JavaPackage.class).ignoreAll(),
-                        In.loc("SignatureParser").ignoreAll(),
-                        In.loc("*Collector").ignoreAll(),
-                        In.loc("*Matchers").ignoreAll(),
-                        In.loc("*Result").ignoreAll(),
-                        In.clazz(DependencyMap.class).ignoreAll()));
+        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.maven().main(), 25, new MatchCollector()
+                .because("equals and hashCode", In.everywhere().ignore(
+                        "*public boolean equals(Object o) {*",
+                        "public int hashCode() {"))
+                .just(
+                        In.everywhere().ignore(
+                                "public static <T extends AnalyzerResult<?>> Matcher<T> hasNoUnusedActions() {"),
+                        In.loc("*Matchers").ignore(
+                                "return item.findings().isEmpty();"))
+        );
         return analyzer.analyze();
     }
 
@@ -163,13 +168,13 @@ public class PmdTest {
                 priority, name, new File("src/" + scope + "/java/guru/nidi/codeassert/" + file + ".java").getAbsolutePath(), desc);
     }
 
-    private String cpd(String relative, int from, int to) {
-        return cpd(0, relative, from, to);
+    private String cpd(String relative) {
+        return cpd(0, relative);
     }
 
-    private String cpd(int len, String file, int from, int to) {
+    private String cpd(int len, String file) {
         return "\n" + (len == 0 ? "     " : String.format("%-4d ", len)) +
                 new File("src/main/java/guru/nidi/codeassert/" + file + ".java").getAbsolutePath() +
-                ":" + from + "-" + to;
+                ":%d-%d";
     }
 }

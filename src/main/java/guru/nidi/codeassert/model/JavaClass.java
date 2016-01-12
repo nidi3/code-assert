@@ -75,7 +75,7 @@ public class JavaClass {
     }
 
     public boolean hasImportsMatchedBy(String name) {
-        return ! JavaPackage.allMatchesBy(getImports(), name).isEmpty();
+        return !JavaPackage.allMatchesBy(getImports(), name).isEmpty();
     }
 
     public boolean equals(Object other) {
@@ -83,7 +83,6 @@ public class JavaClass {
             final JavaClass otherClass = (JavaClass) other;
             return otherClass.getName().equals(getName());
         }
-
         return false;
     }
 

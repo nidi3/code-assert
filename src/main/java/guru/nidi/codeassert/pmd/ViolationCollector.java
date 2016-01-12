@@ -20,7 +20,6 @@ import guru.nidi.codeassert.util.ListUtils;
 import net.sourceforge.pmd.RulePriority;
 import net.sourceforge.pmd.RuleViolation;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -63,14 +62,12 @@ public class ViolationCollector extends BaseCollector<RuleViolation, ViolationCo
 
     @Override
     protected boolean doAccept(RuleViolation issue, Action action) {
-        return action.accept(issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName());
+        return action.accept(issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName(), true);
     }
 
     @Override
     public List<Action> unused(RejectCounter counter) {
-        return counter.getCount(null) != 0 || minPriority == null
-                ? Collections.<Action>emptyList()
-                : Collections.<Action>singletonList(null);
+        return unusedNullAction(counter, minPriority != null);
     }
 
     @Override

@@ -44,20 +44,20 @@ public class LocationMatcher {
      * @return If the given name and location (className and method)
      * both match any of the predefined names and locations.
      */
-    public boolean matches(String name, String className, String method) {
+    public boolean matches(String name, String className, String method, boolean strictNameMatch) {
         if (locs.isEmpty()) {
-            return matchesName(name);
+            return matchesName(name, strictNameMatch);
         }
         for (final String loc : locs) {
-            if (matches(loc, name, className, method)) {
+            if (matches(loc, name, className, method, strictNameMatch)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean matches(String loc, String name, String className, String method) {
-        if (!matchesName(name)) {
+    private boolean matches(String loc, String name, String className, String method, boolean strictNameMatch) {
+        if (!matchesName(name, strictNameMatch)) {
             return false;
         }
         final int methodPos = loc.indexOf('#');
@@ -70,33 +70,56 @@ public class LocationMatcher {
         return matchesClass(loc.substring(0, methodPos), className) && matchesMethod(loc.substring(methodPos + 1), method);
     }
 
-    private boolean matchesName(String name) {
-        return names.isEmpty() || names.contains(name);
+    private boolean matchesName(String name, boolean strictNameMatch) {
+        if (names.isEmpty()) {
+            return true;
+        }
+        for (final String n : names) {
+            if (wildcardMatch(n, name, strictNameMatch)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean matchesMethod(String pattern, String name) {
-        return wildcardMatch(pattern, name);
+        return wildcardMatch(pattern, name, true);
     }
 
     private boolean matchesClass(String pattern, String name) {
         final int namePos = name.lastIndexOf('.');
         final int patternPos = pattern.lastIndexOf('.');
-        final boolean matchesPackage = namePos < 0 || patternPos < 0 || wildcardMatch(pattern.substring(0, patternPos), name.substring(0, namePos));
-        final boolean matchesClass = wildcardMatch(pattern.substring(patternPos + 1), name.substring(namePos + 1));
+        final boolean matchesPackage = namePos < 0 || patternPos < 0 || wildcardMatch(pattern.substring(0, patternPos), name.substring(0, namePos), true);
+        final boolean matchesClass = wildcardMatch(pattern.substring(patternPos + 1), name.substring(namePos + 1), true);
         return matchesPackage && matchesClass;
     }
 
-    private boolean wildcardMatch(String pattern, String test) {
-        if (pattern.startsWith("*") && pattern.endsWith("*")) {
-            return pattern.length() == 1 || test.contains(pattern.substring(1, pattern.length() - 1));
+    private boolean wildcardMatch(String pattern, String test, boolean strictPattern) {
+        final String pat = createPattern(pattern, strictPattern);
+        if (pat.startsWith("*") && pat.endsWith("*")) {
+            return pat.length() == 1 || test.contains(pat.substring(1, pat.length() - 1));
         }
-        if (pattern.startsWith("*")) {
-            return test.endsWith(pattern.substring(1));
+        if (pat.startsWith("*")) {
+            return test.endsWith(pat.substring(1));
         }
-        if (pattern.endsWith("*")) {
-            return test.startsWith(pattern.substring(0, pattern.length() - 1));
+        if (pat.endsWith("*")) {
+            return test.startsWith(pat.substring(0, pat.length() - 1));
         }
-        return test.equals(pattern);
+        return test.equals(pat);
+    }
+
+    private String createPattern(String pattern, boolean strictPattern) {
+        if (strictPattern) {
+            return pattern;
+        }
+        String wildcarded = pattern;
+        if (!pattern.startsWith("*")) {
+            wildcarded = "*" + wildcarded;
+        }
+        if (!pattern.endsWith("*")) {
+            wildcarded = wildcarded + "*";
+        }
+        return wildcarded;
     }
 
     @Override

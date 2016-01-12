@@ -19,9 +19,10 @@ import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.DependencyMap;
 import guru.nidi.codeassert.dependency.RuleResult;
-import guru.nidi.codeassert.model.JavaClass;
-import guru.nidi.codeassert.model.JavaPackage;
-import guru.nidi.codeassert.pmd.*;
+import guru.nidi.codeassert.pmd.CpdAnalyzer;
+import guru.nidi.codeassert.pmd.MatchCollector;
+import guru.nidi.codeassert.pmd.PmdAnalyzer;
+import guru.nidi.codeassert.pmd.ViolationCollector;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -69,11 +70,12 @@ public class PmdTest {
     @Test
     public void cpd() {
         // Ignore duplications in the given classes
-        MatchCollector collector = new MatchCollector().just(
-                In.classes(DependencyMap.class, RuleResult.class).ignoreAll(),
-                In.classes(JavaClass.class, JavaPackage.class).ignoreAll(),
-                In.loc("SignatureParser").ignoreAll(),
-                In.clazz(DependencyMap.class).ignoreAll());
+        MatchCollector collector = new MatchCollector()
+                .because("equals",
+                        In.everywhere().ignore("public boolean equals(Object o) {"))
+                .just(
+                        In.classes(DependencyMap.class, RuleResult.class).ignoreAll(),
+                        In.loc("SignatureParser").ignoreAll());
 
         // Only treat duplications with at least 20 tokens
         CpdAnalyzer analyzer = new CpdAnalyzer(config, 20, collector);

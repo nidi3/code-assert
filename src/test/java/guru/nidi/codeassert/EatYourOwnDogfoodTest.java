@@ -92,7 +92,8 @@ public class EatYourOwnDogfoodTest {
                 In.everywhere().ignore(
                         "MethodArgumentCouldBeFinal", "AvoidFieldNameMatchingMethodName",
                         "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName",
-                        "UncommentedEmptyConstructor", "AvoidInstantiatingObjectsInLoops"),
+                        "UncommentedEmptyConstructor", "AvoidInstantiatingObjectsInLoops",
+                        "UseStringBufferForStringAppends"),
                 In.locs("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
                 In.loc("Rulesets$*").ignore("AvoidDuplicateLiterals"),
                 In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),

@@ -18,6 +18,7 @@ package guru.nidi.codeassert.config;
 import guru.nidi.codeassert.util.ListUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -92,5 +93,11 @@ public abstract class BaseCollector<S, T extends BaseCollector<S, T>> {
             System.out.println("WARN: " + location + "These collector actions have not been used:");
             System.out.println(s);
         }
+    }
+
+    protected List<Action> unusedNullAction(RejectCounter counter, boolean hasDefaultConfig) {
+        return counter.getCount(null) == 0 && hasDefaultConfig
+                ? Collections.<Action>singletonList(null)
+                : Collections.<Action>emptyList();
     }
 }

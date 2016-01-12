@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 package guru.nidi.codeassert.model.p4.p4;
+
 /**
  *
  */
-public class Type4  {
+public class Type4 {
 }
