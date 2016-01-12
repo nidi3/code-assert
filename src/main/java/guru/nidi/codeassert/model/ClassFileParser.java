@@ -28,18 +28,16 @@ import java.io.*;
 class ClassFileParser {
     private static final int JAVA_MAGIC = 0xCAFEBABE;
 
-    private JavaClass jClass;
     private ConstantPool constantPool;
     private DataInputStream in;
 
-    public JavaClass parse(File file) throws IOException {
+    public JavaClass parse(File file, JavaClassBuilder builder) throws IOException {
         try (final InputStream in = new FileInputStream(file)) {
-            return parse(in);
+            return parse(in, builder);
         }
     }
 
-    public JavaClass parse(InputStream is) throws IOException {
-        jClass = new JavaClass("Unknown");
+    public JavaClass parse(InputStream is, JavaClassBuilder builder) throws IOException {
         in = new DataInputStream(is);
 
         parseMagic();
@@ -57,8 +55,7 @@ class ClassFileParser {
         final MemberInfo[] methods = parseMembers();
         final AttributeInfo[] attributes = parseAttributes();
 
-        final JavaClassImportBuilder adder = new JavaClassImportBuilder(jClass, constantPool);
-        adder.addClassName(className);
+        final JavaClassImportBuilder adder = new JavaClassImportBuilder(className, builder, constantPool);
         adder.addClassConstantReferences();
         adder.addSuperClass(superClassName);
         adder.addInterfaces(interfaceNames);
@@ -66,7 +63,7 @@ class ClassFileParser {
         adder.addMethodRefs(methods);
         adder.addAttributeRefs(attributes);
 
-        return jClass;
+        return adder.jClass;
     }
 
     private int parseMagic() throws IOException {
@@ -123,11 +120,6 @@ class ClassFileParser {
         final AttributeInfo[] attributes = new AttributeInfo[count];
         for (int i = 0; i < count; i++) {
             attributes[i] = AttributeInfo.fromData(in, constantPool);
-
-            // Section 4.7.7 of VM Spec - Class File Format
-            if (attributes[i].isSource()) {
-                jClass.setSourceFile(attributes[i].sourceFile(constantPool));
-            }
         }
         return attributes;
     }

@@ -78,8 +78,6 @@ public class PmdTest {
                         pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "pmd/PmdUtils", "Avoid using Literals in Conditional Statements") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p2/ExampleEnum", "enumCommentRequirement Required") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", "enumCommentRequirement Required") +
-                        pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRuler", "Comment is too large: Too many lines") +
-                        pmd(MEDIUM, "CommentSize", MAIN, "dependency/DependencyRules", "Comment is too large: Too many lines") +
                         pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", "Class cannot be instantiated and does not provide any static methods or fields") +
                         pmd(MEDIUM, "NullAssignment", MAIN, "dependency/DependencyRules", "Assigning an Object to null is a code smell.  Consider refactoring.") +
                         pmd(MEDIUM, "SwitchStmtsShouldHaveDefault", MAIN, "model/SignatureParser", "Switch statements should have a default label") +
@@ -135,7 +133,7 @@ public class PmdTest {
                         finalizers(), imports(), j2ee(), javabeans(), junit(), optimizations(),
                         exceptions(), strings(), sunSecure(), typeResolution(), unnecessary(), unused(),
                         codesize().excessiveMethodLength(50).tooManyMethods(30),
-                        comments().requirement(Ignored).enums(Required).maxLines(15).maxLineLen(100),
+                        comments().requirement(Ignored).enums(Required).maxLines(35).maxLineLen(100),
                         empty().allowCommentedEmptyCatch(true),
                         naming().variableLen(1, 20).methodLen(2));
         return analyzer.analyze();

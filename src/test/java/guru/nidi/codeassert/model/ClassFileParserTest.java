@@ -18,6 +18,7 @@ package guru.nidi.codeassert.model;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,32 +33,34 @@ import static org.junit.Assert.assertTrue;
 
 public class ClassFileParserTest {
     private ClassFileParser parser;
+    private JavaClassBuilder builder;
 
     @Before
     public void setUp() {
         parser = new ClassFileParser();
+        builder = new JavaClassBuilder();
     }
 
     @Test(expected = IOException.class)
     public void invalidClassFile() throws IOException {
-        parser.parse(Path.testJava("ExampleTest"));
+        parse(Path.testJava("ExampleTest"));
     }
 
     @Test
     public void className() throws IOException {
-        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass"));
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertEquals("guru.nidi.codeassert.model.ExampleConcreteClass", clazz.getName());
     }
 
     @Test
     public void classSource() throws IOException {
-        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass"));
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
     }
 
     @Test
     public void classImports() throws IOException {
-        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass"));
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertCollectionEquals(clazz.getImports(),
                 new JavaPackage("java.net"),
                 new JavaPackage("java.text"),
@@ -84,59 +87,59 @@ public class ClassFileParserTest {
 
     @Test
     public void innerClassName() throws IOException {
-        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
         assertEquals("guru.nidi.codeassert.model.ExampleConcreteClass$ExampleInnerClass", clazz.getName());
     }
 
     @Test
     public void innerClassSource() throws IOException {
-        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
     }
 
     @Test
     public void innerClassImports() throws IOException {
-        final JavaClass clazz = parser.parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
         assertCollectionEquals(clazz.getImports(), new JavaPackage("java.lang"));
     }
 
     @Test
     public void packageClassName() throws IOException {
-        final JavaClass clazz = parser.parse(Path.testClass("ExamplePackageClass"));
+        final JavaClass clazz = parse(Path.testClass("ExamplePackageClass"));
         assertEquals("guru.nidi.codeassert.model.ExamplePackageClass", clazz.getName());
     }
 
     @Test
     public void packageClassSource() throws IOException {
-        final JavaClass clazz = parser.parse(Path.testClass("ExamplePackageClass"));
+        final JavaClass clazz = parse(Path.testClass("ExamplePackageClass"));
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
     }
 
     @Test
     public void packageClassImports() throws IOException {
-        final JavaClass clazz = parser.parse(Path.testClass("ExamplePackageClass"));
+        final JavaClass clazz = parse(Path.testClass("ExamplePackageClass"));
         assertCollectionEquals(clazz.getImports(), new JavaPackage("java.lang"));
     }
 
     @Test
     public void exampleClassFileFromTimDrury() throws IOException {
-        parser.parse(ClassFileParser.class.getResourceAsStream("/example_class1.bin"));
+        parser.parse(ClassFileParser.class.getResourceAsStream("/example_class1.bin"), builder);
     }
 
     @Test
     public void exampleClassFile2() throws IOException {
-        parser.parse(ClassFileParser.class.getResourceAsStream("/example_class2.bin"));
+        parser.parse(ClassFileParser.class.getResourceAsStream("/example_class2.bin"), builder);
     }
 
     @Test
     public void genericParameters() throws IOException {
-        final JavaClass generic = parser.parse(Path.testClass("p4/GenericParameters"));
+        final JavaClass generic = parse(Path.testClass("p4/GenericParameters"));
         assertEquals(11, generic.getImports().size());
     }
 
     @Test
     public void subGenericParameters() throws IOException {
-        final JavaClass subGeneric = parser.parse(Path.testClass("p4/SubGenericParameters"));
+        final JavaClass subGeneric = parse(Path.testClass("p4/SubGenericParameters"));
         assertEquals(1, subGeneric.getImports().size());
     }
 
@@ -146,5 +149,8 @@ public class ClassFileParserTest {
         assertTrue(actual.containsAll(Arrays.asList(expected)));
     }
 
+    private JavaClass parse(File f) throws IOException {
+        return parser.parse(f, builder);
+    }
 }
 

@@ -15,10 +15,12 @@
  */
 package guru.nidi.codeassert.model;
 
+import guru.nidi.codeassert.AnalyzerException;
+
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -33,6 +35,8 @@ import java.util.zip.ZipEntry;
 class JavaClassBuilder {
     private final ClassFileParser parser;
     private final FileManager fileManager;
+    final Map<String, JavaPackage> packages = new HashMap<>();
+    final Map<String, JavaClass> classes = new HashMap<>();
 
     public JavaClassBuilder() {
         this(new ClassFileParser(), new FileManager());
@@ -43,22 +47,39 @@ class JavaClassBuilder {
         this.fileManager = fm;
     }
 
+    JavaPackage getPackage(String name) {
+        JavaPackage pack = packages.get(name);
+        if (pack == null) {
+            pack = new JavaPackage(name);
+            packages.put(name, pack);
+        }
+        return pack;
+    }
+
+    JavaClass getClass(String name) {
+        JavaClass clazz = classes.get(name);
+        if (clazz == null) {
+            final JavaPackage pack = getPackage(JavaClass.packageOf(name));
+            clazz = new JavaClass(name, pack);
+            classes.put(name, clazz);
+            pack.addClass(clazz);
+        }
+        return clazz;
+    }
+
     /**
      * Builds the <code>JavaClass</code> instances.
      *
      * @return Collection of <code>JavaClass</code> instances.
      */
-    public Collection<JavaClass> build() {
-        final Collection<JavaClass> classes = new ArrayList<>();
+    public void build() {
         for (final File nextFile : fileManager.extractFiles()) {
             try {
-                classes.addAll(buildClasses(nextFile));
-            } catch (IOException ioe) {
-                System.err.println("\n" + ioe.getMessage());
+                buildClasses(nextFile);
+            } catch (IOException e) {
+                throw new AnalyzerException("could not parse class " + nextFile, e);
             }
         }
-
-        return classes;
     }
 
     /**
@@ -68,17 +89,14 @@ class JavaClassBuilder {
      * @param file Class or Jar file.
      * @return Collection of <code>JavaClass</code> instances.
      */
-    public Collection<JavaClass> buildClasses(File file) throws IOException {
+    public void buildClasses(File file) throws IOException {
         if (fileManager.acceptClassFile(file)) {
             try (final InputStream is = new BufferedInputStream(new FileInputStream(file))) {
-                final JavaClass parsedClass = parser.parse(is);
-                final Collection<JavaClass> javaClasses = new ArrayList<>();
-                javaClasses.add(parsedClass);
-                return javaClasses;
+                parser.parse(is, this);
             }
         } else if (fileManager.acceptJarFile(file)) {
             try (final JarFile jarFile = new JarFile(file)) {
-                return buildClasses(jarFile);
+                buildClasses(jarFile);
             }
         } else {
             throw new IOException("File is not a valid " + ".class, .jar, .war, or .zip file: " + file.getPath());
@@ -92,19 +110,15 @@ class JavaClassBuilder {
      * @param file Jar, war, or zip file.
      * @return Collection of <code>JavaClass</code> instances.
      */
-    public Collection<JavaClass> buildClasses(JarFile file) throws IOException {
-        final Collection<JavaClass> javaClasses = new ArrayList<>();
-
+    public void buildClasses(JarFile file) throws IOException {
         final Enumeration entries = file.entries();
         while (entries.hasMoreElements()) {
             final ZipEntry e = (ZipEntry) entries.nextElement();
             if (fileManager.acceptClassFileName(e.getName())) {
                 try (final InputStream is = file.getInputStream(e)) {
-                    javaClasses.add(parser.parse(is));
+                    parser.parse(is, this);
                 }
             }
         }
-
-        return javaClasses;
     }
 }

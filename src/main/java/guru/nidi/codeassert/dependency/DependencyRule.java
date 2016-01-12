@@ -21,7 +21,38 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *
+ * A DependencyRule can refer either to package(s) or class(es).
+ * It has the following grammar:
+ * <table>
+ * <tr>
+ * <td>rule</td>
+ * <td>package | package-and-sub | class | simple-class</td>
+ * </tr>
+ * <tr>
+ * <td>package</td>
+ * <td>lower+ ('.' lower+)*</td>
+ * </tr>
+ * <tr>
+ * <td>package-and-sub</td>
+ * <td>package '*'</td>
+ * </tr>
+ * <tr>
+ * <td>class</td>
+ * <td>package '.' simple-class</td>
+ * </tr>
+ * <tr>
+ * <td>simple-class</td>
+ * <td>upper lower* | '*' lower+ | upper lower* '*' </td>
+ * </tr>
+ * <tr>
+ * <td>upper</td>
+ * <td>[A-Z]</td>
+ * </tr>
+ * <tr>
+ * <td>lower</td>
+ * <td>[a-z$0-9]</td>
+ * </tr>
+ * </table>
  */
 public class DependencyRule {
     final String name;

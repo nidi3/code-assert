@@ -23,16 +23,14 @@ class JavaClassImportBuilder {
     private static final char CLASS_DESCRIPTOR = 'L';
     private static final char TYPE_END = ';';
 
-    private final JavaClass jClass;
+    final JavaClass jClass;
+    private final JavaClassBuilder builder;
     private final ConstantPool constantPool;
 
-    public JavaClassImportBuilder(JavaClass jClass, ConstantPool constantPool) {
-        this.jClass = jClass;
+    public JavaClassImportBuilder(String className, JavaClassBuilder builder, ConstantPool constantPool) {
+        this.builder = builder;
+        this.jClass = builder.getClass(className);
         this.constantPool = constantPool;
-    }
-
-    public void addClassName(String className) {
-        jClass.setType(className);
     }
 
     public void addSuperClass(String className) {
@@ -98,26 +96,31 @@ class JavaClassImportBuilder {
     }
 
     public void addAttributeRefs(AttributeInfo[] attributes) throws IOException {
-        addAttributeAnnotationRefs(attributes);
-        addAttributeSignatureRefs(attributes);
+        for (final AttributeInfo attribute : attributes) {
+            addSourceAttribute(attribute);
+            addAttributeAnnotationRefs(attribute);
+            addAttributeSignatureRefs(attribute);
+        }
     }
 
-    private void addAttributeSignatureRefs(AttributeInfo[] attributes) throws IOException {
-        for (final AttributeInfo attr : attributes) {
-            if (attr.isSignature()) {
-                final String name = constantPool.getUtf8(u2(attr.value, 0));
-                for (final String clazz : SignatureParser.parseSignature(SignatureParser.Source.CLASS, name).getClasses()) {
-                    addImport(clazz);
-                }
+    private void addSourceAttribute(AttributeInfo attribute) throws IOException {
+        if (attribute.isSource()) {
+            jClass.setSourceFile(attribute.sourceFile(constantPool));
+        }
+    }
+
+    private void addAttributeSignatureRefs(AttributeInfo attribute) throws IOException {
+        if (attribute.isSignature()) {
+            final String name = constantPool.getUtf8(u2(attribute.value, 0));
+            for (final String clazz : SignatureParser.parseSignature(SignatureParser.Source.CLASS, name).getClasses()) {
+                addImport(clazz);
             }
         }
     }
 
-    private void addAttributeAnnotationRefs(AttributeInfo[] attributes) throws IOException {
-        for (int j = 1; j < attributes.length; j++) {
-            if (attributes[j].isAnnotation()) {
-                addAnnotationReferences(attributes[j]);
-            }
+    private void addAttributeAnnotationRefs(AttributeInfo attribute) throws IOException {
+        if (attribute.isAnnotation()) {
+            addAnnotationReferences(attribute);
         }
     }
 
@@ -184,7 +187,7 @@ class JavaClassImportBuilder {
     private void addImport(String type) {
         final String name = getTypeName(type);
         if (name != null) {
-            jClass.addImport(name);
+            jClass.addImport(name,builder);
         }
     }
 

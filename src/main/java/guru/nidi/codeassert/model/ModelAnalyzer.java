@@ -22,7 +22,6 @@ import guru.nidi.codeassert.config.AnalyzerConfig;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -37,37 +36,13 @@ public class ModelAnalyzer implements Analyzer<Collection<JavaPackage>> {
 
     public ModelResult analyze() {
         try {
-            final Collection<JavaClass> classes = new JavaClassBuilder(
+            final JavaClassBuilder builder = new JavaClassBuilder(
                     new ClassFileParser(),
-                    new FileManager().withDirectories(config.getClasses())).build();
-            final Map<String, JavaPackage> packages = new HashMap<>();
-            for (final JavaClass aClass : classes) {
-                readClass(packages, aClass);
-            }
-            return new ModelResult(this, packages.values(), Collections.<String>emptyList());
+                    new FileManager().withDirectories(config.getClasses()));
+            builder.build();
+            return new ModelResult(this, builder.packages.values(), Collections.<String>emptyList());
         } catch (IOException e) {
             throw new AnalyzerException("Problem executing ModelAnalyzer", e);
         }
-    }
-
-    private void readClass(Map<String, JavaPackage> packages, JavaClass clazz) {
-        final String packageName = clazz.getPackageName();
-
-        final JavaPackage clazzPackage = addPackage(packages, packageName);
-        clazzPackage.addClass(clazz);
-
-        for (JavaPackage importedPackage : clazz.getImports()) {
-            importedPackage = addPackage(packages, importedPackage.getName());
-            clazzPackage.addEfferent(importedPackage);
-        }
-    }
-
-    private JavaPackage addPackage(Map<String, JavaPackage> packages, String name) {
-        JavaPackage pkg = packages.get(name);
-        if (pkg == null) {
-            pkg = new JavaPackage(name);
-            packages.put(pkg.getName(), pkg);
-        }
-        return pkg;
     }
 }

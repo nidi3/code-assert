@@ -35,13 +35,6 @@ public class JavaPackage {
         efferents = new ArrayList<>();
     }
 
-    public JavaPackage copyWithEfferents(List<JavaPackage> efferents) {
-        final JavaPackage res = new JavaPackage(name);
-        res.classes.addAll(classes);
-        res.efferents.addAll(efferents);
-        return res;
-    }
-
     public String getName() {
         return name;
     }

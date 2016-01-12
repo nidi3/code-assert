@@ -26,31 +26,26 @@ import java.util.*;
  */
 
 public class JavaClass {
-    private String className;
-    private String packageName;
+    private final String className;
+    private final JavaPackage pack;
     private final Map<String, JavaPackage> imports;
-    private final Set<String> importClasses;
+    private final Set<JavaClass> importClasses;
     private String sourceFile;
 
-    public JavaClass(String name) {
+    public JavaClass(String name, JavaPackage pack) {
         className = name;
-        packageName = "default";
+        this.pack = pack;
         imports = new HashMap<>();
         importClasses = new HashSet<>();
         sourceFile = "Unknown";
-    }
-
-    void setType(String type) {
-        className = type;
-        packageName = packageOf(type);
     }
 
     public String getName() {
         return className;
     }
 
-    public String getPackageName() {
-        return packageName;
+    public JavaPackage getPackage() {
+        return pack;
     }
 
     public void setSourceFile(String name) {
@@ -65,15 +60,17 @@ public class JavaClass {
         return imports.values();
     }
 
-    public void addImport(String type) {
-        final String pack = packageOf(type);
-        if (!pack.equals(getPackageName())) {
-            imports.put(pack, new JavaPackage(pack));
-            importClasses.add(type);
+    public void addImport(String type, JavaClassBuilder builder) {
+        final String packName = packageOf(type);
+        if (!packName.equals(pack.getName())) {
+            final JavaPackage p = builder.getPackage(packName);
+            imports.put(packName, p);
+            pack.addEfferent(p);
+            importClasses.add(builder.getClass(type));
         }
     }
 
-    private String packageOf(String type) {
+    static String packageOf(String type) {
         final int pos = type.lastIndexOf('.');
         return pos > 0 ? type.substring(0, pos) : "Default";
     }
@@ -92,5 +89,10 @@ public class JavaClass {
 
     public int hashCode() {
         return getName().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return className;
     }
 }

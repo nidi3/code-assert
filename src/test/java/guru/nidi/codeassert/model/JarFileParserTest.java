@@ -56,21 +56,21 @@ public class JarFileParserTest {
 
     private void archive(File archive) throws IOException {
         final JavaClassBuilder builder = new JavaClassBuilder();
+        builder.buildClasses(archive);
 
-        final Collection classes = builder.buildClasses(archive);
-        assertEquals(5, classes.size());
+        assertEquals(19, builder.classes.size());
 
-        assertClassesExist(classes);
-        assertInnerClassesExist(classes);
+        assertClassesExist(builder.classes.values());
+        assertInnerClassesExist(builder.classes.values());
     }
 
     private void assertClassesExist(Collection classes) {
-        assertTrue(classes.contains(new JavaClass("jdepend.framework.ExampleAbstractClass")));
-        assertTrue(classes.contains(new JavaClass("jdepend.framework.ExampleInterface")));
-        assertTrue(classes.contains(new JavaClass("jdepend.framework.ExampleConcreteClass")));
+        assertTrue(classes.contains(new JavaClass("jdepend.framework.ExampleAbstractClass", new JavaPackage(""))));
+        assertTrue(classes.contains(new JavaClass("jdepend.framework.ExampleInterface", new JavaPackage(""))));
+        assertTrue(classes.contains(new JavaClass("jdepend.framework.ExampleConcreteClass", new JavaPackage(""))));
     }
 
     private void assertInnerClassesExist(Collection classes) {
-        assertTrue(classes.contains(new JavaClass("jdepend.framework.ExampleConcreteClass$ExampleInnerClass")));
+        assertTrue(classes.contains(new JavaClass("jdepend.framework.ExampleConcreteClass$ExampleInnerClass", new JavaPackage(""))));
     }
 }
