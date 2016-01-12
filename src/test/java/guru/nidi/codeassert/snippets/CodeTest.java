@@ -29,6 +29,7 @@ import guru.nidi.codeassert.model.ModelResult;
 import guru.nidi.codeassert.pmd.PmdAnalyzer;
 import guru.nidi.codeassert.pmd.PmdResult;
 import guru.nidi.codeassert.pmd.ViolationCollector;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
@@ -37,9 +38,7 @@ import static guru.nidi.codeassert.pmd.Rulesets.basic;
 import static guru.nidi.codeassert.pmd.Rulesets.braces;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- */
+@Ignore
 //## codeTest
 public class CodeTest extends CodeAssertTest {
 
