@@ -39,7 +39,7 @@ public class CycleTest {
 
     @Before
     public void analyze() {
-        final ModelAnalyzer analyzer = new ModelAnalyzer(AnalyzerConfig.mavenTestClasses("guru/nidi/codeassert/dependency"));
+        final ModelAnalyzer analyzer = new ModelAnalyzer(AnalyzerConfig.maven().test("guru/nidi/codeassert/dependency"));
         result = analyzer.analyze();
     }
 

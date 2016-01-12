@@ -27,21 +27,14 @@ public final class ListUtils {
     private ListUtils() {
     }
 
-    public static List<String> prepend(String prefix, List<String> ss) {
-        if (ss.isEmpty()) {
+    public static List<String> prepend(String prefix, String... ss) {
+        if (ss.length == 0) {
             return Collections.singletonList(prefix);
         }
         final List<String> res = new ArrayList<>();
         for (final String s : ss) {
             res.add(prefix + s);
         }
-        return res;
-    }
-
-    public static List<String> merge(List<String> ss1, List<String> ss2) {
-        final List<String> res = new ArrayList<>();
-        res.addAll(ss1);
-        res.addAll(ss2);
         return res;
     }
 

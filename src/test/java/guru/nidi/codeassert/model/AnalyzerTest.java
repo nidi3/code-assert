@@ -30,7 +30,7 @@ public class AnalyzerTest {
     @Test
     public void simple() throws IOException {
         final Collection<JavaPackage> packs = new ModelAnalyzer(
-                AnalyzerConfig.mavenMainAndTestClasses("guru/nidi/codeassert/model")).analyze().findings();
+                AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model")).analyze().findings();
         assertEquals(37, packs.size());
     }
 }

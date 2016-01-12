@@ -15,11 +15,11 @@
  */
 package guru.nidi.codeassert.config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static guru.nidi.codeassert.util.ListUtils.merge;
 import static guru.nidi.codeassert.util.ListUtils.prepend;
 
 /**
@@ -42,22 +42,12 @@ public class AnalyzerConfig {
         this.classes = classes;
     }
 
-    public static AnalyzerConfig mavenMainClasses(String... packages) {
-        return new AnalyzerConfig(
-                prepend("src/main/java/", Arrays.asList(packages)),
-                prepend("target/classes/", Arrays.asList(packages)));
+    public static Maven maven() {
+        return maven(null);
     }
 
-    public static AnalyzerConfig mavenTestClasses(String... packages) {
-        return new AnalyzerConfig(
-                prepend("src/test/java/", Arrays.asList(packages)),
-                prepend("target/test-classes/", Arrays.asList(packages)));
-    }
-
-    public static AnalyzerConfig mavenMainAndTestClasses(String... packages) {
-        return new AnalyzerConfig(
-                merge(prepend("src/main/java/", Arrays.asList(packages)), prepend("src/test/java/", Arrays.asList(packages))),
-                merge(prepend("target/classes/", Arrays.asList(packages)), prepend("target/test-classes/", Arrays.asList(packages))));
+    public static Maven maven(String module) {
+        return new Maven(module);
     }
 
     public AnalyzerConfig withSources(String... sources) {
@@ -75,4 +65,48 @@ public class AnalyzerConfig {
     public List<String> getClasses() {
         return classes;
     }
+
+    public static class Maven {
+        private final String module;
+
+        public Maven(String module) {
+            this.module = module;
+        }
+
+        public AnalyzerConfig main(String... packages) {
+            return new AnalyzerConfig(
+                    path(packages, "src/main/java/"),
+                    path(packages, "target/classes/"));
+        }
+
+        public AnalyzerConfig test(String... packages) {
+            return new AnalyzerConfig(
+                    path(packages, "src/test/java/"),
+                    path(packages, "target/test-classes/"));
+        }
+
+        public AnalyzerConfig mainAndTest(String... packages) {
+            return new AnalyzerConfig(
+                    path(packages, "src/main/java/", "src/test/java/"),
+                    path(packages, "target/classes/", "target/test-classes/"));
+        }
+
+        private List<String> path(String[] packs, String... paths) {
+            final List<String> res = new ArrayList<>();
+            for (final String path : paths) {
+                res.addAll(prepend(path(path), packs));
+            }
+            return res;
+        }
+
+        private String path(String relative) {
+            if (module == null || module.length() == 0) {
+                return relative;
+            }
+            return module.endsWith("/")
+                    ? module + relative
+                    : module + "/" + relative;
+        }
+    }
+
 }

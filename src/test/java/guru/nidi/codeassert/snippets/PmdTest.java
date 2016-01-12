@@ -43,7 +43,7 @@ public class PmdTest {
     @Before
     public void setup() throws IOException {
         // Analyze all sources in src/main/java
-        config = AnalyzerConfig.mavenMainClasses();
+        config = AnalyzerConfig.maven().main();
     }
 
     @Test

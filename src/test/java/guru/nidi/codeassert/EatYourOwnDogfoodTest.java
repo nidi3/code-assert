@@ -49,7 +49,7 @@ public class EatYourOwnDogfoodTest {
 
     @Before
     public void setup() throws IOException {
-        config = AnalyzerConfig.mavenMainClasses();
+        config = AnalyzerConfig.maven().main();
     }
 
     @Test

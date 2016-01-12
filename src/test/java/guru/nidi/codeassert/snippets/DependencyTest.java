@@ -39,7 +39,7 @@ public class DependencyTest {
     @Before
     public void setup() throws IOException {
         // Analyze all sources in src/main/java
-        config = AnalyzerConfig.mavenMainClasses();
+        config = AnalyzerConfig.maven().main();
     }
 
     @Test
@@ -63,7 +63,10 @@ public class DependencyTest {
         }
 
         // All dependencies are forbidden, except the ones defined in OrgProject
-        DependencyRules rules = DependencyRules.denyAll().withRules(new OrgProject());
+        // java, org, net packages are ignored
+        DependencyRules rules = DependencyRules.denyAll()
+                .withRules(new OrgProject())
+                .withExternals("java.*", "org.*", "net.*");
 
         assertThat(new ModelAnalyzer(config).analyze(), matchesExactly(rules));
     }

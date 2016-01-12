@@ -54,7 +54,7 @@ public class PmdTest {
 
     @Test
     public void priority() {
-        final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.mavenMainAndTestClasses(),
+        final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.maven().mainAndTest(),
                 new ViolationCollector().minPriority(RulePriority.MEDIUM_HIGH))
                 .withRuleSets(basic(), braces(), design(), optimizations(), codesize(), empty(), coupling());
         assertMatcher("" +
@@ -97,8 +97,6 @@ public class PmdTest {
     @Test
     public void duplications() {
         assertMatcher("" +
-                        cpd(21, "config/AnalyzerConfig", 53, 54) +
-                        cpd("config/AnalyzerConfig", 60, 60) +
                         cpd(21, "dependency/Usage", 109, 110) +
                         cpd("dependency/Usage", 121, 122),
                 cpdResult, PmdMatchers.hasNoDuplications());
@@ -110,7 +108,7 @@ public class PmdTest {
     }
 
     private PmdResult pmdAnalyze() {
-        final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.mavenMainAndTestClasses(),
+        final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.maven().mainAndTest(),
                 new ViolationCollector().minPriority(RulePriority.MEDIUM)
                         .because("it's not useful", In.everywhere().ignore(
                                 "MethodArgumentCouldBeFinal", "LawOfDemeter", "LooseCoupling", "LocalVariableCouldBeFinal",
@@ -141,7 +139,7 @@ public class PmdTest {
     }
 
     private CpdResult cpdAnalyze() {
-        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.mavenMainClasses(), 20, new MatchCollector()
+        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.maven().main(), 20, new MatchCollector()
                 .because("blaj",
                         In.classes(DependencyMap.class, RuleResult.class).ignoreAll())
                 .just(In.classes(JavaClass.class, JavaPackage.class).ignoreAll(),

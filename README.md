@@ -25,8 +25,7 @@ public class DependencyTest {
     @Before
     public void setup() throws IOException {
         // Analyze all sources in src/main/java
-        // Ignore dependencies from/to java.*, org.*, net.*
-        config = AnalyzerConfig.mavenMainClasses().collecting(allPackages().excluding("java.*", "org.*", "net.*"));
+        config = AnalyzerConfig.maven().main();
     }
 
     @Test
@@ -43,14 +42,17 @@ public class DependencyTest {
 
             @Override
             public void defineRules() {
-                $self.mayDependUpon(util, dependency_);
-                dependency_.mustDependUpon(model);
-                model.mayDependUpon(util).mustNotDependUpon($self);
+                $self.mayUse(util, dependency_);
+                dependency_.mustUse(model);
+                model.mayUse(util).mustNotUse($self);
             }
         }
 
         // All dependencies are forbidden, except the ones defined in OrgProject
-        DependencyRules rules = DependencyRules.denyAll().withRules(new OrgProject());
+        // java, org, net packages are ignored
+        DependencyRules rules = DependencyRules.denyAll()
+                .withRules(new OrgProject())
+                .withExternals("java.*", "org.*", "net.*");
 
         assertThat(new ModelAnalyzer(config).analyze(), matchesExactly(rules));
     }
@@ -68,7 +70,7 @@ public class FindBugsTest {
     @Test
     public void findBugs() {
         // Analyze all sources in src/main/java
-        AnalyzerConfig config = AnalyzerConfig.mavenMainClasses();
+        AnalyzerConfig config = AnalyzerConfig.maven().main();
 
         // Only treat bugs with rank < 17 and with NORMAL_PRIORITY or higher
         // Ignore the given bug types in the given classes / methods.
@@ -99,7 +101,7 @@ public class PmdTest {
     @Before
     public void setup() throws IOException {
         // Analyze all sources in src/main/java
-        config = AnalyzerConfig.mavenMainClasses();
+        config = AnalyzerConfig.maven().main();
     }
 
     @Test

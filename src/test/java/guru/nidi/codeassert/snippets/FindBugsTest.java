@@ -36,7 +36,7 @@ public class FindBugsTest {
     @Test
     public void findBugs() {
         // Analyze all sources in src/main/java
-        AnalyzerConfig config = AnalyzerConfig.mavenMainClasses();
+        AnalyzerConfig config = AnalyzerConfig.maven().main();
 
         // Only treat bugs with rank < 17 and with NORMAL_PRIORITY or higher
         // Ignore the given bug types in the given classes / methods.

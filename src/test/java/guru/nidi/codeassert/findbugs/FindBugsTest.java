@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
  *
  */
 public class FindBugsTest {
-    private final AnalyzerConfig config = AnalyzerConfig.mavenMainAndTestClasses();
+    private final AnalyzerConfig config = AnalyzerConfig.maven().mainAndTest();
     private final BugCollector bugCollector = new BugCollector().minPriority(Priorities.NORMAL_PRIORITY)
             .because("is not useful",
                     In.everywhere().ignore("UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD", "UUF_UNUSED_FIELD", "DLS_DEAD_LOCAL_STORE", "SIC_INNER_SHOULD_BE_STATIC", "UC_USELESS_OBJECT", "OBL_UNSATISFIED_OBLIGATION"),
