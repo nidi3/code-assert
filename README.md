@@ -137,9 +137,65 @@ public class PmdTest {
         // Only treat duplications with at least 20 tokens
         CpdAnalyzer analyzer = new CpdAnalyzer(config, 20, collector);
 
-        assertThat(analyzer.analyze(), hasNoDuplications());
+        assertThat(analyzer.analyze(), hasNoCodeDuplications());
     }
 }
 ```
 [//]: # (end)
+
+## Standard Tests
+
+A test can inherit from `CodeAssertTest`. It should override one or more `analyzeXXX` methods.
+If it does so, these standard checks will be executed:
+* circular dependencies
+* PMD
+* PMD - unused actions
+* CPD
+* CPD - unused actions
+* FindBugs
+* FindBugs - unused actions
+
+[//]: # (codeTest)
+```java
+public class CodeTest extends CodeAssertTest {
+
+    private static final AnalyzerConfig config = AnalyzerConfig.maven().main();
+
+    @Test
+    public void dependency() {
+        class MyProject implements DependencyRuler {
+            DependencyRule packages;
+
+            @Override
+            public void defineRules() {
+                //TODO
+            }
+        }
+        final DependencyRules rules = denyAll().withExternals("java*").withRules(new MyProject());
+        assertThat(modelResult(), matchesExactly(rules));
+    }
+
+    @Override
+    protected ModelResult analyzeModel() {
+        return new ModelAnalyzer(config).analyze();
+    }
+
+    @Override
+    protected FindBugsResult analyzeFindBugs() {
+        final BugCollector bugCollector = new BugCollector().just(
+                In.loc("*Exception").ignore("SE_BAD_FIELD"));
+        return new FindBugsAnalyzer(config, bugCollector).analyze();
+    }
+
+    @Override
+    protected PmdResult analyzePmd() {
+        final ViolationCollector collector = new ViolationCollector().just(
+                In.everywhere().ignore("MethodArgumentCouldBeFinal"));
+        return new PmdAnalyzer(config, collector).withRuleSets(basic(), braces()).analyze();
+    }
+}
+```
+[//]: # (end)
+
+
 

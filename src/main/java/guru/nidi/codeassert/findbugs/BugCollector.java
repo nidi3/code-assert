@@ -86,7 +86,7 @@ public class BugCollector extends BaseCollector<BugInstance, BugCollector> {
 
     @Override
     public List<Action> unused(RejectCounter counter) {
-        return unusedNullAction(counter, maxRank != null || minPriority == null);
+        return unusedNullAction(counter, maxRank != null || minPriority != null);
     }
 
     @Override

@@ -30,7 +30,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoDuplications;
+import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoCodeDuplications;
 import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoPmdViolations;
 import static guru.nidi.codeassert.pmd.Rulesets.*;
 import static org.junit.Assert.assertThat;
@@ -80,7 +80,7 @@ public class PmdTest {
         // Only treat duplications with at least 20 tokens
         CpdAnalyzer analyzer = new CpdAnalyzer(config, 20, collector);
 
-        assertThat(analyzer.analyze(), hasNoDuplications());
+        assertThat(analyzer.analyze(), hasNoCodeDuplications());
     }
 }
 //##

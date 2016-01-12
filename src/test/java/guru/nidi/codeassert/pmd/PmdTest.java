@@ -102,7 +102,7 @@ public class PmdTest {
                         cpd("model/SignatureParser") +
                         cpd(26, "pmd/MatchCollector") +
                         cpd("pmd/ViolationCollector"),
-                cpdResult, PmdMatchers.hasNoDuplications());
+                cpdResult, PmdMatchers.hasNoCodeDuplications());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class PmdTest {
                                 "AtLeastOneConstructor", "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming",
                                 "AvoidFieldNameMatchingMethodName", "AvoidFieldNameMatchingTypeName", "BeanMembersShouldSerialize",
                                 "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith", "AvoidInstantiatingObjectsInLoops",
-                                "UseStringBufferForStringAppends"))
+                                "UseStringBufferForStringAppends","AvoidSynchronizedAtMethodLevel"))
                         .because("They are snippets", In.loc("*.snippets.*").ignoreAll())
                         .just(In.clazz(DependencyRulesTest.class).ignore("ExcessiveMethodLength"),
                                 In.classes(DependencyRulesTest.class, FindBugsTest.class).ignore("AvoidDuplicateLiterals"),

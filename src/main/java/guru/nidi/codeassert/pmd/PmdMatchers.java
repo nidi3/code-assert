@@ -38,7 +38,7 @@ public class PmdMatchers {
         return new PmdMatcher();
     }
 
-    public static Matcher<CpdResult> hasNoDuplications() {
+    public static Matcher<CpdResult> hasNoCodeDuplications() {
         return new CpdMatcher();
     }
 
