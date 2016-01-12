@@ -15,9 +15,7 @@
  */
 package guru.nidi.codeassert.model;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The <code>JavaClass</code> class represents a Java
@@ -31,25 +29,24 @@ public class JavaClass {
     private String className;
     private String packageName;
     private final Map<String, JavaPackage> imports;
+    private final Set<String> importClasses;
     private String sourceFile;
 
     public JavaClass(String name) {
         className = name;
         packageName = "default";
         imports = new HashMap<>();
+        importClasses = new HashSet<>();
         sourceFile = "Unknown";
     }
 
-    void setName(String name) {
-        className = name;
+    void setType(String type) {
+        className = classOf(type);
+        packageName = packageOf(type);
     }
 
     public String getName() {
         return className;
-    }
-
-    public void setPackageName(String name) {
-        packageName = name;
     }
 
     public String getPackageName() {
@@ -68,10 +65,22 @@ public class JavaClass {
         return imports.values();
     }
 
-    public void addImport(JavaPackage jPackage) {
-        if (!jPackage.getName().equals(getPackageName())) {
-            imports.put(jPackage.getName(), jPackage);
+    public void addImport(String type) {
+        final String pack = packageOf(type);
+        if (!pack.equals(getPackageName())) {
+            imports.put(pack, new JavaPackage(pack));
+            importClasses.add(type);
         }
+    }
+
+    private String packageOf(String type) {
+        final int pos = type.lastIndexOf('.');
+        return pos > 0 ? type.substring(0, pos) : "Default";
+    }
+
+    private String classOf(String type) {
+        final int pos = type.lastIndexOf('.');
+        return pos > 0 ? type.substring(pos + 1) : type;
     }
 
     public boolean hasImportsMatchedBy(String name) {

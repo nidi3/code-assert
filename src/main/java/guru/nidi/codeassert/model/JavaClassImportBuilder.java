@@ -32,16 +32,16 @@ class JavaClassImportBuilder {
     }
 
     public void addClassName(String className) {
-        jClass.setPackageName(getPackageName(className));
+        jClass.setType(className);
     }
 
     public void addSuperClass(String className) {
-        addImport(getPackageName(className));
+        addImport(className);
     }
 
     public void addInterfaces(String[] interfaceNames) {
         for (final String interfaceName : interfaceNames) {
-            addImport(getPackageName(interfaceName));
+            addImport(interfaceName);
         }
     }
 
@@ -49,7 +49,7 @@ class JavaClassImportBuilder {
         for (final Constant constant : constantPool) {
             if (constant.tag == Constant.CLASS) {
                 final String name = constantPool.getUtf8(constant.nameIndex);
-                addImport(getPackageName(name));
+                addImport(name);
             }
         }
     }
@@ -78,8 +78,8 @@ class JavaClassImportBuilder {
         for (final MemberInfo info : infos) {
             if (info.signature != null) {
                 final String name = constantPool.getUtf8(u2(info.signature.value, 0));
-                for (final String pack : SignatureParser.parseSignature(source, name).getPackages()) {
-                    addImport(pack);
+                for (final String clazz : SignatureParser.parseSignature(source, name).getClasses()) {
+                    addImport(clazz);
                 }
             }
         }
@@ -91,7 +91,7 @@ class JavaClassImportBuilder {
             final String[] types = descriptorToTypes(descriptor);
             for (final String type : types) {
                 if (type.length() > 0) {
-                    addImport(getPackageName(type));
+                    addImport(type);
                 }
             }
         }
@@ -106,8 +106,8 @@ class JavaClassImportBuilder {
         for (final AttributeInfo attr : attributes) {
             if (attr.isSignature()) {
                 final String name = constantPool.getUtf8(u2(attr.value, 0));
-                for (final String pack : SignatureParser.parseSignature(SignatureParser.Source.CLASS, name).getPackages()) {
-                    addImport(pack);
+                for (final String clazz : SignatureParser.parseSignature(SignatureParser.Source.CLASS, name).getClasses()) {
+                    addImport(clazz);
                 }
             }
         }
@@ -133,7 +133,7 @@ class JavaClassImportBuilder {
         for (int a = 0; a < numAnnotations; a++) {
             final int typeIndex = u2(data, i);
             final int elements = u2(data, i += 2);
-            addImport(getPackageName(constantPool.getUtf8(typeIndex).substring(1)));
+            addImport(descriptorToType(constantPool.getUtf8(typeIndex)));
             i += 2;
             for (int e = 0; e < elements; e++) {
                 i = addAnnotationElementValueReferences(data, i + 2);
@@ -157,11 +157,11 @@ class JavaClassImportBuilder {
                 return i + 3;
             case 'e':
                 final int enumTypeIndex = u2(data, i + 1);
-                addImport(getPackageName(constantPool.getUtf8(enumTypeIndex).substring(1)));
+                addImport(descriptorToType(constantPool.getUtf8(enumTypeIndex)));
                 return i + 5;
             case 'c':
                 final int classInfoIndex = u2(data, i + 1);
-                addImport(getPackageName(constantPool.getUtf8(classInfoIndex).substring(1)));
+                addImport(descriptorToType(constantPool.getUtf8(classInfoIndex)));
                 return i + 3;
             case '@':
                 return addAnnotationReferences(data, i + 1, 1);
@@ -181,9 +181,10 @@ class JavaClassImportBuilder {
         return (data[index] << 8 & 0xFF00) | (data[index + 1] & 0xFF);
     }
 
-    private void addImport(String importPackage) {
-        if (importPackage != null) {
-            jClass.addImport(new JavaPackage(importPackage));
+    private void addImport(String type) {
+        final String name = getTypeName(type);
+        if (name != null) {
+            jClass.addImport(name);
         }
     }
 
@@ -191,7 +192,7 @@ class JavaClassImportBuilder {
         return s.replace('/', '.');
     }
 
-    private String getPackageName(String s) {
+    private String getTypeName(String s) {
         final String typed;
         if (s.length() > 0 && s.charAt(0) == '[') {
             final String types[] = descriptorToTypes(s);
@@ -202,14 +203,14 @@ class JavaClassImportBuilder {
         } else {
             typed = s;
         }
+        return slashesToDots(typed);
+    }
 
-        final String dotted = slashesToDots(typed);
-        final int pos = dotted.lastIndexOf('.');
-        if (pos > 0) {
-            return dotted.substring(0, pos);
+    private String descriptorToType(String descriptor) {
+        if (!descriptor.startsWith("L")) {
+            throw new AssertionError("Expected Object descriptor, but found '" + descriptor + "'");
         }
-
-        return "Default";
+        return descriptor.substring(1, descriptor.length() - 1);
     }
 
     private String[] descriptorToTypes(String descriptor) {

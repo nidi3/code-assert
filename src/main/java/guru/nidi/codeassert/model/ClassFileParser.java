@@ -91,10 +91,7 @@ class ClassFileParser {
 
     private String parseClassName() throws IOException {
         final int entryIndex = in.readUnsignedShort();
-        final String className = constantPool.getClassConstantName(entryIndex);
-        jClass.setName(className);
-
-        return className;
+        return constantPool.getClassConstantName(entryIndex);
     }
 
     private String parseSuperClassName() throws IOException {

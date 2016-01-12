@@ -39,7 +39,7 @@ final class SignatureParser {
     private final String s;
     private char c;
     private int pos;
-    private final Set<String> packages = new HashSet<>();
+    private final Set<String> classes = new HashSet<>();
 
     private SignatureParser(String s) {
         this.s = s;
@@ -63,8 +63,8 @@ final class SignatureParser {
         return parser;
     }
 
-    public Collection<String> getPackages() {
-        return packages;
+    public Collection<String> getClasses() {
+        return classes;
     }
 
     private void classSignature() {
@@ -135,8 +135,7 @@ final class SignatureParser {
         while (is('.')) {
             classTypeSignatureSuffix();
         }
-        final int pos = id.lastIndexOf('.');
-        packages.add(pos < 0 ? id : id.substring(0, pos));
+        classes.add(id);
         read(';');
     }
 

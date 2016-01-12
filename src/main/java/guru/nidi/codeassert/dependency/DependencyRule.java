@@ -76,10 +76,6 @@ public class DependencyRule {
         return this;
     }
 
-    public boolean hasUseClause() {
-        return !use.isEmpty();
-    }
-
     public boolean matches(JavaPackage pack) {
         return pack.isMatchedBy(name);
     }

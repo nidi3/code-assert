@@ -25,7 +25,7 @@ public class RejectCounter {
     private final Map<Action, Integer> rejects = new HashMap<>();
 
     public <S> Issue<S> issue(S rawIssue) {
-        return new Issue<S>(this, rawIssue);
+        return new Issue<>(this, rawIssue);
     }
 
     public int getCount(Action action) {
