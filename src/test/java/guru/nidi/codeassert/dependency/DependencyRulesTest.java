@@ -88,7 +88,6 @@ public class DependencyRulesTest {
     public void matcherFlags() {
         final DependencyRules rules = DependencyRules.allowAll();
         rules.addExternal("java.*");
-        rules.addExternal("org.junit.*");
         rules.addExternal("org.hamcrest*");
         rules.addRule(base("a"));
         rules.addRule(base("d"));
@@ -114,7 +113,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, " +
                         "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, " +
                         "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, " +
-                        "guru.nidi.codeassert.junit, guru.nidi.codeassert.model\n",
+                        "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
                 matchesExactly(rules));
 
         assertMatcher("\nFound packages which are not defined:\n" +
@@ -123,7 +122,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, " +
                         "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, " +
                         "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, " +
-                        "guru.nidi.codeassert.junit, guru.nidi.codeassert.model\n",
+                        "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
                 matchesIgnoringNonExisting(rules));
 
         assertMatcher("\nDefined, but not existing packages:\n" +
