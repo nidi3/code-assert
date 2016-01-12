@@ -26,7 +26,6 @@ import java.util.*;
  */
 public class DependencyRules {
     private final List<DependencyRule> rules = new ArrayList<>();
-    private final List<DependencyRule> externals = new ArrayList<>();
     private final boolean allowAll;
 
     private DependencyRules(boolean allowAll) {
@@ -42,7 +41,7 @@ public class DependencyRules {
     }
 
     public DependencyRule addRule(String pack) {
-        return doAddRule(pack, rules);
+        return addRule(new DependencyRule(pack, allowAll));
     }
 
     public DependencyRule addRule(DependencyRule pack) {
@@ -51,31 +50,15 @@ public class DependencyRules {
     }
 
     /**
-     * An external package and usages thereof are ignored.
+     * An external package has a default {@code mayBeUsedBy("*")}.
      *
      * @param pack
      * @return
      */
     public DependencyRule addExternal(String pack) {
-        return doAddRule(pack, externals);
-    }
-
-    /**
-     * The package of an external rule is ignored,
-     * it must not contain "use" clauses, but its "beUsedBy" clauses are applied.
-     *
-     * @param pack
-     * @return
-     */
-    public DependencyRule addExternal(DependencyRule pack) {
-        externals.add(pack);
-        return pack;
-    }
-
-    private DependencyRule doAddRule(String pack, List<DependencyRule> rules) {
         final DependencyRule rule = new DependencyRule(pack, allowAll);
-        rules.add(rule);
-        return rule;
+        rule.mayBeUsedBy(new DependencyRule("*", allowAll));
+        return addRule(rule);
     }
 
     /**
@@ -114,16 +97,15 @@ public class DependencyRules {
      * @return DependencyRules including the new rules.
      */
     public DependencyRules withRules(String basePackage, DependencyRuler ruler) {
-        return doWithRules(addPackages(basePackage, ruler.getClass()), ruler, rules);
+        return doWithRules(addPackages(basePackage, ruler.getClass()), false, ruler);
     }
 
-
     public DependencyRules withRules(DependencyRuler... rulers) {
-        return doWithRules(rules, true, rulers);
+        return doWithRules(true, false, rulers);
     }
 
     public DependencyRules withExternals(DependencyRuler... rulers) {
-        return doWithRules(externals, false, rulers);
+        return doWithRules(false, true, rulers);
     }
 
     public DependencyRules withExternals(String... externals) {
@@ -133,26 +115,45 @@ public class DependencyRules {
         return this;
     }
 
-    private DependencyRules doWithRules(List<DependencyRule> rules, boolean withRulerName, DependencyRuler... rulers) {
+    private DependencyRules doWithRules(boolean withRulerName, boolean external, DependencyRuler... rulers) {
         for (final DependencyRuler ruler : rulers) {
-            doWithRules(addPackages("", withRulerName ? ruler.getClass() : null), ruler, rules);
+            doWithRules(addPackages("", withRulerName ? ruler.getClass() : null), external, ruler);
         }
         return this;
     }
 
-    private DependencyRules doWithRules(String basePackage, DependencyRuler ruler, List<DependencyRule> rules) {
+    private DependencyRules doWithRules(String basePackage, boolean external, DependencyRuler ruler) {
         try {
-            for (final Field f : ruler.getClass().getDeclaredFields()) {
-                f.setAccessible(true);
-                if (f.getType() == DependencyRule.class) {
-                    final String pack = addPackages(basePackage, (f.getName().equals("$self") ? "" : camelCaseToDotCase(f.getName())));
-                    f.set(ruler, doAddRule(pack, rules));
-                }
-            }
+            final List<DependencyRule> ruleFields = initFields(basePackage, ruler);
             ruler.defineRules();
+            postProcessFields(ruleFields, external);
             return this;
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException("Could not access field", e);
+        }
+    }
+
+    private List<DependencyRule> initFields(String basePackage, DependencyRuler ruler) throws IllegalAccessException {
+        final List<DependencyRule> ruleFields = new ArrayList<>();
+        for (final Field f : ruler.getClass().getDeclaredFields()) {
+            f.setAccessible(true);
+            if (f.getType() == DependencyRule.class) {
+                final String pack = addPackages(basePackage, (f.getName().equals("$self") ? "" : camelCaseToDotCase(f.getName())));
+                final DependencyRule rule = addRule(pack);
+                ruleFields.add(rule);
+                f.set(ruler, rule);
+            }
+        }
+        return ruleFields;
+    }
+
+    private void postProcessFields(List<DependencyRule> ruleFields, boolean external) {
+        if (external) {
+            for (final DependencyRule rule : ruleFields) {
+                if (rule.isEmpty()) {
+                    rule.mayBeUsedBy(new DependencyRule("*", allowAll));
+                }
+            }
         }
     }
 
@@ -197,55 +198,17 @@ public class DependencyRules {
     }
 
     public RuleResult analyzeRules(Collection<JavaPackage> packs) {
-        checkRules();
         final RuleResult result = new RuleResult();
-        final Collection<JavaPackage> filtered = filterExternals(packs);
         for (final DependencyRule rule : rules) {
-            result.merge(rule.analyze(filtered, rules));
+            result.merge(rule.analyze(packs, rules));
         }
-        for (final JavaPackage pack : filtered) {
+        for (final JavaPackage pack : packs) {
             if (!matchesAny(pack, rules)) {
                 result.undefined.add(pack.getName());
             }
         }
         result.normalize();
         return result;
-    }
-
-    private Collection<JavaPackage> filterExternals(Collection<JavaPackage> packs) {
-        final List<JavaPackage> filtered = new ArrayList<>();
-        for (final JavaPackage pack : packs) {
-            if (!matchesAny(pack, externals)) {
-                filtered.add(filterMatchingEfferents(pack, externals));
-            }
-        }
-        return filtered;
-    }
-
-    private JavaPackage filterMatchingEfferents(JavaPackage pack, List<DependencyRule> rules) {
-        final List<JavaPackage> filtered = new ArrayList<>(pack.getEfferents());
-        for (final DependencyRule rule : rules) {
-            for (final Iterator<JavaPackage> it = filtered.iterator(); it.hasNext(); ) {
-                final JavaPackage eff = it.next();
-                if (rule.matches(eff)) {
-                    it.remove();
-                }
-            }
-        }
-        return pack.copyWithEfferents(filtered);
-    }
-
-
-    private void checkRules() {
-        final List<DependencyRule> rs = new ArrayList<>();
-        for (final DependencyRule external : externals) {
-            if (external.hasUseClause()) {
-                rs.add(external);
-            }
-        }
-        if (!rs.isEmpty()) {
-            throw new ExternalDependencyWithUseClauseException(rs);
-        }
     }
 
     private boolean matchesAny(JavaPackage pack, List<DependencyRule> rules) {

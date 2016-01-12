@@ -23,10 +23,7 @@ import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static org.junit.Assert.*;
@@ -51,20 +48,6 @@ public class DependencyRulesTest {
     @Test(expected = IllegalArgumentException.class)
     public void wildcardNotAtEnd() {
         DependencyRule.allowAll("a*b");
-    }
-
-    @Test
-    public void externalsWithUseClause() {
-        final DependencyRules rules = DependencyRules.allowAll();
-        final DependencyRule java = rules.addExternal("java.*");
-        final DependencyRule hamcrest = rules.addExternal("org.hamcrest.*");
-        hamcrest.mayUse(java);
-        try {
-            rules.analyzeRules(model.findings());
-            fail();
-        } catch (ExternalDependencyWithUseClauseException e) {
-            assertEquals(Arrays.asList(hamcrest), e.getRules());
-        }
     }
 
     @Test
@@ -131,7 +114,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, " +
                         "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, " +
                         "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, " +
-                        "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
+                        "guru.nidi.codeassert.junit, guru.nidi.codeassert.model\n",
                 matchesExactly(rules));
 
         assertMatcher("\nFound packages which are not defined:\n" +
@@ -140,7 +123,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, " +
                         "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, " +
                         "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, " +
-                        "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
+                        "guru.nidi.codeassert.junit, guru.nidi.codeassert.model\n",
                 matchesIgnoringNonExisting(rules));
 
         assertMatcher("\nDefined, but not existing packages:\n" +
@@ -355,7 +338,7 @@ public class DependencyRulesTest {
     }
 
     private static Set<String> set(String... ss) {
-        final Set<String> res = new HashSet<>();
+        final Set<String> res = new TreeSet<>();
         Collections.addAll(res, ss);
         return res;
     }

@@ -17,6 +17,7 @@ package guru.nidi.codeassert.dependency;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -29,7 +30,7 @@ public class RuleResult {
     final Set<String> undefined;
 
     public RuleResult() {
-        this(new DependencyMap(), new DependencyMap(), new DependencyMap(), new HashSet<String>(), new HashSet<String>());
+        this(new DependencyMap(), new DependencyMap(), new DependencyMap(), new TreeSet<String>(), new TreeSet<String>());
     }
 
     public RuleResult(DependencyMap allowed, DependencyMap missing, DependencyMap denied, Set<String> notExisting, Set<String> undefined) {

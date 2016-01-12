@@ -84,6 +84,10 @@ public class DependencyRule {
         return pack.isMatchedBy(name);
     }
 
+    public boolean isEmpty() {
+        return use.isEmpty() && usedBy.isEmpty();
+    }
+
     public RuleResult analyze(Collection<JavaPackage> packages, List<DependencyRule> rules) {
         final RuleResult result = new RuleResult();
         final List<JavaPackage> thisPackages = JavaPackage.allMatchesBy(packages, name);
