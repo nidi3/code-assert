@@ -38,9 +38,10 @@ public class LocationMatcher {
     }
 
     /**
-     * @param name      the name to be matched
-     * @param className the class name to be matched
-     * @param method    the method to be matched
+     * @param name            the name to be matched
+     * @param className       the class name to be matched
+     * @param method          the method to be matched
+     * @param strictNameMatch if the name must match exactly (as opposed to 'contains')
      * @return If the given name and location (className and method)
      * both match any of the predefined names and locations.
      */

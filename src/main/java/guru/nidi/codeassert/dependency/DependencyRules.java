@@ -52,8 +52,8 @@ public class DependencyRules {
     /**
      * An external package has a default {@code mayBeUsedBy("*")}.
      *
-     * @param pack
-     * @return
+     * @param pack The name of the external package.
+     * @return A DependencyRule with the given name.
      */
     public DependencyRule addExternal(String pack) {
         final DependencyRule rule = new DependencyRule(pack, allowAll);
