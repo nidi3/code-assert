@@ -76,21 +76,21 @@ public class FileManagerTest {
 
     @Test
     public void jar() throws IOException {
-        File f = File.createTempFile("bogus", ".jar", Path.testResource(""));
+        File f = File.createTempFile("bogus", ".jar");
         fileManager.withDirectory(f.getPath());
         f.deleteOnExit();
     }
 
     @Test
     public void zip() throws IOException {
-        File f = File.createTempFile("bogus", ".zip", Path.testResource(""));
+        File f = File.createTempFile("bogus", ".zip");
         fileManager.withDirectory(f.getPath());
         f.deleteOnExit();
     }
 
     @Test
     public void war() throws IOException {
-        File f = File.createTempFile("bogus", ".war", Path.testResource(""));
+        File f = File.createTempFile("bogus", ".war");
         fileManager.withDirectory(f.getPath());
         f.deleteOnExit();
     }
