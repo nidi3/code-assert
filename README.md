@@ -127,11 +127,12 @@ public class PmdTest {
     @Test
     public void cpd() {
         // Ignore duplications in the given classes
-        MatchCollector collector = new MatchCollector().just(
-                In.classes(DependencyMap.class, RuleResult.class).ignoreAll(),
-                In.classes(JavaClass.class, JavaPackage.class).ignoreAll(),
-                In.loc("SignatureParser").ignoreAll(),
-                In.clazz(DependencyMap.class).ignoreAll());
+        MatchCollector collector = new MatchCollector()
+                .because("equals",
+                        In.everywhere().ignore("public boolean equals(Object o) {"))
+                .just(
+                        In.classes(DependencyMap.class, RuleResult.class).ignoreAll(),
+                        In.loc("SignatureParser").ignoreAll());
 
         // Only treat duplications with at least 20 tokens
         CpdAnalyzer analyzer = new CpdAnalyzer(config, 20, collector);
