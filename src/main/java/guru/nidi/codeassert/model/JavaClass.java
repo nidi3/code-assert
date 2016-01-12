@@ -41,7 +41,7 @@ public class JavaClass {
     }
 
     void setType(String type) {
-        className = classOf(type);
+        className = type;
         packageName = packageOf(type);
     }
 
@@ -76,11 +76,6 @@ public class JavaClass {
     private String packageOf(String type) {
         final int pos = type.lastIndexOf('.');
         return pos > 0 ? type.substring(0, pos) : "Default";
-    }
-
-    private String classOf(String type) {
-        final int pos = type.lastIndexOf('.');
-        return pos > 0 ? type.substring(pos + 1) : type;
     }
 
     public boolean hasImportsMatchedBy(String name) {

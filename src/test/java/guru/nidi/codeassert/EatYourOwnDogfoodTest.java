@@ -94,12 +94,11 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                         "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName",
                         "UncommentedEmptyConstructor", "AvoidInstantiatingObjectsInLoops",
                         "UseStringBufferForStringAppends", "AvoidSynchronizedAtMethodLevel",
-                        "JUnitAssertionsShouldIncludeMessage"),
+                        "JUnitAssertionsShouldIncludeMessage","SimplifyStartsWith"),
                 In.locs("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
                 In.loc("Rulesets$*").ignore("AvoidDuplicateLiterals"),
                 In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),
                 In.clazz(Rulesets.class).ignore("TooManyMethods"),
-                In.clazz(LocationMatcher.class).ignore("SimplifyStartsWith"),
                 In.loc("*Test").ignore("TooManyStaticImports"),
                 In.loc("Reason").ignore("SingularField"),
                 In.locs("DependencyRules", "JavaClassImportBuilder").ignore("GodClass"));
