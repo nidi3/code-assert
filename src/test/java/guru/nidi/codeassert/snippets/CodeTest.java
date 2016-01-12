@@ -32,8 +32,8 @@ import guru.nidi.codeassert.pmd.ViolationCollector;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesExactly;
 import static guru.nidi.codeassert.pmd.Rulesets.basic;
 import static guru.nidi.codeassert.pmd.Rulesets.braces;
 import static org.junit.Assert.assertThat;

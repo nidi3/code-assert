@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.util;
+package guru.nidi.codeassert.junit;
 
 import guru.nidi.codeassert.AnalyzerResult;
 import org.hamcrest.Description;

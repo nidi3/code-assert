@@ -26,7 +26,7 @@ import guru.nidi.codeassert.pmd.Ruleset;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static guru.nidi.codeassert.findbugs.FindBugsMatchers.hasNoBugs;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoBugs;
 import static org.junit.Assert.assertThat;
 
 @Ignore

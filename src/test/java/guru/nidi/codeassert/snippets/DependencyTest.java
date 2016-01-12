@@ -26,8 +26,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
-import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCycles;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesExactly;
 import static org.junit.Assert.assertThat;
 
 @Ignore

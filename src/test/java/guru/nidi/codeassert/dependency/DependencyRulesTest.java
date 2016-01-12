@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static guru.nidi.codeassert.dependency.DependencyMatchers.*;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static org.junit.Assert.*;
 
 /**
@@ -36,8 +36,8 @@ import static org.junit.Assert.*;
  */
 public class DependencyRulesTest {
     private static final String BASE = "guru.nidi.codeassert.dependency.";
-    private static final Set<String> WILDCARD_UNDEFINED = set("guru.nidi.codeassert", "guru.nidi.codeassert.config", "guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", "guru.nidi.codeassert.util", base("a"), base("b"), base("c"));
-    private static final Set<String> UNDEFINED = set("guru.nidi.codeassert", "guru.nidi.codeassert.config", "guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", "guru.nidi.codeassert.util", base("a.a"), base("a.b"), base("b.a"), base("b.b"), base("c.a"), base("c.b"));
+    private static final Set<String> WILDCARD_UNDEFINED = set("guru.nidi.codeassert", "guru.nidi.codeassert.config", "guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", "guru.nidi.codeassert.junit", base("a"), base("b"), base("c"));
+    private static final Set<String> UNDEFINED = set("guru.nidi.codeassert", "guru.nidi.codeassert.config", "guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", "guru.nidi.codeassert.junit", base("a.a"), base("a.b"), base("b.a"), base("b.b"), base("c.a"), base("c.b"));
 
     private ModelResult model;
 
@@ -131,7 +131,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, " +
                         "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, " +
                         "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, " +
-                        "guru.nidi.codeassert.model, guru.nidi.codeassert.util, org.junit\n",
+                        "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
                 matchesExactly(rules));
 
         assertMatcher("\nFound packages which are not defined:\n" +
@@ -140,7 +140,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, " +
                         "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, " +
                         "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, " +
-                        "guru.nidi.codeassert.model, guru.nidi.codeassert.util, org.junit\n",
+                        "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
                 matchesIgnoringNonExisting(rules));
 
         assertMatcher("\nDefined, but not existing packages:\n" +

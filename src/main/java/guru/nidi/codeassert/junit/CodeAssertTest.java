@@ -24,12 +24,8 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
-import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoUnusedActions;
-import static guru.nidi.codeassert.findbugs.FindBugsMatchers.hasNoBugs;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static guru.nidi.codeassert.junit.CodeAssertTest.Type.*;
-import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoCodeDuplications;
-import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoPmdViolations;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;

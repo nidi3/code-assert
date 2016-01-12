@@ -32,8 +32,7 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoPmdViolations;
-import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoUnusedActions;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static guru.nidi.codeassert.pmd.RegexMatcher.matchesFormat;
 import static guru.nidi.codeassert.pmd.Rulesets.Comments.Requirement.Ignored;
 import static guru.nidi.codeassert.pmd.Rulesets.Comments.Requirement.Required;
@@ -102,7 +101,7 @@ public class PmdTest {
                         cpd("model/SignatureParser") +
                         cpd(26, "pmd/MatchCollector") +
                         cpd("pmd/ViolationCollector"),
-                cpdResult, PmdMatchers.hasNoCodeDuplications());
+                cpdResult, hasNoCodeDuplications());
     }
 
     @Test
@@ -119,7 +118,7 @@ public class PmdTest {
                                 "AtLeastOneConstructor", "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming",
                                 "AvoidFieldNameMatchingMethodName", "AvoidFieldNameMatchingTypeName", "BeanMembersShouldSerialize",
                                 "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith", "AvoidInstantiatingObjectsInLoops",
-                                "UseStringBufferForStringAppends","AvoidSynchronizedAtMethodLevel"))
+                                "UseStringBufferForStringAppends", "AvoidSynchronizedAtMethodLevel"))
                         .because("They are snippets", In.loc("*.snippets.*").ignoreAll())
                         .just(In.clazz(DependencyRulesTest.class).ignore("ExcessiveMethodLength"),
                                 In.classes(DependencyRulesTest.class, FindBugsTest.class).ignore("AvoidDuplicateLiterals"),
@@ -150,7 +149,7 @@ public class PmdTest {
                 .just(
                         In.everywhere().ignore(
                                 "public static <T extends AnalyzerResult<?>> Matcher<T> hasNoUnusedActions() {"),
-                        In.loc("*Matchers").ignore(
+                        In.loc("*Matcher").ignore(
                                 "return item.findings().isEmpty();"))
         );
         return analyzer.analyze();

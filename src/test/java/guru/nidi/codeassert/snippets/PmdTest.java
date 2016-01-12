@@ -30,8 +30,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoCodeDuplications;
-import static guru.nidi.codeassert.pmd.PmdMatchers.hasNoPmdViolations;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCodeDuplications;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoPmdViolations;
 import static guru.nidi.codeassert.pmd.Rulesets.*;
 import static org.junit.Assert.assertThat;
 

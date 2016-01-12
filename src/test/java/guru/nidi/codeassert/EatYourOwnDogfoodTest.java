@@ -36,8 +36,8 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static guru.nidi.codeassert.dependency.DependencyMatchers.matchesExactly;
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesExactly;
 import static guru.nidi.codeassert.junit.CodeAssertTest.Type.*;
 import static guru.nidi.codeassert.pmd.Rulesets.*;
 import static org.junit.Assert.assertThat;
@@ -64,7 +64,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                 model.mayUse($self, util, config);
                 pmd.mayUse($self, util, config);
                 util.mayUse($self);
-                junit.mayUse(model, dependency, findbugs, pmd);
+                junit.mayUse($self, model, dependency, findbugs, pmd);
             }
         }
         final DependencyRules rules = denyAll().withExternals("edu*", "java*", "net*", "org*").withRules(new GuruNidiCodeassert());

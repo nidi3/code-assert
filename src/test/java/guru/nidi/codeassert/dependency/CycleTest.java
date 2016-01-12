@@ -25,8 +25,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static guru.nidi.codeassert.dependency.CycleResult.packages;
-import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCycles;
-import static guru.nidi.codeassert.dependency.DependencyMatchers.hasNoCyclesExcept;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCycles;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCyclesExcept;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
