@@ -16,8 +16,8 @@
 package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.model.JavaPackage;
+import guru.nidi.codeassert.model.Model;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -93,7 +93,7 @@ class Usage {
 
     public void analyzeDenyAll(RuleResult result, List<JavaPackage> thisPackages) {
         for (final JavaPackage thisPack : thisPackages) {
-            for (final JavaPackage dep : thisPack.getEfferents()) {
+            for (final JavaPackage dep : thisPack.getUses()) {
                 final boolean allowed = dep.isMatchedByAny(must) || dep.isMatchedByAny(may);
                 final boolean mustNot = dep.isMatchedByAny(this.mustNot);
                 if (!mustNot && allowed) {
@@ -106,11 +106,11 @@ class Usage {
         }
     }
 
-    public void analyzeAllowAll(RuleResult result, List<JavaPackage> thisPackages, Collection<JavaPackage> packages) {
+    public void analyzeAllowAll(RuleResult result, List<JavaPackage> thisPackages, Model model) {
         for (final String mustNot : this.mustNot) {
-            for (final JavaPackage mustNotPack : JavaPackage.allMatchesBy(packages, mustNot)) {
+            for (final JavaPackage mustNotPack : model.matchingPackages(mustNot)) {
                 for (final JavaPackage thisPack : thisPackages) {
-                    if (thisPack.hasEfferentsMatchedBy(mustNotPack.getName()) && !mustNotPack.isMatchedByAny(may)) {
+                    if (thisPack.usesPackagesMatchedBy(mustNotPack.getName()) && !mustNotPack.isMatchedByAny(may)) {
                         result.denied.with(thisPack, mustNotPack);
                     }
                 }
@@ -118,11 +118,11 @@ class Usage {
         }
     }
 
-    public void analyzeMissing(RuleResult result, List<JavaPackage> thisPackages, Collection<JavaPackage> packages) {
+    public void analyzeMissing(RuleResult result, List<JavaPackage> thisPackages, Model model) {
         for (final String must : this.must) {
-            for (final JavaPackage mustPack : JavaPackage.allMatchesBy(packages, must)) {
+            for (final JavaPackage mustPack : model.matchingPackages(must)) {
                 for (final JavaPackage thisPack : thisPackages) {
-                    if (!thisPack.hasEfferentsMatchedBy(mustPack.getName())) {
+                    if (!thisPack.usesPackagesMatchedBy(mustPack.getName())) {
                         result.missing.with(thisPack, mustPack);
                     }
                 }

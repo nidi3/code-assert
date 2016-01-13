@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCycles;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoPackageCycles;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesExactly;
 import static org.junit.Assert.assertThat;
 
@@ -44,7 +44,7 @@ public class DependencyTest {
 
     @Test
     public void noCycles() {
-        assertThat(new ModelAnalyzer(config).analyze(), hasNoCycles());
+        assertThat(new ModelAnalyzer(config).analyze(), hasNoPackageCycles());
     }
 
     @Test

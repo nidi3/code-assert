@@ -53,13 +53,22 @@ public final class CodeAssertMatchers {
         return new DependencyRuleMatcher(rules, true, false);
     }
 
-    public static Matcher<ModelResult> hasNoCycles() {
-        return new DependencyCycleMatcher();
+    public static Matcher<ModelResult> hasNoPackageCycles() {
+        return new DependencyCycleMatcher(true);
     }
 
     @SafeVarargs
-    public static Matcher<ModelResult> hasNoCyclesExcept(Set<String>... cyclicGroups) {
-        return new DependencyCycleMatcher(cyclicGroups);
+    public static Matcher<ModelResult> hasNoPackgeCyclesExcept(Set<String>... cyclicGroups) {
+        return new DependencyCycleMatcher(true, cyclicGroups);
+    }
+
+    public static Matcher<ModelResult> hasNoClassCycles() {
+        return new DependencyCycleMatcher(false);
+    }
+
+    @SafeVarargs
+    public static Matcher<ModelResult> hasNoClassCyclesExcept(Set<String>... cyclicGroups) {
+        return new DependencyCycleMatcher(false, cyclicGroups);
     }
 
     public static Matcher<FindBugsResult> hasNoBugs() {

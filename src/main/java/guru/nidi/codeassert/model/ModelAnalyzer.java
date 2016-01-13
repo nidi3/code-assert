@@ -22,12 +22,11 @@ import guru.nidi.codeassert.config.AnalyzerConfig;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  *
  */
-public class ModelAnalyzer implements Analyzer<Collection<JavaPackage>> {
+public class ModelAnalyzer implements Analyzer<Model> {
     private final AnalyzerConfig config;
 
     public ModelAnalyzer(AnalyzerConfig config) {
@@ -40,7 +39,7 @@ public class ModelAnalyzer implements Analyzer<Collection<JavaPackage>> {
                     new ClassFileParser(),
                     new FileManager().withDirectories(config.getClasses()));
             builder.build();
-            return new ModelResult(this, builder.packages.values(), Collections.<String>emptyList());
+            return new ModelResult(this, builder.model, Collections.<String>emptyList());
         } catch (IOException e) {
             throw new AnalyzerException("Problem executing ModelAnalyzer", e);
         }

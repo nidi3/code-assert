@@ -27,7 +27,12 @@ final class MatcherUtils {
     public static String deps(String prefix, Map<String, Set<String>> deps) {
         final StringBuilder s = new StringBuilder();
         for (final String dep : sorted(deps.keySet())) {
-            s.append(prefix).append(dep).append(" (by ").append(join(deps.get(dep))).append(")\n");
+            s.append(prefix).append(dep);
+            final Set<String> by = deps.get(dep);
+            if (!by.isEmpty()) {
+                s.append(" (by ").append(join(by)).append(')');
+            }
+            s.append('\n');
         }
         return s.toString();
     }

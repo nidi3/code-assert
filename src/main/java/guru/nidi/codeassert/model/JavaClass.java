@@ -25,7 +25,7 @@ import java.util.*;
  * @author Clarkware Consulting, Inc.
  */
 
-public class JavaClass {
+public class JavaClass implements UsingElement<JavaClass> {
     private final String className;
     private final JavaPackage pack;
     private final Map<String, JavaPackage> imports;
@@ -60,13 +60,13 @@ public class JavaClass {
         return imports.values();
     }
 
-    public void addImport(String type, JavaClassBuilder builder) {
+    public void addImport(String type, Model model) {
         final String packName = packageOf(type);
         if (!packName.equals(pack.getName())) {
-            final JavaPackage p = builder.getPackage(packName);
+            final JavaPackage p = model.getOrCreatePackage(packName);
             imports.put(packName, p);
             pack.addEfferent(p);
-            importClasses.add(builder.getClass(type));
+            importClasses.add(model.getOrCreateClass(type));
         }
     }
 
@@ -75,8 +75,13 @@ public class JavaClass {
         return pos > 0 ? type.substring(0, pos) : "Default";
     }
 
-    public boolean hasImportsMatchedBy(String name) {
-        return !JavaPackage.allMatchesBy(getImports(), name).isEmpty();
+    public boolean usesPackagesMatchedBy(String name) {
+        for (final JavaPackage pack : imports.values()) {
+            if (pack.isMatchedBy(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean equals(Object other) {
@@ -94,5 +99,15 @@ public class JavaClass {
     @Override
     public String toString() {
         return className;
+    }
+
+    @Override
+    public Collection<JavaClass> uses() {
+        return importClasses;
+    }
+
+    @Override
+    public Collection<String> usedVia(UsingElement<JavaClass> other) {
+        return Collections.emptyList();
     }
 }

@@ -16,8 +16,8 @@
 package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.model.JavaPackage;
+import guru.nidi.codeassert.model.Model;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -115,16 +115,16 @@ public class DependencyRule {
         return use.isEmpty() && usedBy.isEmpty();
     }
 
-    public RuleResult analyze(Collection<JavaPackage> packages, List<DependencyRule> rules) {
+    public RuleResult analyze(Model model, List<DependencyRule> rules) {
         final RuleResult result = new RuleResult();
-        final List<JavaPackage> thisPackages = JavaPackage.allMatchesBy(packages, name);
+        final List<JavaPackage> thisPackages = model.matchingPackages(name);
 
         analyzeNotExisting(result, thisPackages);
         final Usage usage = applyUsageBy(rules);
-        usage.analyzeMissing(result, thisPackages, packages);
+        usage.analyzeMissing(result, thisPackages, model);
 
         if (allowAll) {
-            usage.analyzeAllowAll(result, thisPackages, packages);
+            usage.analyzeAllowAll(result, thisPackages, model);
         } else {
             usage.analyzeDenyAll(result, thisPackages);
         }

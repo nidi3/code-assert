@@ -15,32 +15,34 @@
  */
 package guru.nidi.codeassert.dependency;
 
+import guru.nidi.codeassert.model.JavaClass;
+import guru.nidi.codeassert.model.JavaPackage;
 import guru.nidi.codeassert.model.ModelResult;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.util.*;
 
-import static guru.nidi.codeassert.dependency.MatcherUtils.deps;
-import static guru.nidi.codeassert.dependency.MatcherUtils.join;
-import static guru.nidi.codeassert.dependency.MatcherUtils.sorted;
+import static guru.nidi.codeassert.dependency.MatcherUtils.*;
 
 /**
  *
  */
 public class DependencyCycleMatcher extends TypeSafeMatcher<ModelResult> {
     private static final Comparator<DependencyMap> DEP_MAP_COMPARATOR = new DependencyMapComparator();
+
+    private final boolean packages;
     private final Set<String>[] exceptions;
 
     @SafeVarargs
-    public DependencyCycleMatcher(Set<String>... exceptions) {
+    public DependencyCycleMatcher(boolean packages, Set<String>... exceptions) {
+        this.packages = packages;
         this.exceptions = exceptions;
     }
 
     @Override
     protected boolean matchesSafely(ModelResult item) {
-        final CycleResult result = DependencyRules.analyzeCycles(item.findings());
-        return result.isEmptyExcept(exceptions);
+        return result(item).isEmptyExcept(exceptions);
     }
 
     public void describeTo(Description description) {
@@ -49,7 +51,7 @@ public class DependencyCycleMatcher extends TypeSafeMatcher<ModelResult> {
 
     @Override
     protected void describeMismatchSafely(ModelResult item, Description description) {
-        final CycleResult result = DependencyRules.analyzeCycles(item.findings());
+        final CycleResult result = result(item);
         if (!result.isEmptyExcept(exceptions)) {
             description.appendText("Found these cyclic groups:\n");
             for (final DependencyMap cycle : sortedDepMaps(result.getCyclesExcept(exceptions))) {
@@ -60,6 +62,14 @@ public class DependencyCycleMatcher extends TypeSafeMatcher<ModelResult> {
                 }
             }
         }
+    }
+
+    private CycleResult result(ModelResult item) {
+        final Collection<JavaPackage> packs = item.findings().getPackages();
+        final Collection<JavaClass> classes = item.findings().getClasses();
+        return packages
+                ? DependencyRules.analyzeCycles(packs)
+                : DependencyRules.analyzeCycles(classes);
     }
 
     private static List<DependencyMap> sortedDepMaps(Collection<DependencyMap> maps) {

@@ -20,6 +20,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -58,10 +59,10 @@ public class JarFileParserTest {
         final JavaClassBuilder builder = new JavaClassBuilder();
         builder.buildClasses(archive);
 
-        assertEquals(19, builder.classes.size());
-
-        assertClassesExist(builder.classes.values());
-        assertInnerClassesExist(builder.classes.values());
+        final Map<String, JavaClass> classes = builder.model.classes;
+        assertEquals(19, classes.size());
+        assertClassesExist(classes.values());
+        assertInnerClassesExist(classes.values());
     }
 
     private void assertClassesExist(Collection classes) {

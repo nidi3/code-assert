@@ -17,6 +17,8 @@ package guru.nidi.codeassert.dependency;
 
 
 import guru.nidi.codeassert.model.JavaPackage;
+import guru.nidi.codeassert.model.Model;
+import guru.nidi.codeassert.model.UsingElement;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -197,12 +199,12 @@ public class DependencyRules {
         return Character.toString(c);
     }
 
-    public RuleResult analyzeRules(Collection<JavaPackage> packs) {
+    public RuleResult analyzeRules(Model model) {
         final RuleResult result = new RuleResult();
         for (final DependencyRule rule : rules) {
-            result.merge(rule.analyze(packs, rules));
+            result.merge(rule.analyze(model, rules));
         }
-        for (final JavaPackage pack : packs) {
+        for (final JavaPackage pack : model.getPackages()) {
             if (!matchesAny(pack, rules)) {
                 result.undefined.add(pack.getName());
             }
@@ -220,13 +222,13 @@ public class DependencyRules {
         return false;
     }
 
-    public static CycleResult analyzeCycles(Collection<JavaPackage> packs) {
-        return new Tarjan().analyzeCycles(packs);
+    public static <T extends UsingElement<T>> CycleResult analyzeCycles(Collection<T> elems) {
+        return new Tarjan<T>().analyzeCycles(elems);
     }
 
-    private static class Tarjan {
+    private static class Tarjan<T extends UsingElement<T>> {
         private int index;
-        private final Stack<JavaPackage> s = new Stack<>();
+        private final Stack<T> s = new Stack<>();
         private final Map<String, Node> nodes = new HashMap<>();
         private final CycleResult result = new CycleResult();
 
@@ -236,49 +238,49 @@ public class DependencyRules {
             boolean onStack;
         }
 
-        public CycleResult analyzeCycles(Collection<JavaPackage> packs) {
+        public CycleResult analyzeCycles(Collection<T> elems) {
             index = 0;
-            for (final JavaPackage pack : packs) {
-                if (node(pack).index < 0) {
-                    strongConnect(pack);
+            for (final T elem : elems) {
+                if (node(elem).index < 0) {
+                    strongConnect(elem);
                 }
             }
             return result;
         }
 
-        private Node node(JavaPackage pack) {
-            Node node = nodes.get(pack.getName());
+        private Node node(T elem) {
+            Node node = nodes.get(elem.getName());
             if (node == null) {
                 node = new Node();
-                nodes.put(pack.getName(), node);
+                nodes.put(elem.getName(), node);
             }
             return node;
         }
 
-        private void strongConnect(JavaPackage pack) {
-            final Node v = init(pack);
-            processEfferents(pack, v);
+        private void strongConnect(T elem) {
+            final Node v = init(elem);
+            processUses(elem, v);
 
             if (v.lowlink == v.index) {
-                final Set<JavaPackage> group = createGroup(pack);
+                final Set<T> group = createGroup(elem);
                 if (group.size() > 1) {
                     addCycle(group);
                 }
             }
         }
 
-        private Node init(JavaPackage pack) {
-            final Node v = node(pack);
+        private Node init(T elem) {
+            final Node v = node(elem);
             v.index = index;
             v.lowlink = index;
             index++;
-            s.push(pack);
+            s.push(elem);
             v.onStack = true;
             return v;
         }
 
-        private void processEfferents(JavaPackage pack, Node v) {
-            for (final JavaPackage dep : pack.getEfferents()) {
+        private void processUses(T elem, Node v) {
+            for (final T dep : elem.uses()) {
                 final Node w = node(dep);
                 if (w.index < 0) {
                     strongConnect(dep);
@@ -289,21 +291,21 @@ public class DependencyRules {
             }
         }
 
-        private Set<JavaPackage> createGroup(JavaPackage pack) {
-            final Set<JavaPackage> group = new HashSet<>();
-            JavaPackage w;
+        private Set<T> createGroup(T elem) {
+            final Set<T> group = new HashSet<>();
+            T w;
             do {
                 w = s.pop();
                 node(w).onStack = false;
                 group.add(w);
-            } while (!pack.equals(w));
+            } while (!elem.equals(w));
             return group;
         }
 
-        private void addCycle(Set<JavaPackage> group) {
+        private void addCycle(Set<T> group) {
             final DependencyMap g = new DependencyMap();
-            for (final JavaPackage elem : group) {
-                for (final JavaPackage dep : elem.getEfferents()) {
+            for (final T elem : group) {
+                for (final T dep : elem.uses()) {
                     if (group.contains(dep)) {
                         g.with(elem, dep);
                     }

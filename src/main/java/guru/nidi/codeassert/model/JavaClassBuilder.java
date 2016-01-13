@@ -19,8 +19,6 @@ import guru.nidi.codeassert.AnalyzerException;
 
 import java.io.*;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -35,8 +33,7 @@ import java.util.zip.ZipEntry;
 class JavaClassBuilder {
     private final ClassFileParser parser;
     private final FileManager fileManager;
-    final Map<String, JavaPackage> packages = new HashMap<>();
-    final Map<String, JavaClass> classes = new HashMap<>();
+    final Model model = new Model();
 
     public JavaClassBuilder() {
         this(new ClassFileParser(), new FileManager());
@@ -45,26 +42,6 @@ class JavaClassBuilder {
     public JavaClassBuilder(ClassFileParser parser, FileManager fm) {
         this.parser = parser;
         this.fileManager = fm;
-    }
-
-    JavaPackage getPackage(String name) {
-        JavaPackage pack = packages.get(name);
-        if (pack == null) {
-            pack = new JavaPackage(name);
-            packages.put(name, pack);
-        }
-        return pack;
-    }
-
-    JavaClass getClass(String name) {
-        JavaClass clazz = classes.get(name);
-        if (clazz == null) {
-            final JavaPackage pack = getPackage(JavaClass.packageOf(name));
-            clazz = new JavaClass(name, pack);
-            classes.put(name, clazz);
-            pack.addClass(clazz);
-        }
-        return clazz;
     }
 
     /**
@@ -92,7 +69,7 @@ class JavaClassBuilder {
     public void buildClasses(File file) throws IOException {
         if (fileManager.acceptClassFile(file)) {
             try (final InputStream is = new BufferedInputStream(new FileInputStream(file))) {
-                parser.parse(is, this);
+                parser.parse(is, model);
             }
         } else if (fileManager.acceptJarFile(file)) {
             try (final JarFile jarFile = new JarFile(file)) {
@@ -116,7 +93,7 @@ class JavaClassBuilder {
             final ZipEntry e = (ZipEntry) entries.nextElement();
             if (fileManager.acceptClassFileName(e.getName())) {
                 try (final InputStream is = file.getInputStream(e)) {
-                    parser.parse(is, this);
+                    parser.parse(is, model);
                 }
             }
         }

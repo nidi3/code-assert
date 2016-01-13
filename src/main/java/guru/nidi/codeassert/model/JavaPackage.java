@@ -24,15 +24,15 @@ import java.util.*;
  * @author Clarkware Consulting, Inc.
  */
 
-public class JavaPackage {
+public class JavaPackage implements UsingElement<JavaPackage> {
     private final String name;
     private final Set<JavaClass> classes;
-    private final List<JavaPackage> efferents;
+    private final List<JavaPackage> uses;
 
     public JavaPackage(String name) {
         this.name = name;
         classes = new HashSet<>();
-        efferents = new ArrayList<>();
+        uses = new ArrayList<>();
     }
 
     public String getName() {
@@ -48,13 +48,13 @@ public class JavaPackage {
     }
 
     void addEfferent(JavaPackage jPackage) {
-        if (!jPackage.getName().equals(getName()) && !efferents.contains(jPackage)) {
-            efferents.add(jPackage);
+        if (!jPackage.getName().equals(getName()) && !uses.contains(jPackage)) {
+            uses.add(jPackage);
         }
     }
 
-    public Collection<JavaPackage> getEfferents() {
-        return efferents;
+    public Collection<JavaPackage> getUses() {
+        return uses;
     }
 
     public boolean isMatchedBy(String name) {
@@ -72,24 +72,19 @@ public class JavaPackage {
         return false;
     }
 
-    public static List<JavaPackage> allMatchesBy(Collection<JavaPackage> packages, String name) {
-        final List<JavaPackage> res = new ArrayList<>();
-        for (final JavaPackage pack : packages) {
-            if (pack.isMatchedBy(name)) {
-                res.add(pack);
+    public boolean usesPackagesMatchedBy(String name) {
+        for (final JavaPackage eff : uses) {
+            if (eff.isMatchedBy(name)) {
+                return true;
             }
         }
-        return res;
+        return false;
     }
 
-    public boolean hasEfferentsMatchedBy(String name) {
-        return !allMatchesBy(getEfferents(), name).isEmpty();
-    }
-
-    public Set<String> classesWithImportsFrom(JavaPackage to) {
+    public Set<String> usedVia(UsingElement<JavaPackage> to) {
         final Set<String> res = new HashSet<>();
         for (final JavaClass jc : getClasses()) {
-            if (jc.hasImportsMatchedBy(to.getName())) {
+            if (jc.usesPackagesMatchedBy(to.getName())) {
                 res.add(jc.getName());
             }
         }
@@ -110,5 +105,10 @@ public class JavaPackage {
 
     public String toString() {
         return name;
+    }
+
+    @Override
+    public Collection<JavaPackage> uses() {
+        return uses;
     }
 }

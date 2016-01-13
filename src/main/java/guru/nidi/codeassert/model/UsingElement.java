@@ -15,17 +15,13 @@
  */
 package guru.nidi.codeassert.model;
 
-import guru.nidi.codeassert.Analyzer;
-import guru.nidi.codeassert.AnalyzerResult;
-
 import java.util.Collection;
-import java.util.List;
 
 /**
  *
  */
-public class ModelResult extends AnalyzerResult<Model> {
-    public ModelResult(Analyzer<Model> analyzer, Model findings, List<String> unusedActions) {
-        super(analyzer, findings, unusedActions);
-    }
+public interface UsingElement<T> {
+    String getName();
+    Collection<T> uses();
+    Collection<String> usedVia(UsingElement<T> other);
 }

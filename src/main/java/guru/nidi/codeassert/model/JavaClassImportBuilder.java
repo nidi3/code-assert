@@ -24,12 +24,12 @@ class JavaClassImportBuilder {
     private static final char TYPE_END = ';';
 
     final JavaClass jClass;
-    private final JavaClassBuilder builder;
+    private final Model model;
     private final ConstantPool constantPool;
 
-    public JavaClassImportBuilder(String className, JavaClassBuilder builder, ConstantPool constantPool) {
-        this.builder = builder;
-        this.jClass = builder.getClass(className);
+    public JavaClassImportBuilder(String className, Model model, ConstantPool constantPool) {
+        this.model = model;
+        this.jClass = model.getOrCreateClass(className);
         this.constantPool = constantPool;
     }
 
@@ -187,7 +187,7 @@ class JavaClassImportBuilder {
     private void addImport(String type) {
         final String name = getTypeName(type);
         if (name != null) {
-            jClass.addImport(name,builder);
+            jClass.addImport(name, model);
         }
     }
 

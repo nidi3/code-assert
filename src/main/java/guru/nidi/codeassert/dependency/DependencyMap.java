@@ -16,7 +16,7 @@
 package guru.nidi.codeassert.dependency;
 
 
-import guru.nidi.codeassert.model.JavaPackage;
+import guru.nidi.codeassert.model.UsingElement;
 
 import java.util.*;
 
@@ -26,11 +26,11 @@ import java.util.*;
 public class DependencyMap {
     private final Map<String, Map<String, Set<String>>> map = new LinkedHashMap<>();
 
-    public void with(JavaPackage from, JavaPackage to) {
-        with(from.getName(), from.classesWithImportsFrom(to), to.getName());
+    public <T> void with(UsingElement<T> from, UsingElement<T> to) {
+        with(from.getName(), from.usedVia(to), to.getName());
     }
 
-    public DependencyMap with(String from, Set<String> fromClasses, String to) {
+    public DependencyMap with(String from, Collection<String> fromClasses, String to) {
         Map<String, Set<String>> deps = map.get(from);
         if (deps == null) {
             deps = new HashMap<>();

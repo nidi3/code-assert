@@ -33,12 +33,10 @@ import static org.junit.Assert.assertTrue;
 
 public class ClassFileParserTest {
     private ClassFileParser parser;
-    private JavaClassBuilder builder;
 
     @Before
     public void setUp() {
         parser = new ClassFileParser();
-        builder = new JavaClassBuilder();
     }
 
     @Test(expected = IOException.class)
@@ -123,12 +121,12 @@ public class ClassFileParserTest {
 
     @Test
     public void exampleClassFileFromTimDrury() throws IOException {
-        parser.parse(ClassFileParser.class.getResourceAsStream("/example_class1.bin"), builder);
+        parser.parse(ClassFileParser.class.getResourceAsStream("/example_class1.bin"), new Model());
     }
 
     @Test
     public void exampleClassFile2() throws IOException {
-        parser.parse(ClassFileParser.class.getResourceAsStream("/example_class2.bin"), builder);
+        parser.parse(ClassFileParser.class.getResourceAsStream("/example_class2.bin"), new Model());
     }
 
     @Test
@@ -150,7 +148,7 @@ public class ClassFileParserTest {
     }
 
     private JavaClass parse(File f) throws IOException {
-        return parser.parse(f, builder);
+        return parser.parse(f, new Model());
     }
 }
 
