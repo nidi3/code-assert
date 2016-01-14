@@ -30,7 +30,6 @@ import guru.nidi.codeassert.pmd.PmdAnalyzer;
 import guru.nidi.codeassert.pmd.PmdResult;
 import guru.nidi.codeassert.pmd.Rulesets;
 import guru.nidi.codeassert.pmd.ViolationCollector;
-import guru.nidi.codeassert.util.LocationMatcher;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.Test;
 
@@ -53,7 +52,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
 
     @Test
     public void dependency() {
-        class GuruNidiCodeassert implements DependencyRuler {
+        class GuruNidiCodeassert extends DependencyRuler {
             DependencyRule $self, config, dependency, findbugs, model, pmd, util, junit;
 
             @Override
@@ -94,7 +93,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                         "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName",
                         "UncommentedEmptyConstructor", "AvoidInstantiatingObjectsInLoops",
                         "UseStringBufferForStringAppends", "AvoidSynchronizedAtMethodLevel",
-                        "JUnitAssertionsShouldIncludeMessage","SimplifyStartsWith"),
+                        "JUnitAssertionsShouldIncludeMessage", "SimplifyStartsWith", "UncommentedEmptyMethodBody"),
                 In.locs("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
                 In.loc("Rulesets$*").ignore("AvoidDuplicateLiterals"),
                 In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),

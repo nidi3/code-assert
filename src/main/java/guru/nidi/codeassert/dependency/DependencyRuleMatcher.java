@@ -88,7 +88,7 @@ public class DependencyRuleMatcher extends TypeSafeMatcher<ModelResult> {
     private void describeNotExisting(RuleResult result, Description description) {
         if (nonExisting && !result.getNotExisting().isEmpty()) {
             description.appendText("\nDefined, but not existing packages:\n");
-            description.appendText(join(sorted(result.getNotExisting())) + "\n");
+            description.appendText(join(sortedPatterns(result.getNotExisting())) + "\n");
         }
     }
 }

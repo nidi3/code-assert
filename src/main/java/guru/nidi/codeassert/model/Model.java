@@ -15,6 +15,8 @@
  */
 package guru.nidi.codeassert.model;
 
+import guru.nidi.codeassert.config.LocationMatcher;
+
 import java.util.*;
 
 /**
@@ -44,10 +46,10 @@ public class Model {
         return clazz;
     }
 
-    public List<JavaPackage> matchingPackages(String name) {
+    public List<JavaPackage> matchingPackages(LocationMatcher pattern) {
         final List<JavaPackage> res = new ArrayList<>();
         for (final JavaPackage pack : packages.values()) {
-            if (pack.isMatchedBy(name)) {
+            if (pattern.matches(pack.getName())) {
                 res.add(pack);
             }
         }

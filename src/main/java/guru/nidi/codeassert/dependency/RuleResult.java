@@ -15,6 +15,8 @@
  */
 package guru.nidi.codeassert.dependency;
 
+import guru.nidi.codeassert.config.LocationMatcher;
+
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -25,14 +27,14 @@ public class RuleResult {
     final DependencyMap allowed;
     final DependencyMap missing;
     final DependencyMap denied;
-    final Set<String> notExisting;
+    final Set<LocationMatcher> notExisting;
     final Set<String> undefined;
 
     public RuleResult() {
-        this(new DependencyMap(), new DependencyMap(), new DependencyMap(), new TreeSet<String>(), new TreeSet<String>());
+        this(new DependencyMap(), new DependencyMap(), new DependencyMap(), new TreeSet<LocationMatcher>(), new TreeSet<String>());
     }
 
-    public RuleResult(DependencyMap allowed, DependencyMap missing, DependencyMap denied, Set<String> notExisting, Set<String> undefined) {
+    public RuleResult(DependencyMap allowed, DependencyMap missing, DependencyMap denied, Set<LocationMatcher> notExisting, Set<String> undefined) {
         this.allowed = allowed;
         this.missing = missing;
         this.denied = denied;
@@ -66,7 +68,7 @@ public class RuleResult {
         return denied;
     }
 
-    public Set<String> getNotExisting() {
+    public Set<LocationMatcher> getNotExisting() {
         return notExisting;
     }
 

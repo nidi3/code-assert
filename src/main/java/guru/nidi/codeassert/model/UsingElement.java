@@ -21,7 +21,11 @@ import java.util.Collection;
  *
  */
 public interface UsingElement<T> {
+    T self();
+
     String getName();
+
     Collection<T> uses();
+
     Collection<String> usedVia(UsingElement<T> other);
 }

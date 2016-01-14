@@ -15,29 +15,36 @@
  */
 package guru.nidi.codeassert.dependency;
 
+import guru.nidi.codeassert.model.JavaPackage;
+
 /**
  *
  */
-public class InconsistentDependencyRuleException extends RuntimeException {
+public class AmbiguousRuleException extends RuntimeException {
     private final DependencyRule rule;
-    private final Usage use;
+    private final JavaPackage from;
+    private final JavaPackage to;
 
-    public InconsistentDependencyRuleException(DependencyRule rule, Usage use) {
+    public AmbiguousRuleException(DependencyRule rule, JavaPackage from, JavaPackage to) {
         this.rule = rule;
-        this.use = use;
+        this.from = from;
+        this.to = to;
     }
 
     public DependencyRule getRule() {
         return rule;
     }
 
-    public Usage getUse() {
-        return use;
+    public JavaPackage getFrom() {
+        return from;
+    }
+
+    public JavaPackage getTo() {
+        return to;
     }
 
     @Override
     public String getMessage() {
-        return rule.toString() + "  real use: " + use;
+        return rule + " is ambiguous for dependency " + from + " -> " + to;
     }
-
 }

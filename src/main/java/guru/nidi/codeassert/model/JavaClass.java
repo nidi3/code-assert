@@ -15,6 +15,8 @@
  */
 package guru.nidi.codeassert.model;
 
+import guru.nidi.codeassert.config.LocationMatcher;
+
 import java.util.*;
 
 /**
@@ -75,9 +77,9 @@ public class JavaClass implements UsingElement<JavaClass> {
         return pos > 0 ? type.substring(0, pos) : "Default";
     }
 
-    public boolean usesPackagesMatchedBy(String name) {
+    public boolean usesPackagesMatchedBy(LocationMatcher matcher) {
         for (final JavaPackage pack : imports.values()) {
-            if (pack.isMatchedBy(name)) {
+            if (matcher.matches(pack.getName())) {
                 return true;
             }
         }
@@ -102,8 +104,17 @@ public class JavaClass implements UsingElement<JavaClass> {
     }
 
     @Override
+    public JavaClass self() {
+        return this;
+    }
+
+    @Override
     public Collection<JavaClass> uses() {
         return importClasses;
+    }
+
+    public boolean uses(JavaPackage pack) {
+        return imports.containsValue(pack);
     }
 
     @Override

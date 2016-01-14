@@ -16,6 +16,7 @@
 package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.config.AnalyzerConfig;
+import guru.nidi.codeassert.config.LocationMatcher;
 import guru.nidi.codeassert.model.ModelAnalyzer;
 import guru.nidi.codeassert.model.ModelResult;
 import org.hamcrest.Matcher;
@@ -23,7 +24,9 @@ import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static org.junit.Assert.*;
@@ -32,9 +35,10 @@ import static org.junit.Assert.*;
  *
  */
 public class DependencyRulesTest {
-    private static final String BASE = "guru.nidi.codeassert.dependency.";
-    private static final Set<String> WILDCARD_UNDEFINED = set("guru.nidi.codeassert", "guru.nidi.codeassert.config", "guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", "guru.nidi.codeassert.junit", base("a"), base("b"), base("c"));
-    private static final Set<String> UNDEFINED = set("guru.nidi.codeassert", "guru.nidi.codeassert.config", "guru.nidi.codeassert.model", "guru.nidi.codeassert.dependency", "guru.nidi.codeassert.junit", base("a.a"), base("a.b"), base("b.a"), base("b.b"), base("c.a"), base("c.b"));
+    private static final String CODE_ASSERT = "guru.nidi.codeassert.";
+    private static final String DEP = CODE_ASSERT + "dependency.";
+    private static final Set<String> WILDCARD_UNDEFINED = set("guru.nidi.codeassert", ca("config"), ca("model"), ca("dependency"), ca("junit"), dep("a"), dep("b"), dep("c"));
+    private static final Set<String> UNDEFINED = set("guru.nidi.codeassert", ca("config"), ca("dependency"), ca("junit"), ca("model"), dep("a.a"), dep("a.b"), dep("b.a"), dep("b.b"), dep("c.a"), dep("c.b"));
 
     private ModelResult model;
 
@@ -50,56 +54,24 @@ public class DependencyRulesTest {
         DependencyRule.allowAll("a*b");
     }
 
-    @Test
-    public void inconsistentUseRule() {
-        final DependencyRules rules = DependencyRules.allowAll();
-        final DependencyRule java = rules.addRule("java.*");
-        final DependencyRule hamcrest = rules.addRule("org.hamcrest.*").mustUse(java).mustNotUse(java);
-        try {
-            rules.analyzeRules(model.findings());
-            fail();
-        } catch (InconsistentDependencyRuleException e) {
-            assertEquals(hamcrest, e.getRule());
-        }
-    }
-
-    @Test(expected = InconsistentDependencyRuleException.class)
-    public void inconsistentUsedByRule() {
-        final DependencyRules rules = DependencyRules.allowAll();
-        final DependencyRule java = rules.addRule("java.*");
-        rules.addRule("org.hamcrest.*").mustBeUsedBy(java).mustNotBeUsedBy(java);
-        rules.analyzeRules(model.findings());
-    }
-
-    @Test
-    public void indirectInconsistentRule() {
-        final DependencyRules rules = DependencyRules.allowAll();
-        final DependencyRule java = rules.addRule("java.*").mustNotBeUsedBy(DependencyRule.allowAll("*"));
-        final DependencyRule hamcrest = rules.addRule("org.hamcrest.*").mustUse(java);
-        try {
-            rules.analyzeRules(model.findings());
-            fail();
-        } catch (InconsistentDependencyRuleException e) {
-            assertEquals(hamcrest, e.getRule());
-        }
-    }
+    //TODO test AmbigousRuleException
 
     @Test
     public void matcherFlags() {
         final DependencyRules rules = DependencyRules.allowAll();
         rules.addExternal("java.*");
         rules.addExternal("org.hamcrest*");
-        rules.addRule(base("a"));
-        rules.addRule(base("d"));
-        final Set<String> undefined = new HashSet<>(UNDEFINED);
-        undefined.addAll(set("org.junit", base("b"), base("c")));
+        rules.addRule(dep("a"));
+        rules.addRule(dep("d"));
+        final Set<String> undefined = new TreeSet<>(UNDEFINED);
+        undefined.addAll(set("org.junit", dep("b"), dep("c")));
 
         final RuleResult result = rules.analyzeRules(model.findings());
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap(),
                         new DependencyMap(),
-                        set(base("d")),
+                        patterns(dep("d")),
                         undefined),
                 result);
 
@@ -133,40 +105,36 @@ public class DependencyRulesTest {
     @Test
     public void allow() {
         final DependencyRules rules = DependencyRules.allowAll();
-        final DependencyRule a = rules.addRule(base("a"));
-        final DependencyRule b = rules.addRule(base("b"));
-        final DependencyRule c = rules.addRule(base("c"));
+        final DependencyRule a = rules.addRule(dep("a"));
+        final DependencyRule b = rules.addRule(dep("b"));
+        final DependencyRule c = rules.addRule(dep("c"));
         rules.addExternal("java.*");
         rules.addExternal("org*");
 
         a.mustUse(b);
-        b.mustNotUse(a, c).mayUse(a);
+        b.mustNotUse(c);
 
-        class GuruNidiCodeassertDependency implements DependencyRuler {
+        class GuruNidiCodeassertDependency extends DependencyRuler {
             DependencyRule a, b, c;
 
             public void defineRules() {
                 a.mustUse(b);
-                b.mustNotUse(a, c).mayUse(a);
-            }
-        }
-        class Externals implements DependencyRuler {
-            DependencyRule java_, org_;
-
-            public void defineRules() {
+                b.mustNotUse(c);
             }
         }
         final DependencyRules rules2 = DependencyRules.allowAll()
-                .withExternals(new Externals())
+                .withExternals(new DependencyRuler() {
+                    DependencyRule java_, org_;
+                })
                 .withRules(new GuruNidiCodeassertDependency());
 
         final RuleResult result = rules.analyzeRules(model.findings());
         assertEquals(result, rules2.analyzeRules(model.findings()));
         assertEquals(new RuleResult(
                         new DependencyMap(),
-                        new DependencyMap().with(base("a"), set(), base("b")),
-                        new DependencyMap().with(base("b"), set(base("b.B1")), base("c")),
-                        set(),
+                        new DependencyMap().with(0, dep("a"), set(), dep("b")),
+                        new DependencyMap().with(0, dep("b"), set(dep("b.B1")), dep("c")),
+                        patterns(),
                         UNDEFINED),
                 result);
         assertMatcher("\n" +
@@ -183,25 +151,25 @@ public class DependencyRulesTest {
     @Test
     public void deny() {
         final DependencyRules rules = DependencyRules.denyAll();
-        final DependencyRule a = rules.addRule(base("a"));
-        final DependencyRule b = rules.addRule(base("b"));
-        final DependencyRule c = rules.addRule(base("c"));
+        final DependencyRule a = rules.addRule(dep("a"));
+        final DependencyRule b = rules.addRule(dep("b"));
+        final DependencyRule c = rules.addRule(dep("c"));
         rules.addExternal("java*");
         rules.addExternal("org*");
 
         a.mustUse(b);
-        b.mayUse(a, c).mustNotUse(a);
+        b.mayUse(c);
 
         final RuleResult result = rules.analyzeRules(model.findings());
         assertEquals(new RuleResult(
                         new DependencyMap(),
-                        new DependencyMap().with(base("a"), set(), base("b")),
+                        new DependencyMap().with(0, dep("a"), set(), dep("b")),
                         new DependencyMap()
-                                .with(base("a"), set(base("a.A1")), base("c"))
-                                .with(base("b"), set(base("b.B1")), base("a"))
-                                .with(base("c"), set(base("c.C1")), base("a"))
-                                .with(base("c"), set(base("c.C1"), base("c.C2")), base("b")),
-                        set(),
+                                .with(0, dep("a"), set(dep("a.A1")), dep("c"))
+                                .with(0, dep("b"), set(dep("b.B1")), dep("a"))
+                                .with(0, dep("c"), set(dep("c.C1")), dep("a"))
+                                .with(0, dep("c"), set(dep("c.C1"), dep("c.C2")), dep("b")),
+                        patterns(),
                         UNDEFINED),
                 result);
         assertMatcher("\n" +
@@ -223,10 +191,10 @@ public class DependencyRulesTest {
     @Test
     public void allowWithWildcard() {
         final DependencyRules rules = DependencyRules.allowAll();
-        final DependencyRule a1 = rules.addRule(base("a.a"));
-        final DependencyRule a = rules.addRule(base("a.*"));
-        final DependencyRule b = rules.addRule(base("b.*"));
-        final DependencyRule c = rules.addRule(base("c.*"));
+        final DependencyRule a1 = rules.addRule(dep("a.a"));
+        final DependencyRule a = rules.addRule(dep("a.*"));
+        final DependencyRule b = rules.addRule(dep("b.*"));
+        final DependencyRule c = rules.addRule(dep("c.*"));
         rules.addExternal("java*");
         rules.addExternal("org*");
 
@@ -246,27 +214,22 @@ public class DependencyRulesTest {
                 })
                 .withExternals(new DependencyRuler() {
                     DependencyRule java_, org_;
-
-                    @Override
-                    public void defineRules() {
-
-                    }
                 });
 
         assertEquals(result, rules2.analyzeRules(model.findings()));
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap()
-                                .with(base("a.a"), set(), base("b.b"))
-                                .with(base("a.b"), set(), base("b.a"))
-                                .with(base("a.b"), set(), base("b.b")),
+                                .with(0, dep("a.a"), set(), dep("b.b"))
+                                .with(0, dep("a.b"), set(), dep("b.a"))
+                                .with(0, dep("a.b"), set(), dep("b.b")),
                         new DependencyMap()
-                                .with(base("b.a"), set(base("b.a.Ba1")), base("a.b"))
-                                .with(base("b.a"), set(base("b.a.Ba2")), base("c.b"))
-                                .with(base("b.a"), set(base("b.a.Ba2")), base("c.a"))
-                                .with(base("b.b"), set(base("b.b.Bb1")), base("c.a"))
-                                .with(base("b.b"), set(base("b.b.Bb1")), base("c.b")),
-                        set(),
+                                .with(0, dep("b.a"), set(dep("b.a.Ba1")), dep("a.b"))
+                                .with(0, dep("b.a"), set(dep("b.a.Ba2")), dep("c.b"))
+                                .with(0, dep("b.a"), set(dep("b.a.Ba2")), dep("c.a"))
+                                .with(0, dep("b.b"), set(dep("b.b.Bb1")), dep("c.a"))
+                                .with(0, dep("b.b"), set(dep("b.b.Bb1")), dep("c.b")),
+                        patterns(),
                         WILDCARD_UNDEFINED),
                 result);
         assertMatcher("\n" +
@@ -291,10 +254,10 @@ public class DependencyRulesTest {
     @Test
     public void denyWithWildcard() {
         final DependencyRules rules = DependencyRules.denyAll();
-        final DependencyRule a1 = rules.addRule(base("a.a"));
-        final DependencyRule a = rules.addRule(base("a.*"));
-        final DependencyRule b = rules.addRule(base("b.*"));
-        final DependencyRule c = rules.addRule(base("c.*"));
+        final DependencyRule a1 = rules.addRule(dep("a.a"));
+        final DependencyRule a = rules.addRule(dep("a.*"));
+        final DependencyRule b = rules.addRule(dep("b.*"));
+        final DependencyRule c = rules.addRule(dep("c.*"));
         rules.addExternal("java.*");
         rules.addExternal("org*");
 
@@ -305,14 +268,14 @@ public class DependencyRulesTest {
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap()
-                                .with(base("a.a"), set(), base("b.b"))
-                                .with(base("a.b"), set(), base("b.a"))
-                                .with(base("a.b"), set(), base("b.b")),
+                                .with(0, dep("a.a"), set(), dep("b.b"))
+                                .with(0, dep("a.b"), set(), dep("b.a"))
+                                .with(0, dep("a.b"), set(), dep("b.b")),
                         new DependencyMap()
-                                .with(base("b.a"), set(base("b.a.Ba1")), base("a.a"))
-                                .with(base("c.a"), set(base("c.a.Ca1")), base("a.a"))
-                                .with(base("c.a"), set(base("c.a.Ca1")), base("b.a")),
-                        set(),
+                                .with(0, dep("b.a"), set(dep("b.a.Ba1")), dep("a.a"))
+                                .with(0, dep("c.a"), set(dep("c.a.Ca1")), dep("a.a"))
+                                .with(0, dep("c.a"), set(dep("c.a.Ca1")), dep("b.a")),
+                        patterns(),
                         WILDCARD_UNDEFINED),
                 result);
         assertMatcher("\n" +
@@ -332,13 +295,25 @@ public class DependencyRulesTest {
                 matchesRules(rules));
     }
 
-    private static String base(String s) {
-        return BASE + s;
+    private static String ca(String s) {
+        return CODE_ASSERT + s;
+    }
+
+    private static String dep(String s) {
+        return DEP + s;
     }
 
     private static Set<String> set(String... ss) {
         final Set<String> res = new TreeSet<>();
         Collections.addAll(res, ss);
+        return res;
+    }
+
+    private static Set<LocationMatcher> patterns(String... ss) {
+        final Set<LocationMatcher> res = new TreeSet<>();
+        for (final String s : ss) {
+            res.add(new LocationMatcher(s));
+        }
         return res;
     }
 

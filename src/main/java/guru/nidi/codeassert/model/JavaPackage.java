@@ -15,6 +15,8 @@
  */
 package guru.nidi.codeassert.model;
 
+import guru.nidi.codeassert.config.LocationMatcher;
+
 import java.util.*;
 
 /**
@@ -57,38 +59,38 @@ public class JavaPackage implements UsingElement<JavaPackage> {
         return uses;
     }
 
-    public boolean isMatchedBy(String name) {
-        return name.endsWith("*")
-                ? getName().startsWith(name.substring(0, name.length() - 1))
-                : getName().equals(name);
-    }
-
-    public boolean isMatchedByAny(Collection<String> names) {
-        for (final String name : names) {
-            if (isMatchedBy(name)) {
-                return true;
+    public int mostSpecificMatch(Collection<LocationMatcher> matchers) {
+        int s = 0;
+        for (final LocationMatcher matcher : matchers) {
+            if (matcher.matches(getName()) && matcher.specificity() > s) {
+                s = matcher.specificity();
             }
         }
-        return false;
-    }
-
-    public boolean usesPackagesMatchedBy(String name) {
-        for (final JavaPackage eff : uses) {
-            if (eff.isMatchedBy(name)) {
-                return true;
-            }
-        }
-        return false;
+        return s;
     }
 
     public Set<String> usedVia(UsingElement<JavaPackage> to) {
         final Set<String> res = new HashSet<>();
         for (final JavaClass jc : getClasses()) {
-            if (jc.usesPackagesMatchedBy(to.getName())) {
+            if (jc.uses(to.self())) {
                 res.add(jc.getName());
             }
         }
         return res;
+    }
+
+    @Override
+    public JavaPackage self() {
+        return this;
+    }
+
+    @Override
+    public Collection<JavaPackage> uses() {
+        return uses;
+    }
+
+    public boolean uses(JavaPackage pack) {
+        return uses.contains(pack);
     }
 
     public boolean equals(Object other) {
@@ -107,8 +109,4 @@ public class JavaPackage implements UsingElement<JavaPackage> {
         return name;
     }
 
-    @Override
-    public Collection<JavaPackage> uses() {
-        return uses;
-    }
 }

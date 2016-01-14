@@ -15,57 +15,26 @@
  */
 package guru.nidi.codeassert.dependency;
 
+import guru.nidi.codeassert.config.LocationMatcher;
 import guru.nidi.codeassert.model.JavaPackage;
 import guru.nidi.codeassert.model.Model;
 
 import java.util.List;
 
 /**
- * A DependencyRule can refer either to package(s) or class(es).
- * It has the following grammar:
- * <table>
- * <tr>
- * <td>rule</td>
- * <td>package | package-and-sub | class | simple-class</td>
- * </tr>
- * <tr>
- * <td>package</td>
- * <td>lower+ ('.' lower+)*</td>
- * </tr>
- * <tr>
- * <td>package-and-sub</td>
- * <td>package '*'</td>
- * </tr>
- * <tr>
- * <td>class</td>
- * <td>package '.' simple-class</td>
- * </tr>
- * <tr>
- * <td>simple-class</td>
- * <td>upper lower* | '*' lower+ | upper lower* '*' </td>
- * </tr>
- * <tr>
- * <td>upper</td>
- * <td>[A-Z]</td>
- * </tr>
- * <tr>
- * <td>lower</td>
- * <td>[a-z$0-9]</td>
- * </tr>
- * </table>
  */
 public class DependencyRule {
-    final String name;
+    final LocationMatcher pattern;
     private final boolean allowAll;
-    private final Usage use = new Usage();
-    private final Usage usedBy = new Usage();
+    final Usage use = new Usage();
+    final Usage usedBy = new Usage();
 
-    DependencyRule(String name, boolean allowAll) {
-        final int starPos = name.indexOf('*');
-        if (starPos >= 0 && starPos != name.length() - 1) {
+    DependencyRule(String pattern, boolean allowAll) {
+        final int starPos = pattern.indexOf('*');
+        if (starPos >= 0 && starPos != pattern.length() - 1) {
             throw new IllegalArgumentException("Wildcard * is only allowed at the end (e.g. java*)");
         }
-        this.name = name;
+        this.pattern = new LocationMatcher(pattern);
         this.allowAll = allowAll;
     }
 
@@ -108,49 +77,86 @@ public class DependencyRule {
     }
 
     public boolean matches(JavaPackage pack) {
-        return pack.isMatchedBy(name);
+        return pattern.matches(pack.getName());
     }
 
     public boolean isEmpty() {
         return use.isEmpty() && usedBy.isEmpty();
     }
 
-    public RuleResult analyze(Model model, List<DependencyRule> rules) {
+    public RuleResult analyze(Model model, DependencyRules rules) {
         final RuleResult result = new RuleResult();
-        final List<JavaPackage> thisPackages = model.matchingPackages(name);
+        final List<JavaPackage> thisPackages = model.matchingPackages(pattern);
 
         analyzeNotExisting(result, thisPackages);
-        final Usage usage = applyUsageBy(rules);
-        usage.analyzeMissing(result, thisPackages, model);
-
-        if (allowAll) {
-            usage.analyzeAllowAll(result, thisPackages, model);
-        } else {
-            usage.analyzeDenyAll(result, thisPackages);
-        }
+        analyzeMissing(result, thisPackages, model);
+        analyzeAllowAndDeny(result, thisPackages, rules);
 
         return result;
     }
 
-    private Usage applyUsageBy(List<DependencyRule> rules) {
-        final Usage usage = use.copy();
-        for (final DependencyRule rule : rules) {
-            usage.applyUsageBy(name, rule.name, rule.usedBy);
+    private void analyzeAllowAndDeny(RuleResult result, List<JavaPackage> thisPackages, DependencyRules rules) {
+        for (final JavaPackage thisPack : thisPackages) {
+            for (final JavaPackage dep : thisPack.getUses()) {
+                final int allowed = calcAllowedSpecificity(rules, thisPack, dep);
+                final int denied = calcDeniedSpecificity(rules, thisPack, dep);
+                if (isAmbiguous(allowed, denied)) {
+                    throw new AmbiguousRuleException(this, thisPack, dep);
+                }
+                if (isAllowed(allowed, denied)) {
+                    result.allowed.with(pattern.specificity(), thisPack, dep);
+                }
+                if (isDenied(allowed, denied)) {
+                    //if deny if only because of !allowAll -> lowest specificity
+                    final int spec = denied == 0 ? 0 : pattern.specificity();
+                    result.denied.with(spec, thisPack, dep);
+                }
+            }
         }
-        if (!usage.isConsistent() || !this.usedBy.isConsistent()) {
-            throw new InconsistentDependencyRuleException(this, usage);
+    }
+
+    private boolean isDenied(int allowed, int denied) {
+        return denied > allowed || (!allowAll && allowed == 0);
+    }
+
+    private boolean isAllowed(int allowed, int denied) {
+        return allowed > denied || (allowAll && denied == 0);
+    }
+
+    private boolean isAmbiguous(int allowed, int denied) {
+        return allowed != 0 && allowed == denied;
+    }
+
+    private int calcDeniedSpecificity(DependencyRules rules, JavaPackage thisPack, JavaPackage dep) {
+        return Math.max(dep.mostSpecificMatch(use.mustNot), rules.mostSpecificMustNotBeUsedMatch(thisPack, dep));
+    }
+
+    private int calcAllowedSpecificity(DependencyRules rules, JavaPackage thisPack, JavaPackage dep) {
+        final int useAllowed = Math.max(dep.mostSpecificMatch(use.must), dep.mostSpecificMatch(use.may));
+        final int usedByAllowed = Math.max(rules.mostSpecificMustBeUsedMatch(thisPack, dep), rules.mostSpecificMayBeUsedMatch(thisPack, dep));
+        return Math.max(useAllowed, usedByAllowed);
+    }
+
+    private void analyzeMissing(RuleResult result, List<JavaPackage> thisPackages, Model model) {
+        for (final JavaPackage thisPack : thisPackages) {
+            for (final LocationMatcher must : use.must) {
+                for (final JavaPackage mustPack : model.matchingPackages(must)) {
+                    if (!thisPack.uses(mustPack)) {
+                        result.missing.with(pattern.specificity(), thisPack, mustPack);
+                    }
+                }
+            }
         }
-        return usage;
     }
 
     private void analyzeNotExisting(RuleResult result, List<JavaPackage> thisPackages) {
         if (thisPackages.isEmpty()) {
-            result.notExisting.add(name);
+            result.notExisting.add(pattern);
         }
     }
 
     @Override
     public String toString() {
-        return "DependencyRule for " + name + "\n  use:      " + use + "\n  used by:  " + usedBy + "\n";
+        return "DependencyRule for " + pattern + "\n  use:      " + use + "\n  used by:  " + usedBy + "\n";
     }
 }

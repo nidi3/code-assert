@@ -50,8 +50,8 @@ public class DependencyTest {
     @Test
     public void dependency() {
         // Defines the dependency rules for package org.project
-        class OrgProject implements DependencyRuler {
-            // Rules for org.project, org.project.dependency (with sub packages), org.project.model, org.project.util
+        class OrgProj extends DependencyRuler {
+            // Rules for org.proj, org.proj.dependency (with sub packages), org.proj.model, org.proj.util
             DependencyRule $self, dependency_, model, util;
 
             @Override
@@ -65,7 +65,7 @@ public class DependencyTest {
         // All dependencies are forbidden, except the ones defined in OrgProject
         // java, org, net packages are ignored
         DependencyRules rules = DependencyRules.denyAll()
-                .withRules(new OrgProject())
+                .withRules(new OrgProj())
                 .withExternals("java.*", "org.*", "net.*");
 
         assertThat(new ModelAnalyzer(config).analyze(), matchesExactly(rules));

@@ -36,6 +36,6 @@ public class AnalyzerTest {
 
     @Test
     public void classes() throws IOException {
-        assertEquals(110, model.getClasses().size());
+        assertEquals(111, model.getClasses().size());
     }
 }

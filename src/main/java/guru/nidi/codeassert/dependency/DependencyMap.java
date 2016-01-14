@@ -24,50 +24,54 @@ import java.util.*;
  *
  */
 public class DependencyMap {
-    private final Map<String, Map<String, Set<String>>> map = new LinkedHashMap<>();
+    private final Map<String, Map<String, Info>> map = new LinkedHashMap<>();
 
-    public <T> void with(UsingElement<T> from, UsingElement<T> to) {
-        with(from.getName(), from.usedVia(to), to.getName());
+    public <T> void with(int specificity, UsingElement<T> from, UsingElement<T> to) {
+        with(specificity, from.getName(), from.usedVia(to), to.getName());
     }
 
-    public DependencyMap with(String from, Collection<String> fromClasses, String to) {
-        Map<String, Set<String>> deps = map.get(from);
+    DependencyMap with(int specificity, String from, Collection<String> vias, String to) {
+        Map<String, Info> deps = map.get(from);
         if (deps == null) {
             deps = new HashMap<>();
             map.put(from, deps);
         }
-        final Set<String> existingFromClasses = deps.get(to);
-        if (existingFromClasses == null) {
-            deps.put(to, new HashSet<>(fromClasses));
+        final Info info = deps.get(to);
+        if (info == null) {
+            deps.put(to, new Info(vias, specificity));
         } else {
-            existingFromClasses.addAll(fromClasses);
+            //TODO specificity?
+            info.getVias().addAll(vias);
         }
         return this;
     }
 
-    public DependencyMap without(String from, String to) {
-        final Map<String, Set<String>> deps = map.get(from);
+    public DependencyMap without(int specificity, String from, String to) {
+        final Map<String, Info> deps = map.get(from);
         if (deps != null) {
-            deps.remove(to);
-            if (deps.isEmpty()) {
-                map.remove(from);
+            final Info info = deps.get(to);
+            if (info != null && specificity > info.specificity) {
+                deps.remove(to);
+                if (deps.isEmpty()) {
+                    map.remove(from);
+                }
             }
         }
         return this;
     }
 
     public DependencyMap without(DependencyMap other) {
-        for (final Map.Entry<String, Map<String, Set<String>>> entry : other.map.entrySet()) {
-            for (final String to : entry.getValue().keySet()) {
-                without(entry.getKey(), to);
+        for (final Map.Entry<String, Map<String, Info>> entry : other.map.entrySet()) {
+            for (final Map.Entry<String, Info> to : entry.getValue().entrySet()) {
+                without(to.getValue().specificity, entry.getKey(), to.getKey());
             }
         }
         return this;
     }
 
     public void merge(DependencyMap deps) {
-        for (final Map.Entry<String, Map<String, Set<String>>> entry : deps.map.entrySet()) {
-            final Map<String, Set<String>> ds = map.get(entry.getKey());
+        for (final Map.Entry<String, Map<String, Info>> entry : deps.map.entrySet()) {
+            final Map<String, Info> ds = map.get(entry.getKey());
             if (ds == null) {
                 map.put(entry.getKey(), entry.getValue());
             } else {
@@ -93,7 +97,7 @@ public class DependencyMap {
      * @return A map with all dependencies of a given package.
      * Key: package, Value: A set of all classes importing the package
      */
-    public Map<String, Set<String>> getDependencies(String pack) {
+    public Map<String, Info> getDependencies(String pack) {
         return map.get(pack);
     }
 
@@ -123,4 +127,43 @@ public class DependencyMap {
         return map.toString();
     }
 
+    public static class Info {
+        private final Set<String> vias;
+        private final int specificity;
+
+        Info(Collection<String> vias, int specificity) {
+            this.vias = new HashSet<>(vias);
+            this.specificity = specificity;
+        }
+
+        public Set<String> getVias() {
+            return vias;
+        }
+
+        public int getSpecificity() {
+            return specificity;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            final Info info = (Info) o;
+            return vias.equals(info.vias);
+        }
+
+        @Override
+        public int hashCode() {
+            return vias.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return vias.toString();
+        }
+    }
 }

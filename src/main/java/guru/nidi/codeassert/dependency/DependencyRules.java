@@ -202,7 +202,7 @@ public class DependencyRules {
     public RuleResult analyzeRules(Model model) {
         final RuleResult result = new RuleResult();
         for (final DependencyRule rule : rules) {
-            result.merge(rule.analyze(model, rules));
+            result.merge(rule.analyze(model, this));
         }
         for (final JavaPackage pack : model.getPackages()) {
             if (!matchesAny(pack, rules)) {
@@ -211,6 +211,36 @@ public class DependencyRules {
         }
         result.normalize();
         return result;
+    }
+
+    int mostSpecificMayBeUsedMatch(JavaPackage from, JavaPackage to) {
+        int s = 0;
+        for (final DependencyRule rule : rules) {
+            if (rule.matches(to)) {
+                s = Math.max(s, from.mostSpecificMatch(rule.usedBy.may));
+            }
+        }
+        return s;
+    }
+
+    int mostSpecificMustBeUsedMatch(JavaPackage pack, JavaPackage dependent) {
+        int s = 0;
+        for (final DependencyRule rule : rules) {
+            if (rule.matches(dependent)) {
+                s = Math.max(s, pack.mostSpecificMatch(rule.usedBy.must));
+            }
+        }
+        return s;
+    }
+
+    int mostSpecificMustNotBeUsedMatch(JavaPackage pack, JavaPackage dependent) {
+        int s = 0;
+        for (final DependencyRule rule : rules) {
+            if (rule.matches(dependent)) {
+                s = Math.max(s, pack.mostSpecificMatch(rule.usedBy.mustNot));
+            }
+        }
+        return s;
     }
 
     private boolean matchesAny(JavaPackage pack, List<DependencyRule> rules) {
@@ -307,7 +337,7 @@ public class DependencyRules {
             for (final T elem : group) {
                 for (final T dep : elem.uses()) {
                     if (group.contains(dep)) {
-                        g.with(elem, dep);
+                        g.with(0, elem, dep);
                     }
                 }
             }

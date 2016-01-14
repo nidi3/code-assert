@@ -46,7 +46,7 @@ public class CodeTest extends CodeAssertTest {
 
     @Test
     public void dependency() {
-        class MyProject implements DependencyRuler {
+        class MyProject extends DependencyRuler {
             DependencyRule packages;
 
             @Override

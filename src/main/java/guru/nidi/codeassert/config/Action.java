@@ -15,8 +15,6 @@
  */
 package guru.nidi.codeassert.config;
 
-import guru.nidi.codeassert.util.LocationMatcher;
-
 import java.util.List;
 
 /**
@@ -25,10 +23,10 @@ import java.util.List;
  * @see In
  */
 public class Action {
-    private final LocationMatcher matcher;
+    private final LocationNameMatcher matcher;
 
     protected Action(List<String> locs, List<String> names) {
-        matcher = new LocationMatcher(locs, names);
+        matcher = new LocationNameMatcher(locs, names);
     }
 
     public static In in(final Class<?>... classes) {

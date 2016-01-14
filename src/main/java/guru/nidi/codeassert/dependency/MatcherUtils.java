@@ -15,6 +15,8 @@
  */
 package guru.nidi.codeassert.dependency;
 
+import guru.nidi.codeassert.config.LocationMatcher;
+
 import java.util.*;
 
 /**
@@ -24,11 +26,11 @@ final class MatcherUtils {
     private MatcherUtils() {
     }
 
-    public static String deps(String prefix, Map<String, Set<String>> deps) {
+    public static String deps(String prefix, Map<String, DependencyMap.Info> deps) {
         final StringBuilder s = new StringBuilder();
         for (final String dep : sorted(deps.keySet())) {
             s.append(prefix).append(dep);
-            final Set<String> by = deps.get(dep);
+            final Set<String> by = deps.get(dep).getVias();
             if (!by.isEmpty()) {
                 s.append(" (by ").append(join(by)).append(')');
             }
@@ -49,6 +51,14 @@ final class MatcherUtils {
         final List<String> sorted = new ArrayList<>(ss);
         Collections.sort(sorted);
         return sorted;
+    }
+
+    public static List<String> sortedPatterns(Collection<LocationMatcher> patterns) {
+        final List<String> ss = new ArrayList<>();
+        for (final LocationMatcher pattern : patterns) {
+            ss.add(pattern.toString());
+        }
+        return sorted(ss);
     }
 
 }
