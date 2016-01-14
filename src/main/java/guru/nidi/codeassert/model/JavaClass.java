@@ -27,7 +27,7 @@ import java.util.*;
  * @author Clarkware Consulting, Inc.
  */
 
-public class JavaClass implements UsingElement<JavaClass> {
+public class JavaClass extends UsingElement<JavaClass> {
     private final String className;
     private final JavaPackage pack;
     private final Map<String, JavaPackage> imports;

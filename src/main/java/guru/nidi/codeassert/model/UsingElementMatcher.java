@@ -15,27 +15,9 @@
  */
 package guru.nidi.codeassert.model;
 
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import org.junit.Test;
-
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-
 /**
  *
  */
-public class AnalyzerTest {
-    final Model model = new ModelAnalyzer(
-            AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model")).analyze().findings();
-
-    @Test
-    public void packages() throws IOException {
-        assertEquals(37, model.getPackages().size());
-    }
-
-    @Test
-    public void classes() throws IOException {
-        assertEquals(116, model.getClasses().size());
-    }
+public interface UsingElementMatcher {
+    boolean matches(UsingElement<?> elem);
 }

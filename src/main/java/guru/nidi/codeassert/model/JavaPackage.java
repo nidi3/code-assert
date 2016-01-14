@@ -26,7 +26,7 @@ import java.util.*;
  * @author Clarkware Consulting, Inc.
  */
 
-public class JavaPackage implements UsingElement<JavaPackage> {
+public class JavaPackage extends UsingElement<JavaPackage> {
     private final String name;
     private final Set<JavaClass> classes;
     private final List<JavaPackage> uses;
@@ -55,20 +55,6 @@ public class JavaPackage implements UsingElement<JavaPackage> {
         }
     }
 
-    public Collection<JavaPackage> getUses() {
-        return uses;
-    }
-
-    public int mostSpecificMatch(Collection<LocationMatcher> matchers) {
-        int s = 0;
-        for (final LocationMatcher matcher : matchers) {
-            if (matcher.matches(getName()) && matcher.specificity() > s) {
-                s = matcher.specificity();
-            }
-        }
-        return s;
-    }
-
     public Set<String> usedVia(UsingElement<JavaPackage> to) {
         final Set<String> res = new HashSet<>();
         for (final JavaClass jc : getClasses()) {
@@ -87,10 +73,6 @@ public class JavaPackage implements UsingElement<JavaPackage> {
     @Override
     public Collection<JavaPackage> uses() {
         return uses;
-    }
-
-    public boolean uses(JavaPackage pack) {
-        return uses.contains(pack);
     }
 
     public boolean equals(Object other) {

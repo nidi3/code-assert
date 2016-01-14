@@ -27,7 +27,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoPackageCycles;
-import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesExactly;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.packagesMatchExactly;
 import static org.junit.Assert.assertThat;
 
 @Ignore
@@ -68,7 +68,7 @@ public class DependencyTest {
                 .withRules(new OrgProj())
                 .withExternals("java.*", "org.*", "net.*");
 
-        assertThat(new ModelAnalyzer(config).analyze(), matchesExactly(rules));
+        assertThat(new ModelAnalyzer(config).analyze(), packagesMatchExactly(rules));
     }
 }
 //##

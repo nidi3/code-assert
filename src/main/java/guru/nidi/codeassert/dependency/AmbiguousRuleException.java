@@ -15,17 +15,17 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.JavaPackage;
+import guru.nidi.codeassert.model.UsingElement;
 
 /**
  *
  */
 public class AmbiguousRuleException extends RuntimeException {
     private final DependencyRule rule;
-    private final JavaPackage from;
-    private final JavaPackage to;
+    private final UsingElement<?> from;
+    private final UsingElement<?> to;
 
-    public AmbiguousRuleException(DependencyRule rule, JavaPackage from, JavaPackage to) {
+    public AmbiguousRuleException(DependencyRule rule, UsingElement<?> from, UsingElement<?> to) {
         this.rule = rule;
         this.from = from;
         this.to = to;
@@ -35,11 +35,11 @@ public class AmbiguousRuleException extends RuntimeException {
         return rule;
     }
 
-    public JavaPackage getFrom() {
+    public UsingElement<?> getFrom() {
         return from;
     }
 
-    public JavaPackage getTo() {
+    public UsingElement<?> getTo() {
         return to;
     }
 

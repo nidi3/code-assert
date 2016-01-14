@@ -56,17 +56,23 @@ public class DependencyRulesTest {
 
     //TODO test AmbigousRuleException
 
+//    @Test
+//    public void classes() {
+//        final DependencyRules rules = DependencyRules.denyAll();
+//        rules.withExternals("java.*", "org*");
+//TODO
+//    }
+
     @Test
     public void matcherFlags() {
         final DependencyRules rules = DependencyRules.allowAll();
-        rules.addExternal("java.*");
-        rules.addExternal("org.hamcrest*");
+        rules.withExternals("java.*", "org.hamcrest*");
         rules.addRule(dep("a"));
         rules.addRule(dep("d"));
         final Set<String> undefined = new TreeSet<>(UNDEFINED);
         undefined.addAll(set("org.junit", dep("b"), dep("c")));
 
-        final RuleResult result = rules.analyzeRules(model.findings());
+        final RuleResult result = rules.analyzeRules(model.findings().packageView());
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap(),
@@ -75,7 +81,7 @@ public class DependencyRulesTest {
                         undefined),
                 result);
 
-        assertThat(model, matchesRules(rules));
+        assertThat(model, packagesMatchRules(rules));
 
         assertMatcher("\nDefined, but not existing packages:\n" +
                         "guru.nidi.codeassert.dependency.d\n" +
@@ -86,7 +92,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, " +
                         "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, " +
                         "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
-                matchesExactly(rules));
+                packagesMatchExactly(rules));
 
         assertMatcher("\nFound packages which are not defined:\n" +
                         "guru.nidi.codeassert, guru.nidi.codeassert.config, guru.nidi.codeassert.dependency, " +
@@ -95,11 +101,11 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, " +
                         "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, " +
                         "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
-                matchesIgnoringNonExisting(rules));
+                packagesMatchIgnoringNonExisting(rules));
 
         assertMatcher("\nDefined, but not existing packages:\n" +
                         "guru.nidi.codeassert.dependency.d\n",
-                matchesIgnoringUndefined(rules));
+                packagesMatchIgnoringUndefined(rules));
     }
 
     @Test
@@ -108,8 +114,7 @@ public class DependencyRulesTest {
         final DependencyRule a = rules.addRule(dep("a"));
         final DependencyRule b = rules.addRule(dep("b"));
         final DependencyRule c = rules.addRule(dep("c"));
-        rules.addExternal("java.*");
-        rules.addExternal("org*");
+        rules.withExternals("java.*", "org*");
 
         a.mustUse(b);
         b.mustNotUse(c);
@@ -128,8 +133,8 @@ public class DependencyRulesTest {
                 })
                 .withRules(new GuruNidiCodeassertDependency());
 
-        final RuleResult result = rules.analyzeRules(model.findings());
-        assertEquals(result, rules2.analyzeRules(model.findings()));
+        final RuleResult result = rules.analyzeRules(model.findings().packageView());
+        assertEquals(result, rules2.analyzeRules(model.findings().packageView()));
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap().with(0, dep("a"), set(), dep("b")),
@@ -145,7 +150,7 @@ public class DependencyRulesTest {
                         "Found forbidden dependencies:\n" +
                         "guru.nidi.codeassert.dependency.b ->\n" +
                         "  guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.b.B1)\n",
-                matchesRules(rules));
+                packagesMatchRules(rules));
     }
 
     @Test
@@ -154,13 +159,12 @@ public class DependencyRulesTest {
         final DependencyRule a = rules.addRule(dep("a"));
         final DependencyRule b = rules.addRule(dep("b"));
         final DependencyRule c = rules.addRule(dep("c"));
-        rules.addExternal("java*");
-        rules.addExternal("org*");
+        rules.withExternals("java*", "org*");
 
         a.mustUse(b);
         b.mayUse(c);
 
-        final RuleResult result = rules.analyzeRules(model.findings());
+        final RuleResult result = rules.analyzeRules(model.findings().packageView());
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap().with(0, dep("a"), set(), dep("b")),
@@ -185,7 +189,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.dependency.c ->\n" +
                         "  guru.nidi.codeassert.dependency.a (by guru.nidi.codeassert.dependency.c.C1)\n" +
                         "  guru.nidi.codeassert.dependency.b (by guru.nidi.codeassert.dependency.c.C1, guru.nidi.codeassert.dependency.c.C2)\n",
-                matchesRules(rules));
+                packagesMatchRules(rules));
     }
 
     @Test
@@ -195,13 +199,12 @@ public class DependencyRulesTest {
         final DependencyRule a = rules.addRule(dep("a.*"));
         final DependencyRule b = rules.addRule(dep("b.*"));
         final DependencyRule c = rules.addRule(dep("c.*"));
-        rules.addExternal("java*");
-        rules.addExternal("org*");
+        rules.withExternals("java*", "org*");
 
         a.mustUse(b);
         b.mustNotUse(a, c).mayUse(a1);
 
-        final RuleResult result = rules.analyzeRules(model.findings());
+        final RuleResult result = rules.analyzeRules(model.findings().packageView());
         final DependencyRules rules2 = DependencyRules.allowAll()
                 .withRules("guru.nidi.codeassert.dependency", new DependencyRuler() {
                     DependencyRule aA, a_, b_, c_;
@@ -216,7 +219,7 @@ public class DependencyRulesTest {
                     DependencyRule java_, org_;
                 });
 
-        assertEquals(result, rules2.analyzeRules(model.findings()));
+        assertEquals(result, rules2.analyzeRules(model.findings().packageView()));
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap()
@@ -248,7 +251,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.dependency.b.b ->\n" +
                         "  guru.nidi.codeassert.dependency.c.a (by guru.nidi.codeassert.dependency.b.b.Bb1)\n" +
                         "  guru.nidi.codeassert.dependency.c.b (by guru.nidi.codeassert.dependency.b.b.Bb1)\n",
-                matchesRules(rules));
+                packagesMatchRules(rules));
     }
 
     @Test
@@ -258,13 +261,12 @@ public class DependencyRulesTest {
         final DependencyRule a = rules.addRule(dep("a.*"));
         final DependencyRule b = rules.addRule(dep("b.*"));
         final DependencyRule c = rules.addRule(dep("c.*"));
-        rules.addExternal("java.*");
-        rules.addExternal("org*");
+        rules.withExternals("java.*", "org*");
 
         a.mustUse(b);
         b.mayUse(a, c).mustNotUse(a1);
 
-        final RuleResult result = rules.analyzeRules(model.findings());
+        final RuleResult result = rules.analyzeRules(model.findings().packageView());
         assertEquals(new RuleResult(
                         new DependencyMap(),
                         new DependencyMap()
@@ -292,7 +294,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.dependency.c.a ->\n" +
                         "  guru.nidi.codeassert.dependency.a.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n" +
                         "  guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n",
-                matchesRules(rules));
+                packagesMatchRules(rules));
     }
 
     private static String ca(String s) {

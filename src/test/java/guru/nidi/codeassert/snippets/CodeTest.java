@@ -33,7 +33,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
-import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesExactly;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.packagesMatchExactly;
 import static guru.nidi.codeassert.pmd.Rulesets.basic;
 import static guru.nidi.codeassert.pmd.Rulesets.braces;
 import static org.junit.Assert.assertThat;
@@ -55,7 +55,7 @@ public class CodeTest extends CodeAssertTest {
             }
         }
         final DependencyRules rules = denyAll().withExternals("java*").withRules(new MyProject());
-        assertThat(modelResult(), matchesExactly(rules));
+        assertThat(modelResult(), packagesMatchExactly(rules));
     }
 
     @Override

@@ -16,6 +16,7 @@
 package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.model.ModelResult;
+import guru.nidi.codeassert.model.UsingElement;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -24,12 +25,14 @@ import static guru.nidi.codeassert.dependency.MatcherUtils.*;
 /**
  *
  */
-public class DependencyRuleMatcher extends TypeSafeMatcher<ModelResult> {
+public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMatcher<ModelResult> {
+    private final Class<T> type;
     private final DependencyRules rules;
     private final boolean nonExisting;
     private final boolean undefined;
 
-    public DependencyRuleMatcher(DependencyRules rules, boolean nonExisting, boolean undefined) {
+    public DependencyRuleMatcher(Class<T> type, DependencyRules rules, boolean nonExisting, boolean undefined) {
+        this.type = type;
         this.rules = rules;
         this.nonExisting = nonExisting;
         this.undefined = undefined;
@@ -37,7 +40,7 @@ public class DependencyRuleMatcher extends TypeSafeMatcher<ModelResult> {
 
     @Override
     protected boolean matchesSafely(ModelResult item) {
-        final RuleResult result = rules.analyzeRules(item.findings());
+        final RuleResult result = result(item);
         return result.getMissing().isEmpty() && result.getDenied().isEmpty() &&
                 (result.getNotExisting().isEmpty() || !nonExisting) &&
                 (result.getUndefined().isEmpty() || !undefined);
@@ -49,11 +52,15 @@ public class DependencyRuleMatcher extends TypeSafeMatcher<ModelResult> {
 
     @Override
     protected void describeMismatchSafely(ModelResult item, Description description) {
-        final RuleResult result = rules.analyzeRules(item.findings());
+        final RuleResult result = result(item);
         describeNotExisting(result, description);
         describeUndefined(result, description);
         describeMissing(result, description);
         describeForbidden(result, description);
+    }
+
+    private RuleResult result(ModelResult item) {
+        return rules.analyzeRules(item.findings().view(type));
     }
 
     private void describeForbidden(RuleResult result, Description description) {

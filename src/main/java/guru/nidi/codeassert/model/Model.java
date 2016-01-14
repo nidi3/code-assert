@@ -46,14 +46,45 @@ public class Model {
         return clazz;
     }
 
-    public List<JavaPackage> matchingPackages(LocationMatcher pattern) {
-        final List<JavaPackage> res = new ArrayList<>();
-        for (final JavaPackage pack : packages.values()) {
-            if (pattern.matches(pack.getName())) {
-                res.add(pack);
-            }
+    @SuppressWarnings("unchecked")
+    public <T extends UsingElement<T>> View<T> view(Class<T> type) {
+        if (type == JavaPackage.class) {
+            return (View<T>) packageView();
         }
-        return res;
+        if (type == JavaClass.class) {
+            return (View<T>) classView();
+        }
+        throw new IllegalArgumentException("Unsupported type " + type);
+    }
+
+    public View<JavaPackage> packageView() {
+        return new View<JavaPackage>() {
+            @Override
+            public Iterator<JavaPackage> iterator() {
+                return packages.values().iterator();
+            }
+        };
+    }
+
+    public View<JavaClass> classView() {
+        return new View<JavaClass>() {
+            @Override
+            public Iterator<JavaClass> iterator() {
+                return classes.values().iterator();
+            }
+        };
+    }
+
+    public abstract class View<T extends UsingElement<T>> implements Iterable<T> {
+        public List<T> matchingElements(LocationMatcher pattern) {
+            final List<T> res = new ArrayList<>();
+            for (final T elem : this) {
+                if (pattern.matches(elem.getName())) {
+                    res.add(elem);
+                }
+            }
+            return res;
+        }
     }
 
     public Collection<JavaPackage> getPackages() {

@@ -21,6 +21,8 @@ import guru.nidi.codeassert.dependency.DependencyRuleMatcher;
 import guru.nidi.codeassert.dependency.DependencyRules;
 import guru.nidi.codeassert.findbugs.FindBugsMatcher;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
+import guru.nidi.codeassert.model.JavaClass;
+import guru.nidi.codeassert.model.JavaPackage;
 import guru.nidi.codeassert.model.ModelResult;
 import guru.nidi.codeassert.pmd.CpdMatcher;
 import guru.nidi.codeassert.pmd.CpdResult;
@@ -37,38 +39,38 @@ public final class CodeAssertMatchers {
     private CodeAssertMatchers() {
     }
 
-    public static Matcher<ModelResult> matchesRules(final DependencyRules rules) {
-        return new DependencyRuleMatcher(rules, false, false);
+    public static Matcher<ModelResult> packagesMatchRules(final DependencyRules rules) {
+        return new DependencyRuleMatcher<>(JavaPackage.class, rules, false, false);
     }
 
-    public static Matcher<ModelResult> matchesExactly(final DependencyRules rules) {
-        return new DependencyRuleMatcher(rules, true, true);
+    public static Matcher<ModelResult> packagesMatchExactly(final DependencyRules rules) {
+        return new DependencyRuleMatcher<>(JavaPackage.class, rules, true, true);
     }
 
-    public static Matcher<ModelResult> matchesIgnoringNonExisting(final DependencyRules rules) {
-        return new DependencyRuleMatcher(rules, false, true);
+    public static Matcher<ModelResult> packagesMatchIgnoringNonExisting(final DependencyRules rules) {
+        return new DependencyRuleMatcher<>(JavaPackage.class, rules, false, true);
     }
 
-    public static Matcher<ModelResult> matchesIgnoringUndefined(final DependencyRules rules) {
-        return new DependencyRuleMatcher(rules, true, false);
+    public static Matcher<ModelResult> packagesMatchIgnoringUndefined(final DependencyRules rules) {
+        return new DependencyRuleMatcher<>(JavaPackage.class, rules, true, false);
     }
 
     public static Matcher<ModelResult> hasNoPackageCycles() {
-        return new DependencyCycleMatcher(true);
+        return new DependencyCycleMatcher<>(JavaPackage.class);
     }
 
     @SafeVarargs
     public static Matcher<ModelResult> hasNoPackgeCyclesExcept(Set<String>... cyclicGroups) {
-        return new DependencyCycleMatcher(true, cyclicGroups);
+        return new DependencyCycleMatcher<>(JavaPackage.class, cyclicGroups);
     }
 
     public static Matcher<ModelResult> hasNoClassCycles() {
-        return new DependencyCycleMatcher(false);
+        return new DependencyCycleMatcher<>(JavaClass.class);
     }
 
     @SafeVarargs
     public static Matcher<ModelResult> hasNoClassCyclesExcept(Set<String>... cyclicGroups) {
-        return new DependencyCycleMatcher(false, cyclicGroups);
+        return new DependencyCycleMatcher<>(JavaClass.class, cyclicGroups);
     }
 
     public static Matcher<FindBugsResult> hasNoBugs() {

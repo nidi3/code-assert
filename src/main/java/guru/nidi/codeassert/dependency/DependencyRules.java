@@ -16,7 +16,6 @@
 package guru.nidi.codeassert.dependency;
 
 
-import guru.nidi.codeassert.model.JavaPackage;
 import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.model.UsingElement;
 
@@ -199,21 +198,21 @@ public class DependencyRules {
         return Character.toString(c);
     }
 
-    public RuleResult analyzeRules(Model model) {
+    public <T extends UsingElement<T>> RuleResult analyzeRules(Model.View<T> view) {
         final RuleResult result = new RuleResult();
         for (final DependencyRule rule : rules) {
-            result.merge(rule.analyze(model, this));
+            result.merge(rule.analyzer(view, this).analyze());
         }
-        for (final JavaPackage pack : model.getPackages()) {
-            if (!matchesAny(pack, rules)) {
-                result.undefined.add(pack.getName());
+        for (final T elem : view) {
+            if (!elem.matchesAny(rules)) {
+                result.undefined.add(elem.getName());
             }
         }
         result.normalize();
         return result;
     }
 
-    int mostSpecificMayBeUsedMatch(JavaPackage from, JavaPackage to) {
+    <T extends UsingElement<T>> int mostSpecificMayBeUsedMatch(T from, T to) {
         int s = 0;
         for (final DependencyRule rule : rules) {
             if (rule.matches(to)) {
@@ -223,37 +222,28 @@ public class DependencyRules {
         return s;
     }
 
-    int mostSpecificMustBeUsedMatch(JavaPackage pack, JavaPackage dependent) {
+    <T extends UsingElement<T>> int mostSpecificMustBeUsedMatch(T from, T to) {
         int s = 0;
         for (final DependencyRule rule : rules) {
-            if (rule.matches(dependent)) {
-                s = Math.max(s, pack.mostSpecificMatch(rule.usedBy.must));
+            if (rule.matches(to)) {
+                s = Math.max(s, from.mostSpecificMatch(rule.usedBy.must));
             }
         }
         return s;
     }
 
-    int mostSpecificMustNotBeUsedMatch(JavaPackage pack, JavaPackage dependent) {
+    <T extends UsingElement<T>> int mostSpecificMustNotBeUsedMatch(T from, T to) {
         int s = 0;
         for (final DependencyRule rule : rules) {
-            if (rule.matches(dependent)) {
-                s = Math.max(s, pack.mostSpecificMatch(rule.usedBy.mustNot));
+            if (rule.matches(to)) {
+                s = Math.max(s, from.mostSpecificMatch(rule.usedBy.mustNot));
             }
         }
         return s;
     }
 
-    private boolean matchesAny(JavaPackage pack, List<DependencyRule> rules) {
-        for (final DependencyRule rule : rules) {
-            if (rule.matches(pack)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static <T extends UsingElement<T>> CycleResult analyzeCycles(Collection<T> elems) {
-        return new Tarjan<T>().analyzeCycles(elems);
+    public static <T extends UsingElement<T>> CycleResult analyzeCycles(Model.View<T> view) {
+        return new Tarjan<T>().analyzeCycles(view);
     }
 
     private static class Tarjan<T extends UsingElement<T>> {
@@ -268,7 +258,7 @@ public class DependencyRules {
             boolean onStack;
         }
 
-        public CycleResult analyzeCycles(Collection<T> elems) {
+        public CycleResult analyzeCycles(Iterable<T> elems) {
             index = 0;
             for (final T elem : elems) {
                 if (node(elem).index < 0) {

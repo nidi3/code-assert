@@ -15,17 +15,44 @@
  */
 package guru.nidi.codeassert.model;
 
+import guru.nidi.codeassert.config.LocationMatcher;
+
 import java.util.Collection;
+import java.util.List;
 
 /**
  *
  */
-public interface UsingElement<T> {
-    T self();
+public abstract class UsingElement<T> {
+    public abstract T self();
 
-    String getName();
+    public abstract String getName();
 
-    Collection<T> uses();
+    public abstract Collection<T> uses();
 
-    Collection<String> usedVia(UsingElement<T> other);
+    public abstract Collection<String> usedVia(UsingElement<T> other);
+
+    public boolean uses(T elem) {
+        return uses().contains(elem);
+    }
+
+    public int mostSpecificMatch(Collection<LocationMatcher> matchers) {
+        int s = 0;
+        for (final LocationMatcher matcher : matchers) {
+            if (matcher.matches(getName()) && matcher.specificity() > s) {
+                s = matcher.specificity();
+            }
+        }
+        return s;
+    }
+
+    public boolean matchesAny(List<? extends UsingElementMatcher> matchers) {
+        for (final UsingElementMatcher matcher : matchers) {
+            if (matcher.matches(this)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

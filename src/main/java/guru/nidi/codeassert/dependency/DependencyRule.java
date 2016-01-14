@@ -16,14 +16,15 @@
 package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.config.LocationMatcher;
-import guru.nidi.codeassert.model.JavaPackage;
 import guru.nidi.codeassert.model.Model;
+import guru.nidi.codeassert.model.UsingElement;
+import guru.nidi.codeassert.model.UsingElementMatcher;
 
 import java.util.List;
 
 /**
  */
-public class DependencyRule {
+public class DependencyRule implements UsingElementMatcher {
     final LocationMatcher pattern;
     private final boolean allowAll;
     final Usage use = new Usage();
@@ -76,83 +77,98 @@ public class DependencyRule {
         return this;
     }
 
-    public boolean matches(JavaPackage pack) {
-        return pattern.matches(pack.getName());
+    public boolean matches(UsingElement<?> elem) {
+        return pattern.matches(elem.getName());
     }
 
     public boolean isEmpty() {
         return use.isEmpty() && usedBy.isEmpty();
     }
 
-    public RuleResult analyze(Model model, DependencyRules rules) {
-        final RuleResult result = new RuleResult();
-        final List<JavaPackage> thisPackages = model.matchingPackages(pattern);
-
-        analyzeNotExisting(result, thisPackages);
-        analyzeMissing(result, thisPackages, model);
-        analyzeAllowAndDeny(result, thisPackages, rules);
-
-        return result;
+    public <T extends UsingElement<T>> Analyzer analyzer(Model.View<T> view, DependencyRules rules) {
+        return new Analyzer<>(view, rules);
     }
 
-    private void analyzeAllowAndDeny(RuleResult result, List<JavaPackage> thisPackages, DependencyRules rules) {
-        for (final JavaPackage thisPack : thisPackages) {
-            for (final JavaPackage dep : thisPack.getUses()) {
-                final int allowed = calcAllowedSpecificity(rules, thisPack, dep);
-                final int denied = calcDeniedSpecificity(rules, thisPack, dep);
-                if (isAmbiguous(allowed, denied)) {
-                    throw new AmbiguousRuleException(this, thisPack, dep);
-                }
-                if (isAllowed(allowed, denied)) {
-                    result.allowed.with(pattern.specificity(), thisPack, dep);
-                }
-                if (isDenied(allowed, denied)) {
-                    //if deny if only because of !allowAll -> lowest specificity
-                    final int spec = denied == 0 ? 0 : pattern.specificity();
-                    result.denied.with(spec, thisPack, dep);
-                }
+    public class Analyzer<T extends UsingElement<T>> {
+        final RuleResult result = new RuleResult();
+        private final Model.View<T> view;
+        private final DependencyRules rules;
+        private final List<T> elems;
+
+        public Analyzer(Model.View<T> view, DependencyRules rules) {
+            this.view = view;
+            this.rules = rules;
+            elems = view.matchingElements(pattern);
+        }
+
+        public RuleResult analyze() {
+            analyzeNotExisting();
+            analyzeMissing();
+            analyzeAllowAndDeny();
+            return result;
+        }
+
+        private void analyzeNotExisting() {
+            if (elems.isEmpty()) {
+                result.notExisting.add(pattern);
             }
         }
-    }
 
-    private boolean isDenied(int allowed, int denied) {
-        return denied > allowed || (!allowAll && allowed == 0);
-    }
-
-    private boolean isAllowed(int allowed, int denied) {
-        return allowed > denied || (allowAll && denied == 0);
-    }
-
-    private boolean isAmbiguous(int allowed, int denied) {
-        return allowed != 0 && allowed == denied;
-    }
-
-    private int calcDeniedSpecificity(DependencyRules rules, JavaPackage thisPack, JavaPackage dep) {
-        return Math.max(dep.mostSpecificMatch(use.mustNot), rules.mostSpecificMustNotBeUsedMatch(thisPack, dep));
-    }
-
-    private int calcAllowedSpecificity(DependencyRules rules, JavaPackage thisPack, JavaPackage dep) {
-        final int useAllowed = Math.max(dep.mostSpecificMatch(use.must), dep.mostSpecificMatch(use.may));
-        final int usedByAllowed = Math.max(rules.mostSpecificMustBeUsedMatch(thisPack, dep), rules.mostSpecificMayBeUsedMatch(thisPack, dep));
-        return Math.max(useAllowed, usedByAllowed);
-    }
-
-    private void analyzeMissing(RuleResult result, List<JavaPackage> thisPackages, Model model) {
-        for (final JavaPackage thisPack : thisPackages) {
-            for (final LocationMatcher must : use.must) {
-                for (final JavaPackage mustPack : model.matchingPackages(must)) {
-                    if (!thisPack.uses(mustPack)) {
-                        result.missing.with(pattern.specificity(), thisPack, mustPack);
+        private void analyzeMissing() {
+            for (final T elem : elems) {
+                for (final LocationMatcher mustMatcher : use.must) {
+                    for (final T must : view.matchingElements(mustMatcher)) {
+                        if (!elem.uses(must)) {
+                            result.missing.with(pattern.specificity(), elem, must);
+                        }
                     }
                 }
             }
         }
-    }
 
-    private void analyzeNotExisting(RuleResult result, List<JavaPackage> thisPackages) {
-        if (thisPackages.isEmpty()) {
-            result.notExisting.add(pattern);
+        private void analyzeAllowAndDeny() {
+            for (final T elem : elems) {
+                for (final T dep : elem.uses()) {
+                    final int allowed = calcAllowedSpecificity(elem, dep);
+                    final int denied = calcDeniedSpecificity(elem, dep);
+                    if (isAmbiguous(allowed, denied)) {
+                        throw new AmbiguousRuleException(DependencyRule.this, elem, dep);
+                    }
+                    if (isAllowed(allowed, denied)) {
+                        result.allowed.with(pattern.specificity(), elem, dep);
+                    }
+                    if (isDenied(allowed, denied)) {
+                        //if deny if only because of !allowAll -> lowest specificity
+                        final int spec = denied == 0 ? 0 : pattern.specificity();
+                        result.denied.with(spec, elem, dep);
+                    }
+                }
+            }
         }
+
+        private boolean isDenied(int allowed, int denied) {
+            return denied > allowed || (!allowAll && allowed == 0);
+        }
+
+        private boolean isAllowed(int allowed, int denied) {
+            return allowed > denied || (allowAll && denied == 0);
+        }
+
+        private boolean isAmbiguous(int allowed, int denied) {
+            return allowed != 0 && allowed == denied;
+        }
+
+        private int calcDeniedSpecificity(T thisPack, T dep) {
+            return Math.max(dep.mostSpecificMatch(use.mustNot), rules.mostSpecificMustNotBeUsedMatch(thisPack, dep));
+        }
+
+        private int calcAllowedSpecificity(T thisPack, T dep) {
+            final int useAllowed = Math.max(dep.mostSpecificMatch(use.must), dep.mostSpecificMatch(use.may));
+            final int usedByAllowed = Math.max(rules.mostSpecificMustBeUsedMatch(thisPack, dep), rules.mostSpecificMayBeUsedMatch(thisPack, dep));
+            return Math.max(useAllowed, usedByAllowed);
+        }
+
+
     }
 
     @Override
