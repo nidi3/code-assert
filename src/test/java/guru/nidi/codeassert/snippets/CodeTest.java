@@ -54,7 +54,7 @@ public class CodeTest extends CodeAssertTest {
                 //TODO
             }
         }
-        final DependencyRules rules = denyAll().withExternals("java*").withRules(new MyProject());
+        final DependencyRules rules = denyAll().withExternals("java*").withRelativeRules(new MyProject());
         assertThat(modelResult(), packagesMatchExactly(rules));
     }
 

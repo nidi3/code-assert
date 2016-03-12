@@ -65,7 +65,7 @@ public class DependencyTest {
         // All dependencies are forbidden, except the ones defined in OrgProject
         // java, org, net packages are ignored
         DependencyRules rules = DependencyRules.denyAll()
-                .withRules(new OrgProj())
+                .withRelativeRules(new OrgProj())
                 .withExternals("java.*", "org.*", "net.*");
 
         assertThat(new ModelAnalyzer(config).analyze(), packagesMatchExactly(rules));

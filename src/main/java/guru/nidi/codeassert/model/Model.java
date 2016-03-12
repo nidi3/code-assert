@@ -38,12 +38,17 @@ public class Model {
     JavaClass getOrCreateClass(String name) {
         JavaClass clazz = classes.get(name);
         if (clazz == null) {
-            final JavaPackage pack = getOrCreatePackage(JavaClass.packageOf(name));
+            final JavaPackage pack = getOrCreatePackage(packageOf(name));
             clazz = new JavaClass(name, pack);
             classes.put(name, clazz);
             pack.addClass(clazz);
         }
         return clazz;
+    }
+
+    static String packageOf(String type) {
+        final int pos = type.lastIndexOf('.');
+        return pos < 0 ? "Default" : type.substring(0, pos);
     }
 
     @SuppressWarnings("unchecked")
@@ -76,10 +81,10 @@ public class Model {
     }
 
     public abstract class View<T extends UsingElement<T>> implements Iterable<T> {
-        public List<T> matchingElements(LocationMatcher pattern) {
+        public List<T> matchingElements(LocationMatcher matcher) {
             final List<T> res = new ArrayList<>();
             for (final T elem : this) {
-                if (pattern.matches(elem.getName())) {
+                if (elem.isMatchedBy(matcher)) {
                     res.add(elem);
                 }
             }

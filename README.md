@@ -30,14 +30,14 @@ public class DependencyTest {
 
     @Test
     public void noCycles() {
-        assertThat(new ModelAnalyzer(config).analyze(), hasNoCycles());
+        assertThat(new ModelAnalyzer(config).analyze(), hasNoPackageCycles());
     }
 
     @Test
     public void dependency() {
         // Defines the dependency rules for package org.project
-        class OrgProject implements DependencyRuler {
-            // Rules for org.project, org.project.dependency (with sub packages), org.project.model, org.project.util
+        class OrgProj extends DependencyRuler {
+            // Rules for org.proj, org.proj.dependency (with sub packages), org.proj.model, org.proj.util
             DependencyRule $self, dependency_, model, util;
 
             @Override
@@ -51,10 +51,10 @@ public class DependencyTest {
         // All dependencies are forbidden, except the ones defined in OrgProject
         // java, org, net packages are ignored
         DependencyRules rules = DependencyRules.denyAll()
-                .withRules(new OrgProject())
+                .withRelativeRules(new OrgProj())
                 .withExternals("java.*", "org.*", "net.*");
 
-        assertThat(new ModelAnalyzer(config).analyze(), matchesExactly(rules));
+        assertThat(new ModelAnalyzer(config).analyze(), packagesMatchExactly(rules));
     }
 }
 ```
@@ -163,7 +163,7 @@ public class CodeTest extends CodeAssertTest {
 
     @Test
     public void dependency() {
-        class MyProject implements DependencyRuler {
+        class MyProject extends DependencyRuler {
             DependencyRule packages;
 
             @Override
@@ -171,8 +171,8 @@ public class CodeTest extends CodeAssertTest {
                 //TODO
             }
         }
-        final DependencyRules rules = denyAll().withExternals("java*").withRules(new MyProject());
-        assertThat(modelResult(), matchesExactly(rules));
+        final DependencyRules rules = denyAll().withExternals("java*").withRelativeRules(new MyProject());
+        assertThat(modelResult(), packagesMatchExactly(rules));
     }
 
     @Override

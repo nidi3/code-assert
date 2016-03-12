@@ -59,15 +59,21 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
         checkPattern(methodPat);
     }
 
-    public boolean matches(String packageName) {
-        return matchesAll(classPat) && matchesAll(methodPat) &&
-                matchesPattern(packagePat, packageName);
+    public boolean matchesPackage(String packageName) {
+        return matchesPattern(packagePat, packageName) &&
+                matchesAll(classPat) && matchesAll(methodPat);
     }
 
-    public boolean matches(String packageName, String className) {
-        return matchesAll(methodPat) &&
-                matchesPattern(packagePat, packageName) &&
-                matchesPattern(classPat, className);
+    public boolean matchesClass(String className) {
+        final int pos = className.lastIndexOf('.');
+        return matchesAll(methodPat) && pos < 0
+                ? matchesAll(packagePat) && matchesPattern(classPat, className)
+                : matchesPattern(packagePat, className.substring(0, pos)) && matchesPattern(classPat, className.substring(pos + 1));
+    }
+
+    public boolean matchesPackageClass(String packageName, String className) {
+        return matchesPattern(packagePat, packageName) &&
+                matchesPattern(classPat, className) && matchesAll(methodPat);
     }
 
     public boolean matches(String packageName, String className, String methodName) {

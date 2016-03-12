@@ -54,10 +54,10 @@ public class DependencyCycleMatcher<T extends UsingElement<T>> extends TypeSafeM
         if (!result.isEmptyExcept(exceptions)) {
             description.appendText("Found these cyclic groups:\n");
             for (final DependencyMap cycle : sortedDepMaps(result.getCyclesExcept(exceptions))) {
-                description.appendText("\n- Group of " + cycle.getPackages().size() + ": " + join(sorted(cycle.getPackages())) + "\n");
-                for (final String pack : sorted(cycle.getPackages())) {
-                    description.appendText("  " + pack + " ->\n");
-                    description.appendText(deps("    ", cycle.getDependencies(pack)));
+                description.appendText("\n- Group of " + cycle.getElements().size() + ": " + join(sorted(cycle.getElements())) + "\n");
+                for (final String elem : sorted(cycle.getElements())) {
+                    description.appendText("  " + elem + " ->\n");
+                    description.appendText(deps("    ", cycle.getDependencies(elem)));
                 }
             }
         }
@@ -76,8 +76,8 @@ public class DependencyCycleMatcher<T extends UsingElement<T>> extends TypeSafeM
     private static class DependencyMapComparator implements Comparator<DependencyMap> {
         @Override
         public int compare(DependencyMap d1, DependencyMap d2) {
-            final Iterator<String> i1 = sorted(d1.getPackages()).iterator();
-            final Iterator<String> i2 = sorted(d2.getPackages()).iterator();
+            final Iterator<String> i1 = sorted(d1.getElements()).iterator();
+            final Iterator<String> i2 = sorted(d2.getElements()).iterator();
             while (i1.hasNext() && i2.hasNext()) {
                 final String s1 = i1.next();
                 final String s2 = i2.next();

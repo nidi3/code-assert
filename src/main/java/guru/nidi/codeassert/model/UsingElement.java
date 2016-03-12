@@ -32,6 +32,8 @@ public abstract class UsingElement<T> {
 
     public abstract Collection<String> usedVia(UsingElement<T> other);
 
+    public abstract boolean isMatchedBy(LocationMatcher matcher);
+
     public boolean uses(T elem) {
         return uses().contains(elem);
     }
@@ -39,7 +41,7 @@ public abstract class UsingElement<T> {
     public int mostSpecificMatch(Collection<LocationMatcher> matchers) {
         int s = 0;
         for (final LocationMatcher matcher : matchers) {
-            if (matcher.matches(getName()) && matcher.specificity() > s) {
+            if (isMatchedBy(matcher) && matcher.specificity() > s) {
                 s = matcher.specificity();
             }
         }

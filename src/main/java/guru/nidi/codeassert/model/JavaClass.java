@@ -28,14 +28,14 @@ import java.util.*;
  */
 
 public class JavaClass extends UsingElement<JavaClass> {
-    private final String className;
+    private final String name;
     private final JavaPackage pack;
     private final Map<String, JavaPackage> imports;
     private final Set<JavaClass> importClasses;
     private String sourceFile;
 
-    public JavaClass(String name, JavaPackage pack) {
-        className = name;
+    JavaClass(String name, JavaPackage pack) {
+        this.name = name;
         this.pack = pack;
         imports = new HashMap<>();
         importClasses = new HashSet<>();
@@ -43,7 +43,7 @@ public class JavaClass extends UsingElement<JavaClass> {
     }
 
     public String getName() {
-        return className;
+        return name;
     }
 
     public JavaPackage getPackage() {
@@ -63,27 +63,13 @@ public class JavaClass extends UsingElement<JavaClass> {
     }
 
     public void addImport(String type, Model model) {
-        final String packName = packageOf(type);
+        final String packName = Model.packageOf(type);
         if (!packName.equals(pack.getName())) {
             final JavaPackage p = model.getOrCreatePackage(packName);
             imports.put(packName, p);
             pack.addEfferent(p);
             importClasses.add(model.getOrCreateClass(type));
         }
-    }
-
-    static String packageOf(String type) {
-        final int pos = type.lastIndexOf('.');
-        return pos > 0 ? type.substring(0, pos) : "Default";
-    }
-
-    public boolean usesPackagesMatchedBy(LocationMatcher matcher) {
-        for (final JavaPackage pack : imports.values()) {
-            if (matcher.matches(pack.getName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean equals(Object other) {
@@ -100,7 +86,7 @@ public class JavaClass extends UsingElement<JavaClass> {
 
     @Override
     public String toString() {
-        return className;
+        return name;
     }
 
     @Override
@@ -120,5 +106,10 @@ public class JavaClass extends UsingElement<JavaClass> {
     @Override
     public Collection<String> usedVia(UsingElement<JavaClass> other) {
         return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isMatchedBy(LocationMatcher matcher) {
+        return matcher.matchesClass(name);
     }
 }

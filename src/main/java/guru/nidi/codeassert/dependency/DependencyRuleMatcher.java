@@ -66,9 +66,9 @@ public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMa
     private void describeForbidden(RuleResult result, Description description) {
         if (!result.getDenied().isEmpty()) {
             description.appendText("\nFound forbidden dependencies:\n");
-            for (final String pack : sorted(result.getDenied().getPackages())) {
-                description.appendText(pack + " ->\n");
-                description.appendText(deps("  ", result.getDenied().getDependencies(pack)));
+            for (final String elem : sorted(result.getDenied().getElements())) {
+                description.appendText(elem + " ->\n");
+                description.appendText(deps("  ", result.getDenied().getDependencies(elem)));
             }
         }
     }
@@ -76,9 +76,9 @@ public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMa
     private void describeMissing(RuleResult result, Description description) {
         if (!result.getMissing().isEmpty()) {
             description.appendText("\nFound missing dependencies:\n");
-            for (final String pack : sorted(result.getMissing().getPackages())) {
-                description.appendText(pack + " ->\n");
-                for (final String dep : sorted(result.getMissing().getDependencies(pack).keySet())) {
+            for (final String elem : sorted(result.getMissing().getElements())) {
+                description.appendText(elem + " ->\n");
+                for (final String dep : sorted(result.getMissing().getDependencies(elem).keySet())) {
                     description.appendText("  " + dep + "\n");
                 }
             }
@@ -87,14 +87,14 @@ public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMa
 
     private void describeUndefined(RuleResult result, Description description) {
         if (undefined && !result.getUndefined().isEmpty()) {
-            description.appendText("\nFound packages which are not defined:\n");
+            description.appendText("\nFound elements which are not defined:\n");
             description.appendText(join(sorted(result.getUndefined())) + "\n");
         }
     }
 
     private void describeNotExisting(RuleResult result, Description description) {
         if (nonExisting && !result.getNotExisting().isEmpty()) {
-            description.appendText("\nDefined, but not existing packages:\n");
+            description.appendText("\nDefined, but not existing elements:\n");
             description.appendText(join(sortedPatterns(result.getNotExisting())) + "\n");
         }
     }

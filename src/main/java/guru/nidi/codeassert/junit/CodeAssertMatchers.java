@@ -55,6 +55,22 @@ public final class CodeAssertMatchers {
         return new DependencyRuleMatcher<>(JavaPackage.class, rules, true, false);
     }
 
+    public static Matcher<ModelResult> classesMatchRules(final DependencyRules rules) {
+        return new DependencyRuleMatcher<>(JavaClass.class, rules, false, false);
+    }
+
+    public static Matcher<ModelResult> classesMatchExactly(final DependencyRules rules) {
+        return new DependencyRuleMatcher<>(JavaClass.class, rules, true, true);
+    }
+
+    public static Matcher<ModelResult> classesMatchIgnoringNonExisting(final DependencyRules rules) {
+        return new DependencyRuleMatcher<>(JavaClass.class, rules, false, true);
+    }
+
+    public static Matcher<ModelResult> classesMatchIgnoringUndefined(final DependencyRules rules) {
+        return new DependencyRuleMatcher<>(JavaClass.class, rules, true, false);
+    }
+
     public static Matcher<ModelResult> hasNoPackageCycles() {
         return new DependencyCycleMatcher<>(JavaPackage.class);
     }

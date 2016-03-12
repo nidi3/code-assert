@@ -101,7 +101,11 @@ public class DependencyRules {
         return doWithRules(addPackages(basePackage, ruler.getClass()), false, ruler);
     }
 
-    public DependencyRules withRules(DependencyRuler... rulers) {
+    public DependencyRules withAbsoluteRules(DependencyRuler... rulers) {
+        return doWithRules(false, false, rulers);
+    }
+
+    public DependencyRules withRelativeRules(DependencyRuler... rulers) {
         return doWithRules(true, false, rulers);
     }
 

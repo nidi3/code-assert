@@ -88,17 +88,17 @@ public class DependencyMap {
         map.clear();
     }
 
-    public Set<String> getPackages() {
+    public Set<String> getElements() {
         return map.keySet();
     }
 
     /**
-     * @param pack the package name
+     * @param name the name of the element
      * @return A map with all dependencies of a given package.
      * Key: package, Value: A set of all classes importing the package
      */
-    public Map<String, Info> getDependencies(String pack) {
-        return map.get(pack);
+    public Map<String, Info> getDependencies(String name) {
+        return map.get(name);
     }
 
 

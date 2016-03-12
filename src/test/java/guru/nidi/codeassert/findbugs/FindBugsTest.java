@@ -45,7 +45,7 @@ public class FindBugsTest {
     @Test
     public void simple() {
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
-        assertEquals(23, analyzer.analyze().findings().size());
+        assertEquals(29, analyzer.analyze().findings().size());
     }
 
     @Test

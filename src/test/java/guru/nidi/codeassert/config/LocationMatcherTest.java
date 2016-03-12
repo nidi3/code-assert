@@ -67,16 +67,16 @@ public class LocationMatcherTest {
     @Test
     public void all() {
         final LocationMatcher m = new LocationMatcher("*");
-        assertTrue(m.matches("pa"));
-        assertTrue(m.matches("pa", "Cl"));
+        assertTrue(m.matchesPackage("pa"));
+        assertTrue(m.matchesPackageClass("pa", "Cl"));
         assertTrue(m.matches("pa", "Cl", "me"));
     }
 
     @Test
     public void methodOnly() {
         final LocationMatcher m = new LocationMatcher("#me");
-        assertFalse(m.matches("pa"));
-        assertFalse(m.matches("pa", "Cl"));
+        assertFalse(m.matchesPackage("pa"));
+        assertFalse(m.matchesPackageClass("pa", "Cl"));
         assertTrue(m.matches("pa", "Cl", "me"));
         assertFalse(m.matches("pa", "Cl", "mu"));
     }
@@ -84,99 +84,99 @@ public class LocationMatcherTest {
     @Test
     public void classOnlyUppercase() {
         final LocationMatcher m = new LocationMatcher("Cl");
-        assertFalse(m.matches("pa"));
-        assertTrue(m.matches("pa", "Cl"));
+        assertFalse(m.matchesPackage("pa"));
+        assertTrue(m.matchesPackageClass("pa", "Cl"));
         assertTrue(m.matches("pa", "Cl", "me"));
-        assertFalse(m.matches("pa", "Co"));
+        assertFalse(m.matchesPackageClass("pa", "Co"));
     }
 
     @Test
     public void classOnlySlash() {
         final LocationMatcher m = new LocationMatcher("/Cl");
-        assertFalse(m.matches("pa"));
-        assertTrue(m.matches("pa", "Cl"));
+        assertFalse(m.matchesPackage("pa"));
+        assertTrue(m.matchesPackageClass("pa", "Cl"));
         assertTrue(m.matches("pa", "Cl", "me"));
-        assertFalse(m.matches("pa", "Co"));
+        assertFalse(m.matchesPackageClass("pa", "Co"));
     }
 
     @Test
     public void packageOnly() {
         final LocationMatcher m = new LocationMatcher("pa");
-        assertTrue(m.matches("pa"));
-        assertTrue(m.matches("pa", "Cl"));
+        assertTrue(m.matchesPackage("pa"));
+        assertTrue(m.matchesPackageClass("pa", "Cl"));
         assertTrue(m.matches("pa", "Cl", "me"));
-        assertFalse(m.matches("po"));
+        assertFalse(m.matchesPackage("po"));
     }
 
     @Test
     public void startWildcard() {
         final LocationMatcher m = new LocationMatcher("*pa");
-        assertTrue(m.matches("pa"));
-        assertTrue(m.matches("xxxpa"));
-        assertFalse(m.matches("paxxx"));
+        assertTrue(m.matchesPackage("pa"));
+        assertTrue(m.matchesPackage("xxxpa"));
+        assertFalse(m.matchesPackage("paxxx"));
     }
 
     @Test
     public void endWildcard() {
         final LocationMatcher m = new LocationMatcher("pa*");
-        assertTrue(m.matches("pa"));
-        assertFalse(m.matches("xxxpa"));
-        assertTrue(m.matches("paxxx"));
+        assertTrue(m.matchesPackage("pa"));
+        assertFalse(m.matchesPackage("xxxpa"));
+        assertTrue(m.matchesPackage("paxxx"));
     }
 
     @Test
     public void bothWildcard() {
         final LocationMatcher m = new LocationMatcher("*pa*");
-        assertTrue(m.matches("pa"));
-        assertTrue(m.matches("xxxpa"));
-        assertTrue(m.matches("paxxx"));
-        assertFalse(m.matches(""));
+        assertTrue(m.matchesPackage("pa"));
+        assertTrue(m.matchesPackage("xxxpa"));
+        assertTrue(m.matchesPackage("paxxx"));
+        assertFalse(m.matchesPackage(""));
     }
 
     @Test
     public void onlyWildcard() {
         final LocationMatcher m = new LocationMatcher("*");
-        assertTrue(m.matches("pa"));
-        assertTrue(m.matches(""));
+        assertTrue(m.matchesPackage("pa"));
+        assertTrue(m.matchesPackage(""));
     }
 
     @Test
     public void packageAndClass() {
         final LocationMatcher m = new LocationMatcher("a.B");
-        assertTrue(m.matches("a", "B"));
-        assertFalse(m.matches("a"));
-        assertFalse(m.matches("a", "C"));
+        assertTrue(m.matchesPackageClass("a", "B"));
+        assertFalse(m.matchesPackage("a"));
+        assertFalse(m.matchesPackageClass("a", "C"));
     }
 
     @Test
     public void wildcardPackageAndClass2() {
         final LocationMatcher m = new LocationMatcher("a*.B");
-        assertTrue(m.matches("a", "B"));
-        assertTrue(m.matches("ab", "B"));
-        assertTrue(m.matches("a.b", "B"));
-        assertFalse(m.matches("b", "B"));
-        assertFalse(m.matches("a", "C"));
+        assertTrue(m.matchesPackageClass("a", "B"));
+        assertTrue(m.matchesPackageClass("ab", "B"));
+        assertTrue(m.matchesPackageClass("a.b", "B"));
+        assertFalse(m.matchesPackageClass("b", "B"));
+        assertFalse(m.matchesPackageClass("a", "C"));
     }
 
     @Test
     public void packageAndWildcardClass() {
         final LocationMatcher m = new LocationMatcher("a.*B");
-        assertTrue(m.matches("a", "B"));
-        assertTrue(m.matches("a", "xxxB"));
-        assertFalse(m.matches("a"));
-        assertFalse(m.matches("a", "C"));
+        assertTrue(m.matchesPackageClass("a", "B"));
+        assertTrue(m.matchesPackageClass("a", "xxxB"));
+        assertFalse(m.matchesPackage("a"));
+        assertFalse(m.matchesPackageClass("a", "C"));
     }
 
     @Test
     public void wildcardPackageAndWildcardClass() {
         final LocationMatcher m = new LocationMatcher("a*.*B");
-        assertTrue(m.matches("a", "B"));
-        assertTrue(m.matches("ab", "B"));
-        assertTrue(m.matches("a.b", "B"));
-        assertTrue(m.matches("a", "xxxB"));
-        assertFalse(m.matches("a"));
-        assertFalse(m.matches("b", "B"));
-        assertFalse(m.matches("a", "C"));
+        assertTrue(m.matchesPackageClass("a", "B"));
+        assertTrue(m.matchesPackageClass("ab", "B"));
+        assertTrue(m.matchesPackageClass("a.b", "B"));
+        assertTrue(m.matchesPackageClass("a", "xxxB"));
+        assertFalse(m.matchesPackage("a"));
+        assertFalse(m.matchesPackageClass("b", "B"));
+        assertFalse(m.matchesPackageClass("a", "C"));
     }
 
 

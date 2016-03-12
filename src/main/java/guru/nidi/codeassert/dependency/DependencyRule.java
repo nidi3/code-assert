@@ -78,7 +78,7 @@ public class DependencyRule implements UsingElementMatcher {
     }
 
     public boolean matches(UsingElement<?> elem) {
-        return pattern.matches(elem.getName());
+        return elem.isMatchedBy(pattern);
     }
 
     public boolean isEmpty() {

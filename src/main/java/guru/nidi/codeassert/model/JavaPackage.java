@@ -31,7 +31,7 @@ public class JavaPackage extends UsingElement<JavaPackage> {
     private final Set<JavaClass> classes;
     private final List<JavaPackage> uses;
 
-    public JavaPackage(String name) {
+    JavaPackage(String name) {
         this.name = name;
         classes = new HashSet<>();
         uses = new ArrayList<>();
@@ -63,6 +63,11 @@ public class JavaPackage extends UsingElement<JavaPackage> {
             }
         }
         return res;
+    }
+
+    @Override
+    public boolean isMatchedBy(LocationMatcher matcher) {
+        return matcher.matchesPackage(name);
     }
 
     @Override

@@ -66,7 +66,9 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                 junit.mayUse($self, model, dependency, findbugs, pmd);
             }
         }
-        final DependencyRules rules = denyAll().withExternals("edu*", "java*", "net*", "org*").withRules(new GuruNidiCodeassert());
+        final DependencyRules rules = denyAll()
+                .withExternals("edu*", "java*", "net*", "org*")
+                .withRelativeRules(new GuruNidiCodeassert());
         assertThat(modelResult(), packagesMatchExactly(rules));
     }
 

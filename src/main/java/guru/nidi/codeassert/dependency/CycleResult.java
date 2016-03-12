@@ -44,7 +44,7 @@ public class CycleResult {
         for (final DependencyMap cycle : cycles) {
             boolean excepted = false;
             for (final Set<String> exception : exceptions) {
-                if (exception.containsAll(cycle.getPackages())) {
+                if (exception.containsAll(cycle.getElements())) {
                     excepted = true;
                     break;
                 }

@@ -60,7 +60,32 @@ public class DependencyRulesTest {
 //    public void classes() {
 //        final DependencyRules rules = DependencyRules.denyAll();
 //        rules.withExternals("java.*", "org*");
-//TODO
+//        class Rules extends DependencyRuler{
+//            DependencyRule $A1,$A2,$B1,$X,guruNidiCodeassert_;
+//
+//            @Override
+//            public void defineRules() {
+//                B1.mustUse(A2).mustNotUse(A1);
+//                guruNidiCodeassert_.mayUse(guruNidiCodeassert_);
+//            }
+//        }
+//        final DependencyRule a2 = rules.addRule("A2");
+//        final DependencyRule a1 = rules.addRule("A1");
+//        rules.addRule("B1").mustUse(a2).mustNotUse(a1);
+//        rules.addRule("X");
+//        final DependencyRule all = rules.addRule(ca("*"));
+//        all.mayUse(all);
+//        rules.withAbsoluteRules(new Rules());
+//        final RuleResult result = rules.analyzeRules(model.findings().classView());
+//        assertEquals(new RuleResult(
+//                        new DependencyMap(),
+//                        new DependencyMap().with(0, dep("b.B1"), set(), dep("a.A2")),
+//                        new DependencyMap()
+//                                .with(0, dep("CycleTest"), set(), ca("AnalyzerResult"))
+//                                .with(0, dep("b.B1"), set(), dep("a.A1")),
+//                        patterns("X"),
+//                        set(ca("AnalyzerResult"))),
+//                result);
 //    }
 
     @Test
@@ -83,9 +108,9 @@ public class DependencyRulesTest {
 
         assertThat(model, packagesMatchRules(rules));
 
-        assertMatcher("\nDefined, but not existing packages:\n" +
+        assertMatcher("\nDefined, but not existing elements:\n" +
                         "guru.nidi.codeassert.dependency.d\n" +
-                        "\nFound packages which are not defined:\n" +
+                        "\nFound elements which are not defined:\n" +
                         "guru.nidi.codeassert, guru.nidi.codeassert.config, guru.nidi.codeassert.dependency, " +
                         "guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.a.b, " +
                         "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, " +
@@ -94,7 +119,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
                 packagesMatchExactly(rules));
 
-        assertMatcher("\nFound packages which are not defined:\n" +
+        assertMatcher("\nFound elements which are not defined:\n" +
                         "guru.nidi.codeassert, guru.nidi.codeassert.config, guru.nidi.codeassert.dependency, " +
                         "guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.a.b, " +
                         "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, " +
@@ -103,7 +128,7 @@ public class DependencyRulesTest {
                         "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
                 packagesMatchIgnoringNonExisting(rules));
 
-        assertMatcher("\nDefined, but not existing packages:\n" +
+        assertMatcher("\nDefined, but not existing elements:\n" +
                         "guru.nidi.codeassert.dependency.d\n",
                 packagesMatchIgnoringUndefined(rules));
     }
@@ -131,7 +156,7 @@ public class DependencyRulesTest {
                 .withExternals(new DependencyRuler() {
                     DependencyRule java_, org_;
                 })
-                .withRules(new GuruNidiCodeassertDependency());
+                .withRelativeRules(new GuruNidiCodeassertDependency());
 
         final RuleResult result = rules.analyzeRules(model.findings().packageView());
         assertEquals(result, rules2.analyzeRules(model.findings().packageView()));
