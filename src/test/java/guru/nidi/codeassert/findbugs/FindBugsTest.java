@@ -15,6 +15,7 @@
  */
 package guru.nidi.codeassert.findbugs;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Priorities;
 import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
@@ -25,6 +26,7 @@ import org.hamcrest.StringDescription;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.List;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoBugs;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoUnusedActions;
@@ -45,7 +47,11 @@ public class FindBugsTest {
     @Test
     public void simple() {
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
-        assertEquals(29, analyzer.analyze().findings().size());
+        final List<BugInstance> findings = analyzer.analyze().findings();
+        for (BugInstance i : findings) {
+            System.out.println(i.getPrimaryClass() + " "+i.getPrimaryMethod()+" " + i);
+        }
+        assertEquals(29, findings.size());
     }
 
     @Test
