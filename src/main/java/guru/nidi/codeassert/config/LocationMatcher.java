@@ -19,8 +19,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A ModelPattern is used to match a code location.
- * It the form [package][[/]class][#method].
+ * The LocationMatcher is used to match a code location.
+ * A pattern has the form [package][[/]class][#method].
  * package and class are separated by the first occurrence of \.\*?[A-Z]
  * If this is not intended or clear, a / can be used to separate package and class.
  * All three elements may start and/or end with a wildcard *.

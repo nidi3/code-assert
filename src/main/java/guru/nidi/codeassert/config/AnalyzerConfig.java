@@ -15,6 +15,7 @@
  */
 package guru.nidi.codeassert.config;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -100,12 +101,16 @@ public class AnalyzerConfig {
         }
 
         private String path(String relative) {
-            if (module == null || module.length() == 0) {
+            if (module == null || module.length() == 0 || runningInModuleDir()) {
                 return relative;
             }
             return module.endsWith("/")
                     ? module + relative
                     : module + "/" + relative;
+        }
+
+        private boolean runningInModuleDir() {
+            return new File(".").getAbsolutePath().endsWith("/" + module + "/.");
         }
     }
 
