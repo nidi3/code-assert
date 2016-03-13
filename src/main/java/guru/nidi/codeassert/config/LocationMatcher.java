@@ -42,21 +42,25 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
         final String qualif = hash < 0 ? pattern : pattern.substring(0, hash);
         final int slash = qualif.indexOf('/');
         if (slash >= 0) {
-            packagePat = qualif.substring(0, slash);
+            packagePat = withoutDotStar(qualif.substring(0, slash));
             classPat = qualif.substring(slash + 1);
         } else {
             final Matcher matcher = CLASS_START.matcher(qualif);
             if (matcher.find()) {
-                packagePat = qualif.substring(0, matcher.start());
+                packagePat = withoutDotStar(qualif.substring(0, matcher.start()));
                 classPat = qualif.substring(matcher.start() + matcher.group(1).length());
             } else {
-                packagePat = qualif;
+                packagePat = withoutDotStar(qualif);
                 classPat = "";
             }
         }
         checkPattern(packagePat);
         checkPattern(classPat);
         checkPattern(methodPat);
+    }
+
+    private String withoutDotStar(String pattern) {
+        return pattern.endsWith(".*") ? pattern.substring(0, pattern.length() - 2) + "*" : pattern;
     }
 
     public boolean matchesPackage(String packageName) {
