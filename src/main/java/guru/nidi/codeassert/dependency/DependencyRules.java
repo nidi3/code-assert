@@ -181,7 +181,7 @@ public class DependencyRules {
         for (int i = 0; i < s.length(); i++) {
             final char c = s.charAt(i);
             if (c == '_' && i == s.length() - 1) {
-                res.append(res.charAt(res.length() - 1) == '.' ? "*" : ".*");
+                res.append(res.length() == 0 || res.charAt(res.length() - 1) == '.' ? "*" : ".*");
             } else {
                 res.append(processChar(dollarMode, i == 0, c));
             }
