@@ -52,6 +52,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
 
     @Test
     public void dependency() {
+        System.gc();
         class GuruNidiCodeassert extends DependencyRuler {
             DependencyRule $self, config, dependency, findbugs, model, pmd, util, junit;
 
@@ -74,11 +75,13 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
 
     @Override
     protected ModelResult analyzeModel() {
+        System.gc();
         return new ModelAnalyzer(AnalyzerConfig.maven().main()).analyze();
     }
 
     @Override
     protected FindBugsResult analyzeFindBugs() {
+        System.gc();
         final BugCollector bugCollector = new BugCollector().just(
                 In.locs("DependencyRules#withRules", "Ruleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
                 In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
@@ -89,6 +92,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
 
     @Override
     protected PmdResult analyzePmd() {
+        System.gc();
         final ViolationCollector collector = new ViolationCollector().minPriority(RulePriority.MEDIUM).just(
                 In.everywhere().ignore(
                         "MethodArgumentCouldBeFinal", "AvoidFieldNameMatchingMethodName",
