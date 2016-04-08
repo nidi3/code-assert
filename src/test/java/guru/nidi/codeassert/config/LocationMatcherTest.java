@@ -100,6 +100,19 @@ public class LocationMatcherTest {
     }
 
     @Test
+    public void classOnlyInner() {
+        final LocationMatcher m = new LocationMatcher("Cl");
+        assertTrue(m.matchesClass("Cl$bla"));
+        assertTrue(m.matchesPackageClass("pa", "Cl$bla"));
+    }
+
+    @Test
+    public void classMethodInner() {
+        final LocationMatcher m = new LocationMatcher("Cl#me");
+        assertFalse(m.matches("pa","Cl$bla","me"));
+    }
+
+    @Test
     public void packageOnly() {
         final LocationMatcher m = new LocationMatcher("pa");
         assertTrue(m.matchesPackage("pa"));

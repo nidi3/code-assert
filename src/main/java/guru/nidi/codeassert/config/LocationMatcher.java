@@ -66,14 +66,15 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
 
     public boolean matchesClass(String className) {
         final int pos = className.lastIndexOf('.');
-        return matchesAll(methodPat) && pos < 0
-                ? matchesAll(packagePat) && matchesPattern(classPat, className)
-                : matchesPattern(packagePat, className.substring(0, pos)) && matchesPattern(classPat, className.substring(pos + 1));
+        return matchesAll(methodPat) &&
+                (pos < 0
+                        ? matchesAll(packagePat) && matchesClassPattern(classPat, className)
+                        : matchesPattern(packagePat, className.substring(0, pos)) && matchesClassPattern(classPat, className.substring(pos + 1)));
     }
 
     public boolean matchesPackageClass(String packageName, String className) {
         return matchesPattern(packagePat, packageName) &&
-                matchesPattern(classPat, className) && matchesAll(methodPat);
+                matchesClassPattern(classPat, className) && matchesAll(methodPat);
     }
 
     public boolean matches(String packageName, String className, String methodName) {
@@ -106,6 +107,17 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
 
     private boolean matchesAll(String pattern) {
         return pattern.length() == 0 || "*".equals(pattern);
+    }
+
+    private boolean matchesClassPattern(String pat, String name) {
+        if (matchesPattern(pat, name)) {
+            return true;
+        }
+        final int pos = name.indexOf('$');
+        if (pos >= 0) {
+            return matchesPattern(pat, name.substring(0, pos));
+        }
+        return false;
     }
 
     static boolean matchesPattern(String pat, String name) {
