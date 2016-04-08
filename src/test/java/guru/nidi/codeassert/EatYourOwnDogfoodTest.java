@@ -52,7 +52,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
 
     @Test
     public void dependency() {
-        mem();
+        mem("d1");
         class GuruNidiCodeassert extends DependencyRuler {
             DependencyRule $self, config, dependency, findbugs, model, pmd, util, junit;
 
@@ -71,23 +71,23 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                 .withExternals("edu*", "java*", "net*", "org*")
                 .withRelativeRules(new GuruNidiCodeassert());
         assertThat(modelResult(), packagesMatchExactly(rules));
-        mem();
+        mem("d2");
 
     }
 
-    private void mem() {
-        System.out.println(Runtime.getRuntime().freeMemory()+ " "+Runtime.getRuntime().maxMemory()+" "+Runtime.getRuntime().totalMemory());
+    private void mem(String s) {
+        System.out.println(s+Runtime.getRuntime().freeMemory()+ " "+Runtime.getRuntime().maxMemory()+" "+Runtime.getRuntime().totalMemory());
     }
 
     @Override
     protected ModelResult analyzeModel() {
-        mem();
+        mem("m");
         return new ModelAnalyzer(AnalyzerConfig.maven().main()).analyze();
     }
 
     @Override
     protected FindBugsResult analyzeFindBugs() {
-        mem();
+        mem("f");
 
         final BugCollector bugCollector = new BugCollector().just(
                 In.locs("DependencyRules#withRules", "Ruleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
@@ -99,7 +99,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
 
     @Override
     protected PmdResult analyzePmd() {
-        mem();
+        mem("p");
 
         final ViolationCollector collector = new ViolationCollector().minPriority(RulePriority.MEDIUM).just(
                 In.everywhere().ignore(
