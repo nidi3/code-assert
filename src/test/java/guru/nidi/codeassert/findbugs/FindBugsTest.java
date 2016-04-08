@@ -15,6 +15,7 @@
  */
 package guru.nidi.codeassert.findbugs;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Priorities;
 import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
@@ -45,7 +46,10 @@ public class FindBugsTest {
     @Test
     public void simple() {
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
-        assertEquals(22, analyzer.analyze().findings().size());
+        for(BugInstance b:analyzer.analyze().findings()){
+            System.out.println(b.getPrimaryClass()+b.getMessage()+"\n");
+        }
+            assertEquals(22, analyzer.analyze().findings().size());
     }
 
     @Test
