@@ -33,7 +33,7 @@ import static org.junit.Assume.assumeTrue;
 /**
  *
  */
-@Ignore("This is made to subclass")
+@Ignore("This is made to be subclassed")
 public class CodeAssertTest {
     /**
      *

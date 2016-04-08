@@ -18,8 +18,10 @@ package guru.nidi.codeassert.findbugs;
 import edu.umd.cs.findbugs.Priorities;
 import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
+import guru.nidi.codeassert.EatYourOwnDogfoodTest;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
+import guru.nidi.codeassert.pmd.Rulesets;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.Test;
@@ -39,13 +41,15 @@ public class FindBugsTest {
             .because("is not useful",
                     In.everywhere().ignore("UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD", "UUF_UNUSED_FIELD", "DLS_DEAD_LOCAL_STORE", "SIC_INNER_SHOULD_BE_STATIC", "UC_USELESS_OBJECT", "OBL_UNSATISFIED_OBLIGATION"),
                     In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"))
+            .because("avoid jvm killed on travis",
+                    In.clazz(EatYourOwnDogfoodTest.class).ignore("DM_GC"))
             .because("is handled by annotation",
-                    In.loc("Rulesets$*").ignore("URF_UNREAD_FIELD"));
+                    In.clazz(Rulesets.class).ignore("URF_UNREAD_FIELD"));
 
     @Test
     public void simple() {
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
-        assertEquals(23, analyzer.analyze().findings().size());
+        assertEquals(27, analyzer.analyze().findings().size());
     }
 
     @Test

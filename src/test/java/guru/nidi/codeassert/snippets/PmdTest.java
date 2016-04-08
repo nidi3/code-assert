@@ -54,7 +54,7 @@ public class PmdTest {
         ViolationCollector collector = new ViolationCollector().minPriority(RulePriority.MEDIUM)
                 .because("It's not severe and occurs very often",
                         In.everywhere().ignore("MethodArgumentCouldBeFinal"),
-                        In.locs("JavaClassBuilder#build", "FindBugsMatchers$*").ignore("AvoidInstantiatingObjectsInLoops"))
+                        In.locs("JavaClassBuilder#build", "FindBugsMatchers").ignore("AvoidInstantiatingObjectsInLoops"))
                 .because("it'a an enum",
                         In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"))
                 .just(In.loc("*Test").ignore("TooManyStaticImports"));

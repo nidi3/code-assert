@@ -86,7 +86,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                 In.locs("DependencyRules#withRules", "Ruleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
                 In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
                 In.loc("*Exception").ignore("SE_BAD_FIELD"),
-                In.locs("ClassFileParser", "Constant", "MemberInfo", "Rulesets$*", "Reason").ignore("URF_UNREAD_FIELD"));
+                In.locs("ClassFileParser", "Constant", "MemberInfo", "Rulesets", "Reason").ignore("URF_UNREAD_FIELD"));
         return new FindBugsAnalyzer(AnalyzerConfig.maven().main(), bugCollector).analyze();
     }
 
@@ -101,9 +101,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                         "UseStringBufferForStringAppends", "AvoidSynchronizedAtMethodLevel",
                         "JUnitAssertionsShouldIncludeMessage", "SimplifyStartsWith", "UncommentedEmptyMethodBody"),
                 In.locs("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
-                In.loc("Rulesets$*").ignore("AvoidDuplicateLiterals"),
                 In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),
-                In.clazz(Rulesets.class).ignore("TooManyMethods"),
+                In.clazz(Rulesets.class).ignore("TooManyMethods","AvoidDuplicateLiterals"),
                 In.loc("*Test").ignore("TooManyStaticImports"),
                 In.loc("Reason").ignore("SingularField"),
                 In.locs("DependencyRules", "JavaClassImportBuilder").ignore("GodClass"));

@@ -43,7 +43,7 @@ public class FindBugsTest {
                 .just(In.everywhere().ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"))
                 .because("It's checked and OK like this",
                         In.classes(DependencyRules.class, Ruleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
-                        In.locs("ClassFileParser#parse", "*Test", "Rulesets$*").ignore("URF_UNREAD_FIELD"));
+                        In.locs("ClassFileParser#parse", "*Test", "Rulesets").ignore("URF_UNREAD_FIELD"));
 
         FindBugsResult result = new FindBugsAnalyzer(config, collector).analyze();
         assertThat(result, hasNoBugs());
