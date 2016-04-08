@@ -79,7 +79,7 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
 
     public boolean matches(String packageName, String className, String methodName) {
         return matchesPattern(packagePat, packageName) &&
-                matchesPattern(classPat, className) &&
+                (matchesAll(methodPat) ? matchesClassPattern(classPat, className) : matchesPattern(classPat, className)) &&
                 matchesPattern(methodPat, methodName);
     }
 
