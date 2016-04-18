@@ -78,7 +78,7 @@ public class FindBugsTest {
                 .just(In.everywhere().ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"))
                 .because("It's checked and OK like this",
                         In.classes(DependencyRules.class, Ruleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
-                        In.locs("ClassFileParser#parse", "*Test", "Rulesets$*").ignore("URF_UNREAD_FIELD"));
+                        In.locs("ClassFileParser#parse", "*Test", "Rulesets").ignore("URF_UNREAD_FIELD"));
 
         FindBugsResult result = new FindBugsAnalyzer(config, collector).analyze();
         assertThat(result, hasNoBugs());
@@ -111,7 +111,7 @@ public class PmdTest {
         ViolationCollector collector = new ViolationCollector().minPriority(RulePriority.MEDIUM)
                 .because("It's not severe and occurs very often",
                         In.everywhere().ignore("MethodArgumentCouldBeFinal"),
-                        In.locs("JavaClassBuilder#build", "FindBugsMatchers$*").ignore("AvoidInstantiatingObjectsInLoops"))
+                        In.locs("JavaClassBuilder#build", "FindBugsMatchers").ignore("AvoidInstantiatingObjectsInLoops"))
                 .because("it'a an enum",
                         In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"))
                 .just(In.loc("*Test").ignore("TooManyStaticImports"));

@@ -102,7 +102,7 @@ public class CodeAssertTest {
     public void circularDependencies() {
         assumeFalse("analyzeModel() not implemented.", modelResult() == null);
         assumeTrue("Circular dependencies test excluded.", defaultTests().contains(CIRCULAR_DEPENDENCIES));
-        assertThat(modelResult(), hasNoClassCycles());
+        assertThat(modelResult(), hasNoPackageCycles());
     }
 
     @Test
