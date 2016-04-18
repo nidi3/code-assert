@@ -21,8 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static guru.nidi.codeassert.util.ListUtils.prepend;
-
 /**
  *
  */
@@ -95,7 +93,15 @@ public class AnalyzerConfig {
         private List<String> path(String[] packs, String... paths) {
             final List<String> res = new ArrayList<>();
             for (final String path : paths) {
-                res.addAll(prepend(path(path), packs));
+                final String normPath = path(path);
+                if (packs.length == 0) {
+                    res.add(normPath);
+                } else {
+                    for (final String pack : packs) {
+                        final String normPack = pack.replace('.', '/');
+                        res.add(normPath + normPack);
+                    }
+                }
             }
             return res;
         }
