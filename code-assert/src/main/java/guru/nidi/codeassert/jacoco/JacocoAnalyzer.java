@@ -22,6 +22,8 @@ import guru.nidi.codeassert.config.ValuedLocation;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -67,23 +69,19 @@ public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
     private JacocoResult filterResult(Coverages coverages) {
         final List<ValuedLocation> filtered = new ArrayList<>();
         final RejectCounter counter = new RejectCounter();
-        final ValuedLocation global = coverages.global.toValuedLocation(collector.types);
-        if (collector.accept(counter.issue(global))) {
-            filtered.add(global);
-        }
-        for (final Coverage c : coverages.perPackage.values()) {
-            final ValuedLocation vc = c.toValuedLocation(collector.types);
-            if (collector.accept(counter.issue(vc))) {
-                filtered.add(vc);
-            }
-        }
-        for (final Coverage c : coverages.coverages) {
-            final ValuedLocation vc = c.toValuedLocation(collector.types);
-            if (collector.accept(counter.issue(vc))) {
-                filtered.add(vc);
-            }
-        }
+        filter(filtered, Collections.singleton(coverages.global), counter);
+        filter(filtered, coverages.perPackage.values(), counter);
+        filter(filtered, coverages.coverages, counter);
         collector.printUnusedWarning(counter);
         return new JacocoResult(this, filtered, collector.unusedActions(counter), collector.types);
+    }
+
+    private void filter(List<ValuedLocation> filtered, Collection<Coverage> coverages, RejectCounter counter) {
+        for (final Coverage c : coverages) {
+            final ValuedLocation vc = c.toValuedLocation(collector.types);
+            if (collector.accept(counter.issue(vc))) {
+                filtered.add(vc);
+            }
+        }
     }
 }

@@ -34,22 +34,21 @@ public class CoverageMatcher extends TypeSafeMatcher<JacocoResult> {
 
     @Override
     protected void describeMismatchSafely(JacocoResult item, Description description) {
-        String s = pad("Analyzed coverage types:", 60);
+        description.appendText(pad("Analyzed coverage types:", 60));
         for (final CoverageType type : item.getTypes()) {
-            s += pad(type.toString(), 13);
+            description.appendText(pad(type.toString(), 13));
         }
-        description.appendText(s);
         for (final ValuedLocation coverage : item.findings()) {
-            description.appendText("\n").appendText(printCoverage(coverage));
+            description.appendText("\n");
+            printCoverage(coverage, description);
         }
     }
 
-    private String printCoverage(ValuedLocation coverage) {
-        String s = pad(printLocation(coverage), 60);
+    private void printCoverage(ValuedLocation coverage, Description description) {
+        description.appendText(pad(printLocation(coverage), 60));
         for (int i = 0; i < coverage.getValues().length; i++) {
-            s += String.format("%3.0f /%3s     ", coverage.getValues()[i], printAppliedValue(coverage.getAppliedLimits()[i]));
+            description.appendText(String.format("%3.0f /%3s     ", coverage.getValues()[i], printAppliedValue(coverage.getAppliedLimits()[i])));
         }
-        return s;
     }
 
     private String printAppliedValue(double value) {
@@ -72,9 +71,10 @@ public class CoverageMatcher extends TypeSafeMatcher<JacocoResult> {
         if (s.length() > len) {
             return s.substring(0, len);
         }
-        while (s.length() < len) {
-            s += " ";
+        final StringBuilder p = new StringBuilder(s);
+        while (p.length() < len) {
+            p.append(' ');
         }
-        return s;
+        return p.toString();
     }
 }

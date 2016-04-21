@@ -72,8 +72,7 @@ public class PmdTest {
     public void pmdIgnore() {
         assertMatcher("" +
                         pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", "A class which only has private constructors should be final") +
-                        pmd(MEDIUM, "ArrayIsStoredDirectly", MAIN, "model/AttributeInfo", "The user-supplied array 'value' is stored directly.") +
-                        pmd(MEDIUM, "ArrayIsStoredDirectly", MAIN, "model/ConstantPool", "The user-supplied array 'pool' is stored directly.") +
+                        pmd(MEDIUM, "AssignmentInOperand", MAIN, "jacoco/JacocoAnalyzer", "Avoid assignments in operands") +
                         pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 118") +
                         pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 160") +
                         pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", "Avoid using final local variables, turn them into fields") +
@@ -81,6 +80,7 @@ public class PmdTest {
                         pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "pmd/PmdUtils", "Avoid using Literals in Conditional Statements") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p2/ExampleEnum", "enumCommentRequirement Required") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", "enumCommentRequirement Required") +
+                        pmd(MEDIUM, "ExcessiveParameterList", MAIN, "jacoco/Coverage", "Avoid long parameter lists.") +
                         pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", "Class cannot be instantiated and does not provide any static methods or fields") +
                         pmd(MEDIUM, "NullAssignment", MAIN, "dependency/DependencyRules", "Assigning an Object to null is a code smell.  Consider refactoring.") +
                         pmd(MEDIUM, "SwitchStmtsShouldHaveDefault", MAIN, "model/SignatureParser", "Switch statements should have a default label") +
@@ -96,6 +96,8 @@ public class PmdTest {
     @Test
     public void duplications() {
         assertMatcher("" +
+                        cpd(26, "findbugs/BugCollector") +
+                        cpd("jacoco/CoverageCollector") +
                         cpd(26, "model/SignatureParser") +
                         cpd("model/SignatureParser") +
                         cpd(26, "pmd/MatchCollector") +
@@ -125,12 +127,12 @@ public class PmdTest {
                                 In.classes(DependencyRulesTest.class, FindBugsTest.class).ignore("AvoidDuplicateLiterals"),
                                 In.clazz(ExampleInterface.class).ignore("ShortMethodName"),
                                 In.clazz(Bugs.class).ignore("UnusedLocalVariable"),
-                                In.locs("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns"),
+                                In.locs("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns", "AddEmptyString"),
                                 In.classes(ClassFileParserTest.class, FileManagerTest.class, JarFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert"),
                                 In.classes(DependencyRulesTest.class, LocationMatcherTest.class, LocationNameMatcherTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.clazz(DependencyRulesTest.class).ignore("VariableNamingConventions"),
                                 In.classes(PmdTest.class, FindBugsTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
-                                In.everywhere().ignore("UseConcurrentHashMap"),
+                                In.everywhere().ignore("UseConcurrentHashMap", "ArrayIsStoredDirectly", "MethodReturnsInternalArray"),
                                 In.locs("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))
                 .withRuleSets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
                         finalizers(), imports(), j2ee(), javabeans(), junit(), optimizations(),

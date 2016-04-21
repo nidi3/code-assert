@@ -81,8 +81,9 @@ public class Coverage implements Comparable<Coverage> {
                 return complexCoverage();
             case METHOD:
                 return methodCoverage();
+            default:
+                throw new AssertionError("Unhandled CoverageType " + type);
         }
-        throw new AssertionError("Unhandled CoverageType " + type);
     }
 
     public double instCoverage() {
@@ -114,4 +115,5 @@ public class Coverage implements Comparable<Coverage> {
     public int compareTo(Coverage o) {
         return (pack + "." + clazz).compareToIgnoreCase(o.pack + "." + o.clazz);
     }
+
 }

@@ -23,6 +23,7 @@ import guru.nidi.codeassert.dependency.DependencyRules;
 import guru.nidi.codeassert.findbugs.BugCollector;
 import guru.nidi.codeassert.findbugs.FindBugsAnalyzer;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
+import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertTest;
 import guru.nidi.codeassert.model.ModelAnalyzer;
 import guru.nidi.codeassert.model.ModelResult;
@@ -54,7 +55,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
     public void dependency() {
         System.gc();
         class GuruNidiCodeassert extends DependencyRuler {
-            DependencyRule $self, config, dependency, findbugs, model, pmd, util, junit;
+            DependencyRule $self, config, dependency, findbugs, model, pmd, util, junit, jacoco;
 
             @Override
             public void defineRules() {
@@ -63,6 +64,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                 findbugs.mayUse($self, util, config);
                 model.mayUse($self, util, config);
                 pmd.mayUse($self, util, config);
+                jacoco.mayUse($self, util, config);
                 util.mayUse($self);
                 junit.mayUse($self, model, dependency, findbugs, pmd);
             }
@@ -86,6 +88,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                 In.locs("DependencyRules#withRules", "Ruleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
                 In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
                 In.loc("*Exception").ignore("SE_BAD_FIELD"),
+                In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"),
+                In.everywhere().ignore("EI_EXPOSE_REP", "EI_EXPOSE_REP2", "SBSC_USE_STRINGBUFFER_CONCATENATION"),
                 In.locs("ClassFileParser", "Constant", "MemberInfo", "Rulesets", "Reason").ignore("URF_UNREAD_FIELD"));
         return new FindBugsAnalyzer(AnalyzerConfig.maven().main(), bugCollector).analyze();
     }
@@ -99,12 +103,14 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                         "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName",
                         "UncommentedEmptyConstructor", "AvoidInstantiatingObjectsInLoops",
                         "UseStringBufferForStringAppends", "AvoidSynchronizedAtMethodLevel",
-                        "JUnitAssertionsShouldIncludeMessage", "SimplifyStartsWith", "UncommentedEmptyMethodBody"),
+                        "JUnitAssertionsShouldIncludeMessage", "SimplifyStartsWith", "UncommentedEmptyMethodBody",
+                        "ArrayIsStoredDirectly", "MethodReturnsInternalArray"),
                 In.locs("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
                 In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),
-                In.clazz(Rulesets.class).ignore("TooManyMethods","AvoidDuplicateLiterals"),
+                In.clazz(Rulesets.class).ignore("TooManyMethods", "AvoidDuplicateLiterals"),
                 In.loc("*Test").ignore("TooManyStaticImports"),
                 In.loc("Reason").ignore("SingularField"),
+                In.clazz(Coverage.class).ignore("ExcessiveParameterList"),
                 In.locs("DependencyRules", "JavaClassImportBuilder").ignore("GodClass"));
         return new PmdAnalyzer(AnalyzerConfig.maven().main(), collector)
                 .withRuleSets(basic(), braces(),

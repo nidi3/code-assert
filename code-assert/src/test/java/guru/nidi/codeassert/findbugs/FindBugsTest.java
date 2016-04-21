@@ -21,6 +21,8 @@ import guru.nidi.codeassert.Bugs;
 import guru.nidi.codeassert.EatYourOwnDogfoodTest;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
+import guru.nidi.codeassert.jacoco.Coverage;
+import guru.nidi.codeassert.jacoco.JacocoTest;
 import guru.nidi.codeassert.pmd.Rulesets;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -39,17 +41,24 @@ public class FindBugsTest {
     private final AnalyzerConfig config = AnalyzerConfig.maven().mainAndTest();
     private final BugCollector bugCollector = new BugCollector().minPriority(Priorities.NORMAL_PRIORITY)
             .because("is not useful",
-                    In.everywhere().ignore("UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD", "UUF_UNUSED_FIELD", "DLS_DEAD_LOCAL_STORE", "SIC_INNER_SHOULD_BE_STATIC", "UC_USELESS_OBJECT", "OBL_UNSATISFIED_OBLIGATION"),
+                    In.everywhere().ignore(
+                            "UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD", "UUF_UNUSED_FIELD",
+                            "DLS_DEAD_LOCAL_STORE", "SIC_INNER_SHOULD_BE_STATIC", "UC_USELESS_OBJECT",
+                            "OBL_UNSATISFIED_OBLIGATION", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"),
                     In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"))
             .because("avoid jvm killed on travis",
                     In.clazz(EatYourOwnDogfoodTest.class).ignore("DM_GC"))
+            .because("it's a test",
+                    In.clazz(JacocoTest.class).ignore("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"))
+            .because("it's ok",
+                    In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"))
             .because("is handled by annotation",
                     In.clazz(Rulesets.class).ignore("URF_UNREAD_FIELD"));
 
     @Test
     public void simple() {
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
-        assertEquals(27, analyzer.analyze().findings().size());
+        assertEquals(30, analyzer.analyze().findings().size());
     }
 
     @Test

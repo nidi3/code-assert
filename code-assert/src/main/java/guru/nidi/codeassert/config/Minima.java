@@ -28,7 +28,7 @@ public class Minima implements Action<ValuedLocation> {
     Minima(String pack, String clazz, int... values) {
         this.pack = pack;
         this.clazz = clazz;
-        for (int value : values) {
+        for (final int value : values) {
             if (value < 0 || value > 100) {
                 throw new IllegalArgumentException("Invalid value " + value);
             }
@@ -57,7 +57,7 @@ public class Minima implements Action<ValuedLocation> {
     }
 
     private boolean wildcardMatches(String pattern, String value, boolean wcMatchEmpty) {
-        return pattern.equals(value) || (pattern.equals("*") && (wcMatchEmpty || value.length() > 0));
+        return pattern.equals(value) || ("*".equals(pattern) && (wcMatchEmpty || value.length() > 0));
     }
 
     @Override

@@ -29,7 +29,7 @@ public class Ignore implements Action<NamedLocation> {
 
     @Override
     public boolean accept(NamedLocation namedLocation) {
-        return matcher.matches(namedLocation.name, namedLocation.className, namedLocation.method, namedLocation.strictNameMatch);
+        return !matcher.matches(namedLocation.name, namedLocation.className, namedLocation.method, namedLocation.strictNameMatch);
     }
 
     @Override
