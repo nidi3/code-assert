@@ -22,7 +22,7 @@ import guru.nidi.codeassert.EatYourOwnDogfoodTest;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.jacoco.Coverage;
-import guru.nidi.codeassert.jacoco.JacocoTest;
+import guru.nidi.codeassert.jacoco.JacocoTest2;
 import guru.nidi.codeassert.pmd.Rulesets;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -49,7 +49,7 @@ public class FindBugsTest {
             .because("avoid jvm killed on travis",
                     In.clazz(EatYourOwnDogfoodTest.class).ignore("DM_GC"))
             .because("it's a test",
-                    In.clazz(JacocoTest.class).ignore("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"))
+                    In.clazz(JacocoTest2.class).ignore("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"))
             .because("it's ok",
                     In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"))
             .because("is handled by annotation",

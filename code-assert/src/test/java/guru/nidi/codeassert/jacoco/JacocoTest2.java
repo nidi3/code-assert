@@ -32,12 +32,12 @@ import static org.junit.Assert.assertThat;
 /**
  *
  */
-public class JacocoTest {
+public class JacocoTest2 {
     @BeforeClass
     public static void init() throws IOException {
         final File file = new File("target/site/jacoco/jacoco.csv");
         file.getParentFile().mkdirs();
-        Files.copy(JacocoTest.class.getResourceAsStream("/jacoco.csv"), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(JacocoTest2.class.getResourceAsStream("/jacoco.csv"), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Test
