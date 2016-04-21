@@ -25,7 +25,7 @@ import java.util.List;
 /**
  *
  */
-public class ViolationCollector extends BaseCollector<RuleViolation, ViolationCollector> {
+public class ViolationCollector extends BaseCollector<RuleViolation, Ignore, ViolationCollector> {
     private final RulePriority minPriority;
 
     public ViolationCollector() {
@@ -33,6 +33,7 @@ public class ViolationCollector extends BaseCollector<RuleViolation, ViolationCo
     }
 
     private ViolationCollector(RulePriority minPriority) {
+        super(true);
         this.minPriority = minPriority;
     }
 
@@ -41,7 +42,7 @@ public class ViolationCollector extends BaseCollector<RuleViolation, ViolationCo
     }
 
     @Override
-    public ViolationCollector config(final CollectorConfig... configs) {
+    public ViolationCollector config(final CollectorConfig<Ignore>... configs) {
         return new ViolationCollector(minPriority) {
             @Override
             public boolean accept(Issue<RuleViolation> issue) {
@@ -61,12 +62,12 @@ public class ViolationCollector extends BaseCollector<RuleViolation, ViolationCo
     }
 
     @Override
-    protected boolean doAccept(RuleViolation issue, Action action) {
-        return action.accept(issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName(), true);
+    protected boolean doAccept(RuleViolation issue, Ignore action) {
+        return action.accept(new NamedLocation(issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName(), true));
     }
 
     @Override
-    public List<Action> unused(RejectCounter counter) {
+    public List<Ignore> unused(RejectCounter counter) {
         return unusedNullAction(counter, minPriority != null);
     }
 

@@ -20,7 +20,6 @@ import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 
 /**

@@ -25,7 +25,7 @@ import java.util.List;
 /**
  *
  */
-public class BugCollector extends BaseCollector<BugInstance, BugCollector> {
+public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollector> {
     private final Integer maxRank;
     private final Integer minPriority;
 
@@ -34,6 +34,7 @@ public class BugCollector extends BaseCollector<BugInstance, BugCollector> {
     }
 
     private BugCollector(Integer maxRank, Integer minPriority) {
+        super(true);
         this.maxRank = maxRank;
         this.minPriority = minPriority;
     }
@@ -52,14 +53,14 @@ public class BugCollector extends BaseCollector<BugInstance, BugCollector> {
     }
 
     @Override
-    public BugCollector config(final CollectorConfig... configs) {
+    public BugCollector config(final CollectorConfig<Ignore>... configs) {
         return new BugCollector(maxRank, minPriority) {
             @Override
             public boolean accept(Issue<BugInstance> issue) {
                 return accept(issue, BugCollector.this, configs);
             }
 
-            public List<Action> unused(RejectCounter counter) {
+            public List<Ignore> unused(RejectCounter counter) {
                 return unused(counter, BugCollector.this, configs);
             }
 
@@ -77,15 +78,15 @@ public class BugCollector extends BaseCollector<BugInstance, BugCollector> {
     }
 
     @Override
-    protected boolean doAccept(BugInstance issue, Action action) {
+    protected boolean doAccept(BugInstance issue, Ignore action) {
         final MethodAnnotation method = issue.getPrimaryMethod();
         final String className = issue.getPrimaryClass().getClassName();
         final String methodName = method == null ? null : method.getMethodName();
-        return action.accept(issue.getType(), className, methodName, true);
+        return action.accept(new NamedLocation(issue.getType(), className, methodName, true));
     }
 
     @Override
-    public List<Action> unused(RejectCounter counter) {
+    public List<Ignore> unused(RejectCounter counter) {
         return unusedNullAction(counter, maxRank != null || minPriority != null);
     }
 

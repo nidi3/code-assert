@@ -23,20 +23,20 @@ import java.util.List;
 /**
  *
  */
-public final class CollectorConfig {
+public final class CollectorConfig<A extends Action> {
     public final String reason;
-    public final List<Action> actions;
+    public final List<A> actions;
 
-    private CollectorConfig(String reason, List<Action> actions) {
+    private CollectorConfig(String reason, List<A> actions) {
         this.reason = reason;
         this.actions = actions;
     }
 
-    public static CollectorConfig because(String reason, Action... actions) {
-        return new CollectorConfig(reason, Arrays.asList(actions));
+    public static <A extends Action> CollectorConfig<A> because(String reason, A... actions) {
+        return new CollectorConfig<>(reason, Arrays.asList(actions));
     }
 
-    public static CollectorConfig just(Action... actions) {
+    public static <A extends Action> CollectorConfig<A> just(A... actions) {
         return because(null, actions);
     }
 

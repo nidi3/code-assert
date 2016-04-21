@@ -15,12 +15,9 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.JavaPackage;
-import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.config.LocationMatcher;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**

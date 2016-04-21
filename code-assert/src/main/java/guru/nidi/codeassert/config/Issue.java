@@ -27,7 +27,7 @@ public class Issue<S> {
         this.issue = issue;
     }
 
-    boolean accept(BaseCollector<S, ?> collector, Action action) {
+    <A extends Action> boolean accept(BaseCollector<S, A, ?> collector, A action) {
         final boolean accept = action == null
                 ? collector.doAccept(issue)
                 : collector.doAccept(issue, action);

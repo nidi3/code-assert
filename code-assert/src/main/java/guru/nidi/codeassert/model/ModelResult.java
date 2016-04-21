@@ -18,7 +18,6 @@ package guru.nidi.codeassert.model;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerResult;
 
-import java.util.Collection;
 import java.util.List;
 
 /**

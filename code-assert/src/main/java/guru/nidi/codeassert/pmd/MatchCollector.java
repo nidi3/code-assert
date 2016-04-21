@@ -27,9 +27,13 @@ import java.util.List;
 /**
  *
  */
-public class MatchCollector extends BaseCollector<Match, MatchCollector> {
+public class MatchCollector extends BaseCollector<Match, Ignore, MatchCollector> {
+    public MatchCollector() {
+        super(true);
+    }
+
     @Override
-    public MatchCollector config(final CollectorConfig... configs) {
+    public MatchCollector config(final CollectorConfig<Ignore>... configs) {
         return new MatchCollector() {
             @Override
             public boolean accept(Issue<Match> issue) {
@@ -44,10 +48,10 @@ public class MatchCollector extends BaseCollector<Match, MatchCollector> {
     }
 
     @Override
-    protected boolean doAccept(Match issue, Action action) {
+    protected boolean doAccept(Match issue, Ignore action) {
         for (final Iterator<Mark> it = issue.iterator(); it.hasNext(); ) {
             final Mark mark = it.next();
-            if (!action.accept(mark.getSourceCodeSlice(), PmdUtils.className(mark), "", false)) {
+            if (!action.accept(new NamedLocation(mark.getSourceCodeSlice(), PmdUtils.className(mark), "", false))) {
                 return false;
             }
         }
@@ -60,7 +64,7 @@ public class MatchCollector extends BaseCollector<Match, MatchCollector> {
     }
 
     @Override
-    public List<Action> unused(RejectCounter counter) {
+    public List<Ignore> unused(RejectCounter counter) {
         return Collections.emptyList();
     }
 

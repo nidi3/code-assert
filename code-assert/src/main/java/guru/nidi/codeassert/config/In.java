@@ -61,20 +61,4 @@ public final class In {
     public Ignore ignoreAll() {
         return ignore();
     }
-
-    static class Ignore extends Action {
-        public Ignore(List<String> locs, List<String> names) {
-            super(locs, names);
-        }
-
-        @Override
-        public boolean accept(String name, String className, String method, boolean strictNameMatch) {
-            return !super.accept(name, className, method, strictNameMatch);
-        }
-
-        @Override
-        public String toString() {
-            return "    ignore " + super.toString();
-        }
-    }
 }

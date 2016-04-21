@@ -48,7 +48,7 @@ public class Model {
 
     static String packageOf(String type) {
         final int pos = type.lastIndexOf('.');
-        return pos < 0 ? "Default" : type.substring(0, pos);
+        return pos < 0 ? "<No Package>" : type.substring(0, pos);
     }
 
     @SuppressWarnings("unchecked")

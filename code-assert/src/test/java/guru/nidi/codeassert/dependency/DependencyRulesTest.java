@@ -54,7 +54,7 @@ public class DependencyRulesTest {
         DependencyRule.allowAll("a*b");
     }
 
-    //TODO test AmbigousRuleException
+    //TODO test AmbiguousRuleException
 
 //    @Test
 //    public void classes() {

@@ -24,42 +24,52 @@ import java.util.List;
 /**
  *
  */
-public abstract class BaseCollector<S, T extends BaseCollector<S, T>> {
-    public T because(String reason, Action... actions) {
+public abstract class BaseCollector<S, A extends Action, T extends BaseCollector<S, A, T>> {
+    private final boolean allAccept;
+
+    protected BaseCollector(boolean allAccept) {
+        this.allAccept = allAccept;
+    }
+
+    public T because(String reason, A... actions) {
         return config(CollectorConfig.because(reason, actions));
     }
 
-    public T just(Action... actions) {
+    public T just(A... actions) {
         return config(CollectorConfig.just(actions));
     }
 
-    public abstract T config(final CollectorConfig... configs);
+    protected abstract T config(final CollectorConfig<A>... configs);
 
     public boolean accept(Issue<S> issue) {
         return issue.accept(this, null);
     }
 
-    protected abstract boolean doAccept(S issue, Action action);
+    protected abstract boolean doAccept(S issue, A action);
 
     protected abstract boolean doAccept(S issue);
 
-    public abstract List<Action> unused(RejectCounter counter);
+    protected abstract List<A> unused(RejectCounter counter);
 
-    protected boolean accept(Issue<S> issue, T parent, CollectorConfig... configs) {
-        for (final CollectorConfig config : configs) {
-            for (final Action action : config.actions) {
-                if (!issue.accept(this, action)) {
+    protected boolean accept(Issue<S> issue, T parent, CollectorConfig<A>... configs) {
+        for (final CollectorConfig<A> config : configs) {
+            for (final A action : config.actions) {
+                final boolean accepted = issue.accept(this, action);
+                if (allAccept && !accepted) {
                     return false;
+                }
+                if (!allAccept && accepted){
+                    return true;
                 }
             }
         }
         return parent.accept(issue);
     }
 
-    protected List<Action> unused(RejectCounter counter, T parent, CollectorConfig... configs) {
-        final List<Action> res = new ArrayList<>();
-        for (final CollectorConfig config : configs) {
-            for (final Action action : config.actions) {
+    protected List<A> unused(RejectCounter counter, T parent, CollectorConfig<A>... configs) {
+        final List<A> res = new ArrayList<>();
+        for (final CollectorConfig<A> config : configs) {
+            for (final A action : config.actions) {
                 if (counter.getCount(action) == 0) {
                     res.add(action);
                 }
@@ -95,9 +105,9 @@ public abstract class BaseCollector<S, T extends BaseCollector<S, T>> {
         }
     }
 
-    protected List<Action> unusedNullAction(RejectCounter counter, boolean hasDefaultConfig) {
+    protected List<A> unusedNullAction(RejectCounter counter, boolean hasDefaultConfig) {
         return counter.getCount(null) == 0 && hasDefaultConfig
-                ? Collections.<Action>singletonList(null)
-                : Collections.<Action>emptyList();
+                ? Collections.<A>singletonList(null)
+                : Collections.<A>emptyList();
     }
 }

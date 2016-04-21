@@ -13,14 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.config;
+package guru.nidi.codeassert.jacoco;
+
+import guru.nidi.codeassert.Analyzer;
+import guru.nidi.codeassert.AnalyzerResult;
+import guru.nidi.codeassert.config.ValuedLocation;
+
+import java.util.List;
 
 /**
- * Actions are created using the In and For classes.
  *
- * @see In
- * @see For
  */
-public interface Action<T> {
-    boolean accept(T issue);
+public class JacocoResult extends AnalyzerResult<List<ValuedLocation>> {
+    private final CoverageType[] types;
+
+    public JacocoResult(Analyzer<List<ValuedLocation>> analyzer, List<ValuedLocation> findings, List<String> unusedActions, CoverageType[] types) {
+        super(analyzer, findings, unusedActions);
+        this.types = types;
+    }
+
+    public CoverageType[] getTypes() {
+        return types;
+    }
 }
