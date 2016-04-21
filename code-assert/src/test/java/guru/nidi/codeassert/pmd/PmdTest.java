@@ -17,7 +17,6 @@ package guru.nidi.codeassert.pmd;
 
 import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
-import guru.nidi.codeassert.EatYourOwnDogfoodTest;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.config.LocationMatcherTest;
@@ -122,12 +121,11 @@ public class PmdTest {
                                 "UseStringBufferForStringAppends", "AvoidSynchronizedAtMethodLevel", "VariableNamingConventions"))
                         .because("They are snippets", In.loc("*.snippets.*").ignoreAll())
                         .just(
-                                In.clazz(EatYourOwnDogfoodTest.class).ignore("DoNotCallGarbageCollectionExplicitly"),
                                 In.clazz(DependencyRulesTest.class).ignore("ExcessiveMethodLength"),
                                 In.classes(DependencyRulesTest.class, FindBugsTest.class).ignore("AvoidDuplicateLiterals"),
                                 In.clazz(ExampleInterface.class).ignore("ShortMethodName"),
                                 In.clazz(Bugs.class).ignore("UnusedLocalVariable"),
-                                In.locs("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns", "AddEmptyString"),
+                                In.locs("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns", "AddEmptyString", "DoNotCallGarbageCollectionExplicitly"),
                                 In.classes(ClassFileParserTest.class, FileManagerTest.class, JarFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert"),
                                 In.classes(DependencyRulesTest.class, LocationMatcherTest.class, LocationNameMatcherTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.clazz(DependencyRulesTest.class).ignore("VariableNamingConventions"),

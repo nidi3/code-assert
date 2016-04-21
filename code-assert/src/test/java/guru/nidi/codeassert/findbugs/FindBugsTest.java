@@ -18,7 +18,6 @@ package guru.nidi.codeassert.findbugs;
 import edu.umd.cs.findbugs.Priorities;
 import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
-import guru.nidi.codeassert.EatYourOwnDogfoodTest;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.jacoco.Coverage;
@@ -47,7 +46,7 @@ public class FindBugsTest {
                             "OBL_UNSATISFIED_OBLIGATION", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"),
                     In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"))
             .because("avoid jvm killed on travis",
-                    In.clazz(EatYourOwnDogfoodTest.class).ignore("DM_GC"))
+                    In.loc("*Test").ignore("DM_GC"))
             .because("it's a test",
                     In.clazz(JacocoTest.class).ignore("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"))
             .because("it's ok",
@@ -57,17 +56,20 @@ public class FindBugsTest {
 
     @Test
     public void simple() {
+        System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
-        assertEquals(30, analyzer.analyze().findings().size());
+        assertEquals(39, analyzer.analyze().findings().size());
     }
 
     @Test
     public void noUnusedActions() {
+        System.gc();
         assertThat(new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY)).analyze(), hasNoUnusedActions());
     }
 
     @Test
     public void globalIgnore() {
+        System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector);
         assertMatcher("" +
                         line(15, "H", "UC_USELESS_VOID_METHOD", "model/ExampleConcreteClass", 52, "Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless") +
@@ -80,6 +82,7 @@ public class FindBugsTest {
 
     @Test
     public void classNameIgnore() {
+        System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("Bugs").ignore("DM_NUMBER_CTOR")));
         assertMatcher("" +
                         line(15, "H", "UC_USELESS_VOID_METHOD", "model/ExampleConcreteClass", 52, "Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless") +
@@ -89,6 +92,7 @@ public class FindBugsTest {
 
     @Test
     public void classIgnore() {
+        System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.clazz(Bugs.class).ignore("DM_NUMBER_CTOR")));
         assertMatcher("" +
                         line(15, "H", "UC_USELESS_VOID_METHOD", "model/ExampleConcreteClass", 52, "Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless") +
@@ -98,6 +102,7 @@ public class FindBugsTest {
 
     @Test
     public void innerClassIgnore() {
+        System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.clazz(Bugs.InnerBugs.class).ignore("DM_NUMBER_CTOR")));
         assertMatcher("" +
                         line(15, "H", "UC_USELESS_VOID_METHOD", "model/ExampleConcreteClass", 52, "Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless") +
@@ -109,6 +114,7 @@ public class FindBugsTest {
 
     @Test
     public void fullClassIgnore() {
+        System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("guru.nidi.codeassert.Bugs").ignore("DM_NUMBER_CTOR")));
         assertMatcher("" +
                         line(15, "H", "UC_USELESS_VOID_METHOD", "model/ExampleConcreteClass", 52, "Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless") +
@@ -118,6 +124,7 @@ public class FindBugsTest {
 
     @Test
     public void fullClassMethodIgnore() {
+        System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("guru.nidi.codeassert.Bugs#bugs").ignore("DM_NUMBER_CTOR")));
         assertMatcher("" +
                         line(15, "H", "UC_USELESS_VOID_METHOD", "model/ExampleConcreteClass", 52, "Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless") +
@@ -129,6 +136,7 @@ public class FindBugsTest {
 
     @Test
     public void methodIgnore() {
+        System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("#bugs").ignore("DM_NUMBER_CTOR")));
         assertMatcher("" +
                         line(15, "H", "UC_USELESS_VOID_METHOD", "model/ExampleConcreteClass", 52, "Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless") +
