@@ -38,7 +38,7 @@ public class JacocoTest {
 
     @Test(expected = AnalyzerException.class)
     public void wrongData() {
-        new JacocoAnalyzer(new File("target/jacoco.exec"), new CoverageCollector()).analyze();
+        new JacocoAnalyzer(new File("target/text-classes/test.zip"), new CoverageCollector()).analyze();
     }
 
     @Test
