@@ -34,6 +34,7 @@ public class UnusedActionsMatcher<T extends AnalyzerResult<?>> extends TypeSafeM
 
     @Override
     protected void describeMismatchSafely(T item, Description description) {
+        description.appendText("Found unused actions:");
         for (final String action : item.unusedActions()) {
             description.appendText("\n").appendText(action);
         }

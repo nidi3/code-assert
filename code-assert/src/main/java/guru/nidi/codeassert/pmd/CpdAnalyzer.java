@@ -18,7 +18,8 @@ package guru.nidi.codeassert.pmd;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.RejectCounter;
+import guru.nidi.codeassert.config.Ignore;
+import guru.nidi.codeassert.config.UsageCounter;
 import net.sourceforge.pmd.cpd.CPD;
 import net.sourceforge.pmd.cpd.CPDConfiguration;
 import net.sourceforge.pmd.cpd.Match;
@@ -71,10 +72,10 @@ public class CpdAnalyzer implements Analyzer<List<Match>> {
 
     private CpdResult processMatches(Iterator<Match> matches) {
         final List<Match> res = new ArrayList<>();
-        final RejectCounter counter = new RejectCounter();
+        final UsageCounter counter = new UsageCounter();
         while (matches.hasNext()) {
             final Match match = matches.next();
-            if (collector.accept(counter.issue(match))) {
+            if (counter.accept(collector.accept(match))) {
                 res.add(match);
             }
         }

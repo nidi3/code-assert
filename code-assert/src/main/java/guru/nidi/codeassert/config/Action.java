@@ -22,5 +22,5 @@ package guru.nidi.codeassert.config;
  * @see For
  */
 public interface Action<T> {
-    boolean accept(T issue);
+    ActionResult accept(T issue);
 }

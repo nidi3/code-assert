@@ -21,11 +21,13 @@ import java.util.Arrays;
  *
  */
 public class Minima implements Action<ValuedLocation> {
+    private final LocationMatcher locationMatcher;
     private final String pack;
     private final String clazz;
     private final int[] values;
 
-    Minima(String pack, String clazz, int... values) {
+    Minima(String loc, String pack, String clazz, int... values) {
+        locationMatcher = loc == null ? null : new LocationMatcher(loc);
         this.pack = pack;
         this.clazz = clazz;
         for (final int value : values) {
@@ -41,23 +43,45 @@ public class Minima implements Action<ValuedLocation> {
     }
 
     @Override
-    public boolean accept(ValuedLocation valLoc) {
-        if (!wildcardMatches(pack, valLoc.pack, false) || !wildcardMatches(clazz, valLoc.clazz, false)) {
-            return false;
+    public ActionResult accept(ValuedLocation valLoc) {
+        final int quality;
+        if (locationMatcher == null) {
+            final int packMatch = wildcardMatches(pack, valLoc.pack);
+            final int clazzMatch = wildcardMatches(clazz, valLoc.clazz);
+            if (packMatch == 0 || clazzMatch == 0) {
+                return ActionResult.undecided(this);
+            }
+            quality = packMatch + clazzMatch;
+        } else {
+            if (!locationMatcher.matchesPackageClass(valLoc.pack, valLoc.clazz)) {
+                return ActionResult.undecided(this);
+            }
+            quality = locationMatcher.specificity();
         }
+
         for (int i = 0; i < valLoc.values.length; i++) {
             valLoc.appliedLimits[i] = i < values.length ? values[i] : -1;
         }
         for (int i = 0; i < valLoc.values.length; i++) {
             if (valLoc.values[i] < valLoc.appliedLimits[i]) {
-                return true;
+                return ActionResult.accept(this, quality);
             }
         }
-        return false;
+        return ActionResult.reject(this, quality);
     }
 
-    private boolean wildcardMatches(String pattern, String value, boolean wcMatchEmpty) {
-        return pattern.equals(value) || ("*".equals(pattern) && (wcMatchEmpty || value.length() > 0));
+    private int wildcardMatches(String pattern, String value) {
+        if (pattern.equals(value)) {
+            return 3;
+        }
+        if ((pattern.length() > 1 && pattern.startsWith("*") && value.endsWith(pattern.substring(1)))
+                || (pattern.length() > 1 && pattern.endsWith("*") && value.startsWith(pattern.substring(0, pattern.length() - 1)))) {
+            return 2;
+        }
+        if ("*".equals(pattern) && value.length() > 0) {
+            return 1;
+        }
+        return 0;
     }
 
     @Override

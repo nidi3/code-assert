@@ -28,6 +28,9 @@ import org.apache.maven.project.MavenProject;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
+/**
+ * Prepare the maven surefire plugin to run the tests with a Jacoco Agent.
+ */
 @Mojo(name = "prepare", defaultPhase = LifecyclePhase.INITIALIZE)
 public class PrepareMojo extends AbstractMojo {
 

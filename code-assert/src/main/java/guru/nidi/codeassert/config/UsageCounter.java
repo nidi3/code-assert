@@ -15,22 +15,23 @@
  */
 package guru.nidi.codeassert.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  */
-public class Issue<S> {
-    private final RejectCounter counter;
-    private final S issue;
+public class UsageCounter {
+    private final Map<Action<?>, Integer> usage = new HashMap<>();
 
-    Issue(RejectCounter counter, S issue) {
-        this.counter = counter;
-        this.issue = issue;
+    public int getCount(Action<?> action) {
+        final Integer c = usage.get(action);
+        return c == null ? 0 : c;
     }
 
-    <A extends Action> boolean accept(BaseCollector<S, A, ?> collector, A action) {
-        final boolean accept = action == null
-                ? collector.doAccept(issue)
-                : collector.doAccept(issue, action);
-        return counter.count(action, accept);
+    public boolean accept(ActionResult accept) {
+        final Integer count = usage.get(accept.action);
+        usage.put(accept.action, (count == null ? 0 : count) + 1);
+        return accept.accept;
     }
 }

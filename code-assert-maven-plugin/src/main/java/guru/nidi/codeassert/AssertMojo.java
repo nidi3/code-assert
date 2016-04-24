@@ -25,9 +25,15 @@ import org.apache.maven.project.MavenProject;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
+/**
+ * Run a test that can consume the Jacoco test coverage data.
+ */
 @Mojo(name = "assert", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.TEST)
 public class AssertMojo extends AbstractMojo {
 
+    /**
+     * The test class to be run.
+     */
     @Parameter(property = "testClass", defaultValue = "CodeAssert")
     private String testClass;
 
@@ -41,6 +47,24 @@ public class AssertMojo extends AbstractMojo {
     private BuildPluginManager pluginManager;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        report();
+        runTest();
+    }
+
+    private void report() throws MojoExecutionException {
+        executeMojo(
+                plugin(
+                        groupId("org.jacoco"),
+                        artifactId("jacoco-maven-plugin"),
+                        version("0.7.6.201602180812")
+                ),
+                goal("report"),
+                configuration(),
+                executionEnvironment(mavenProject, mavenSession, pluginManager)
+        );
+    }
+
+    private void runTest() throws MojoExecutionException {
         executeMojo(
                 plugin(
                         groupId("org.apache.maven.plugins"),

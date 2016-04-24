@@ -21,6 +21,8 @@ import guru.nidi.codeassert.dependency.DependencyRuleMatcher;
 import guru.nidi.codeassert.dependency.DependencyRules;
 import guru.nidi.codeassert.findbugs.FindBugsMatcher;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
+import guru.nidi.codeassert.jacoco.CoverageMatcher;
+import guru.nidi.codeassert.jacoco.JacocoResult;
 import guru.nidi.codeassert.model.JavaClass;
 import guru.nidi.codeassert.model.JavaPackage;
 import guru.nidi.codeassert.model.ModelResult;
@@ -103,5 +105,9 @@ public final class CodeAssertMatchers {
 
     public static <T extends AnalyzerResult<?>> Matcher<T> hasNoUnusedActions() {
         return new UnusedActionsMatcher<>();
+    }
+
+    public static Matcher<JacocoResult> hasEnoughCoverage() {
+        return new CoverageMatcher();
     }
 }

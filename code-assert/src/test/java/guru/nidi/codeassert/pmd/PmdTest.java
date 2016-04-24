@@ -95,11 +95,12 @@ public class PmdTest {
     @Test
     public void duplications() {
         assertMatcher("" +
-                        cpd(26, "findbugs/BugCollector") +
-                        cpd("jacoco/CoverageCollector") +
+                        cpd(29, "findbugs/BugCollector") +
+                        cpd("pmd/ViolationCollector") +
                         cpd(26, "model/SignatureParser") +
                         cpd("model/SignatureParser") +
-                        cpd(26, "pmd/MatchCollector") +
+                        cpd(25, "findbugs/BugCollector") +
+                        cpd("jacoco/CoverageCollector") +
                         cpd("pmd/ViolationCollector"),
                 cpdResult, hasNoCodeDuplications());
     }

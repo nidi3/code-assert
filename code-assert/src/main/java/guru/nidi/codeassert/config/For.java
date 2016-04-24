@@ -19,48 +19,49 @@ package guru.nidi.codeassert.config;
  *
  */
 public final class For {
+    private final String loc;
     private final String pack;
     private final String clazz;
 
-    private For(String pack, String clazz) {
+    private For(String loc, String pack, String clazz) {
+        this.loc = loc;
         this.pack = pack;
         this.clazz = clazz;
     }
 
     public static For global() {
-        return new For("", "");
+        return new For(null, "", "");
     }
 
     public static For allPackages() {
-        return new For("*", "");
+        return new For(null, "*", "");
     }
 
     public static For allClasses() {
-        return new For("*", "*");
+        return new For(null, "*", "*");
     }
 
     public static For packge(String pack) {
-        return new For(pack, "");
+        return new For(null, pack, "");
     }
 
     public static For allInPackage(String pack) {
-        return new For(pack, "*");
+        return new For(null, pack, "*");
     }
 
-    public static For clazz(String clazz) {
-        final int pos = clazz.lastIndexOf('.');
-        return pos < 0 ? new For("*", clazz) : new For(clazz.substring(0, pos), clazz.substring(pos + 1));
+    public static For loc(String loc) {
+        return new For(loc, null, null);
     }
 
     public static For clazz(Class<?> clazz) {
-        return clazz(clazz.getName());
+        return loc(clazz.getName());
     }
 
     public Minima setMinima(int... values) {
-        return new Minima(pack, clazz, values);
+        return new Minima(loc, pack, clazz, values);
     }
 
     public Minima setNoMinima() {
-        return new Minima(pack, clazz);
+        return new Minima(loc, pack, clazz);
     }
 }

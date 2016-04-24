@@ -17,7 +17,8 @@ package guru.nidi.codeassert.jacoco;
 
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
-import guru.nidi.codeassert.config.RejectCounter;
+import guru.nidi.codeassert.config.Minima;
+import guru.nidi.codeassert.config.UsageCounter;
 import guru.nidi.codeassert.config.ValuedLocation;
 
 import java.io.*;
@@ -68,7 +69,7 @@ public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
 
     private JacocoResult filterResult(Coverages coverages) {
         final List<ValuedLocation> filtered = new ArrayList<>();
-        final RejectCounter counter = new RejectCounter();
+        final UsageCounter counter = new UsageCounter();
         filter(filtered, Collections.singleton(coverages.global), counter);
         filter(filtered, coverages.perPackage.values(), counter);
         filter(filtered, coverages.coverages, counter);
@@ -76,10 +77,10 @@ public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
         return new JacocoResult(this, filtered, collector.unusedActions(counter), collector.types);
     }
 
-    private void filter(List<ValuedLocation> filtered, Collection<Coverage> coverages, RejectCounter counter) {
+    private void filter(List<ValuedLocation> filtered, Collection<Coverage> coverages, UsageCounter counter) {
         for (final Coverage c : coverages) {
             final ValuedLocation vc = c.toValuedLocation(collector.types);
-            if (collector.accept(counter.issue(vc))) {
+            if (counter.accept(collector.accept(vc))) {
                 filtered.add(vc);
             }
         }

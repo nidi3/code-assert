@@ -25,12 +25,6 @@ import java.util.List;
  *
  */
 public abstract class BaseCollector<S, A extends Action, T extends BaseCollector<S, A, T>> {
-    private final boolean allAccept;
-
-    protected BaseCollector(boolean allAccept) {
-        this.allAccept = allAccept;
-    }
-
     public T because(String reason, A... actions) {
         return config(CollectorConfig.because(reason, actions));
     }
@@ -41,32 +35,23 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
 
     protected abstract T config(final CollectorConfig<A>... configs);
 
-    public boolean accept(Issue<S> issue) {
-        return issue.accept(this, null);
-    }
+    public abstract ActionResult accept(S issue);
 
-    protected abstract boolean doAccept(S issue, A action);
+    protected abstract ActionResult doAccept(S issue, A action);
 
-    protected abstract boolean doAccept(S issue);
+    protected abstract List<A> unused(UsageCounter counter);
 
-    protected abstract List<A> unused(RejectCounter counter);
-
-    protected boolean accept(Issue<S> issue, T parent, CollectorConfig<A>... configs) {
+    protected ActionResult accept(S issue, T parent, CollectorConfig<A>... configs) {
+        ActionResult res = ActionResult.undecided(null);
         for (final CollectorConfig<A> config : configs) {
             for (final A action : config.actions) {
-                final boolean accepted = issue.accept(this, action);
-                if (allAccept && !accepted) {
-                    return false;
-                }
-                if (!allAccept && accepted){
-                    return true;
-                }
+                res = res.orMoreQuality(doAccept(issue, action));
             }
         }
-        return parent.accept(issue);
+        return res.orMoreQuality(parent.accept(issue));
     }
 
-    protected List<A> unused(RejectCounter counter, T parent, CollectorConfig<A>... configs) {
+    protected List<A> unused(UsageCounter counter, T parent, CollectorConfig<A>... configs) {
         final List<A> res = new ArrayList<>();
         for (final CollectorConfig<A> config : configs) {
             for (final A action : config.actions) {
@@ -79,7 +64,7 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
         return res;
     }
 
-    public List<String> unusedActions(RejectCounter counter) {
+    public List<String> unusedActions(UsageCounter counter) {
         final List<String> res = new ArrayList<>();
         for (final Action unused : unused(counter)) {
             res.add(unused == null ? "    Base filtering" : unused.toString());
@@ -87,7 +72,7 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
         return res;
     }
 
-    public void printUnusedWarning(RejectCounter counter) {
+    public void printUnusedWarning(UsageCounter counter) {
         final String s = ListUtils.join("\n", unusedActions(counter));
         if (s.length() > 0) {
             final StackTraceElement[] trace = new Exception().fillInStackTrace().getStackTrace();
@@ -105,9 +90,10 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
         }
     }
 
-    protected List<A> unusedNullAction(RejectCounter counter, boolean hasDefaultConfig) {
+    protected List<A> unusedNullAction(UsageCounter counter, boolean hasDefaultConfig) {
         return counter.getCount(null) == 0 && hasDefaultConfig
                 ? Collections.<A>singletonList(null)
                 : Collections.<A>emptyList();
     }
+
 }

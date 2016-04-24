@@ -33,7 +33,6 @@ public class ViolationCollector extends BaseCollector<RuleViolation, Ignore, Vio
     }
 
     private ViolationCollector(RulePriority minPriority) {
-        super(true);
         this.minPriority = minPriority;
     }
 
@@ -45,7 +44,7 @@ public class ViolationCollector extends BaseCollector<RuleViolation, Ignore, Vio
     public ViolationCollector config(final CollectorConfig<Ignore>... configs) {
         return new ViolationCollector(minPriority) {
             @Override
-            public boolean accept(Issue<RuleViolation> issue) {
+            public ActionResult accept(RuleViolation issue) {
                 return accept(issue, ViolationCollector.this, configs);
             }
 
@@ -57,17 +56,17 @@ public class ViolationCollector extends BaseCollector<RuleViolation, Ignore, Vio
     }
 
     @Override
-    protected boolean doAccept(RuleViolation issue) {
-        return (minPriority == null || issue.getRule().getPriority().getPriority() <= minPriority.getPriority());
+    public ActionResult accept(RuleViolation issue) {
+        return new ActionResult((minPriority == null || issue.getRule().getPriority().getPriority() <= minPriority.getPriority()), null, 1);
     }
 
     @Override
-    protected boolean doAccept(RuleViolation issue, Ignore action) {
+    protected ActionResult doAccept(RuleViolation issue, Ignore action) {
         return action.accept(new NamedLocation(issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName(), true));
     }
 
     @Override
-    public List<Ignore> unused(RejectCounter counter) {
+    public List<Ignore> unused(UsageCounter counter) {
         return unusedNullAction(counter, minPriority != null);
     }
 

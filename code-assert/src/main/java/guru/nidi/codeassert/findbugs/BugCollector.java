@@ -34,7 +34,6 @@ public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollecto
     }
 
     private BugCollector(Integer maxRank, Integer minPriority) {
-        super(true);
         this.maxRank = maxRank;
         this.minPriority = minPriority;
     }
@@ -56,11 +55,11 @@ public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollecto
     public BugCollector config(final CollectorConfig<Ignore>... configs) {
         return new BugCollector(maxRank, minPriority) {
             @Override
-            public boolean accept(Issue<BugInstance> issue) {
+            public ActionResult accept(BugInstance issue) {
                 return accept(issue, BugCollector.this, configs);
             }
 
-            public List<Ignore> unused(RejectCounter counter) {
+            public List<Ignore> unused(UsageCounter counter) {
                 return unused(counter, BugCollector.this, configs);
             }
 
@@ -72,13 +71,14 @@ public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollecto
     }
 
     @Override
-    public boolean doAccept(BugInstance issue) {
-        return (maxRank == null || issue.getBugRank() <= maxRank) &&
-                (minPriority == null || issue.getPriority() <= minPriority);
+    public ActionResult accept(BugInstance issue) {
+        return new ActionResult((maxRank == null || issue.getBugRank() <= maxRank) &&
+                (minPriority == null || issue.getPriority() <= minPriority), null, 1
+        );
     }
 
     @Override
-    protected boolean doAccept(BugInstance issue, Ignore action) {
+    protected ActionResult doAccept(BugInstance issue, Ignore action) {
         final MethodAnnotation method = issue.getPrimaryMethod();
         final String className = issue.getPrimaryClass().getClassName();
         final String methodName = method == null ? null : method.getMethodName();
@@ -86,7 +86,7 @@ public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollecto
     }
 
     @Override
-    public List<Ignore> unused(RejectCounter counter) {
+    public List<Ignore> unused(UsageCounter counter) {
         return unusedNullAction(counter, maxRank != null || minPriority != null);
     }
 
@@ -95,4 +95,5 @@ public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollecto
         return (maxRank == null ? "" : ("Rank <= " + maxRank + " ")) +
                 (minPriority == null ? "" : ("Priority >= " + minPriority) + " ");
     }
+
 }

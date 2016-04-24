@@ -29,11 +29,12 @@ public class CoverageMatcher extends TypeSafeMatcher<JacocoResult> {
     }
 
     public void describeTo(Description description) {
-        description.appendText("Has no coverage issues");
+        description.appendText("Has enough test coverage.");
     }
 
     @Override
     protected void describeMismatchSafely(JacocoResult item, Description description) {
+        description.appendText("Found unsatisfied test coverage requirements:\n");
         description.appendText(pad("Analyzed coverage types:", 60));
         for (final CoverageType type : item.getTypes()) {
             description.appendText(pad(type.toString(), 13));

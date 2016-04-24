@@ -27,7 +27,6 @@ public class CoverageCollector extends BaseCollector<ValuedLocation, Minima, Cov
     final CoverageType[] types;
 
     public CoverageCollector(CoverageType... types) {
-        super(false);
         this.types = types;
     }
 
@@ -43,11 +42,11 @@ public class CoverageCollector extends BaseCollector<ValuedLocation, Minima, Cov
 
         return new CoverageCollector(types) {
             @Override
-            public boolean accept(Issue<ValuedLocation> issue) {
+            public ActionResult accept(ValuedLocation issue) {
                 return accept(issue, CoverageCollector.this, configs);
             }
 
-            public List<Minima> unused(RejectCounter counter) {
+            public List<Minima> unused(UsageCounter counter) {
                 return unused(counter, CoverageCollector.this, configs);
             }
 
@@ -59,17 +58,17 @@ public class CoverageCollector extends BaseCollector<ValuedLocation, Minima, Cov
     }
 
     @Override
-    public boolean doAccept(ValuedLocation issue) {
-        return false;
+    public ActionResult accept(ValuedLocation issue) {
+        return ActionResult.reject(null, 1);
     }
 
     @Override
-    protected boolean doAccept(ValuedLocation issue, Minima action) {
+    protected ActionResult doAccept(ValuedLocation issue, Minima action) {
         return action.accept(issue);
     }
 
     @Override
-    public List<Minima> unused(RejectCounter counter) {
+    public List<Minima> unused(UsageCounter counter) {
         return unusedNullAction(counter, true);
     }
 

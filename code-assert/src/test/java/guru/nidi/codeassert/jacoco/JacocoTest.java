@@ -98,9 +98,20 @@ public class JacocoTest {
     }
 
     @Test
+    public void classesWithWildcard() throws IOException {
+        final JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
+                .just(For.allClasses().setMinima(30, 30, 30))
+                .just(For.loc("org.springframework.p*").setNoMinima()));
+        assertOutput(analyzer.analyze(), "" +
+                "org.springframework.config.MailSparkConverter                 7 / 30      50 / 30      50 / 30     \n" +
+                "org.springframework.handler.InputPersister                   24 / 30      50 / 30      40 / 30     \n" +
+                "org.springframework.handler.MailReceiver                      7 / 30      40 / 30      33 / 30     ");
+    }
+
+    @Test
     public void explicit() throws IOException {
         final JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
-                .just(For.clazz("org.springframework.handler.InputPersister").setMinima(30, 30, 30))
+                .just(For.loc("org.springframework.handler.InputPersister").setMinima(30, 30, 30))
                 .just(For.packge("org.springframework.event").setMinima(30, 30, 30)));
         assertOutput(analyzer.analyze(), "" +
                 "org.springframework.event                                    80 / 30      80 / 30      24 / 30     \n" +
@@ -110,6 +121,8 @@ public class JacocoTest {
     private void assertOutput(JacocoResult result, String expected) {
         final StringDescription sd = new StringDescription();
         new CoverageMatcher().describeMismatchSafely(result, sd);
-        assertThat(sd.toString(), equalTo("Analyzed coverage types:                                    INSTRUCTION  METHOD       COMPLEXITY   \n" + expected));
+        assertThat(sd.toString(), equalTo("Found unsatisfied test coverage requirements:\n" +
+                "Analyzed coverage types:                                    INSTRUCTION  METHOD       COMPLEXITY   \n" +
+                expected));
     }
 }

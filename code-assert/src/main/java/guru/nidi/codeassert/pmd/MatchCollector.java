@@ -28,15 +28,11 @@ import java.util.List;
  *
  */
 public class MatchCollector extends BaseCollector<Match, Ignore, MatchCollector> {
-    public MatchCollector() {
-        super(true);
-    }
-
     @Override
     public MatchCollector config(final CollectorConfig<Ignore>... configs) {
         return new MatchCollector() {
             @Override
-            public boolean accept(Issue<Match> issue) {
+            public ActionResult accept(Match issue) {
                 return accept(issue, MatchCollector.this, configs);
             }
 
@@ -48,23 +44,22 @@ public class MatchCollector extends BaseCollector<Match, Ignore, MatchCollector>
     }
 
     @Override
-    protected boolean doAccept(Match issue, Ignore action) {
+    protected ActionResult doAccept(Match issue, Ignore action) {
+        ActionResult res = ActionResult.undecided(null);
         for (final Iterator<Mark> it = issue.iterator(); it.hasNext(); ) {
             final Mark mark = it.next();
-            if (!action.accept(new NamedLocation(mark.getSourceCodeSlice(), PmdUtils.className(mark), "", false))) {
-                return false;
-            }
+            res = res.orMoreQuality(action.accept(new NamedLocation(mark.getSourceCodeSlice(), PmdUtils.className(mark), "", false)));
         }
-        return true;
+        return res;
     }
 
     @Override
-    public boolean doAccept(Match issue) {
-        return true;
+    public ActionResult accept(Match issue) {
+        return ActionResult.accept(null, 1);
     }
 
     @Override
-    public List<Ignore> unused(RejectCounter counter) {
+    public List<Ignore> unused(UsageCounter counter) {
         return Collections.emptyList();
     }
 

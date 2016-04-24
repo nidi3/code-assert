@@ -66,7 +66,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                 pmd.mayUse($self, util, config);
                 jacoco.mayUse($self, util, config);
                 util.mayUse($self);
-                junit.mayUse($self, model, dependency, findbugs, pmd);
+                junit.mayUse($self, model, dependency, findbugs, pmd, jacoco);
             }
         }
         final DependencyRules rules = denyAll()
