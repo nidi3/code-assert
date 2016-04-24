@@ -21,7 +21,6 @@ import guru.nidi.codeassert.Bugs;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.jacoco.Coverage;
-import guru.nidi.codeassert.jacoco.JacocoTest;
 import guru.nidi.codeassert.pmd.Rulesets;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -47,8 +46,6 @@ public class FindBugsTest {
                     In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"))
             .because("avoid jvm killed on travis",
                     In.loc("*Test").ignore("DM_GC"))
-            .because("it's a test",
-                    In.clazz(JacocoTest.class).ignore("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"))
             .because("it's ok",
                     In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"))
             .because("is handled by annotation",
@@ -144,6 +141,15 @@ public class FindBugsTest {
                         line(18, "M", "DM_NUMBER_CTOR", "Bugs", 27, "guru.nidi.codeassert.Bugs.more() invokes inefficient new Integer(int) constructor; use Integer.valueOf(int) instead") +
                         line(18, "M", "URF_UNREAD_FIELD", "model/p4/GenericParameters", 37, "Unread field: guru.nidi.codeassert.model.p4.GenericParameters.l2"),
                 analyzer.analyze(), hasNoBugs());
+    }
+
+    @Test
+    public void unusedActions() {
+        System.gc();
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("#bugs").ignore("BLA")));
+        assertMatcher("Found unused actions:\n" +
+                        "    ignore [BLA] in [#bugs]",
+                analyzer.analyze(), hasNoUnusedActions());
     }
 
     private <T extends AnalyzerResult<?>> void assertMatcher(String message, T result, Matcher<T> matcher) {

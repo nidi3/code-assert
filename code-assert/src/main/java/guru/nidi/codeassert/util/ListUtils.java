@@ -27,17 +27,6 @@ public final class ListUtils {
     private ListUtils() {
     }
 
-    public static List<String> prepend(String prefix, String... ss) {
-        if (ss.length == 0) {
-            return Collections.singletonList(prefix);
-        }
-        final List<String> res = new ArrayList<>();
-        for (final String s : ss) {
-            res.add(prefix + s);
-        }
-        return res;
-    }
-
     public static String join(String sep, Object[] os) {
         return join(sep, Arrays.asList(os));
     }

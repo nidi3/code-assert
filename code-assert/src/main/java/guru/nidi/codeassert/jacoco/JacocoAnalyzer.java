@@ -38,9 +38,9 @@ public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
     }
 
     public JacocoAnalyzer(File jacocoCsv, CoverageCollector collector) {
-        this.jacocoCsv = jacocoCsv;
+        this.jacocoCsv = jacocoCsv.isDirectory() ? new File(jacocoCsv, "jacoco.csv") : jacocoCsv;
         this.collector = collector;
-        if (!jacocoCsv.exists()) {
+        if (!this.jacocoCsv.exists()) {
             throw new AnalyzerException("Coverage information in '" + jacocoCsv + "' does not exist.");
         }
     }
@@ -65,7 +65,7 @@ public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
                         Integer.parseInt(parts[9]), Integer.parseInt(parts[10]),
                         Integer.parseInt(parts[11]), Integer.parseInt(parts[12])));
             }
-        } catch (IOException e) {
+        } catch (IOException | ArrayIndexOutOfBoundsException e) {
             throw new AnalyzerException("Problem analyzing coverage", e);
         }
         return coverages;

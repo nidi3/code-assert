@@ -15,15 +15,12 @@
  */
 package guru.nidi.codeassert.jacoco;
 
+import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.For;
 import org.hamcrest.StringDescription;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 import static guru.nidi.codeassert.jacoco.CoverageType.*;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -33,41 +30,45 @@ import static org.junit.Assert.assertThat;
  *
  */
 public class JacocoTest {
-    @BeforeClass
-    public static void init() throws IOException {
-        final File file = new File("target/site/jacoco/jacoco.csv");
-        file.getParentFile().mkdirs();
-        Files.copy(JacocoTest.class.getResourceAsStream("/jacoco.csv"), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+    @Test(expected = AnalyzerException.class)
+    public void noData() {
+        new JacocoAnalyzer(new File("target"), new CoverageCollector());
+    }
+
+    @Test(expected = AnalyzerException.class)
+    public void wrongData() {
+        new JacocoAnalyzer(new File("target/jacoco.exec"), new CoverageCollector()).analyze();
     }
 
     @Test
-    public void global() throws IOException {
-        final JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
+    public void global() {
+        final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.global().setMinima(70, 70, 70)));
-        assertOutput(analyzer.analyze(),
+        assertOutput(result,
                 "<global>                                                     59 / 70      61 / 70      50 / 70     ");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void toManyValues() throws IOException {
+    public void toManyValues() {
         new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.global().setMinima(70, 70, 70, 70)));
     }
 
     @Test
-    public void toLessValues() throws IOException {
-        final JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
+    public void toLessValues() {
+        final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allInPackage("org.springframework.handler").setMinima(40, 50)));
-        assertOutput(analyzer.analyze(), "" +
+        assertOutput(result, "" +
                 "org.springframework.handler.InputPersister                   24 / 40      50 / 50      40 / na     \n" +
                 "org.springframework.handler.MailReceiver                      7 / 40      40 / 50      33 / na     ");
     }
 
     @Test
-    public void packages() throws IOException {
-        final JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
+    public void packages() {
+        final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allPackages().setMinima(40, 50, 40)));
-        assertOutput(analyzer.analyze(), "" +
+        assertOutput(result, "" +
                 "org.springframework.config                                   81 / 40      87 / 50      19 / 40     \n" +
                 "org.springframework.data.neo4j.repository.query              70 / 40      78 / 50      39 / 40     \n" +
                 "org.springframework.event                                    80 / 40      80 / 50      24 / 40     \n" +
@@ -75,19 +76,19 @@ public class JacocoTest {
     }
 
     @Test
-    public void packageClasses() throws IOException {
-        final JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
+    public void packageClasses() {
+        final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allInPackage("org.springframework.handler").setMinima(40, 50, 40)));
-        assertOutput(analyzer.analyze(), "" +
+        assertOutput(result, "" +
                 "org.springframework.handler.InputPersister                   24 / 40      50 / 50      40 / 40     \n" +
                 "org.springframework.handler.MailReceiver                      7 / 40      40 / 50      33 / 40     ");
     }
 
     @Test
-    public void classes() throws IOException {
-        final JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
+    public void classes() {
+        final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allClasses().setMinima(30, 30, 30)));
-        assertOutput(analyzer.analyze(), "" +
+        assertOutput(result, "" +
                 "org.springframework.config.MailSparkConverter                 7 / 30      50 / 30      50 / 30     \n" +
                 "org.springframework.handler.InputPersister                   24 / 30      50 / 30      40 / 30     \n" +
                 "org.springframework.handler.MailReceiver                      7 / 30      40 / 30      33 / 30     \n" +
@@ -98,24 +99,28 @@ public class JacocoTest {
     }
 
     @Test
-    public void classesWithWildcard() throws IOException {
-        final JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
+    public void classesWithWildcard() {
+        final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allClasses().setMinima(30, 30, 30))
                 .just(For.loc("org.springframework.p*").setNoMinima()));
-        assertOutput(analyzer.analyze(), "" +
+        assertOutput(result, "" +
                 "org.springframework.config.MailSparkConverter                 7 / 30      50 / 30      50 / 30     \n" +
                 "org.springframework.handler.InputPersister                   24 / 30      50 / 30      40 / 30     \n" +
                 "org.springframework.handler.MailReceiver                      7 / 30      40 / 30      33 / 30     ");
     }
 
     @Test
-    public void explicit() throws IOException {
-        final JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
+    public void explicit() {
+        final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.loc("org.springframework.handler.InputPersister").setMinima(30, 30, 30))
                 .just(For.packge("org.springframework.event").setMinima(30, 30, 30)));
-        assertOutput(analyzer.analyze(), "" +
+        assertOutput(result, "" +
                 "org.springframework.event                                    80 / 30      80 / 30      24 / 30     \n" +
                 "org.springframework.handler.InputPersister                   24 / 30      50 / 30      40 / 30     ");
+    }
+
+    private JacocoResult analyze(CoverageCollector collector) {
+        return new JacocoAnalyzer(new File("target/test-classes"), collector).analyze();
     }
 
     private void assertOutput(JacocoResult result, String expected) {
