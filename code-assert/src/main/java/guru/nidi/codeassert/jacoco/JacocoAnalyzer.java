@@ -17,7 +17,6 @@ package guru.nidi.codeassert.jacoco;
 
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
-import guru.nidi.codeassert.config.Minima;
 import guru.nidi.codeassert.config.UsageCounter;
 import guru.nidi.codeassert.config.ValuedLocation;
 
@@ -31,10 +30,19 @@ import java.util.List;
  *
  */
 public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
+    private final File jacocoCsv;
     private final CoverageCollector collector;
 
     public JacocoAnalyzer(CoverageCollector collector) {
+        this(new File("target/site/jacoco/jacoco.csv"), collector);
+    }
+
+    public JacocoAnalyzer(File jacocoCsv, CoverageCollector collector) {
+        this.jacocoCsv = jacocoCsv;
         this.collector = collector;
+        if (!jacocoCsv.exists()) {
+            throw new AnalyzerException("Coverage information in '" + jacocoCsv + "' does not exist.");
+        }
     }
 
     @Override
@@ -44,12 +52,8 @@ public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
     }
 
     private Coverages readReport() {
-        final File coverage = new File("target/site/jacoco/jacoco.csv");
-        if (!coverage.exists()) {
-            throw new AnalyzerException("Coverage information in '" + coverage + "' does not exist.");
-        }
         final Coverages coverages = new Coverages();
-        try (final BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(coverage), "utf-8"))) {
+        try (final BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(jacocoCsv), "utf-8"))) {
             String line;
             in.readLine();
             while ((line = in.readLine()) != null) {

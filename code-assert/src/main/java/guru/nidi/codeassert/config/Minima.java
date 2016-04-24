@@ -44,19 +44,9 @@ public class Minima implements Action<ValuedLocation> {
 
     @Override
     public ActionResult accept(ValuedLocation valLoc) {
-        final int quality;
-        if (locationMatcher == null) {
-            final int packMatch = wildcardMatches(pack, valLoc.pack);
-            final int clazzMatch = wildcardMatches(clazz, valLoc.clazz);
-            if (packMatch == 0 || clazzMatch == 0) {
-                return ActionResult.undecided(this);
-            }
-            quality = packMatch + clazzMatch;
-        } else {
-            if (!locationMatcher.matchesPackageClass(valLoc.pack, valLoc.clazz)) {
-                return ActionResult.undecided(this);
-            }
-            quality = locationMatcher.specificity();
+        final int quality = matchLocation(valLoc);
+        if (quality == 0) {
+            return ActionResult.undecided(this);
         }
 
         for (int i = 0; i < valLoc.values.length; i++) {
@@ -70,18 +60,37 @@ public class Minima implements Action<ValuedLocation> {
         return ActionResult.reject(this, quality);
     }
 
+    private int matchLocation(ValuedLocation valLoc) {
+        if (locationMatcher == null) {
+            final int packMatch = wildcardMatches(pack, valLoc.pack);
+            final int clazzMatch = wildcardMatches(clazz, valLoc.clazz);
+            if (packMatch == 0 || clazzMatch == 0) {
+                return 0;
+            }
+            return packMatch + clazzMatch;
+        }
+        if (!locationMatcher.matchesPackageClass(valLoc.pack, valLoc.clazz)) {
+            return 0;
+        }
+        return locationMatcher.specificity();
+    }
+
     private int wildcardMatches(String pattern, String value) {
         if (pattern.equals(value)) {
             return 3;
         }
-        if ((pattern.length() > 1 && pattern.startsWith("*") && value.endsWith(pattern.substring(1)))
-                || (pattern.length() > 1 && pattern.endsWith("*") && value.startsWith(pattern.substring(0, pattern.length() - 1)))) {
+        if (complexWildcardMatches(pattern, value)) {
             return 2;
         }
         if ("*".equals(pattern) && value.length() > 0) {
             return 1;
         }
         return 0;
+    }
+
+    private boolean complexWildcardMatches(String pattern, String value) {
+        return (pattern.length() > 1 && pattern.startsWith("*") && value.endsWith(pattern.substring(1)))
+                || (pattern.length() > 1 && pattern.endsWith("*") && value.startsWith(pattern.substring(0, pattern.length() - 1)));
     }
 
     @Override

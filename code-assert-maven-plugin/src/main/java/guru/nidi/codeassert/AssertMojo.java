@@ -34,7 +34,7 @@ public class AssertMojo extends AbstractMojo {
     /**
      * The test class to be run.
      */
-    @Parameter(property = "testClass", defaultValue = "CodeAssert")
+    @Parameter(property = "testClass", defaultValue = "CodeCoverage")
     private String testClass;
 
     @Parameter(defaultValue = "${project}", readonly = true)

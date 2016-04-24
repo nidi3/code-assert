@@ -75,8 +75,6 @@ public class PmdTest {
                         pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 118") +
                         pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 160") +
                         pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", "Avoid using final local variables, turn them into fields") +
-                        pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "dependency/DependencyRules", "Avoid using Literals in Conditional Statements") +
-                        pmd(MEDIUM, "AvoidLiteralsInIfCondition", MAIN, "pmd/PmdUtils", "Avoid using Literals in Conditional Statements") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p2/ExampleEnum", "enumCommentRequirement Required") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", "enumCommentRequirement Required") +
                         pmd(MEDIUM, "ExcessiveParameterList", MAIN, "jacoco/Coverage", "Avoid long parameter lists.") +
@@ -95,13 +93,11 @@ public class PmdTest {
     @Test
     public void duplications() {
         assertMatcher("" +
-                        cpd(29, "findbugs/BugCollector") +
+                        cpd(26, "findbugs/BugCollector") +
+                        cpd("jacoco/CoverageCollector") +
                         cpd("pmd/ViolationCollector") +
                         cpd(26, "model/SignatureParser") +
-                        cpd("model/SignatureParser") +
-                        cpd(25, "findbugs/BugCollector") +
-                        cpd("jacoco/CoverageCollector") +
-                        cpd("pmd/ViolationCollector"),
+                        cpd("model/SignatureParser"),
                 cpdResult, hasNoCodeDuplications());
     }
 
@@ -131,7 +127,7 @@ public class PmdTest {
                                 In.classes(DependencyRulesTest.class, LocationMatcherTest.class, LocationNameMatcherTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.clazz(DependencyRulesTest.class).ignore("VariableNamingConventions"),
                                 In.classes(PmdTest.class, FindBugsTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
-                                In.everywhere().ignore("UseConcurrentHashMap", "ArrayIsStoredDirectly", "MethodReturnsInternalArray"),
+                                In.everywhere().ignore("UseConcurrentHashMap", "ArrayIsStoredDirectly", "MethodReturnsInternalArray", "AvoidLiteralsInIfCondition"),
                                 In.locs("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))
                 .withRuleSets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
                         finalizers(), imports(), j2ee(), javabeans(), junit(), optimizations(),
