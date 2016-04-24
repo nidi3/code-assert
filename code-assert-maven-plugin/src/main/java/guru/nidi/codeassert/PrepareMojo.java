@@ -26,6 +26,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
+import java.io.*;
+
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 /**
@@ -44,6 +46,11 @@ public class PrepareMojo extends AbstractMojo {
     private BuildPluginManager pluginManager;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        executeJacocoPlugin();
+        writeArgLineFile();
+    }
+
+    private void executeJacocoPlugin() throws MojoExecutionException {
         executeMojo(
                 plugin(
                         groupId("org.jacoco"),
@@ -54,5 +61,18 @@ public class PrepareMojo extends AbstractMojo {
                 configuration(),
                 executionEnvironment(mavenProject, mavenSession, pluginManager)
         );
+    }
+
+    private void writeArgLineFile() {
+        final String argLine = mavenProject.getProperties().getProperty("argLine");
+        if (argLine != null) {
+            final File file = new File("target/coverageOptions.txt");
+            try (final Writer out = new OutputStreamWriter(new FileOutputStream(file), "utf-8")) {
+                out.write(argLine);
+                getLog().info("Wrote argLine to " + file);
+            } catch (IOException e) {
+                getLog().warn("Could not write to " + file, e);
+            }
+        }
     }
 }
