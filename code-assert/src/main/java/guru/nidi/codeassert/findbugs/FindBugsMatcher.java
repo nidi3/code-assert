@@ -19,8 +19,9 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import guru.nidi.codeassert.config.AnalyzerConfig;
+import guru.nidi.codeassert.util.ResultMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 
 import java.io.File;
 import java.util.List;
@@ -28,12 +29,7 @@ import java.util.List;
 /**
  *
  */
-public class FindBugsMatcher extends TypeSafeMatcher<FindBugsResult> {
-    @Override
-    protected boolean matchesSafely(FindBugsResult item) {
-        return item.findings().isEmpty();
-    }
-
+public class FindBugsMatcher extends ResultMatcher<FindBugsResult, BugInstance> {
     public void describeTo(Description description) {
         description.appendText("Has no FindBugs issues");
     }
@@ -45,7 +41,7 @@ public class FindBugsMatcher extends TypeSafeMatcher<FindBugsResult> {
         }
     }
 
-    private String printBug(BugInstance bug, List<String> sources) {
+    private String printBug(BugInstance bug, List<AnalyzerConfig.Path> sources) {
         final int rank = BugRanker.findRank(bug);
         final SourceLineAnnotation line = bug.getPrimarySourceLineAnnotation();
         final int startLine = line.getStartLine() <= 0 ? 0 : line.getStartLine();
@@ -55,9 +51,9 @@ public class FindBugsMatcher extends TypeSafeMatcher<FindBugsResult> {
         return String.format("%-2d %-8s %-45s %s:%d    %s", rank, priority(bug), bug.getType(), completeSourcePath(line.getSourcePath(), sources), startLine, message);
     }
 
-    private String completeSourcePath(String sourcePath, List<String> sources) {
-        for (final String source : sources) {
-            final File file = new File(source, sourcePath);
+    private String completeSourcePath(String sourcePath, List<AnalyzerConfig.Path> sources) {
+        for (final AnalyzerConfig.Path source : sources) {
+            final File file = new File(source.getBase(), sourcePath);
             if (file.exists()) {
                 return file.getAbsolutePath();
             }

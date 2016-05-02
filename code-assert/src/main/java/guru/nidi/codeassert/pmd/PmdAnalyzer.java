@@ -18,7 +18,6 @@ package guru.nidi.codeassert.pmd;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.Ignore;
 import guru.nidi.codeassert.config.UsageCounter;
 import net.sourceforge.pmd.PMD;
 import net.sourceforge.pmd.PMDConfiguration;
@@ -34,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import static guru.nidi.codeassert.util.ListUtils.join;
 
 /**
  *
@@ -123,7 +120,11 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
                 return renderer;
             }
         };
-        pmdConfig.setInputPaths(join(",", config.getSources()));
+        final StringBuilder inputs = new StringBuilder();
+        for (final AnalyzerConfig.Path source : config.getSources()) {
+            inputs.append(',').append(source.getPath());
+        }
+        pmdConfig.setInputPaths(inputs.substring(1));
         pmdConfig.setRuleSets(ruleSetNames());
         pmdConfig.setThreads(0);
         return pmdConfig;

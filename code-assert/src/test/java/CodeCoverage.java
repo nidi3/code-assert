@@ -14,10 +14,9 @@ public class CodeCoverage {
     @Test
     public void coverage() {
         JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(BRANCH, LINE, METHOD)
-                .just(For.global().setMinima(75, 75, 75))
-                .just(For.allPackages().setMinima(75, 75, 75))
-                .just(For.packge("*junit").setMinima(65, 75, 65))
-                .just(For.packge("*util").setMinima(75, 75, 65))
+                .just(For.global().setMinima(80, 80, 80))
+                .just(For.allPackages().setMinima(80, 80, 80))
+                .just(For.packge("*junit").setMinima(75, 80, 75))
         );
         assertThat(analyzer.analyze(), hasEnoughCoverage());
     }

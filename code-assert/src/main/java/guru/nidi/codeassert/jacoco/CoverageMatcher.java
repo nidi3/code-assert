@@ -16,18 +16,13 @@
 package guru.nidi.codeassert.jacoco;
 
 import guru.nidi.codeassert.config.ValuedLocation;
+import guru.nidi.codeassert.util.ResultMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 
 /**
  *
  */
-public class CoverageMatcher extends TypeSafeMatcher<JacocoResult> {
-    @Override
-    protected boolean matchesSafely(JacocoResult item) {
-        return item.findings().isEmpty();
-    }
-
+public class CoverageMatcher extends ResultMatcher<JacocoResult, ValuedLocation> {
     public void describeTo(Description description) {
         description.appendText("Has enough test coverage.");
     }

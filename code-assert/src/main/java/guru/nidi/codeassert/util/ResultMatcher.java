@@ -15,25 +15,18 @@
  */
 package guru.nidi.codeassert.util;
 
-import java.util.Arrays;
+import guru.nidi.codeassert.AnalyzerResult;
+import org.hamcrest.TypeSafeMatcher;
+
 import java.util.List;
 
 /**
  *
  */
-public final class ListUtils {
-    private ListUtils() {
+public abstract class ResultMatcher<T extends AnalyzerResult<List<S>>, S> extends TypeSafeMatcher<T> {
+    @Override
+    protected boolean matchesSafely(T item) {
+        return item.findings().isEmpty();
     }
 
-    public static String join(String sep, Object[] os) {
-        return join(sep, Arrays.asList(os));
-    }
-
-    public static String join(String sep, List<?> os) {
-        final StringBuilder res = new StringBuilder();
-        for (final Object o : os) {
-            res.append(sep).append(o);
-        }
-        return os.isEmpty() ? "" : res.substring(sep.length());
-    }
 }

@@ -18,7 +18,6 @@ package guru.nidi.codeassert.pmd;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.Ignore;
 import guru.nidi.codeassert.config.UsageCounter;
 import net.sourceforge.pmd.cpd.CPD;
 import net.sourceforge.pmd.cpd.CPDConfiguration;
@@ -53,9 +52,9 @@ public class CpdAnalyzer implements Analyzer<List<Match>> {
 
     private CPD createCpd() {
         final CPD cpd = new CPD(createCpdConfig());
-        for (final String source : config.getSources()) {
+        for (final AnalyzerConfig.Path source : config.getSources()) {
             try {
-                cpd.addRecursively(new File(source));
+                cpd.addRecursively(new File(source.getPath()));
             } catch (IOException e) {
                 throw new AnalyzerException("Problem reading directory '" + source + "'", e);
             }

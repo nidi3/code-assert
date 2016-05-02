@@ -19,6 +19,7 @@ import edu.umd.cs.findbugs.Priorities;
 import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
 import guru.nidi.codeassert.config.AnalyzerConfig;
+import guru.nidi.codeassert.config.AnalyzerConfigTest;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.pmd.Rulesets;
@@ -47,7 +48,8 @@ public class FindBugsTest {
             .because("avoid jvm killed on travis",
                     In.loc("*Test").ignore("DM_GC"))
             .because("it's ok",
-                    In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"))
+                    In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"),
+                    In.clazz(AnalyzerConfigTest.class).ignore("DMI_HARDCODED_ABSOLUTE_FILENAME"))
             .because("is handled by annotation",
                     In.clazz(Rulesets.class).ignore("URF_UNREAD_FIELD"));
 
@@ -55,7 +57,7 @@ public class FindBugsTest {
     public void simple() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
-        final int expected = System.getProperty("java.version").startsWith("1.7") ? 38 : 37;
+        final int expected = System.getProperty("java.version").startsWith("1.7") ? 40 : 39;
         assertEquals(expected, analyzer.analyze().findings().size());
     }
 

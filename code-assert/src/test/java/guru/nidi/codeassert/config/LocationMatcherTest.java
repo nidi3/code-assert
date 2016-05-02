@@ -104,13 +104,13 @@ public class LocationMatcherTest {
         final LocationMatcher m = new LocationMatcher("Cl");
         assertTrue(m.matchesClass("Cl$bla"));
         assertTrue(m.matchesPackageClass("pa", "Cl$blu"));
-        assertTrue(m.matches("pa","Cl$blo",""));
+        assertTrue(m.matches("pa", "Cl$blo", ""));
     }
 
     @Test
     public void classMethodInner() {
         final LocationMatcher m = new LocationMatcher("Cl#me");
-        assertFalse(m.matches("pa","Cl$bla","me"));
+        assertFalse(m.matches("pa", "Cl$bla", "me"));
     }
 
     @Test

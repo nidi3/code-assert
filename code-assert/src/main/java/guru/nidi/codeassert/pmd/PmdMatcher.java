@@ -15,20 +15,15 @@
  */
 package guru.nidi.codeassert.pmd;
 
+import guru.nidi.codeassert.util.ResultMatcher;
 import net.sourceforge.pmd.Rule;
 import net.sourceforge.pmd.RuleViolation;
 import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 
 /**
  *
  */
-public class PmdMatcher extends TypeSafeMatcher<PmdResult> {
-    @Override
-    protected boolean matchesSafely(PmdResult item) {
-        return item.findings().isEmpty();
-    }
-
+public class PmdMatcher extends ResultMatcher<PmdResult, RuleViolation> {
     public void describeTo(Description description) {
         description.appendText("Has no PMD issues");
     }

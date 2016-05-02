@@ -20,7 +20,6 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.Ignore;
 import guru.nidi.codeassert.config.UsageCounter;
 
 import java.io.IOException;
@@ -67,11 +66,11 @@ public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
 
     private Project createProject() {
         final Project project = new Project();
-        for (final String clazz : config.getClasses()) {
-            project.addFile(clazz);
+        for (final AnalyzerConfig.Path clazz : config.getClasses()) {
+            project.addFile(clazz.getPath());
         }
-        for (final String source : config.getSources()) {
-            project.addSourceDir(source);
+        for (final AnalyzerConfig.Path source : config.getSources()) {
+            project.addSourceDir(source.getPath());
         }
         final String pathSeparator = System.getProperty("path.separator");
         final String classPath = System.getProperty("java.class.path");

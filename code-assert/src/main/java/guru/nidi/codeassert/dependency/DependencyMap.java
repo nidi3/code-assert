@@ -101,7 +101,6 @@ public class DependencyMap {
         return map.get(name);
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.dependency;
+package guru.nidi.codeassert.junit;
 
 /**
  *
  */
-public class PackageRule {
+public class EmptyCodeAssertTest extends CodeAssertTest {
 }

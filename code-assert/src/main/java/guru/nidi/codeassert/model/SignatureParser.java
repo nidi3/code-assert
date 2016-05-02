@@ -103,14 +103,12 @@ final class SignatureParser {
     }
 
     private void fieldTypeSignature(boolean opt) {
-        if (is('L')) {
-            classTypeSignature();
-        } else if (is('T')) {
-            typeVariableSignature();
-        } else if (is('[')) {
-            arrayTypeSignature();
-        } else if (!opt) {
-            throw new AnalyzerException("FieldTypeSignature expected [" + s + "]:" + pos);
+        if (!classTypeOrTypeVariableSignature()) {
+            if (is('[')) {
+                arrayTypeSignature();
+            } else if (!opt) {
+                throw new AnalyzerException("FieldTypeSignature expected [" + s + "]:" + pos);
+            }
         }
     }
 
@@ -208,13 +206,21 @@ final class SignatureParser {
 
     private void throwsSignature() {
         read('^');
-        if (is('L')) {
-            classTypeSignature();
-        } else if (is('T')) {
-            typeVariableSignature();
-        } else {
+        if (!classTypeOrTypeVariableSignature()) {
             throw new AnalyzerException("ClassType or TypeVariable signature expected [" + s + "]:" + pos);
         }
+    }
+
+    private boolean classTypeOrTypeVariableSignature() {
+        if (is('L')) {
+            classTypeSignature();
+            return true;
+        }
+        if (is('T')) {
+            typeVariableSignature();
+            return true;
+        }
+        return false;
     }
 
     private void returnType() {

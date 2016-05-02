@@ -15,22 +15,17 @@
  */
 package guru.nidi.codeassert.pmd;
 
+import guru.nidi.codeassert.util.ResultMatcher;
 import net.sourceforge.pmd.cpd.Mark;
 import net.sourceforge.pmd.cpd.Match;
 import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 
 import java.util.Iterator;
 
 /**
  *
  */
-public class CpdMatcher extends TypeSafeMatcher<CpdResult> {
-    @Override
-    protected boolean matchesSafely(CpdResult item) {
-        return item.findings().isEmpty();
-    }
-
+public class CpdMatcher extends ResultMatcher<CpdResult, Match> {
     public void describeTo(Description description) {
         description.appendText("Has no code duplications");
     }

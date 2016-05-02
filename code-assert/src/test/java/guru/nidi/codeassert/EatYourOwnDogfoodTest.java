@@ -27,18 +27,12 @@ import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertTest;
 import guru.nidi.codeassert.model.ModelAnalyzer;
 import guru.nidi.codeassert.model.ModelResult;
-import guru.nidi.codeassert.pmd.PmdAnalyzer;
-import guru.nidi.codeassert.pmd.PmdResult;
-import guru.nidi.codeassert.pmd.Rulesets;
-import guru.nidi.codeassert.pmd.ViolationCollector;
+import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.Test;
 
-import java.util.EnumSet;
-
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.packagesMatchExactly;
-import static guru.nidi.codeassert.junit.CodeAssertTest.Type.*;
 import static guru.nidi.codeassert.pmd.Rulesets.*;
 import static org.junit.Assert.assertThat;
 
@@ -46,11 +40,6 @@ import static org.junit.Assert.assertThat;
  *
  */
 public class EatYourOwnDogfoodTest extends CodeAssertTest {
-    @Override
-    protected EnumSet<Type> defaultTests() {
-        return EnumSet.of(CIRCULAR_DEPENDENCIES, PMD, PMD_UNUSED_ACTIONS, FIND_BUGS, FIND_BUGS_UNUSED_ACTIONS);
-    }
-
     @Test
     public void dependency() {
         System.gc();
@@ -123,4 +112,12 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                 .analyze();
     }
 
+    @Override
+    protected CpdResult analyzeCpd() {
+        System.gc();
+        final MatchCollector collector = new MatchCollector()
+                .just(In.everywhere().ignore("public boolean equals(Object o)", "public int hashCode()", "public String toString()"));
+
+        return new CpdAnalyzer(AnalyzerConfig.maven().main(), 27, collector).analyze();
+    }
 }

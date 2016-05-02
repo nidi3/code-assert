@@ -17,7 +17,6 @@ package guru.nidi.codeassert.config;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,18 +24,18 @@ import java.util.List;
  *
  */
 public class AnalyzerConfig {
-    private final List<String> sources;
-    private final List<String> classes;
+    private final List<Path> sources;
+    private final List<Path> classes;
 
     public AnalyzerConfig() {
-        this(Collections.<String>emptyList(), Collections.<String>emptyList());
+        this(Collections.<Path>emptyList(), Collections.<Path>emptyList());
     }
 
     public AnalyzerConfig(AnalyzerConfig config) {
         this(config.sources, config.classes);
     }
 
-    protected AnalyzerConfig(List<String> sources, List<String> classes) {
+    protected AnalyzerConfig(List<Path> sources, List<Path> classes) {
         this.sources = sources;
         this.classes = classes;
     }
@@ -49,20 +48,26 @@ public class AnalyzerConfig {
         return new Maven(module);
     }
 
-    public AnalyzerConfig withSources(String... sources) {
-        return new AnalyzerConfig(Arrays.asList(sources), classes);
+    public AnalyzerConfig withSources(File basedir, String... packages) {
+        return new AnalyzerConfig(join(sources, Path.of(basedir, packages)), classes);
     }
 
-    public AnalyzerConfig withClasses(String... classes) {
-        return new AnalyzerConfig(sources, Arrays.asList(classes));
+    public AnalyzerConfig withClasses(File basedir, String... packages) {
+        return new AnalyzerConfig(sources, join(classes, Path.of(basedir, packages)));
     }
 
-    public List<String> getSources() {
+    public List<Path> getSources() {
         return sources;
     }
 
-    public List<String> getClasses() {
+    public List<Path> getClasses() {
         return classes;
+    }
+
+    private List<Path> join(List<Path> p1, List<Path> p2) {
+        final List<Path> res = new ArrayList<>(p1);
+        res.addAll(p2);
+        return res;
     }
 
     public static class Maven {
@@ -90,16 +95,16 @@ public class AnalyzerConfig {
                     path(packages, "target/classes/", "target/test-classes/"));
         }
 
-        private List<String> path(String[] packs, String... paths) {
-            final List<String> res = new ArrayList<>();
+        private List<Path> path(String[] packs, String... paths) {
+            final List<Path> res = new ArrayList<>();
             for (final String path : paths) {
                 final String normPath = path(path);
                 if (packs.length == 0) {
-                    res.add(normPath);
+                    res.add(new Path(normPath, ""));
                 } else {
                     for (final String pack : packs) {
                         final String normPack = pack.replace('.', '/');
-                        res.add(normPath + normPack);
+                        res.add(new Path(normPath, normPack));
                     }
                 }
             }
@@ -120,4 +125,67 @@ public class AnalyzerConfig {
         }
     }
 
+    public static class Path {
+        private final String base;
+        private final String pack;
+
+        public Path(String base, String pack) {
+            this.base = base.endsWith("/") ? base.substring(0, base.length() - 1) : base;
+            this.pack = pack.startsWith("/") ? pack.substring(1) : pack;
+        }
+
+        public static List<Path> of(File basedir, String... packages) {
+            final List<Path> sources = new ArrayList<>();
+            if (packages.length == 0) {
+                sources.add(new Path(basedir.getPath(), ""));
+            } else {
+                for (final String pack : packages) {
+                    sources.add(new Path(basedir.getPath(), pack));
+                }
+            }
+            return sources;
+        }
+
+        public String getPath() {
+            return base + (pack.length() == 0 ? "" : ("/" + pack));
+        }
+
+        public String getBase() {
+            return base;
+        }
+
+        public String getPack() {
+            return pack;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            final Path path = (Path) o;
+
+            if (!base.equals(path.base)) {
+                return false;
+            }
+            return pack.equals(path.pack);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = base.hashCode();
+            result = 31 * result + pack.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Path(" + base + " , " + pack + ")";
+        }
+    }
 }

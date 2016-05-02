@@ -34,9 +34,11 @@ public class ModelAnalyzer implements Analyzer<Model> {
 
     public ModelResult analyze() {
         try {
-            final JavaClassBuilder builder = new JavaClassBuilder(
-                    new ClassFileParser(),
-                    new FileManager().withDirectories(config.getClasses()));
+            final FileManager fm = new FileManager();
+            for (final AnalyzerConfig.Path path : config.getClasses()) {
+                fm.withDirectory(path.getPath());
+            }
+            final JavaClassBuilder builder = new JavaClassBuilder(new ClassFileParser(), fm);
             builder.build();
             return new ModelResult(this, builder.model, Collections.<String>emptyList());
         } catch (IOException e) {

@@ -17,10 +17,7 @@ package guru.nidi.codeassert.pmd;
 
 import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.In;
-import guru.nidi.codeassert.config.LocationMatcherTest;
-import guru.nidi.codeassert.config.LocationNameMatcherTest;
+import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.dependency.DependencyRules;
 import guru.nidi.codeassert.dependency.DependencyRulesTest;
 import guru.nidi.codeassert.findbugs.FindBugsTest;
@@ -96,9 +93,7 @@ public class PmdTest {
         assertMatcher("" +
                         cpd(26, "findbugs/BugCollector") +
                         cpd("jacoco/CoverageCollector") +
-                        cpd("pmd/ViolationCollector") +
-                        cpd(26, "model/SignatureParser") +
-                        cpd("model/SignatureParser"),
+                        cpd("pmd/ViolationCollector"),
                 cpdResult, hasNoCodeDuplications());
     }
 
@@ -123,11 +118,12 @@ public class PmdTest {
                                 In.classes(DependencyRulesTest.class, FindBugsTest.class).ignore("AvoidDuplicateLiterals"),
                                 In.clazz(ExampleInterface.class).ignore("ShortMethodName"),
                                 In.clazz(Bugs.class).ignore("UnusedLocalVariable"),
-                                In.locs("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns", "AddEmptyString", "DoNotCallGarbageCollectionExplicitly","AvoidDuplicateLiterals"),
+                                In.locs("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns", "AddEmptyString", "DoNotCallGarbageCollectionExplicitly", "AvoidDuplicateLiterals"),
                                 In.classes(ClassFileParserTest.class, FileManagerTest.class, JarFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert"),
                                 In.classes(DependencyRulesTest.class, LocationMatcherTest.class, LocationNameMatcherTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.clazz(DependencyRulesTest.class).ignore("VariableNamingConventions"),
                                 In.classes(PmdTest.class, FindBugsTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
+                                In.classes(AnalyzerConfigTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.everywhere().ignore("UseConcurrentHashMap", "ArrayIsStoredDirectly", "MethodReturnsInternalArray", "AvoidLiteralsInIfCondition"),
                                 In.locs("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))
                 .withRuleSets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),

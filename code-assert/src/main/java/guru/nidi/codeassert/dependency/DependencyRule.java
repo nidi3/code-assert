@@ -22,6 +22,8 @@ import guru.nidi.codeassert.model.UsingElementMatcher;
 
 import java.util.List;
 
+import static guru.nidi.codeassert.dependency.RuleAccessor.*;
+
 /**
  */
 public class DependencyRule implements UsingElementMatcher {
@@ -159,15 +161,14 @@ public class DependencyRule implements UsingElementMatcher {
         }
 
         private int calcDeniedSpecificity(T thisPack, T dep) {
-            return Math.max(dep.mostSpecificMatch(use.mustNot), rules.mostSpecificMustNotBeUsedMatch(thisPack, dep));
+            return Math.max(dep.mostSpecificMatch(use.mustNot), rules.mostSpecificUsageMatch(thisPack, dep, MUST_NOT_BE_USED));
         }
 
         private int calcAllowedSpecificity(T thisPack, T dep) {
             final int useAllowed = Math.max(dep.mostSpecificMatch(use.must), dep.mostSpecificMatch(use.may));
-            final int usedByAllowed = Math.max(rules.mostSpecificMustBeUsedMatch(thisPack, dep), rules.mostSpecificMayBeUsedMatch(thisPack, dep));
+            final int usedByAllowed = Math.max(rules.mostSpecificUsageMatch(thisPack, dep, MUST_BE_USED), rules.mostSpecificUsageMatch(thisPack, dep, MAY_BE_USED));
             return Math.max(useAllowed, usedByAllowed);
         }
-
 
     }
 
