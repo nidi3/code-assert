@@ -28,7 +28,7 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 /**
  * Run a test that can consume the Jacoco test coverage data.
  */
-@Mojo(name = "assert", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.TEST)
+@Mojo(name = "assert", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class AssertMojo extends AbstractMojo {
 
     /**
