@@ -28,6 +28,7 @@ import org.apache.maven.project.MavenProject;
 
 import java.io.*;
 
+import static guru.nidi.codeassert.AssertMojo.JACOCO_VERSION;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 /**
@@ -55,7 +56,7 @@ public class PrepareMojo extends AbstractMojo {
                 plugin(
                         groupId("org.jacoco"),
                         artifactId("jacoco-maven-plugin"),
-                        version("0.7.6.201602180812")
+                        version(JACOCO_VERSION)
                 ),
                 goal("prepare-agent"),
                 configuration(),
@@ -66,7 +67,8 @@ public class PrepareMojo extends AbstractMojo {
     private void writeArgLineFile() {
         final String argLine = mavenProject.getProperties().getProperty("argLine");
         if (argLine != null) {
-            final File file = new File("target/coverageOptions.txt");
+            final File file = new File("target", "coverageOptions.txt");
+            file.getParentFile().mkdirs();
             try (final Writer out = new OutputStreamWriter(new FileOutputStream(file), "utf-8")) {
                 out.write(argLine);
                 getLog().info("Wrote argLine to " + file);

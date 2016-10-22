@@ -30,6 +30,7 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
  */
 @Mojo(name = "assert", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class AssertMojo extends AbstractMojo {
+    static final String JACOCO_VERSION = "0.7.7.201606060606";
 
     /**
      * The test class to be run.
@@ -56,7 +57,7 @@ public class AssertMojo extends AbstractMojo {
                 plugin(
                         groupId("org.jacoco"),
                         artifactId("jacoco-maven-plugin"),
-                        version("0.7.6.201602180812")
+                        version(JACOCO_VERSION)
                 ),
                 goal("report"),
                 configuration(),
@@ -73,7 +74,8 @@ public class AssertMojo extends AbstractMojo {
                 ),
                 goal("test"),
                 configuration(
-                        element("test", testClass)
+                        element("test", testClass),
+                        element("failIfNoTests", "false")
                 ),
                 executionEnvironment(mavenProject, mavenSession, pluginManager)
         );
