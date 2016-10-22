@@ -22,6 +22,11 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
@@ -49,7 +54,9 @@ public class AssertMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         report();
-        runTest();
+        if (canRunTest()) {
+            runTest();
+        }
     }
 
     private void report() throws MojoExecutionException {
@@ -79,5 +86,32 @@ public class AssertMojo extends AbstractMojo {
                 ),
                 executionEnvironment(mavenProject, mavenSession, pluginManager)
         );
+    }
+
+    private boolean canRunTest() throws MojoExecutionException {
+        try {
+            return (existsCoverageTest() && existsCoverageData());
+        } catch (IOException e) {
+            throw new MojoExecutionException("Error searching test class", e);
+        }
+    }
+
+    private boolean existsCoverageData() {
+        final String coverageData = "target/site/jacoco/jacoco.csv";
+        if (!new File(coverageData).exists()) {
+            getLog().warn("No coverage data found at '" + coverageData + "'. Are there no tests?");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean existsCoverageTest() throws IOException {
+        final File testDir = new File(mavenProject.getBuild().getTestOutputDirectory());
+        final List<File> testFiles = FileUtils.getFiles(testDir, "**/" + testClass + ".class", "");
+        if (testFiles.isEmpty()) {
+            getLog().warn("Code coverage test not found: '" + testClass + ".java'.");
+            return false;
+        }
+        return true;
     }
 }
