@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>code-assert-parent</artifactId>
-    <version>0.0.6-SNAPSHOT</version>
+    <version>0.0.6</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -30,7 +30,7 @@
         <connection>scm:git:https://github.com/nidi3/code-assert</connection>
         <developerConnection>scm:git:https://github.com/nidi3/code-assert</developerConnection>
         <url>https://github.com/nidi3/code-assert</url>
-        <tag>HEAD</tag>
+        <tag>code-assert-parent-0.0.6</tag>
     </scm>
 
 </project>
