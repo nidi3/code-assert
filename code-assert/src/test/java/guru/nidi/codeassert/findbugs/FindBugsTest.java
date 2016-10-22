@@ -57,8 +57,8 @@ public class FindBugsTest {
     public void simple() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
-        final int expected = System.getProperty("java.version").startsWith("1.7") ? 40 : 39;
-        assertEquals(expected, analyzer.analyze().findings().size());
+//        final int expected = System.getProperty("java.version").startsWith("1.7") ? 40 : 41;
+        assertEquals(40, analyzer.analyze().findings().size());
     }
 
     @Test
