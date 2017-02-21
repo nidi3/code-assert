@@ -1,7 +1,6 @@
 package guru.nidi.codeassert.config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,13 +19,11 @@ public final class CollectorTemplate<A extends Action> extends BaseCollector<Obj
         return configs.iterator();
     }
 
-    public CollectorConfig<A>[] configs() {
-        return configs.toArray(new CollectorConfig[configs.size()]);
-    }
-
     @Override
     protected CollectorTemplate<A> config(CollectorConfig<A>... configs) {
-        this.configs.addAll(Arrays.asList(configs));
+        for (final CollectorConfig<A> config : configs) {
+            this.configs.add(config.ignoringUnused());
+        }
         return this;
     }
 

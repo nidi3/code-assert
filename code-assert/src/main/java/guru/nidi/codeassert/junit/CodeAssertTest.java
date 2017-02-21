@@ -32,9 +32,6 @@ import static org.junit.Assume.assumeTrue;
 
 @Ignore("This is made to be subclassed")
 public class CodeAssertTest {
-    /**
-     *
-     */
     public enum Type {
         CIRCULAR_DEPENDENCIES,
         FIND_BUGS, FIND_BUGS_UNUSED_ACTIONS,

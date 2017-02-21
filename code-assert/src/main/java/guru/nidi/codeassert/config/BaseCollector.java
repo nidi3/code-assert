@@ -36,7 +36,7 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
 
     public T apply(Iterable<CollectorConfig<A>> configs) {
         final List<CollectorConfig<A>> cs = new ArrayList<>();
-        for (CollectorConfig<A> config : configs) {
+        for (final CollectorConfig<A> config : configs) {
             cs.add(config);
         }
         return config(cs.toArray(new CollectorConfig[cs.size()]));
@@ -63,9 +63,11 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
     protected final List<A> unused(UsageCounter counter, T parent, CollectorConfig<A>... configs) {
         final List<A> res = new ArrayList<>();
         for (final CollectorConfig<A> config : configs) {
-            for (final A action : config.actions) {
-                if (counter.getCount(action) == 0) {
-                    res.add(action);
+            if (!config.ignoreUnused) {
+                for (final A action : config.actions) {
+                    if (counter.getCount(action) == 0) {
+                        res.add(action);
+                    }
                 }
             }
         }

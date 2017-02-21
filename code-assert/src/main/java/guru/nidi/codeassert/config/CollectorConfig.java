@@ -22,17 +22,25 @@ import java.util.List;
 
 public final class CollectorConfig<A extends Action> {
     public final String reason;
+    public final boolean ignoreUnused;
     public final List<A> actions;
 
-    private CollectorConfig(String reason, List<A> actions) {
+    private CollectorConfig(String reason, boolean ignoreUnused, List<A> actions) {
         this.reason = reason;
+        this.ignoreUnused = ignoreUnused;
         this.actions = actions;
     }
 
-    public static <A extends Action> CollectorConfig<A> because(String reason, A... actions) {
-        return new CollectorConfig<>(reason, Arrays.asList(actions));
+    public CollectorConfig<A> ignoringUnused() {
+        return new CollectorConfig<>(reason, true, actions);
     }
 
+    @SafeVarargs
+    public static <A extends Action> CollectorConfig<A> because(String reason, A... actions) {
+        return new CollectorConfig<>(reason, false, Arrays.asList(actions));
+    }
+
+    @SafeVarargs
     public static <A extends Action> CollectorConfig<A> just(A... actions) {
         return because(null, actions);
     }

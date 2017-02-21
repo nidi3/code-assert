@@ -147,9 +147,6 @@ public class Rulesets {
     }
 
     public static class Comments extends Ruleset {
-        /**
-         *
-         */
         public enum Requirement {
             Required, Ignored, Unwanted
         }

@@ -25,10 +25,7 @@ import java.util.Set;
  * see https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3.4
  */
 final class SignatureParser {
-    /**
-     *
-     */
-    public enum Source {
+        public enum Source {
         CLASS, FIELD, METHOD
     }
 
