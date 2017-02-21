@@ -53,7 +53,7 @@ public class PmdTest {
     public void priority() {
         final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.maven().mainAndTest(),
                 new PmdViolationCollector().minPriority(RulePriority.MEDIUM_HIGH))
-                .withRuleSets(basic(), braces(), design(), optimizations(), codesize(), empty(), coupling());
+                .withRulesets(basic(), braces(), design(), optimizations(), codesize(), empty(), coupling());
         assertMatcher("" +
                         pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", "A class which only has private constructors should be final") +
                         pmd(HIGH, "EmptyMethodInAbstractClassShouldBeAbstract", TEST, "model/ExampleAbstractClass", "An empty method in an abstract class should be abstract instead") +
@@ -123,7 +123,7 @@ public class PmdTest {
                                 In.classes(AnalyzerConfigTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.everywhere().ignore("UseConcurrentHashMap", "ArrayIsStoredDirectly", "MethodReturnsInternalArray", "AvoidLiteralsInIfCondition"),
                                 In.locs("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))
-                .withRuleSets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
+                .withRulesets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
                         finalizers(), imports(), j2ee(), javabeans(), junit(), optimizations(),
                         exceptions(), strings(), sunSecure(), typeResolution(), unnecessary(), unused(),
                         codesize().excessiveMethodLength(50).tooManyMethods(30),

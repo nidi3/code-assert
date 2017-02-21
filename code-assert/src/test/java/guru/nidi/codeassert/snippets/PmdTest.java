@@ -60,7 +60,7 @@ public class PmdTest {
                 .just(In.loc("*Test").ignore("TooManyStaticImports"));
 
         // Define and configure the rule sets to be used
-        PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRuleSets(
+        PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRulesets(
                 basic(), braces(), design(), empty(), optimizations(),
                 codesize().excessiveMethodLength(40).tooManyMethods(30));
 

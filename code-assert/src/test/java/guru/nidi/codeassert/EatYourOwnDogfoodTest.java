@@ -34,7 +34,6 @@ import org.junit.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.packagesMatchExactly;
-import static guru.nidi.codeassert.pmd.Rulesets.*;
 import static org.junit.Assert.assertThat;
 
 public class EatYourOwnDogfoodTest extends CodeAssertTest {
@@ -99,13 +98,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                         In.clazz(Coverage.class).ignore("ExcessiveParameterList"),
                         In.locs("DependencyRules", "JavaClassImportBuilder").ignore("GodClass"));
         return new PmdAnalyzer(AnalyzerConfig.maven().main(), collector)
-                .withRuleSets(basic(), braces(),
-                        comments().maxLines(35).maxLineLen(100).requirement(Comments.Requirement.Ignored),
-                        codesize().excessiveMethodLength(40).tooManyMethods(30),
-                        design(), empty(), exceptions(), imports(), junit(),
-                        naming().variableLen(1, 20).methodLen(2),
-                        optimizations(), strings(),
-                        sunSecure(), typeResolution(), unnecessary(), unused())
+                .withRulesets(PredefConfig.defaultPmdRulesets())
                 .analyze();
     }
 
@@ -113,7 +106,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
     protected CpdResult analyzeCpd() {
         System.gc();
         final CpdMatchCollector collector = new CpdMatchCollector()
-                .apply(PredefConfig.cpdIgnoreEqualsHashCodeToString());
+                .apply(PredefConfig.cpdIgnoreEqualsHashCodeToString())
+                .just(In.clazz(PmdAnalyzer.class).ignore("Map<String, Ruleset> newRuleset"));
 
         return new CpdAnalyzer(AnalyzerConfig.maven().main(), 27, collector).analyze();
     }

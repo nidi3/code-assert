@@ -29,10 +29,7 @@ import net.sourceforge.pmd.renderers.Renderer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     private static final Comparator<RuleViolation> VIOLATION_SORTER = new Comparator<RuleViolation>() {
@@ -48,30 +45,34 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
 
     private final AnalyzerConfig config;
     private final PmdViolationCollector collector;
-    private final List<Ruleset> rulesets;
+    private final Map<String, Ruleset> rulesets;
 
     public PmdAnalyzer(AnalyzerConfig config, PmdViolationCollector collector) {
-        this(config, collector, Collections.<Ruleset>emptyList());
+        this(config, collector, new HashMap<String, Ruleset>());
     }
 
-    private PmdAnalyzer(AnalyzerConfig config, PmdViolationCollector collector, List<Ruleset> rulesets) {
+    private PmdAnalyzer(AnalyzerConfig config, PmdViolationCollector collector, Map<String, Ruleset> rulesets) {
         this.config = config;
         this.collector = collector;
         this.rulesets = rulesets;
     }
 
-    public PmdAnalyzer withRuleSets(String... ruleSets) {
-        final List<Ruleset> newRules = new ArrayList<>(rulesets);
-        for (final String ruleSet : ruleSets) {
-            newRules.add(new Ruleset(ruleSet));
+    public PmdAnalyzer withRulesets(Ruleset... rulesets) {
+        final Map<String, Ruleset> newRuleset = new HashMap<>();
+        newRuleset.putAll(this.rulesets);
+        for (final Ruleset ruleset : rulesets) {
+            newRuleset.put(ruleset.name, ruleset);
         }
-        return new PmdAnalyzer(config, collector, newRules);
+        return new PmdAnalyzer(config, collector, newRuleset);
     }
 
-    public PmdAnalyzer withRuleSets(Ruleset... ruleSets) {
-        final List<Ruleset> newRules = new ArrayList<>(rulesets);
-        Collections.addAll(newRules, ruleSets);
-        return new PmdAnalyzer(config, collector, newRules);
+    public PmdAnalyzer withoutRulesets(Ruleset... rulesets) {
+        final Map<String, Ruleset> newRuleset = new HashMap<>();
+        newRuleset.putAll(this.rulesets);
+        for (final Ruleset ruleset : rulesets) {
+            newRuleset.remove(ruleset.name);
+        }
+        return new PmdAnalyzer(config, collector, newRuleset);
     }
 
     @Override
@@ -111,7 +112,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
         final PMDConfiguration pmdConfig = new PMDConfiguration() {
             @Override
             public Renderer createRenderer() {
-                for (Ruleset ruleset : rulesets) {
+                for (final Ruleset ruleset : rulesets.values()) {
                     ruleset.apply(this);
                 }
                 return renderer;
@@ -129,7 +130,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
 
     private String ruleSetNames() {
         final StringBuilder s = new StringBuilder();
-        for (final Ruleset ruleset : rulesets) {
+        for (final Ruleset ruleset : rulesets.values()) {
             s.append(',').append(ruleset.name);
         }
         return rulesets.isEmpty() ? "" : s.substring(1);

@@ -74,7 +74,7 @@ public class CodeTest extends CodeAssertTest {
     protected PmdResult analyzePmd() {
         final PmdViolationCollector collector = new PmdViolationCollector().just(
                 In.everywhere().ignore("MethodArgumentCouldBeFinal"));
-        return new PmdAnalyzer(config, collector).withRuleSets(basic(), braces()).analyze();
+        return new PmdAnalyzer(config, collector).withRulesets(basic(), braces()).analyze();
     }
 }
 //##
