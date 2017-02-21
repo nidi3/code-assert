@@ -19,9 +19,6 @@ import guru.nidi.codeassert.config.LocationMatcher;
 
 import java.util.*;
 
-/**
- *
- */
 final class MatcherUtils {
     private MatcherUtils() {
     }

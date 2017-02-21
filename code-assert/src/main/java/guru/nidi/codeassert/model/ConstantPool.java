@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-/**
- *
- */
 final class ConstantPool implements Iterable<Constant> {
     private final Constant[] pool;
 

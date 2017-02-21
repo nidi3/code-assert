@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert.config;
 
-/**
- *
- */
 public class ValuedLocation {
     final String pack;
     final String clazz;

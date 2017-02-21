@@ -18,9 +18,6 @@ package guru.nidi.codeassert.pmd;
 import net.sourceforge.pmd.RuleViolation;
 import net.sourceforge.pmd.cpd.Mark;
 
-/**
- *
- */
 final class PmdUtils {
     private PmdUtils() {
     }

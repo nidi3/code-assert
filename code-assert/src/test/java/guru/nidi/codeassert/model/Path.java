@@ -17,9 +17,6 @@ package guru.nidi.codeassert.model;
 
 import java.io.File;
 
-/**
- *
- */
 public final class Path {
     private static final String PACKAGE = "guru/nidi/codeassert/model/";
     private static final String TEST_RESOURCES = "src/test/resources/";

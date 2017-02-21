@@ -23,9 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- *
- */
 public class RegexMatcher extends TypeSafeMatcher<String> {
     private final List<Pattern> patterns;
 

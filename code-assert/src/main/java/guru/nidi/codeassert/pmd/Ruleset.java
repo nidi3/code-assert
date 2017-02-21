@@ -22,9 +22,6 @@ import net.sourceforge.pmd.Rule;
 
 import java.lang.reflect.Field;
 
-/**
- *
- */
 public class Ruleset {
     public final String name;
 

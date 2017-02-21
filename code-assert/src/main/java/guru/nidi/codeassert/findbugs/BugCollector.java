@@ -22,9 +22,6 @@ import guru.nidi.codeassert.util.ListUtils;
 
 import java.util.List;
 
-/**
- *
- */
 public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollector> {
     private final Integer maxRank;
     private final Integer minPriority;

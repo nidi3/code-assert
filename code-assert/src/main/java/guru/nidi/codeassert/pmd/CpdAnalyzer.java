@@ -29,9 +29,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- *
- */
 public class CpdAnalyzer implements Analyzer<List<Match>> {
     private final AnalyzerConfig config;
     private final int minTokens;

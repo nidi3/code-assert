@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert.config;
 
-/**
- *
- */
 public class NamedLocation {
     final String name;
     final String className;

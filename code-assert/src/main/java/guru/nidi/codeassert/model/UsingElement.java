@@ -20,9 +20,6 @@ import guru.nidi.codeassert.config.LocationMatcher;
 import java.util.Collection;
 import java.util.List;
 
-/**
- *
- */
 public abstract class UsingElement<T> {
     public abstract T self();
 

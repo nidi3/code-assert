@@ -32,9 +32,6 @@ import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-/**
- *
- */
 public class CycleTest {
     private static final String START = "Found these cyclic groups:\n\n";
     private static final String BASE = "guru.nidi.codeassert.dependency.";

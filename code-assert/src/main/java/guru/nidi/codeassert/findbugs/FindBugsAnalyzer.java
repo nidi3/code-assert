@@ -25,9 +25,6 @@ import guru.nidi.codeassert.config.UsageCounter;
 import java.io.IOException;
 import java.util.*;
 
-/**
- *
- */
 public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
     private static final Comparator<BugInstance> BUG_SORTER = new Comparator<BugInstance>() {
         @Override

@@ -36,9 +36,6 @@ import static guru.nidi.codeassert.junit.CodeAssertMatchers.packagesMatchExactly
 import static guru.nidi.codeassert.pmd.Rulesets.*;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- */
 public class EatYourOwnDogfoodTest extends CodeAssertTest {
     @Test
     public void dependency() {

@@ -15,8 +15,5 @@
  */
 package guru.nidi.codeassert.model.p4.p3;
 
-/**
- *
- */
 public class Type3 {
 }

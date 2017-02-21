@@ -31,9 +31,6 @@ import java.util.TreeSet;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static org.junit.Assert.*;
 
-/**
- *
- */
 public class DependencyRulesTest {
     private static final String CODE_ASSERT = "guru.nidi.codeassert.";
     private static final String DEP = CODE_ASSERT + "dependency.";

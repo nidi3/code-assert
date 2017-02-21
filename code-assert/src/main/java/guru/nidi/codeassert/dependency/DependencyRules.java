@@ -23,9 +23,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- */
 public final class DependencyRules {
     private final List<DependencyRule> rules = new ArrayList<>();
     private final boolean allowAll;

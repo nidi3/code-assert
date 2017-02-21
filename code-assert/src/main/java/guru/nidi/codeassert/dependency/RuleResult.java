@@ -20,9 +20,6 @@ import guru.nidi.codeassert.config.LocationMatcher;
 import java.util.Set;
 import java.util.TreeSet;
 
-/**
- *
- */
 public class RuleResult {
     final DependencyMap allowed;
     final DependencyMap missing;

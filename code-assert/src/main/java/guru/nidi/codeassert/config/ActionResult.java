@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert.config;
 
-/**
- *
- */
 public class ActionResult {
     final boolean accept;
     final Action<?> action;

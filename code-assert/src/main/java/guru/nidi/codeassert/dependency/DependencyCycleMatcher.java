@@ -24,9 +24,6 @@ import java.util.*;
 
 import static guru.nidi.codeassert.dependency.MatcherUtils.*;
 
-/**
- *
- */
 public class DependencyCycleMatcher<T extends UsingElement<T>> extends TypeSafeMatcher<ModelResult> {
     private static final Comparator<DependencyMap> DEP_MAP_COMPARATOR = new DependencyMapComparator();
 

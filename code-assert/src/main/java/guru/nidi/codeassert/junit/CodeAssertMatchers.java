@@ -34,9 +34,6 @@ import org.hamcrest.Matcher;
 
 import java.util.Set;
 
-/**
- *
- */
 public final class CodeAssertMatchers {
     private CodeAssertMatchers() {
     }

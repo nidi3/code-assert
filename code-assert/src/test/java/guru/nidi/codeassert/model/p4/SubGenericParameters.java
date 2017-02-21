@@ -17,8 +17,5 @@ package guru.nidi.codeassert.model.p4;
 
 import guru.nidi.codeassert.model.p4.p1.Type1;
 
-/**
- *
- */
 class SubGenericParameters extends GenericParameters<Type1> {
 }

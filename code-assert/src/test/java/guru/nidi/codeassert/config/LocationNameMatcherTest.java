@@ -23,9 +23,6 @@ import java.util.Collections;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- *
- */
 public class LocationNameMatcherTest {
     @Test
     public void basic() {

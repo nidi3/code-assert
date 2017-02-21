@@ -26,9 +26,6 @@ import org.hamcrest.Description;
 import java.io.File;
 import java.util.List;
 
-/**
- *
- */
 public class FindBugsMatcher extends ResultMatcher<FindBugsResult, BugInstance> {
     public void describeTo(Description description) {
         description.appendText("Has no FindBugs issues");

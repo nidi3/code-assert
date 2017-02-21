@@ -17,9 +17,6 @@ package guru.nidi.codeassert.config;
 
 import java.util.Arrays;
 
-/**
- *
- */
 public class Minima implements Action<ValuedLocation> {
     private final LocationMatcher locationMatcher;
     private final String pack;

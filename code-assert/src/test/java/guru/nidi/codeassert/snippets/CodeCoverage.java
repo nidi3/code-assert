@@ -25,9 +25,6 @@ import static guru.nidi.codeassert.jacoco.CoverageType.*;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasEnoughCoverage;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- */
 @Ignore
 //## codeCoverage
 public class CodeCoverage {

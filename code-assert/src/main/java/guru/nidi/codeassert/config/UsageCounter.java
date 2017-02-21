@@ -18,9 +18,6 @@ package guru.nidi.codeassert.config;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- */
 public class UsageCounter {
     private final Map<Action<?>, Integer> usage = new HashMap<>();
 

@@ -15,8 +15,5 @@
  */
 package guru.nidi.codeassert.model.p4.p8;
 
-/**
- *
- */
 public class Type8 extends Exception {
 }

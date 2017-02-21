@@ -40,9 +40,6 @@ import static guru.nidi.codeassert.pmd.Rulesets.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- */
 public class PmdTest {
     private static final String MEDIUM = "Medium";
     private static final String HIGH = "High";

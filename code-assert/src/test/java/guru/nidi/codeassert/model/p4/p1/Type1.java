@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert.model.p4.p1;
 
-/**
- *
- */
 public class Type1 {
     public class Type1Sub<T> {
     }

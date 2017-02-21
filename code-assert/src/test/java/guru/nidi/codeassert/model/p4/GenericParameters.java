@@ -29,9 +29,6 @@ import guru.nidi.codeassert.model.p4.p9.Type9;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- */
 public class GenericParameters<T> {
     private List<Type2> list;
     private List<?> l2 = new ArrayList<Type3>();

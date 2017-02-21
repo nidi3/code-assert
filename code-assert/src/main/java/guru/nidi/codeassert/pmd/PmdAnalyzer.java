@@ -34,9 +34,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- *
- */
 public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     private static final Comparator<RuleViolation> VIOLATION_SORTER = new Comparator<RuleViolation>() {
         @Override

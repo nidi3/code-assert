@@ -20,9 +20,6 @@ import guru.nidi.codeassert.config.LocationMatcher;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- *
- */
 class Usage {
     final Set<LocationMatcher> must = new HashSet<>();
     final Set<LocationMatcher> may = new HashSet<>();

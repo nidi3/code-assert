@@ -19,9 +19,6 @@ import guru.nidi.codeassert.config.LocationMatcher;
 
 import java.util.Set;
 
-/**
- *
- */
 interface RuleAccessor {
     RuleAccessor MAY_BE_USED = new RuleAccessor() {
         @Override

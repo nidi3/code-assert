@@ -20,9 +20,6 @@ import org.hamcrest.TypeSafeMatcher;
 
 import java.util.List;
 
-/**
- *
- */
 public abstract class ResultMatcher<T extends AnalyzerResult<List<S>>, S> extends TypeSafeMatcher<T> {
     @Override
     protected boolean matchesSafely(T item) {

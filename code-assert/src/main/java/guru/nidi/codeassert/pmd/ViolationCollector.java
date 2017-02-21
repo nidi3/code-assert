@@ -22,9 +22,6 @@ import net.sourceforge.pmd.RuleViolation;
 
 import java.util.List;
 
-/**
- *
- */
 public class ViolationCollector extends BaseCollector<RuleViolation, Ignore, ViolationCollector> {
     private final RulePriority minPriority;
 

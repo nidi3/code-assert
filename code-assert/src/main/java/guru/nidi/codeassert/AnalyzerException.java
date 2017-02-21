@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert;
 
-/**
- *
- */
 public class AnalyzerException extends RuntimeException {
     public AnalyzerException(String message) {
         super(message);

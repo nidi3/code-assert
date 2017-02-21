@@ -19,9 +19,6 @@ import guru.nidi.codeassert.config.LocationMatcher;
 
 import java.util.*;
 
-/**
- *
- */
 public class Model {
     final Map<String, JavaPackage> packages = new HashMap<>();
     final Map<String, JavaClass> classes = new HashMap<>();

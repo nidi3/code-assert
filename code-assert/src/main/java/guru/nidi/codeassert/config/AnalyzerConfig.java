@@ -20,9 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- *
- */
 public class AnalyzerConfig {
     private final List<Path> sources;
     private final List<Path> classes;

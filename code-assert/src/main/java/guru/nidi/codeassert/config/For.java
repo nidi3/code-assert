@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert.config;
 
-/**
- *
- */
 public final class For {
     private final String loc;
     private final String pack;

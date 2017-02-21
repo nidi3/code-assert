@@ -33,9 +33,6 @@ import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoBugs;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoUnusedActions;
 import static org.junit.Assert.*;
 
-/**
- *
- */
 public class FindBugsTest {
     private final AnalyzerConfig config = AnalyzerConfig.maven().mainAndTest();
     private final BugCollector bugCollector = new BugCollector().minPriority(Priorities.NORMAL_PRIORITY)

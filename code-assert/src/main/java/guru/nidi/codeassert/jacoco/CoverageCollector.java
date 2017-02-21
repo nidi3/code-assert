@@ -20,9 +20,6 @@ import guru.nidi.codeassert.util.ListUtils;
 
 import java.util.List;
 
-/**
- *
- */
 public class CoverageCollector extends BaseCollector<ValuedLocation, Minima, CoverageCollector> {
     final CoverageType[] types;
 

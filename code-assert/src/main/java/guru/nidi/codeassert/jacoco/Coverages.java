@@ -20,9 +20,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-/**
- *
- */
 public class Coverages {
     final Set<Coverage> coverages = new TreeSet<>();
     final Map<String, Coverage> perPackage = new TreeMap<>();

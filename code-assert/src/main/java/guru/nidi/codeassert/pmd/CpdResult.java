@@ -21,9 +21,6 @@ import net.sourceforge.pmd.cpd.Match;
 
 import java.util.List;
 
-/**
- *
- */
 public class CpdResult extends AnalyzerResult<List<Match>> {
     public CpdResult(Analyzer<List<Match>> analyzer, List<Match> findings, List<String> unusedActions) {
         super(analyzer, findings, unusedActions);

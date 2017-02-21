@@ -17,9 +17,6 @@ package guru.nidi.codeassert.config;
 
 import java.util.List;
 
-/**
- *
- */
 public class Ignore implements Action<NamedLocation> {
     private final LocationNameMatcher matcher;
 

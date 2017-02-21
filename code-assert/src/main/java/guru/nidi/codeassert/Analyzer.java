@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert;
 
-/**
- *
- */
 public interface Analyzer<T> {
     AnalyzerResult<T> analyze();
 }

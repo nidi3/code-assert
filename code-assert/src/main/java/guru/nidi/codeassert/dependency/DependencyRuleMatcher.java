@@ -22,9 +22,6 @@ import org.hamcrest.TypeSafeMatcher;
 
 import static guru.nidi.codeassert.dependency.MatcherUtils.*;
 
-/**
- *
- */
 public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMatcher<ModelResult> {
     private final Class<T> type;
     private final DependencyRules rules;

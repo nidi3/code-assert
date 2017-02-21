@@ -19,9 +19,6 @@ import guru.nidi.codeassert.model.UsingElement;
 
 import java.util.*;
 
-/**
- *
- */
 class Tarjan<T extends UsingElement<T>> {
     private int index;
     private final Stack<T> s = new Stack<>();

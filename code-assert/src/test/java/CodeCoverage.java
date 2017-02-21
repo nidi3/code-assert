@@ -7,9 +7,6 @@ import static guru.nidi.codeassert.jacoco.CoverageType.*;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasEnoughCoverage;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- */
 public class CodeCoverage {
     @Test
     public void coverage() {

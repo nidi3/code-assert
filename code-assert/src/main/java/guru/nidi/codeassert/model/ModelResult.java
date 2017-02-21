@@ -20,9 +20,6 @@ import guru.nidi.codeassert.AnalyzerResult;
 
 import java.util.List;
 
-/**
- *
- */
 public class ModelResult extends AnalyzerResult<Model> {
     public ModelResult(Analyzer<Model> analyzer, Model findings, List<String> unusedActions) {
         super(analyzer, findings, unusedActions);

@@ -21,9 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- *
- */
 public abstract class BaseCollector<S, A extends Action, T extends BaseCollector<S, A, T>> {
     public T because(String reason, A... actions) {
         return config(CollectorConfig.because(reason, actions));

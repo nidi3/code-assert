@@ -21,9 +21,6 @@ import guru.nidi.codeassert.config.ValuedLocation;
 
 import java.util.List;
 
-/**
- *
- */
 public class JacocoResult extends AnalyzerResult<List<ValuedLocation>> {
     private final CoverageType[] types;
 

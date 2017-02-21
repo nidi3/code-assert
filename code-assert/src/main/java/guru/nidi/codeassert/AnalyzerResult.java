@@ -17,9 +17,6 @@ package guru.nidi.codeassert;
 
 import java.util.List;
 
-/**
- *
- */
 public class AnalyzerResult<T> {
     private final Analyzer<T> analyzer;
     private final T findings;

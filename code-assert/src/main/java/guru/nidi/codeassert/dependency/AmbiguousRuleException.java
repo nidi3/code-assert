@@ -17,9 +17,6 @@ package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.model.UsingElement;
 
-/**
- *
- */
 public class AmbiguousRuleException extends RuntimeException {
     private final DependencyRule rule;
     private final UsingElement<?> from;

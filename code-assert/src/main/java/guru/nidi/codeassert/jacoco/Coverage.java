@@ -17,9 +17,6 @@ package guru.nidi.codeassert.jacoco;
 
 import guru.nidi.codeassert.config.ValuedLocation;
 
-/**
- *
- */
 public class Coverage implements Comparable<Coverage> {
     final String pack;
     final String clazz;

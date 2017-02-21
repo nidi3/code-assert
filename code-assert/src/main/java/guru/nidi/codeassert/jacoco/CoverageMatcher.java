@@ -19,9 +19,6 @@ import guru.nidi.codeassert.config.ValuedLocation;
 import guru.nidi.codeassert.util.ResultMatcher;
 import org.hamcrest.Description;
 
-/**
- *
- */
 public class CoverageMatcher extends ResultMatcher<JacocoResult, ValuedLocation> {
     public void describeTo(Description description) {
         description.appendText("Has enough test coverage.");

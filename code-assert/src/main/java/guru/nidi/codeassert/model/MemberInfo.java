@@ -18,9 +18,6 @@ package guru.nidi.codeassert.model;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-/**
- *
- */
 final class MemberInfo {
     final int accessFlags;
     final int nameIndex;

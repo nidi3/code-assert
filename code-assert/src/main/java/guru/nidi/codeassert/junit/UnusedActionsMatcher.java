@@ -19,9 +19,6 @@ import guru.nidi.codeassert.AnalyzerResult;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-/**
- *
- */
 public class UnusedActionsMatcher<T extends AnalyzerResult<?>> extends TypeSafeMatcher<T> {
     @Override
     protected boolean matchesSafely(T item) {

@@ -20,9 +20,6 @@ import net.sourceforge.pmd.Rule;
 import net.sourceforge.pmd.RuleViolation;
 import org.hamcrest.Description;
 
-/**
- *
- */
 public class PmdMatcher extends ResultMatcher<PmdResult, RuleViolation> {
     public void describeTo(Description description) {
         description.appendText("Has no PMD issues");

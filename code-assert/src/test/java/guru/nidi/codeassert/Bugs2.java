@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert;
 
-/**
- *
- */
 public class Bugs2 {
     private Bugs2() {
     }

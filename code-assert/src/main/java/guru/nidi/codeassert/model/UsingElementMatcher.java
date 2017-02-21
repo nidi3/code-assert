@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert.model;
 
-/**
- *
- */
 public interface UsingElementMatcher {
     boolean matches(UsingElement<?> elem);
 }

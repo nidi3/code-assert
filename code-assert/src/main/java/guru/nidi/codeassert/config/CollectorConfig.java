@@ -20,9 +20,6 @@ import guru.nidi.codeassert.util.ListUtils;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- *
- */
 public final class CollectorConfig<A extends Action> {
     public final String reason;
     public final List<A> actions;

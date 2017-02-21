@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert;
 
-/**
- *
- */
 public class Bugs {
     public void bugs() {
         Object a = new Integer(5);

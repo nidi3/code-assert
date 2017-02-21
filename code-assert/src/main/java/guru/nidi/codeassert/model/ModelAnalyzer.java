@@ -22,9 +22,6 @@ import guru.nidi.codeassert.config.AnalyzerConfig;
 import java.io.IOException;
 import java.util.Collections;
 
-/**
- *
- */
 public class ModelAnalyzer implements Analyzer<Model> {
     private final AnalyzerConfig config;
 

@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert.pmd;
 
-/**
- *
- */
 public class Rulesets {
     private Rulesets() {
     }

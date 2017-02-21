@@ -24,9 +24,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- *
- */
 public class MatchCollector extends BaseCollector<Match, Ignore, MatchCollector> {
     @Override
     public MatchCollector config(final CollectorConfig<Ignore>... configs) {

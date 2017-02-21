@@ -22,9 +22,6 @@ import org.hamcrest.Description;
 
 import java.util.Iterator;
 
-/**
- *
- */
 public class CpdMatcher extends ResultMatcher<CpdResult, Match> {
     public void describeTo(Description description) {
         description.appendText("Has no code duplications");

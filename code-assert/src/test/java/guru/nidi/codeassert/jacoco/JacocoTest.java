@@ -26,9 +26,6 @@ import static guru.nidi.codeassert.jacoco.CoverageType.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- */
 public class JacocoTest {
 
     @Test(expected = AnalyzerException.class)

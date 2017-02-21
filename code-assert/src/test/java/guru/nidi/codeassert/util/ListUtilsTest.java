@@ -21,9 +21,6 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- *
- */
 public class ListUtilsTest {
 
     @Test
