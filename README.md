@@ -108,7 +108,7 @@ public class PmdTest {
     public void pmd() {
         // Only treat violations with MEDIUM priority or higher
         // Ignore the given violations in the given classes / methods
-        ViolationCollector collector = new ViolationCollector().minPriority(RulePriority.MEDIUM)
+        PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
                 .because("It's not severe and occurs very often",
                         In.everywhere().ignore("MethodArgumentCouldBeFinal"),
                         In.locs("JavaClassBuilder#build", "FindBugsMatchers").ignore("AvoidInstantiatingObjectsInLoops"))
@@ -117,7 +117,7 @@ public class PmdTest {
                 .just(In.loc("*Test").ignore("TooManyStaticImports"));
 
         // Define and configure the rule sets to be used
-        PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRuleSets(
+        PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRulesets(
                 basic(), braces(), design(), empty(), optimizations(),
                 codesize().excessiveMethodLength(40).tooManyMethods(30));
 
@@ -127,7 +127,7 @@ public class PmdTest {
     @Test
     public void cpd() {
         // Ignore duplications in the given classes
-        MatchCollector collector = new MatchCollector()
+        CpdMatchCollector collector = new CpdMatchCollector()
                 .because("equals",
                         In.everywhere().ignore("public boolean equals(Object o) {"))
                 .just(
@@ -189,9 +189,9 @@ public class CodeTest extends CodeAssertTest {
 
     @Override
     protected PmdResult analyzePmd() {
-        final ViolationCollector collector = new ViolationCollector().just(
+        final PmdViolationCollector collector = new PmdViolationCollector().just(
                 In.everywhere().ignore("MethodArgumentCouldBeFinal"));
-        return new PmdAnalyzer(config, collector).withRuleSets(basic(), braces()).analyze();
+        return new PmdAnalyzer(config, collector).withRulesets(basic(), braces()).analyze();
     }
 }
 ```
@@ -206,7 +206,7 @@ The following steps are needed:
 <plugin>
     <groupId>guru.nidi</groupId>
     <artifactId>code-assert-maven-plugin</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
     <executions>
         <execution>
             <goals>

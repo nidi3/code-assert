@@ -16,7 +16,7 @@
             <plugin>
                 <groupId>guru.nidi</groupId>
                 <artifactId>code-assert-maven-plugin</artifactId>
-                <version>0.0.5</version>
+                <version>0.0.6</version>
                 <executions>
                     <execution>
                         <goals>
