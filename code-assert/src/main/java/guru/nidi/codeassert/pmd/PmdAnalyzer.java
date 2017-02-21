@@ -47,14 +47,14 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     };
 
     private final AnalyzerConfig config;
-    private final ViolationCollector collector;
+    private final PmdViolationCollector collector;
     private final List<Ruleset> rulesets;
 
-    public PmdAnalyzer(AnalyzerConfig config, ViolationCollector collector) {
+    public PmdAnalyzer(AnalyzerConfig config, PmdViolationCollector collector) {
         this(config, collector, Collections.<Ruleset>emptyList());
     }
 
-    private PmdAnalyzer(AnalyzerConfig config, ViolationCollector collector, List<Ruleset> rulesets) {
+    private PmdAnalyzer(AnalyzerConfig config, PmdViolationCollector collector, List<Ruleset> rulesets) {
         this.config = config;
         this.collector = collector;
         this.rulesets = rulesets;

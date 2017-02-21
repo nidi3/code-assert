@@ -25,6 +25,7 @@ import guru.nidi.codeassert.findbugs.FindBugsAnalyzer;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertTest;
+import guru.nidi.codeassert.junit.PredefConfig;
 import guru.nidi.codeassert.model.ModelAnalyzer;
 import guru.nidi.codeassert.model.ModelResult;
 import guru.nidi.codeassert.pmd.*;
@@ -52,7 +53,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                 pmd.mayUse($self, util, config);
                 jacoco.mayUse($self, util, config);
                 util.mayUse($self);
-                junit.mayUse($self, model, dependency, findbugs, pmd, jacoco);
+                junit.mayUse($self, config, model, dependency, findbugs, pmd, jacoco);
             }
         }
         final DependencyRules rules = denyAll()
@@ -70,34 +71,33 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
     @Override
     protected FindBugsResult analyzeFindBugs() {
         System.gc();
-        final BugCollector bugCollector = new BugCollector().just(
-                In.locs("DependencyRules#withRules", "Ruleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
-                In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
-                In.loc("*Exception").ignore("SE_BAD_FIELD"),
-                In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"),
-                In.everywhere().ignore("EI_EXPOSE_REP", "EI_EXPOSE_REP2", "SBSC_USE_STRINGBUFFER_CONCATENATION"),
-                In.locs("ClassFileParser", "Constant", "MemberInfo", "Rulesets", "Reason").ignore("URF_UNREAD_FIELD"));
+        final BugCollector bugCollector = new BugCollector()
+                .apply(PredefConfig.minimalFindBugsIgnore())
+                .just(
+                        In.locs("DependencyRules#withRules", "Ruleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
+                        In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
+                        In.loc("*Exception").ignore("SE_BAD_FIELD"),
+                        In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"),
+                        In.everywhere().ignore("EI_EXPOSE_REP", "EI_EXPOSE_REP2"),
+                        In.locs("ClassFileParser", "Constant", "MemberInfo", "Rulesets", "Reason").ignore("URF_UNREAD_FIELD"));
         return new FindBugsAnalyzer(AnalyzerConfig.maven().main(), bugCollector).analyze();
     }
 
     @Override
     protected PmdResult analyzePmd() {
         System.gc();
-        final ViolationCollector collector = new ViolationCollector().minPriority(RulePriority.MEDIUM).just(
-                In.everywhere().ignore(
-                        "MethodArgumentCouldBeFinal", "AvoidFieldNameMatchingMethodName",
-                        "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName",
-                        "UncommentedEmptyConstructor", "AvoidInstantiatingObjectsInLoops",
-                        "UseStringBufferForStringAppends", "AvoidSynchronizedAtMethodLevel",
-                        "JUnitAssertionsShouldIncludeMessage", "SimplifyStartsWith", "UncommentedEmptyMethodBody",
-                        "ArrayIsStoredDirectly", "MethodReturnsInternalArray"),
-                In.locs("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
-                In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),
-                In.clazz(Rulesets.class).ignore("TooManyMethods", "AvoidDuplicateLiterals"),
-                In.loc("*Test").ignore("TooManyStaticImports"),
-                In.loc("Reason").ignore("SingularField"),
-                In.clazz(Coverage.class).ignore("ExcessiveParameterList"),
-                In.locs("DependencyRules", "JavaClassImportBuilder").ignore("GodClass"));
+        final PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
+                .apply(PredefConfig.minimalPmdIgnore())
+                .just(
+                        In.everywhere().ignore(
+                                "AvoidInstantiatingObjectsInLoops", "AvoidSynchronizedAtMethodLevel",
+                                "SimplifyStartsWith", "ArrayIsStoredDirectly", "MethodReturnsInternalArray"),
+                        In.locs("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
+                        In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),
+                        In.clazz(Rulesets.class).ignore("TooManyMethods", "AvoidDuplicateLiterals"),
+                        In.loc("Reason").ignore("SingularField"),
+                        In.clazz(Coverage.class).ignore("ExcessiveParameterList"),
+                        In.locs("DependencyRules", "JavaClassImportBuilder").ignore("GodClass"));
         return new PmdAnalyzer(AnalyzerConfig.maven().main(), collector)
                 .withRuleSets(basic(), braces(),
                         comments().maxLines(35).maxLineLen(100).requirement(Comments.Requirement.Ignored),
@@ -112,8 +112,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
     @Override
     protected CpdResult analyzeCpd() {
         System.gc();
-        final MatchCollector collector = new MatchCollector()
-                .just(In.everywhere().ignore("public boolean equals(Object o)", "public int hashCode()", "public String toString()"));
+        final CpdMatchCollector collector = new CpdMatchCollector()
+                .apply(PredefConfig.cpdIgnoreEqualsHashCodeToString());
 
         return new CpdAnalyzer(AnalyzerConfig.maven().main(), 27, collector).analyze();
     }

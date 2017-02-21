@@ -22,15 +22,25 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class BaseCollector<S, A extends Action, T extends BaseCollector<S, A, T>> {
-    public T because(String reason, A... actions) {
+    @SafeVarargs
+    public final T because(String reason, A... actions) {
         return config(CollectorConfig.because(reason, actions));
     }
 
-    public T just(A... actions) {
+    @SafeVarargs
+    public final T just(A... actions) {
         return config(CollectorConfig.just(actions));
     }
 
-    protected abstract T config(final CollectorConfig<A>... configs);
+    protected abstract T config(CollectorConfig<A>... configs);
+
+    public T apply(Iterable<CollectorConfig<A>> configs) {
+        final List<CollectorConfig<A>> cs = new ArrayList<>();
+        for (CollectorConfig<A> config : configs) {
+            cs.add(config);
+        }
+        return config(cs.toArray(new CollectorConfig[cs.size()]));
+    }
 
     public abstract ActionResult accept(S issue);
 
@@ -38,7 +48,8 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
 
     protected abstract List<A> unused(UsageCounter counter);
 
-    protected ActionResult accept(S issue, T parent, CollectorConfig<A>... configs) {
+    @SafeVarargs
+    protected final ActionResult accept(S issue, T parent, CollectorConfig<A>... configs) {
         ActionResult res = ActionResult.undecided(null);
         for (final CollectorConfig<A> config : configs) {
             for (final A action : config.actions) {
@@ -48,7 +59,8 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
         return res.orMoreQuality(parent.accept(issue));
     }
 
-    protected List<A> unused(UsageCounter counter, T parent, CollectorConfig<A>... configs) {
+    @SafeVarargs
+    protected final List<A> unused(UsageCounter counter, T parent, CollectorConfig<A>... configs) {
         final List<A> res = new ArrayList<>();
         for (final CollectorConfig<A> config : configs) {
             for (final A action : config.actions) {

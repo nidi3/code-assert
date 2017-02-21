@@ -28,7 +28,7 @@ import guru.nidi.codeassert.model.ModelAnalyzer;
 import guru.nidi.codeassert.model.ModelResult;
 import guru.nidi.codeassert.pmd.PmdAnalyzer;
 import guru.nidi.codeassert.pmd.PmdResult;
-import guru.nidi.codeassert.pmd.ViolationCollector;
+import guru.nidi.codeassert.pmd.PmdViolationCollector;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -72,7 +72,7 @@ public class CodeTest extends CodeAssertTest {
 
     @Override
     protected PmdResult analyzePmd() {
-        final ViolationCollector collector = new ViolationCollector().just(
+        final PmdViolationCollector collector = new PmdViolationCollector().just(
                 In.everywhere().ignore("MethodArgumentCouldBeFinal"));
         return new PmdAnalyzer(config, collector).withRuleSets(basic(), braces()).analyze();
     }

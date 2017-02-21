@@ -32,9 +32,9 @@ import java.util.List;
 public class CpdAnalyzer implements Analyzer<List<Match>> {
     private final AnalyzerConfig config;
     private final int minTokens;
-    private final MatchCollector collector;
+    private final CpdMatchCollector collector;
 
-    public CpdAnalyzer(AnalyzerConfig config, int minTokens, MatchCollector collector) {
+    public CpdAnalyzer(AnalyzerConfig config, int minTokens, CpdMatchCollector collector) {
         this.config = config;
         this.minTokens = minTokens;
         this.collector = collector;

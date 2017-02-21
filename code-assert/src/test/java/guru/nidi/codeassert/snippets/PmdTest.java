@@ -20,9 +20,9 @@ import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.DependencyMap;
 import guru.nidi.codeassert.dependency.RuleResult;
 import guru.nidi.codeassert.pmd.CpdAnalyzer;
-import guru.nidi.codeassert.pmd.MatchCollector;
+import guru.nidi.codeassert.pmd.CpdMatchCollector;
 import guru.nidi.codeassert.pmd.PmdAnalyzer;
-import guru.nidi.codeassert.pmd.ViolationCollector;
+import guru.nidi.codeassert.pmd.PmdViolationCollector;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -51,7 +51,7 @@ public class PmdTest {
     public void pmd() {
         // Only treat violations with MEDIUM priority or higher
         // Ignore the given violations in the given classes / methods
-        ViolationCollector collector = new ViolationCollector().minPriority(RulePriority.MEDIUM)
+        PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
                 .because("It's not severe and occurs very often",
                         In.everywhere().ignore("MethodArgumentCouldBeFinal"),
                         In.locs("JavaClassBuilder#build", "FindBugsMatchers").ignore("AvoidInstantiatingObjectsInLoops"))
@@ -70,7 +70,7 @@ public class PmdTest {
     @Test
     public void cpd() {
         // Ignore duplications in the given classes
-        MatchCollector collector = new MatchCollector()
+        CpdMatchCollector collector = new CpdMatchCollector()
                 .because("equals",
                         In.everywhere().ignore("public boolean equals(Object o) {"))
                 .just(

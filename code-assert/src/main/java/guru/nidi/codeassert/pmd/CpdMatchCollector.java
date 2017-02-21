@@ -24,18 +24,18 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class MatchCollector extends BaseCollector<Match, Ignore, MatchCollector> {
+public class CpdMatchCollector extends BaseCollector<Match, Ignore, CpdMatchCollector> {
     @Override
-    public MatchCollector config(final CollectorConfig<Ignore>... configs) {
-        return new MatchCollector() {
+    public CpdMatchCollector config(final CollectorConfig<Ignore>... configs) {
+        return new CpdMatchCollector() {
             @Override
             public ActionResult accept(Match issue) {
-                return accept(issue, MatchCollector.this, configs);
+                return accept(issue, CpdMatchCollector.this, configs);
             }
 
             @Override
             public String toString() {
-                return MatchCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
+                return CpdMatchCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
             }
         };
     }

@@ -22,32 +22,32 @@ import net.sourceforge.pmd.RuleViolation;
 
 import java.util.List;
 
-public class ViolationCollector extends BaseCollector<RuleViolation, Ignore, ViolationCollector> {
+public class PmdViolationCollector extends BaseCollector<RuleViolation, Ignore, PmdViolationCollector> {
     private final RulePriority minPriority;
 
-    public ViolationCollector() {
+    public PmdViolationCollector() {
         this(null);
     }
 
-    private ViolationCollector(RulePriority minPriority) {
+    private PmdViolationCollector(RulePriority minPriority) {
         this.minPriority = minPriority;
     }
 
-    public ViolationCollector minPriority(RulePriority minPriority) {
-        return new ViolationCollector(minPriority);
+    public PmdViolationCollector minPriority(RulePriority minPriority) {
+        return new PmdViolationCollector(minPriority);
     }
 
     @Override
-    public ViolationCollector config(final CollectorConfig<Ignore>... configs) {
-        return new ViolationCollector(minPriority) {
+    public PmdViolationCollector config(final CollectorConfig<Ignore>... configs) {
+        return new PmdViolationCollector(minPriority) {
             @Override
             public ActionResult accept(RuleViolation issue) {
-                return accept(issue, ViolationCollector.this, configs);
+                return accept(issue, PmdViolationCollector.this, configs);
             }
 
             @Override
             public String toString() {
-                return ViolationCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
+                return PmdViolationCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
             }
         };
     }

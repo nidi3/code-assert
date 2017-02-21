@@ -52,7 +52,7 @@ public class PmdTest {
     @Test
     public void priority() {
         final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.maven().mainAndTest(),
-                new ViolationCollector().minPriority(RulePriority.MEDIUM_HIGH))
+                new PmdViolationCollector().minPriority(RulePriority.MEDIUM_HIGH))
                 .withRuleSets(basic(), braces(), design(), optimizations(), codesize(), empty(), coupling());
         assertMatcher("" +
                         pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", "A class which only has private constructors should be final") +
@@ -101,7 +101,7 @@ public class PmdTest {
 
     private PmdResult pmdAnalyze() {
         final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.maven().mainAndTest(),
-                new ViolationCollector().minPriority(RulePriority.MEDIUM)
+                new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
                         .because("it's not useful", In.everywhere().ignore(
                                 "MethodArgumentCouldBeFinal", "LawOfDemeter", "LooseCoupling", "LocalVariableCouldBeFinal",
                                 "UncommentedEmptyConstructor", "UncommentedEmptyMethodBody", "GodClass", "CommentDefaultAccessModifier",
@@ -134,7 +134,7 @@ public class PmdTest {
     }
 
     private CpdResult cpdAnalyze() {
-        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.maven().main(), 25, new MatchCollector()
+        final CpdAnalyzer analyzer = new CpdAnalyzer(AnalyzerConfig.maven().main(), 25, new CpdMatchCollector()
                 .because("equals and hashCode", In.everywhere().ignore(
                         "*public boolean equals(Object o) {*",
                         "public int hashCode() {"))
