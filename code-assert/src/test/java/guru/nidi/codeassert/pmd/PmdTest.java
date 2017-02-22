@@ -66,9 +66,13 @@ public class PmdTest {
         assertMatcher("" +
                         pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", "A class which only has private constructors should be final") +
                         pmd(MEDIUM, "AssignmentInOperand", MAIN, "jacoco/JacocoAnalyzer", "Avoid assignments in operands") +
-                        pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 118") +
-                        pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 160") +
+                        pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 115") +
+                        pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 154") +
                         pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", "Avoid using final local variables, turn them into fields") +
+                        pmd(MEDIUM, "CommentRequired", MAIN, "jacoco/CoverageType", "enumCommentRequirement Required") +
+                        pmd(MEDIUM, "CommentRequired", MAIN, "junit/CodeAssertTest", "enumCommentRequirement Required") +
+                        pmd(MEDIUM, "CommentRequired", MAIN, "model/SignatureParser", "enumCommentRequirement Required") +
+                        pmd(MEDIUM, "CommentRequired", MAIN, "pmd/Rulesets", "enumCommentRequirement Required") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p2/ExampleEnum", "enumCommentRequirement Required") +
                         pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", "enumCommentRequirement Required") +
                         pmd(MEDIUM, "ExcessiveParameterList", MAIN, "jacoco/Coverage", "Avoid long parameter lists.") +
@@ -88,9 +92,11 @@ public class PmdTest {
     @Test
     public void duplications() {
         assertMatcher("" +
+                        cpd(40, "pmd/PmdAnalyzer") +
+                        cpd("pmd/PmdAnalyzer") +
                         cpd(26, "findbugs/BugCollector") +
                         cpd("jacoco/CoverageCollector") +
-                        cpd("pmd/ViolationCollector"),
+                        cpd("pmd/PmdViolationCollector"),
                 cpdResult, hasNoCodeDuplications());
     }
 
