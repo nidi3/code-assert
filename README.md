@@ -1,7 +1,7 @@
 code-assert [![Build Status](https://travis-ci.org/nidi3/code-assert.svg?branch=master)](https://travis-ci.org/nidi3/code-assert)
 ===========
 
-Assert that the java code of a project satisfies certain checks.
+Assert that the java code of a project satisfies certain rules.
 
 Nobody follows rules that are not checked. 
 If they are only checked periodically / manually by an "architect", it's often too late because there are already too many violations.   
@@ -10,6 +10,8 @@ This way, they are asserted automatically and regularly.
 Violations of rules break the build and therefore, one is forced to either 
 adjust the code to comply with the rules or to adapt the rules in a reasonable way.
 
+code-assert supports rules on the package structure and the test coverage.
+It also integrates findbugs, PMD and CPD.
 
 ## Dependency checks
 
