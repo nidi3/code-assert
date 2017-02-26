@@ -151,7 +151,7 @@ public class PmdTest {
 ## Configuration reuse
 
 Collector configurations can be defined separately and thus reused.
-Some configurations are defined in [PredefConfig](blob/master/code-assert/src/main/java/guru/nidi/codeassert/junit/PredefConfig.java).
+Some configurations are defined in [PredefConfig](code-assert/src/main/java/guru/nidi/codeassert/junit/PredefConfig.java).
 
 [//]: # (reuse)
 ```java
