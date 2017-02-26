@@ -32,7 +32,7 @@ public final class PredefConfig {
 
     public static CollectorTemplate<Ignore> minimalPmdIgnore() {
         return CollectorTemplate.forA(PmdViolationCollector.class)
-                .because("junit", In.loc("*Test")
+                .because("junit", In.locs("*Test", "Test*")
                         .ignore("JUnitSpelling", "JUnitAssertionsShouldIncludeMessage", "AvoidDuplicateLiterals",
                                 "SignatureDeclareThrowsException", "TooManyStaticImports"))
                 .because("I don't agree", In.everywhere()
@@ -44,6 +44,13 @@ public final class PredefConfig {
                         .ignore("NPathComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity", "CyclomaticComplexity", "ConfusingTernary"))
                 .because("It's hashCode", In.loc("#hashCode")
                         .ignore("ConfusingTernary"));
+    }
+
+    //valid for both PMD and findBugs
+    public static CollectorTemplate<Ignore> dependencyTestIgnore(Class<?> dependencyTest) {
+        return CollectorTemplate.of(Ignore.class)
+                .just(In.clazz(dependencyTest).ignore("AvoidDollarSigns", "VariableNamingConventions", "SuspiciousConstantFieldName",
+                        "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD"));
     }
 
     public static CollectorTemplate<Ignore> cpdIgnoreEqualsHashCodeToString() {
@@ -64,7 +71,7 @@ public final class PredefConfig {
                 comments().maxLines(35).maxLineLen(120).requirement(Rulesets.Comments.Requirement.Ignored),
                 codesize().excessiveMethodLength(40).tooManyMethods(30),
                 design(), empty().allowCommentedEmptyCatch(true), exceptions(), imports(), junit(),
-                naming().variableLen(1, 20).methodLen(2),
+                naming().variableLen(1, 25).methodLen(2),
                 optimizations(), strings(),
                 sunSecure(), typeResolution(), unnecessary(), unused()};
     }

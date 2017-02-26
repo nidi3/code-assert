@@ -163,8 +163,7 @@ private CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.forA(PmdV
 public void pmd() {
     PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
             .apply(pmdTestCollector)
-            .because("It's not severe and occurs very often",
-                    In.everywhere().ignore("MethodArgumentCouldBeFinal"));
+            .because("It's not severe and occurs often", In.everywhere().ignore("MethodArgumentCouldBeFinal"));
 
     PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRulesets(rules);
     assertThat(analyzer.analyze(), hasNoPmdViolations());

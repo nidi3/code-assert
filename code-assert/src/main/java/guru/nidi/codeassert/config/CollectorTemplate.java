@@ -29,6 +29,10 @@ public final class CollectorTemplate<A extends Action> extends BaseCollector<Obj
         return new CollectorTemplate<>();
     }
 
+    public static <A extends Action> CollectorTemplate<A> of(Class<A> action) {
+        return new CollectorTemplate<>();
+    }
+
     @Override
     public Iterator<CollectorConfig<A>> iterator() {
         return configs.iterator();
