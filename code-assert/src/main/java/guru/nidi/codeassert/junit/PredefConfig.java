@@ -39,7 +39,11 @@ public final class PredefConfig {
                         .ignore("MethodArgumentCouldBeFinal", "AvoidFieldNameMatchingMethodName",
                                 "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName",
                                 "UncommentedEmptyConstructor", "UseStringBufferForStringAppends",
-                                "UncommentedEmptyMethodBody", "EmptyMethodInAbstractClassShouldBeAbstract"));
+                                "UncommentedEmptyMethodBody", "EmptyMethodInAbstractClassShouldBeAbstract"))
+                .because("It's equals", In.loc("#equals")
+                        .ignore("NPathComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity", "CyclomaticComplexity", "ConfusingTernary"))
+                .because("It's hashCode", In.loc("#hashCode")
+                        .ignore("ConfusingTernary"));
     }
 
     public static CollectorTemplate<Ignore> cpdIgnoreEqualsHashCodeToString() {
@@ -57,7 +61,7 @@ public final class PredefConfig {
     public static Ruleset[] defaultPmdRulesets() {
         return new Ruleset[]{
                 basic(), braces(),
-                comments().maxLines(35).maxLineLen(100).requirement(Rulesets.Comments.Requirement.Ignored),
+                comments().maxLines(35).maxLineLen(120).requirement(Rulesets.Comments.Requirement.Ignored),
                 codesize().excessiveMethodLength(40).tooManyMethods(30),
                 design(), empty().allowCommentedEmptyCatch(true), exceptions(), imports(), junit(),
                 naming().variableLen(1, 20).methodLen(2),

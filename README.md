@@ -93,7 +93,7 @@ public class FindBugsTest {
 [//]: # (end)
 
 
-## PmdChecks
+## PMD checks
 
 Runs [PMD](https://pmd.github.io/) on the code and finds questionable constructs and code duplications.
 
@@ -148,7 +148,32 @@ public class PmdTest {
 ```
 [//]: # (end)
 
-## Standard Tests
+## Configuration reuse
+
+Collector configurations can be defined separately and thus reused.
+Some predefined configurations are defined in [PredefConfig](blob/master/code-assert/src/main/java/guru/nidi/codeassert/junit/PredefConfig.java)
+
+[//]: # (reuse)
+```java
+private CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.forA(PmdViolationCollector.class)
+        .because("It's a test", In.loc("*Test")
+                .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"));
+
+@Test
+public void pmd() {
+    PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
+            .apply(pmdTestCollector)
+            .because("It's not severe and occurs very often",
+                    In.everywhere().ignore("MethodArgumentCouldBeFinal"));
+
+    PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRulesets(rules);
+    assertThat(analyzer.analyze(), hasNoPmdViolations());
+}
+```
+[//]: # (end)
+
+
+## Standard tests
 
 A test can inherit from `CodeAssertTest`. It should override one or more `analyzeXXX` methods.
 If it does so, these standard checks will be executed:
