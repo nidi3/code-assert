@@ -35,7 +35,7 @@ public class ReuseTest {
     private final Ruleset[] rules = new Ruleset[]{basic(), braces(), design(), empty(), optimizations()};
 
     //## reuse
-    private CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.forA(PmdViolationCollector.class)
+    private final CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.forA(PmdViolationCollector.class)
             .because("It's a test", In.loc("*Test")
                     .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"));
 
