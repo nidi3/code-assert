@@ -50,7 +50,7 @@ public final class PredefConfig {
     public static CollectorTemplate<Ignore> dependencyTestIgnore(Class<?> dependencyTest) {
         return CollectorTemplate.of(Ignore.class)
                 .just(In.clazz(dependencyTest).ignore("AvoidDollarSigns", "VariableNamingConventions", "SuspiciousConstantFieldName",
-                        "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD"));
+                        "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD", "UUF_UNUSED_FIELD"));
     }
 
     public static CollectorTemplate<Ignore> cpdIgnoreEqualsHashCodeToString() {
