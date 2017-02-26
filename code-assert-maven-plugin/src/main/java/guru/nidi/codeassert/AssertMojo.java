@@ -97,7 +97,7 @@ public class AssertMojo extends AbstractMojo {
     }
 
     private boolean existsCoverageData() {
-        final String coverageData = "target/site/jacoco/jacoco.csv";
+        final String coverageData = mavenProject.getBuild().getDirectory() + "/site/jacoco/jacoco.csv";
         if (!new File(coverageData).exists()) {
             getLog().warn("No coverage data found at '" + coverageData + "'. Are there no tests?");
             return false;
