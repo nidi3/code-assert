@@ -39,7 +39,7 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
         for (final CollectorConfig<A> config : configs) {
             cs.add(config);
         }
-        return config(cs.toArray(new CollectorConfig[cs.size()]));
+        return (T)config(cs.toArray(new CollectorConfig[cs.size()]));
     }
 
     public abstract ActionResult accept(S issue);

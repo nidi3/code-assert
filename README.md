@@ -155,7 +155,7 @@ Some configurations are defined in [PredefConfig](code-assert/src/main/java/guru
 
 [//]: # (reuse)
 ```java
-private CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.forA(PmdViolationCollector.class)
+private final CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.forA(PmdViolationCollector.class)
         .because("It's a test", In.loc("*Test")
                 .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"));
 
