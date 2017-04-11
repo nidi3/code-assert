@@ -21,9 +21,9 @@ public class ActionResult {
     final int quality;
 
     public ActionResult(boolean accept, Action<?> action, int quality) {
+        this.accept = accept;
         this.action = action;
         this.quality = quality;
-        this.accept = accept;
     }
 
     public static ActionResult accept(Action<?> action, int quality) {

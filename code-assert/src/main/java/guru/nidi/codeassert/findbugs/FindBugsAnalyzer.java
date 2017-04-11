@@ -95,7 +95,7 @@ public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
 
     private FindBugsResult createBugList(BugCollectionBugReporter bugReporter) {
         final Collection<BugInstance> bugs = bugReporter.getBugCollection().getCollection();
-        final ArrayList<BugInstance> sorted = new ArrayList<>(bugs);
+        final List<BugInstance> sorted = new ArrayList<>(bugs);
         Collections.sort(sorted, BUG_SORTER);
         final List<BugInstance> filtered = new ArrayList<>();
         final UsageCounter counter = new UsageCounter();

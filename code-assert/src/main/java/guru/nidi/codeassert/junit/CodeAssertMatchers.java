@@ -16,6 +16,8 @@
 package guru.nidi.codeassert.junit;
 
 import guru.nidi.codeassert.AnalyzerResult;
+import guru.nidi.codeassert.checkstyle.CheckstyleMatcher;
+import guru.nidi.codeassert.checkstyle.CheckstyleResult;
 import guru.nidi.codeassert.dependency.DependencyCycleMatcher;
 import guru.nidi.codeassert.dependency.DependencyRuleMatcher;
 import guru.nidi.codeassert.dependency.DependencyRules;
@@ -98,6 +100,10 @@ public final class CodeAssertMatchers {
 
     public static Matcher<CpdResult> hasNoCodeDuplications() {
         return new CpdMatcher();
+    }
+
+    public static Matcher<CheckstyleResult> hasNoCheckstyleIssues() {
+        return new CheckstyleMatcher();
     }
 
     public static <T extends AnalyzerResult<?>> Matcher<T> hasNoUnusedActions() {
