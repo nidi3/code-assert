@@ -37,7 +37,8 @@ public class CpdMatcher extends ResultMatcher<CpdResult, Match> {
     private String printMatch(Match match) {
         final StringBuilder s = new StringBuilder();
         boolean first = true;
-        for (final Iterator<Mark> marks = match.iterator(); marks.hasNext(); ) {
+        final Iterator<Mark> marks = match.iterator();
+        while (marks.hasNext()) {
             final Mark mark = marks.next();
             s.append(first ? String.format("%-4d ", match.getTokenCount()) : "     ");
             first = false;

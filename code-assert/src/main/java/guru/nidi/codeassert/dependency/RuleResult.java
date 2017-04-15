@@ -28,10 +28,12 @@ public class RuleResult {
     final Set<String> undefined;
 
     public RuleResult() {
-        this(new DependencyMap(), new DependencyMap(), new DependencyMap(), new TreeSet<LocationMatcher>(), new TreeSet<String>());
+        this(new DependencyMap(), new DependencyMap(), new DependencyMap(),
+                new TreeSet<LocationMatcher>(), new TreeSet<String>());
     }
 
-    public RuleResult(DependencyMap allowed, DependencyMap missing, DependencyMap denied, Set<LocationMatcher> notExisting, Set<String> undefined) {
+    public RuleResult(DependencyMap allowed, DependencyMap missing, DependencyMap denied,
+                      Set<LocationMatcher> notExisting, Set<String> undefined) {
         this.allowed = allowed;
         this.missing = missing;
         this.denied = denied;
@@ -111,12 +113,12 @@ public class RuleResult {
 
     @Override
     public String toString() {
-        return "RuleResult{" +
-                "allowed=" + allowed +
-                ", missing=" + missing +
-                ", denied=" + denied +
-                ", notExisting=" + notExisting +
-                ", undefined=" + undefined +
-                '}';
+        return "RuleResult{"
+                + "allowed=" + allowed
+                + ", missing=" + missing
+                + ", denied=" + denied
+                + ", notExisting=" + notExisting
+                + ", undefined=" + undefined
+                + '}';
     }
 }

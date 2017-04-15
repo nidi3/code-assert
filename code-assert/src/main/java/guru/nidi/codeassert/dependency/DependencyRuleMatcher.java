@@ -38,9 +38,9 @@ public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMa
     @Override
     protected boolean matchesSafely(ModelResult item) {
         final RuleResult result = result(item);
-        return result.getMissing().isEmpty() && result.getDenied().isEmpty() &&
-                (result.getNotExisting().isEmpty() || !nonExisting) &&
-                (result.getUndefined().isEmpty() || !undefined);
+        return result.getMissing().isEmpty() && result.getDenied().isEmpty()
+                && (result.getNotExisting().isEmpty() || !nonExisting)
+                && (result.getUndefined().isEmpty() || !undefined);
     }
 
     public void describeTo(Description description) {

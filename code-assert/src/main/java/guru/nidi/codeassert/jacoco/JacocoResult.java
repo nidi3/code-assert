@@ -24,7 +24,8 @@ import java.util.List;
 public class JacocoResult extends AnalyzerResult<List<ValuedLocation>> {
     private final CoverageType[] types;
 
-    public JacocoResult(Analyzer<List<ValuedLocation>> analyzer, List<ValuedLocation> findings, List<String> unusedActions, CoverageType[] types) {
+    public JacocoResult(Analyzer<List<ValuedLocation>> analyzer, List<ValuedLocation> findings,
+                        List<String> unusedActions, CoverageType[] types) {
         super(analyzer, findings, unusedActions);
         this.types = types;
     }

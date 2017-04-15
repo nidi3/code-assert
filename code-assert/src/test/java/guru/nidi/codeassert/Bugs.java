@@ -26,7 +26,7 @@ public class Bugs {
 
     public static class InnerBugs {
         private InnerBugs() {
-//            not seen by PMD?
+            //not seen by PMD?
         }
 
         public void bugs() {

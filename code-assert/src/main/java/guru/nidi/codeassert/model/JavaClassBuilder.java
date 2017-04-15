@@ -35,19 +35,17 @@ class JavaClassBuilder {
     private final FileManager fileManager;
     final Model model = new Model();
 
-    public JavaClassBuilder() {
+    JavaClassBuilder() {
         this(new ClassFileParser(), new FileManager());
     }
 
-    public JavaClassBuilder(ClassFileParser parser, FileManager fm) {
+    JavaClassBuilder(ClassFileParser parser, FileManager fm) {
         this.parser = parser;
         this.fileManager = fm;
     }
 
     /**
      * Builds the <code>JavaClass</code> instances.
-     *
-     * @return Collection of <code>JavaClass</code> instances.
      */
     public void build() {
         for (final File nextFile : fileManager.extractFiles()) {
@@ -64,7 +62,7 @@ class JavaClassBuilder {
      * specified file.
      *
      * @param file Class or Jar file.
-     * @return Collection of <code>JavaClass</code> instances.
+     * @throws IOException when something goes wrong
      */
     public void buildClasses(File file) throws IOException {
         if (fileManager.acceptClassFile(file)) {
@@ -85,7 +83,7 @@ class JavaClassBuilder {
      * jar, war, or zip file.
      *
      * @param file Jar, war, or zip file.
-     * @return Collection of <code>JavaClass</code> instances.
+     * @throws IOException when something goes wrong
      */
     public void buildClasses(JarFile file) throws IOException {
         final Enumeration entries = file.entries();

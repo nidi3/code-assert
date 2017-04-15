@@ -41,7 +41,8 @@ public final class PredefConfig {
                                 "UncommentedEmptyConstructor", "UseStringBufferForStringAppends",
                                 "UncommentedEmptyMethodBody", "EmptyMethodInAbstractClassShouldBeAbstract"))
                 .because("It's equals", In.loc("#equals")
-                        .ignore("NPathComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity", "CyclomaticComplexity", "ConfusingTernary"))
+                        .ignore("NPathComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity",
+                                "CyclomaticComplexity", "ConfusingTernary"))
                 .because("It's hashCode", In.loc("#hashCode")
                         .ignore("ConfusingTernary"));
     }
@@ -49,7 +50,8 @@ public final class PredefConfig {
     //valid for both PMD and findBugs
     public static CollectorTemplate<Ignore> dependencyTestIgnore(Class<?> dependencyTest) {
         return CollectorTemplate.of(Ignore.class)
-                .just(In.clazz(dependencyTest).ignore("AvoidDollarSigns", "VariableNamingConventions", "SuspiciousConstantFieldName",
+                .just(In.clazz(dependencyTest).ignore(
+                        "AvoidDollarSigns", "VariableNamingConventions", "SuspiciousConstantFieldName",
                         "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD", "UUF_UNUSED_FIELD"));
     }
 

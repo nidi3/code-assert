@@ -34,6 +34,7 @@ public class CheckstyleMatcher extends ResultMatcher<CheckstyleResult, AuditEven
 
     private String printEvent(AuditEvent event) {
         final LocalizedMessage msg = event.getLocalizedMessage();
-        return String.format("%-8s %-40s %s:%d    %s", msg.getSeverityLevel(), msg.getKey(), event.getFileName(), event.getLine(), event.getMessage());
+        return String.format("%-8s %-40s %s:%d    %s",
+                msg.getSeverityLevel(), msg.getKey(), event.getFileName(), event.getLine(), event.getMessage());
     }
 }

@@ -18,6 +18,7 @@ package guru.nidi.codeassert.config;
 /**
  * Actions are created using the In and For classes.
  *
+ * @param <T> the type of issues this action works on.
  * @see In
  * @see For
  */

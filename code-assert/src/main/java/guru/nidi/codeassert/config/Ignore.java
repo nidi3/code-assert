@@ -26,7 +26,8 @@ public class Ignore implements Action<NamedLocation> {
 
     @Override
     public ActionResult accept(NamedLocation namedLocation) {
-        final boolean matches = matcher.matches(namedLocation.name, namedLocation.className, namedLocation.method, namedLocation.strictNameMatch);
+        final boolean matches = matcher.matches(
+                namedLocation.name, namedLocation.className, namedLocation.method, namedLocation.strictNameMatch);
         return ActionResult.rejectIfFalse(!matches, this, 5);
     }
 

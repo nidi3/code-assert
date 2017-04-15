@@ -19,14 +19,16 @@ import guru.nidi.codeassert.config.ValuedLocation;
 
 public class Coverage implements Comparable<Coverage> {
     final String pack;
-    final String clazz;
-    final int instMissed, instCovered;
-    final int branchMissed, branchCovered;
-    final int lineMissed, lineCovered;
-    final int complexMissed, complexCovered;
-    final int methodMissed, methodCovered;
+    private final String clazz;
+    private final int instMissed, instCovered;
+    private final int branchMissed, branchCovered;
+    private final int lineMissed, lineCovered;
+    private final int complexMissed, complexCovered;
+    private final int methodMissed, methodCovered;
 
-    public Coverage(String pack, String clazz, int instMissed, int instCovered, int branchMissed, int branchCovered, int lineMissed, int lineCovered, int complexMissed, int complexCovered, int methodMissed, int methodCovered) {
+    public Coverage(String pack, String clazz,
+                    int instMissed, int instCovered, int branchMissed, int branchCovered, int lineMissed,
+                    int lineCovered, int complexMissed, int complexCovered, int methodMissed, int methodCovered) {
         this.pack = pack;
         this.clazz = clazz;
         this.instMissed = instMissed;
@@ -51,7 +53,8 @@ public class Coverage implements Comparable<Coverage> {
     }
 
     public Coverage withClazz(String clazz) {
-        return new Coverage(pack, clazz, instMissed, instCovered, branchMissed, branchCovered, lineMissed, lineCovered, complexMissed, complexCovered, methodMissed, methodCovered);
+        return new Coverage(pack, clazz, instMissed, instCovered, branchMissed, branchCovered, lineMissed, lineCovered,
+                complexMissed, complexCovered, methodMissed, methodCovered);
     }
 
     public ValuedLocation toValuedLocation(CoverageType[] types) {

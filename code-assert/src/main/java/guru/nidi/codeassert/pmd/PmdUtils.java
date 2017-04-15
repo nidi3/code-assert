@@ -28,8 +28,8 @@ final class PmdUtils {
 
     public static String className(RuleViolation violation) {
         if (violation.getClassName().length() > 0) {
-            return (violation.getPackageName().length() > 0 ? (violation.getPackageName() + ".") : "") +
-                    violation.getClassName();
+            return (violation.getPackageName().length() > 0 ? (violation.getPackageName() + ".") : "")
+                    + violation.getClassName();
         }
         return className(violation.getPackageName(), violation.getFilename());
     }

@@ -40,7 +40,8 @@ public class CoverageMatcher extends ResultMatcher<JacocoResult, ValuedLocation>
     private void printCoverage(ValuedLocation coverage, Description description) {
         description.appendText(pad(printLocation(coverage), 60));
         for (int i = 0; i < coverage.getValues().length; i++) {
-            description.appendText(String.format("%3.0f /%3s     ", coverage.getValues()[i], printAppliedValue(coverage.getAppliedLimits()[i])));
+            description.appendText(String.format("%3.0f /%3s     ",
+                    coverage.getValues()[i], printAppliedValue(coverage.getAppliedLimits()[i])));
         }
     }
 

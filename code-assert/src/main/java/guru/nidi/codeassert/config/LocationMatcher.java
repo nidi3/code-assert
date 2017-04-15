@@ -60,27 +60,26 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
     }
 
     public boolean matchesPackage(String packageName) {
-        return matchesPattern(packagePat, packageName) &&
-                matchesAll(classPat) && matchesAll(methodPat);
+        return matchesPattern(packagePat, packageName)
+                && matchesAll(classPat) && matchesAll(methodPat);
     }
 
     public boolean matchesClass(String className) {
         final int pos = className.lastIndexOf('.');
-        return matchesAll(methodPat) &&
-                (pos < 0
-                        ? matchesAll(packagePat) && matchesClassPattern(classPat, className)
-                        : matchesPattern(packagePat, className.substring(0, pos)) && matchesClassPattern(classPat, className.substring(pos + 1)));
+        return pos < 0
+                ? matchesAll(methodPat) && matchesAll(packagePat) && matchesClassPattern(classPat, className)
+                : matchesPackageClass(className.substring(0, pos), className.substring(pos + 1));
     }
 
     public boolean matchesPackageClass(String packageName, String className) {
-        return matchesPattern(packagePat, packageName) &&
-                matchesClassPattern(classPat, className) && matchesAll(methodPat);
+        return matchesPattern(packagePat, packageName) && matchesClassPattern(classPat, className) && matchesAll(methodPat);
     }
 
     public boolean matches(String packageName, String className, String methodName) {
-        return matchesPattern(packagePat, packageName) &&
-                (matchesAll(methodPat) ? matchesClassPattern(classPat, className) : matchesPattern(classPat, className)) &&
-                matchesPattern(methodPat, methodName);
+        final boolean matchesClass = matchesAll(methodPat)
+                ? matchesClassPattern(classPat, className)
+                : matchesPattern(classPat, className);
+        return matchesPattern(packagePat, packageName) && matchesClass && matchesPattern(methodPat, methodName);
     }
 
     public int specificity() {

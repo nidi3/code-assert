@@ -141,7 +141,8 @@ public final class DependencyRules {
         for (final Field f : ruler.getClass().getDeclaredFields()) {
             f.setAccessible(true);
             if (f.getType() == DependencyRule.class) {
-                final String pack = addPackages(basePackage, (f.getName().equals("$self") ? "" : camelCaseToDotCase(f.getName())));
+                final String pack = addPackages(basePackage,
+                        f.getName().equals("$self") ? "" : camelCaseToDotCase(f.getName()));
                 final DependencyRule rule = addRule(pack);
                 ruleFields.add(rule);
                 f.set(ruler, rule);

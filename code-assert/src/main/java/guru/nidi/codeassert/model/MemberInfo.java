@@ -25,7 +25,8 @@ final class MemberInfo {
     final AttributeInfo annotations;
     final AttributeInfo signature;
 
-    private MemberInfo(int accessFlags, int nameIndex, int descriptorIndex, AttributeInfo annotations, AttributeInfo signature) {
+    private MemberInfo(int accessFlags, int nameIndex, int descriptorIndex,
+                       AttributeInfo annotations, AttributeInfo signature) {
         this.accessFlags = accessFlags;
         this.nameIndex = nameIndex;
         this.descriptorIndex = descriptorIndex;

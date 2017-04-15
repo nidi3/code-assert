@@ -54,12 +54,14 @@ public class PmdViolationCollector extends BaseCollector<RuleViolation, Ignore, 
 
     @Override
     public ActionResult accept(RuleViolation issue) {
-        return new ActionResult((minPriority == null || issue.getRule().getPriority().getPriority() <= minPriority.getPriority()), null, 1);
+        final int issuePrio = issue.getRule().getPriority().getPriority();
+        return new ActionResult(minPriority == null || issuePrio <= minPriority.getPriority(), null, 1);
     }
 
     @Override
     protected ActionResult doAccept(RuleViolation issue, Ignore action) {
-        return action.accept(new NamedLocation(issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName(), true));
+        return action.accept(new NamedLocation(
+                issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName(), true));
     }
 
     @Override

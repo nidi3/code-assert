@@ -41,22 +41,24 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
     public void dependency() {
         System.gc();
         class GuruNidiCodeassert extends DependencyRuler {
-            DependencyRule $self, config, dependency, findbugs, model, pmd, util, junit, jacoco;
+            DependencyRule $self, config, dependency, findbugs, checkstyle, model, pmd, util, junit, jacoco;
 
             @Override
             public void defineRules() {
                 config.mayUse(util);
                 dependency.mayUse($self, util, config, model);
                 findbugs.mayUse($self, util, config);
+                checkstyle.mayUse($self, util, config);
                 model.mayUse($self, util, config);
                 pmd.mayUse($self, util, config);
                 jacoco.mayUse($self, util, config);
                 util.mayUse($self);
-                junit.mayUse($self, config, model, dependency, findbugs, pmd, jacoco);
+                junit.mayUse($self, config, model, dependency, findbugs, checkstyle, pmd, jacoco);
             }
         }
+
         final DependencyRules rules = denyAll()
-                .withExternals("edu*", "java*", "net*", "org*")
+                .withExternals("edu*", "java*", "net*", "org*","com*")
                 .withRelativeRules(new GuruNidiCodeassert());
         assertThat(modelResult(), packagesMatchExactly(rules));
     }

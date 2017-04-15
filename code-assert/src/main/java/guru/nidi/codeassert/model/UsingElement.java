@@ -25,11 +25,11 @@ public abstract class UsingElement<T> {
 
     public abstract String getName();
 
-    public abstract Collection<T> uses();
-
     public abstract Collection<String> usedVia(UsingElement<T> other);
 
     public abstract boolean isMatchedBy(LocationMatcher matcher);
+
+    public abstract Collection<T> uses();
 
     public boolean uses(T elem) {
         return uses().contains(elem);

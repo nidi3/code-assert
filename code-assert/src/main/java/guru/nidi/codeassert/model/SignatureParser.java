@@ -22,10 +22,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Parse a java type signature.
  * see https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.3.4
  */
 final class SignatureParser {
-        public enum Source {
+    public enum Source {
         CLASS, FIELD, METHOD
     }
 
@@ -56,6 +57,8 @@ final class SignatureParser {
             case METHOD:
                 parser.methodTypeSignature();
                 break;
+            default:
+                //nothing
         }
         return parser;
     }

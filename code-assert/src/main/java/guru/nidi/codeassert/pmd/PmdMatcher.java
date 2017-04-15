@@ -32,9 +32,9 @@ public class PmdMatcher extends ResultMatcher<PmdResult, RuleViolation> {
         }
     }
 
-    private String printViolation(RuleViolation violation) {
-        final Rule rule = violation.getRule();
+    private String printViolation(RuleViolation viol) {
+        final Rule rule = viol.getRule();
         return String.format("%-11s %-45s %s:%d    %s",
-                rule.getPriority(), rule.getName(), violation.getFilename(), violation.getBeginLine(), violation.getDescription());
+                rule.getPriority(), rule.getName(), viol.getFilename(), viol.getBeginLine(), viol.getDescription());
     }
 }

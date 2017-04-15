@@ -51,7 +51,8 @@ public class DependencyCycleMatcher<T extends UsingElement<T>> extends TypeSafeM
         if (!result.isEmptyExcept(exceptions)) {
             description.appendText("Found these cyclic groups:\n");
             for (final DependencyMap cycle : sortedDepMaps(result.getCyclesExcept(exceptions))) {
-                description.appendText("\n- Group of " + cycle.getElements().size() + ": " + join(sorted(cycle.getElements())) + "\n");
+                description.appendText("\n- Group of " + cycle.getElements().size() + ": "
+                        + join(sorted(cycle.getElements())) + "\n");
                 for (final String elem : sorted(cycle.getElements())) {
                     description.appendText("  " + elem + " ->\n");
                     description.appendText(deps("    ", cycle.getDependencies(elem)));

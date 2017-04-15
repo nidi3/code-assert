@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public final class CollectorTemplate<A extends Action> extends BaseCollector<Object, A, CollectorTemplate<A>> implements Iterable<CollectorConfig<A>> {
+public final class CollectorTemplate<A extends Action>
+        extends BaseCollector<Object, A, CollectorTemplate<A>> implements Iterable<CollectorConfig<A>> {
     private final List<CollectorConfig<A>> configs = new ArrayList<>();
 
     private CollectorTemplate() {
@@ -48,17 +49,20 @@ public final class CollectorTemplate<A extends Action> extends BaseCollector<Obj
 
     @Override
     public ActionResult accept(Object issue) {
-        throw new UnsupportedOperationException("This is just a template. Apply it to a real Collector using .configs()");
+        throw new UnsupportedOperationException(
+                "This is just a template. Apply it to a real Collector using .configs()");
     }
 
     @Override
     protected ActionResult doAccept(Object issue, A action) {
-        throw new UnsupportedOperationException("This is just a template. Apply it to a real Collector using .configs()");
+        throw new UnsupportedOperationException(
+                "This is just a template. Apply it to a real Collector using .configs()");
     }
 
     @Override
     protected List<A> unused(UsageCounter counter) {
-        throw new UnsupportedOperationException("This is just a template. Apply it to a real Collector using .configs()");
+        throw new UnsupportedOperationException(
+                "This is just a template. Apply it to a real Collector using .configs()");
     }
 
     @Override

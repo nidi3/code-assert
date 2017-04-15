@@ -37,8 +37,9 @@ public class StyleEventCollector extends BaseCollector<AuditEvent, Ignore, Style
         return new StyleEventCollector(severity);
     }
 
+    @SafeVarargs
     @Override
-    public StyleEventCollector config(final CollectorConfig<Ignore>... configs) {
+    public final StyleEventCollector config(final CollectorConfig<Ignore>... configs) {
         return new StyleEventCollector(severity) {
             @Override
             public ActionResult accept(AuditEvent issue) {

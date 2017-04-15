@@ -23,13 +23,13 @@ class JavaClassImportBuilder {
     private static final char CLASS_DESCRIPTOR = 'L';
     private static final char TYPE_END = ';';
 
-    final JavaClass jClass;
+    final JavaClass clazz;
     private final Model model;
     private final ConstantPool constantPool;
 
-    public JavaClassImportBuilder(String className, Model model, ConstantPool constantPool) {
+    JavaClassImportBuilder(String className, Model model, ConstantPool constantPool) {
         this.model = model;
-        this.jClass = model.getOrCreateClass(className);
+        this.clazz = model.getOrCreateClass(className);
         this.constantPool = constantPool;
     }
 
@@ -105,7 +105,7 @@ class JavaClassImportBuilder {
 
     private void addSourceAttribute(AttributeInfo attribute) throws IOException {
         if (attribute.isSource()) {
-            jClass.setSourceFile(attribute.sourceFile(constantPool));
+            clazz.setSourceFile(attribute.sourceFile(constantPool));
         }
     }
 
@@ -135,9 +135,10 @@ class JavaClassImportBuilder {
         int i = index;
         for (int a = 0; a < numAnnotations; a++) {
             final int typeIndex = u2(data, i);
-            final int elements = u2(data, i += 2);
-            addImport(descriptorToType(constantPool.getUtf8(typeIndex)));
             i += 2;
+            final int elements = u2(data, i);
+            i += 2;
+            addImport(descriptorToType(constantPool.getUtf8(typeIndex)));
             for (int e = 0; e < elements; e++) {
                 i = addAnnotationElementValueReferences(data, i + 2);
             }
@@ -187,7 +188,7 @@ class JavaClassImportBuilder {
     private void addImport(String type) {
         final String name = getTypeName(type);
         if (name != null) {
-            jClass.addImport(name, model);
+            clazz.addImport(name, model);
         }
     }
 
@@ -198,7 +199,7 @@ class JavaClassImportBuilder {
     private String getTypeName(String s) {
         final String typed;
         if (s.length() > 0 && s.charAt(0) == '[') {
-            final String types[] = descriptorToTypes(s);
+            final String[] types = descriptorToTypes(s);
             if (types.length == 0) {
                 return null; // primitives
             }
@@ -224,7 +225,7 @@ class JavaClassImportBuilder {
             }
         }
 
-        final String types[] = new String[typesCount];
+        final String[] types = new String[typesCount];
 
         int typeIndex = 0;
         for (int index = 0; index < descriptor.length(); index++) {

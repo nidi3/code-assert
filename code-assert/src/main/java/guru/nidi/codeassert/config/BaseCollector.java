@@ -39,7 +39,7 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
         for (final CollectorConfig<A> config : configs) {
             cs.add(config);
         }
-        return (T)config(cs.toArray(new CollectorConfig[cs.size()]));
+        return (T) config(cs.toArray(new CollectorConfig[cs.size()]));
     }
 
     public abstract ActionResult accept(S issue);
@@ -90,12 +90,16 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
             int i;
             for (i = 0; i < trace.length; i++) {
                 final String clazz = trace[i].getClassName();
-                if ((!clazz.startsWith("guru.nidi.codeassert") && !clazz.startsWith("org.hamcrest") && !clazz.startsWith("org.junit"))
-                        || clazz.endsWith("Test") || clazz.startsWith("Test")) {
+                final boolean projectClass = !clazz.startsWith("guru.nidi.codeassert")
+                        && !clazz.startsWith("org.hamcrest")
+                        && !clazz.startsWith("org.junit");
+                final boolean testClass = clazz.endsWith("Test") || clazz.startsWith("Test");
+                if (projectClass || testClass) {
                     break;
                 }
             }
-            final String location = i == trace.length ? "" : ("In " + trace[i].getClassName() + "#" + trace[i].getMethodName() + ": ");
+            final String location = i == trace.length ? ""
+                    : ("In " + trace[i].getClassName() + "#" + trace[i].getMethodName() + ": ");
             System.out.println("WARN: " + location + "These collector actions have not been used:");
             System.out.println(s);
         }

@@ -86,8 +86,12 @@ public class Minima implements Action<ValuedLocation> {
     }
 
     private boolean complexWildcardMatches(String pattern, String value) {
-        return (pattern.length() > 1 && pattern.startsWith("*") && value.endsWith(pattern.substring(1)))
-                || (pattern.length() > 1 && pattern.endsWith("*") && value.startsWith(pattern.substring(0, pattern.length() - 1)));
+        if (pattern.length() <= 1) {
+            return false;
+        }
+        final boolean startWildcard = pattern.startsWith("*") && value.endsWith(pattern.substring(1));
+        final boolean endWildcard = pattern.endsWith("*") && value.startsWith(pattern.substring(0, pattern.length() - 1));
+        return startWildcard || endWildcard;
     }
 
     @Override

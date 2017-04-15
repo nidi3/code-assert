@@ -63,7 +63,7 @@ class ClassFileParser {
         adder.addMethodRefs(methods);
         adder.addAttributeRefs(attributes);
 
-        return adder.jClass;
+        return adder.clazz;
     }
 
     private int parseMagic() throws IOException {

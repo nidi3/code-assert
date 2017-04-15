@@ -190,5 +190,4 @@ public class LocationMatcherTest {
         assertFalse(m.matchesPackageClass("a", "C"));
     }
 
-
 }

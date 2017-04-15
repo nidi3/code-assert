@@ -78,7 +78,8 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     @Override
     public PmdResult analyze() {
         if (rulesets.isEmpty()) {
-            throw new AnalyzerException("No rulesets defined. Use the withRulesets methods to define some. See Rulesets class for predefined rule sets.");
+            throw new AnalyzerException("No rulesets defined. Use the withRulesets methods to define some. "
+                    + "See Rulesets class for predefined rule sets.");
         }
         //avoid System.out from being closed
         final PrintStream originalSysOut = System.out;
@@ -137,7 +138,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     }
 
     private static class PmdRenderer extends AbstractAccumulatingRenderer {
-        public PmdRenderer() {
+        PmdRenderer() {
             super("", "");
         }
 
@@ -157,7 +158,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     }
 
     private static class NonCloseablePrintStream extends PrintStream {
-        public NonCloseablePrintStream(OutputStream out) {
+        NonCloseablePrintStream(OutputStream out) {
             super(out);
         }
 

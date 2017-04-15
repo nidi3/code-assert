@@ -18,18 +18,25 @@ package guru.nidi.codeassert.checkstyle;
 import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
 import com.puppycrawl.tools.checkstyle.PropertiesExpander;
+import com.puppycrawl.tools.checkstyle.PropertyResolver;
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import com.puppycrawl.tools.checkstyle.api.AuditListener;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.UsageCounter;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
+    private final AnalyzerConfig config;
+    private final StyleChecks checks;
+    private final StyleEventCollector collector;
+
     private static final Comparator<AuditEvent> EVENT_SORTER = new Comparator<AuditEvent>() {
         @Override
         public int compare(AuditEvent b1, AuditEvent b2) {
@@ -42,7 +49,7 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
     };
 
     private static class LoggingAuditListener implements AuditListener {
-        final List<AuditEvent> events = new ArrayList<>();
+        private final List<AuditEvent> events = new ArrayList<>();
 
         @Override
         public void auditStarted(AuditEvent event) {
@@ -71,12 +78,9 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
         }
     }
 
-
-    private final AnalyzerConfig config;
-    private final StyleEventCollector collector;
-
-    public CheckstyleAnalyzer(AnalyzerConfig config, StyleEventCollector collector) {
+    public CheckstyleAnalyzer(AnalyzerConfig config, StyleChecks checks, StyleEventCollector collector) {
         this.config = config;
+        this.checks = checks;
         this.collector = collector;
     }
 
@@ -86,9 +90,7 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
             final LoggingAuditListener listener = new LoggingAuditListener();
             checker.addListener(listener);
             checker.setModuleClassLoader(CheckstyleAnalyzer.class.getClassLoader());
-            checker.configure(ConfigurationLoader.loadConfiguration(
-                    "/google_checks.xml", new PropertiesExpander(new Properties())));
-            checker.setFileExtensions(".java");
+            checker.configure(ConfigurationLoader.loadConfiguration(checks.location, createPropertyResolver()));
             checker.process(inputFiles());
             return createResult(listener.events);
         } catch (CheckstyleException e) {
@@ -96,6 +98,33 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
         } finally {
             checker.destroy();
         }
+    }
+
+    private PropertyResolver createPropertyResolver() {
+        final Properties p = new Properties();
+        for (final Map.Entry<String, Object> param : checks.params.entrySet()) {
+            p.setProperty(param.getKey(), propertyValue(param.getKey(), param.getValue()));
+        }
+        return new PropertiesExpander(p);
+    }
+
+    private String propertyValue(String name, Object value) {
+        if (name.endsWith("-tokens")) {
+            final StringBuilder tokens = new StringBuilder("");
+            for (final Integer val : (List<Integer>) value) {
+                for (final Field f : TokenTypes.class.getFields()) {
+                    try {
+                        if (val.equals(f.get(null))) {
+                            tokens.append(tokens.length() == 0 ? "" : ",").append(f.getName());
+                        }
+                    } catch (IllegalAccessException e) {
+                        //ignore
+                    }
+                }
+            }
+            return tokens.toString();
+        }
+        return value.toString();
     }
 
     private List<File> inputFiles() {
@@ -125,9 +154,9 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
         Collections.sort(sorted, EVENT_SORTER);
         final List<AuditEvent> filtered = new ArrayList<>();
         final UsageCounter counter = new UsageCounter();
-        for (final AuditEvent bug : sorted) {
-            if (counter.accept(collector.accept(bug))) {
-                filtered.add(bug);
+        for (final AuditEvent event : sorted) {
+            if (counter.accept(collector.accept(event))) {
+                filtered.add(event);
             }
         }
         collector.printUnusedWarning(counter);

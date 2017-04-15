@@ -23,7 +23,7 @@ import net.sourceforge.pmd.Rule;
 import java.lang.reflect.Field;
 
 public class Ruleset {
-    public final String name;
+    final String name;
 
     public Ruleset(String name) {
         this.name = name;
@@ -40,7 +40,8 @@ public class Ruleset {
                         setProperty(config, propertyField.rule(), propertyField.property(), value);
                     }
                 } catch (IllegalAccessException e) {
-                    throw new AnalyzerException("Could not read property " + descField.getName() + " from class " + getClass(), e);
+                    throw new AnalyzerException("Could not read property " + descField.getName()
+                            + " from class " + getClass(), e);
                 }
             }
         }

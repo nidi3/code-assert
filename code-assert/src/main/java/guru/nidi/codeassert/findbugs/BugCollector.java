@@ -69,8 +69,8 @@ public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollecto
 
     @Override
     public ActionResult accept(BugInstance issue) {
-        return new ActionResult((maxRank == null || issue.getBugRank() <= maxRank) &&
-                (minPriority == null || issue.getPriority() <= minPriority), null, 1
+        return new ActionResult((maxRank == null || issue.getBugRank() <= maxRank)
+                && (minPriority == null || issue.getPriority() <= minPriority), null, 1
         );
     }
 
@@ -89,8 +89,8 @@ public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollecto
 
     @Override
     public String toString() {
-        return (maxRank == null ? "" : ("Rank <= " + maxRank + " ")) +
-                (minPriority == null ? "" : ("Priority >= " + minPriority) + " ");
+        return (maxRank == null ? "" : ("Rank <= " + maxRank + " "))
+                + (minPriority == null ? "" : ("Priority >= " + minPriority) + " ");
     }
 
 }

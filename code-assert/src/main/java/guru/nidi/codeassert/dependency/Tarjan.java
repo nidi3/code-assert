@@ -21,7 +21,7 @@ import java.util.*;
 
 class Tarjan<T extends UsingElement<T>> {
     private int index;
-    private final Stack<T> s = new Stack<>();
+    private final Stack<T> stack = new Stack<>();
     private final Map<String, Node> nodes = new HashMap<>();
     private final CycleResult result = new CycleResult();
 
@@ -67,7 +67,7 @@ class Tarjan<T extends UsingElement<T>> {
         v.index = index;
         v.lowlink = index;
         index++;
-        s.push(elem);
+        stack.push(elem);
         v.onStack = true;
         return v;
     }
@@ -88,7 +88,7 @@ class Tarjan<T extends UsingElement<T>> {
         final Set<T> group = new HashSet<>();
         T w;
         do {
-            w = s.pop();
+            w = stack.pop();
             node(w).onStack = false;
             group.add(w);
         } while (!elem.equals(w));

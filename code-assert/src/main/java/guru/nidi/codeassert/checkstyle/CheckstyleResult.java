@@ -16,7 +16,6 @@
 package guru.nidi.codeassert.checkstyle;
 
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
-import edu.umd.cs.findbugs.BugInstance;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerResult;
 

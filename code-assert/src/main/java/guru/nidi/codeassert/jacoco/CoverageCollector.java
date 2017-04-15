@@ -32,7 +32,8 @@ public class CoverageCollector extends BaseCollector<ValuedLocation, Minima, Cov
         for (final CollectorConfig<Minima> config : configs) {
             for (final Minima minima : config.actions) {
                 if (minima.getValueCount() > types.length) {
-                    throw new IllegalArgumentException("Given " + minima.getValueCount() + " values, but expected only " + types.length);
+                    throw new IllegalArgumentException("Given " + minima.getValueCount()
+                            + " values, but expected only " + types.length);
                 }
             }
         }
