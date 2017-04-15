@@ -15,6 +15,10 @@
  */
 package guru.nidi.codeassert.snippets;
 
+import guru.nidi.codeassert.checkstyle.CheckstyleAnalyzer;
+import guru.nidi.codeassert.checkstyle.CheckstyleResult;
+import guru.nidi.codeassert.checkstyle.StyleChecks;
+import guru.nidi.codeassert.checkstyle.StyleEventCollector;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.DependencyRule;
@@ -69,6 +73,13 @@ public class CodeTest extends CodeAssertTest {
         final BugCollector bugCollector = new BugCollector().just(
                 In.loc("*Exception").ignore("SE_BAD_FIELD"));
         return new FindBugsAnalyzer(CONFIG, bugCollector).analyze();
+    }
+
+    @Override
+    protected CheckstyleResult analyzeCheckstyle() {
+        final StyleEventCollector bugCollector = new StyleEventCollector().just(
+                In.everywhere().ignore("javadoc.missing"));
+        return new CheckstyleAnalyzer(CONFIG, StyleChecks.google(), bugCollector).analyze();
     }
 
     @Override

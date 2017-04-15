@@ -92,6 +92,32 @@ public class FindBugsTest {
 ```
 [//]: # (end)
 
+## Checkstyle checks
+
+Runs [checkstyle](http://checkstyle.sourceforge.net/) on the code and finds questionable constructs.
+
+[//]: # (checkstyle)
+```java
+public class CheckstyleTest {
+    @Test
+    public void checkstyle() {
+        // Analyze all sources in src/main/java
+        AnalyzerConfig config = AnalyzerConfig.maven().main();
+
+        // Only treat issues with severity WARNING or higher
+        StyleEventCollector collector = new StyleEventCollector().severity(SeverityLevel.WARNING)
+                .just(In.everywhere().ignore("import.avoidStar", "javadoc.missing"))
+                .because("in tests, long lines are ok", In.loc("*Test").ignore("maxLineLen"));
+
+        //use google checks, but adjust max line length
+        final StyleChecks checks = StyleChecks.google().maxLineLen(120);
+
+        CheckstyleResult result = new CheckstyleAnalyzer(config, checks, collector).analyze();
+        assertThat(result, hasNoCheckstyleIssues());
+    }
+}
+```
+[//]: # (end)
 
 ## PMD checks
 
@@ -183,6 +209,8 @@ If it does so, these standard checks will be executed:
 * CPD - unused actions
 * FindBugs
 * FindBugs - unused actions
+* Checkstyle
+* Checkstyle - unused actions
 
 [//]: # (codeTest)
 ```java
@@ -215,6 +243,13 @@ public class CodeTest extends CodeAssertTest {
         final BugCollector bugCollector = new BugCollector().just(
                 In.loc("*Exception").ignore("SE_BAD_FIELD"));
         return new FindBugsAnalyzer(CONFIG, bugCollector).analyze();
+    }
+
+    @Override
+    protected CheckstyleResult analyzeCheckstyle() {
+        final StyleEventCollector bugCollector = new StyleEventCollector().just(
+                In.everywhere().ignore("javadoc.missing"));
+        return new CheckstyleAnalyzer(CONFIG, StyleChecks.google(), bugCollector).analyze();
     }
 
     @Override
