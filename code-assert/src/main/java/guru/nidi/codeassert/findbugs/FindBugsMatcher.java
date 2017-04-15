@@ -34,7 +34,8 @@ public class FindBugsMatcher extends ResultMatcher<FindBugsResult, BugInstance> 
     @Override
     protected void describeMismatchSafely(FindBugsResult item, Description description) {
         for (final BugInstance bug : item.findings()) {
-            description.appendText("\n").appendText(printBug(bug, ((FindBugsAnalyzer) item.analyzer()).config.getSources()));
+            description.appendText("\n")
+                    .appendText(printBug(bug, ((FindBugsAnalyzer) item.analyzer()).config.getSources()));
         }
     }
 
@@ -46,10 +47,10 @@ public class FindBugsMatcher extends ResultMatcher<FindBugsResult, BugInstance> 
         final int pos = msg.indexOf(':');
         final String message = msg.substring(pos + 2).replace('\n', ' ');
         return String.format("%-2d %-8s %-45s %s:%d    %s",
-                rank, priority(bug), bug.getType(), completeSourcePath(line.getSourcePath(), sources), startLine, message);
+                rank, priority(bug), bug.getType(), sourcePath(line.getSourcePath(), sources), startLine, message);
     }
 
-    private String completeSourcePath(String sourcePath, List<AnalyzerConfig.Path> sources) {
+    private String sourcePath(String sourcePath, List<AnalyzerConfig.Path> sources) {
         for (final AnalyzerConfig.Path source : sources) {
             final File file = new File(source.getBase(), sourcePath);
             if (file.exists()) {

@@ -48,7 +48,7 @@ public class LocationNameMatcher {
      * @param className       the class name to be matched
      * @param methodName      the method to be matched
      * @param strictNameMatch if the name must match exactly (as opposed to 'contains')
-     * @return If the given name and location (className and method) both match any of the predefined names and locations.
+     * @return If name and location (className and method) both match any of the predefined names and locations.
      */
     public boolean matches(String name, String className, String methodName, boolean strictNameMatch) {
         if (matchers.isEmpty()) {

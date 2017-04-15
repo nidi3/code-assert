@@ -89,9 +89,9 @@ public class Minima implements Action<ValuedLocation> {
         if (pattern.length() <= 1) {
             return false;
         }
-        final boolean startWildcard = pattern.startsWith("*") && value.endsWith(pattern.substring(1));
-        final boolean endWildcard = pattern.endsWith("*") && value.startsWith(pattern.substring(0, pattern.length() - 1));
-        return startWildcard || endWildcard;
+        final boolean startWild = pattern.startsWith("*") && value.endsWith(pattern.substring(1));
+        final boolean endWild = pattern.endsWith("*") && value.startsWith(pattern.substring(0, pattern.length() - 1));
+        return startWild || endWild;
     }
 
     @Override

@@ -16,37 +16,49 @@
 package guru.nidi.codeassert.checkstyle;
 
 import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
+import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.EatYourOwnDogfoodTest;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.BaseCollector;
-import guru.nidi.codeassert.config.CollectorConfig;
 import guru.nidi.codeassert.config.In;
-import guru.nidi.codeassert.dependency.DependencyMap;
 import guru.nidi.codeassert.dependency.DependencyRulesTest;
-import guru.nidi.codeassert.jacoco.Coverage;
-import guru.nidi.codeassert.junit.CodeAssertMatchers;
-import guru.nidi.codeassert.model.ExampleConcreteClass;
-import guru.nidi.codeassert.pmd.Rulesets;
 import guru.nidi.codeassert.snippets.DependencyTest;
+import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.File;
+import java.util.Locale;
+
+import static com.puppycrawl.tools.checkstyle.api.SeverityLevel.ERROR;
+import static com.puppycrawl.tools.checkstyle.api.SeverityLevel.WARNING;
 import static com.puppycrawl.tools.checkstyle.api.TokenTypes.*;
 import static guru.nidi.codeassert.config.CollectorConfig.just;
-import static org.junit.Assert.assertThat;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCheckstyleIssues;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class CheckstyleTest {
+    private static final String MAIN = "main";
+    private static final String TEST = "test";
+
     private final AnalyzerConfig config = AnalyzerConfig.maven().mainAndTest();
+
+    @BeforeClass
+    public static void init() {
+        Locale.setDefault(Locale.ENGLISH);
+    }
 
     @Test
     public void google() {
-        final CheckstyleAnalyzer analyzer = new CheckstyleAnalyzer(config, StyleChecks.GOOGLE
-                .maxLineLen(125).indentBasic(4).indentCase(4)
+        final CheckstyleAnalyzer analyzer = new CheckstyleAnalyzer(config, StyleChecks.google()
+                .maxLineLen(120).indentBasic(4).indentCase(4)
                 .paramName("^[a-z][a-zA-Z0-9]*$")
                 .catchParamName("^[a-z][a-zA-Z0-9]*$")
                 .localVarName("^[a-z][a-zA-Z0-9]*$")
                 .emptyLineSeparatorTokens(IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
                         STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF),
-                new StyleEventCollector().severity(SeverityLevel.WARNING).config(
+                new StyleEventCollector().severity(WARNING).config(
                         just(In.everywhere().ignore("import.avoidStar", "javadoc.missing",
                                 "multiple.variable.declarations.comma", "custom.import.order.nonGroup.expected")),
                         just(In.locs("Coverage", "Constant", "DependencyRulesTest", "DependencyTest", "EatYourOwnDogfoodTest")
@@ -54,31 +66,47 @@ public class CheckstyleTest {
                         just(In.loc("*Test").ignore("maxLineLen")),
                         just(In.locs("DependencyRulesTest", "ExampleAbstractClass", "ExampleConcreteClass",
                                 "ExampleInterface", "SignatureParser", "DependencyTest", "EatYourOwnDogfoodTest")
-                                .ignore("name.invalidPattern")),
-                        just(In.clazz(Rulesets.class).ignore("abbreviation.as.word")),
-                        just(In.clazz(ExampleConcreteClass.class).ignore("one.top.level.class")),
-                        just(In.clazz(BaseCollector.class).ignore("overload.methods.declaration")),
-                        just(In.clazz(DependencyMap.class).ignore("tag.continuation.indent"))
+                                .ignore("name.invalidPattern"))
                 ));
-        assertThat(analyzer.analyze(), CodeAssertMatchers.hasNoCheckstyleIssues());
+
+        assertMatcher(""
+                        + line(WARNING, "abbreviation.as.word", MAIN, "pmd/Rulesets", 165, "Abbreviation in name 'serialVersionUID' must contain no more than '1' capital letters.")
+                        + line(WARNING, "abbreviation.as.word", MAIN, "pmd/Rulesets", 210, "Abbreviation in name 'serialVersionUID' must contain no more than '1' capital letters.")
+                        + line(WARNING, "one.top.level.class", TEST, "model/ExampleConcreteClass", 79, "Top-level class ExamplePackageClass has to reside in its own source file.")
+                        + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 51, "Overload methods should not be split. Previous overloaded method located at line '45'.")
+                        + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 62, "Overload methods should not be split. Previous overloaded method located at line '49'.")
+                        + line(WARNING, "tag.continuation.indent", MAIN, "dependency/DependencyMap", 95, "Line continuation have incorrect indentation level, expected level should be 4."),
+                analyzer.analyze(), hasNoCheckstyleIssues());
     }
 
     @Test
     public void sun() {
-        final CheckstyleAnalyzer analyzer = new CheckstyleAnalyzer(config, StyleChecks.SUN
-                .maxLineLen(125).allowDefaultAccessMembers(true),
-                new StyleEventCollector().severity(SeverityLevel.WARNING).config(
+        final CheckstyleAnalyzer analyzer = new CheckstyleAnalyzer(config, StyleChecks.sun()
+                .maxLineLen(120).allowDefaultAccessMembers(true),
+                new StyleEventCollector().severity(WARNING).config(
                         just(In.everywhere().ignore("final.parameter", "javadoc.packageInfo", "javadoc.missing",
                                 "design.forExtension", "hidden.field", "import.avoidStar", "inline.conditional.avoid",
                                 "magic.number")),
                         just(In.loc("*Test").ignore("maxLineLen")),
                         just(In.loc("Bugs*").ignore("final.class")),
-                        just(In.loc("SignatureParser").ignore("assignment.inner.avoid")),
-                        just(In.clazz(Coverage.class).ignore("maxParam")),
-                        just(In.clazz(CollectorConfig.class).ignore("variable.notPrivate")),
                         just(In.classes(DependencyRulesTest.class, DependencyTest.class, EatYourOwnDogfoodTest.class).ignore("name.invalidPattern"))
                 ));
-        assertThat(analyzer.analyze(), CodeAssertMatchers.hasNoCheckstyleIssues());
+
+        assertMatcher(""
+                        + line(ERROR, "assignment.inner.avoid", MAIN, "model/SignatureParser", 256, "Inner assignments should be avoided.")
+                        + line(ERROR, "maxParam", MAIN, "jacoco/Coverage", 29, "More than 7 parameters (found 12).")
+                        + line(ERROR, "variable.notPrivate", MAIN, "config/CollectorConfig", 26, "Variable 'actions' must be private and have accessor methods."),
+                analyzer.analyze(), hasNoCheckstyleIssues());
     }
 
+    private <T extends AnalyzerResult<?>> void assertMatcher(String message, T result, Matcher<T> matcher) {
+        assertFalse(matcher.matches(result));
+        final StringDescription sd = new StringDescription();
+        matcher.describeMismatch(result, sd);
+        assertEquals(message, sd.toString());
+    }
+
+    private String line(SeverityLevel severity, String key, String scope, String file, int line, String msg) {
+        return String.format("%n%-8s %-40s %s:%d    %s", severity, key, new File("src/" + scope + "/java/guru/nidi/codeassert/" + file + ".java").getAbsolutePath(), line, msg);
+    }
 }

@@ -50,7 +50,8 @@ public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
 
     private Coverages readReport() {
         final Coverages coverages = new Coverages();
-        try (final BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(jacocoCsv), "utf-8"))) {
+        try (final BufferedReader in = new BufferedReader(new InputStreamReader(
+                new FileInputStream(jacocoCsv), "utf-8"))) {
             String line;
             in.readLine();
             while ((line = in.readLine()) != null) {

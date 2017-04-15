@@ -56,7 +56,7 @@ public class FindBugsTest {
     public void simple() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
-        assertThat(analyzer.analyze().findings().size(), either(equalTo(39)).or(equalTo(40)));
+        assertThat(analyzer.analyze().findings().size(), either(equalTo(40)).or(equalTo(41)));
     }
 
     @Test

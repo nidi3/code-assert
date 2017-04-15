@@ -17,6 +17,7 @@ package guru.nidi.codeassert.pmd;
 
 import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
+import guru.nidi.codeassert.checkstyle.CheckstyleTest;
 import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.dependency.DependencyRules;
 import guru.nidi.codeassert.dependency.DependencyRulesTest;
@@ -127,7 +128,7 @@ public class PmdTest {
                                 In.classes(ClassFileParserTest.class, FileManagerTest.class, JarFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert"),
                                 In.classes(DependencyRulesTest.class, LocationMatcherTest.class, LocationNameMatcherTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.clazz(DependencyRulesTest.class).ignore("VariableNamingConventions"),
-                                In.classes(PmdTest.class, FindBugsTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
+                                In.classes(PmdTest.class, FindBugsTest.class, CheckstyleTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
                                 In.classes(AnalyzerConfigTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.everywhere().ignore("UseConcurrentHashMap", "ArrayIsStoredDirectly", "MethodReturnsInternalArray", "AvoidLiteralsInIfCondition"),
                                 In.locs("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))

@@ -15,6 +15,7 @@
  */
 package guru.nidi.codeassert.junit;
 
+import guru.nidi.codeassert.checkstyle.StyleChecks;
 import guru.nidi.codeassert.config.CollectorTemplate;
 import guru.nidi.codeassert.config.Ignore;
 import guru.nidi.codeassert.config.In;
@@ -24,6 +25,7 @@ import guru.nidi.codeassert.pmd.PmdViolationCollector;
 import guru.nidi.codeassert.pmd.Ruleset;
 import guru.nidi.codeassert.pmd.Rulesets;
 
+import static com.puppycrawl.tools.checkstyle.api.TokenTypes.*;
 import static guru.nidi.codeassert.pmd.Rulesets.*;
 
 public final class PredefConfig {
@@ -40,10 +42,10 @@ public final class PredefConfig {
                                 "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName",
                                 "UncommentedEmptyConstructor", "UseStringBufferForStringAppends",
                                 "UncommentedEmptyMethodBody", "EmptyMethodInAbstractClassShouldBeAbstract"))
-                .because("It's equals", In.loc("#equals")
+                .because("it's equals", In.loc("#equals")
                         .ignore("NPathComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity",
                                 "CyclomaticComplexity", "ConfusingTernary"))
-                .because("It's hashCode", In.loc("#hashCode")
+                .because("it's hashCode", In.loc("#hashCode")
                         .ignore("ConfusingTernary"));
     }
 
@@ -78,4 +80,26 @@ public final class PredefConfig {
                 sunSecure(), typeResolution(), unnecessary(), unused()};
     }
 
+    public static CollectorTemplate<Ignore> minimalCheckstyleIgnore() {
+        return CollectorTemplate.of(Ignore.class)
+                .because("I don't agree", In.everywhere()
+                        .ignore("import.avoidStar", "custom.import.order.nonGroup.expected",
+                                "javadoc.packageInfo", "javadoc.missing",
+                                "multiple.variable.declarations.comma", "final.parameter",
+                                "design.forExtension", "hidden.field", "inline.conditional.avoid", "magic.number"));
+    }
+
+    public static StyleChecks adjustedGoogleStyleChecks() {
+        return StyleChecks.google()
+                .maxLineLen(120).indentBasic(4).indentCase(4)
+                .paramName("^[a-z][a-zA-Z0-9]*$")
+                .catchParamName("^[a-z][a-zA-Z0-9]*$")
+                .localVarName("^[a-z][a-zA-Z0-9]*$")
+                .emptyLineSeparatorTokens(IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
+                        STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF);
+    }
+
+    public static StyleChecks adjustedSunStyleChecks() {
+        return StyleChecks.sun().maxLineLen(120).allowDefaultAccessMembers(true);
+    }
 }

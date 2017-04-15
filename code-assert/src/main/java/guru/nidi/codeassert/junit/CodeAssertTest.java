@@ -15,6 +15,7 @@
  */
 package guru.nidi.codeassert.junit;
 
+import guru.nidi.codeassert.checkstyle.CheckstyleResult;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
 import guru.nidi.codeassert.model.ModelResult;
 import guru.nidi.codeassert.pmd.CpdResult;
@@ -36,13 +37,15 @@ public class CodeAssertTest {
         CIRCULAR_DEPENDENCIES,
         FIND_BUGS, FIND_BUGS_UNUSED_ACTIONS,
         PMD, PMD_UNUSED_ACTIONS,
-        CPD, CPD_UNUSED_ACTIONS
+        CPD, CPD_UNUSED_ACTIONS,
+        CHECKSTYLE, CHECKSTYLE_UNUSED_ACTIONS
     }
 
     private static ModelResult modelResult;
     private static FindBugsResult findBugsResult;
     private static PmdResult pmdResult;
     private static CpdResult cpdResult;
+    private static CheckstyleResult checkstyleResult;
 
     protected EnumSet<Type> defaultTests() {
         return EnumSet.allOf(Type.class);
@@ -61,6 +64,10 @@ public class CodeAssertTest {
     }
 
     protected CpdResult analyzeCpd() {
+        return null;
+    }
+
+    protected CheckstyleResult analyzeCheckstyle() {
         return null;
     }
 
@@ -90,6 +97,13 @@ public class CodeAssertTest {
             cpdResult = analyzeCpd();
         }
         return cpdResult;
+    }
+
+    protected synchronized CheckstyleResult checkstyleResult() {
+        if (checkstyleResult == null) {
+            checkstyleResult = analyzeCheckstyle();
+        }
+        return checkstyleResult;
     }
 
     @Test
@@ -139,6 +153,20 @@ public class CodeAssertTest {
         assumeFalse("analyzeCpd() not implemented.", cpdResult() == null);
         assumeTrue("CPD - unused actions test excluded.", defaultTests().contains(CPD_UNUSED_ACTIONS));
         assertThat(cpdResult(), hasNoUnusedActions());
+    }
+
+    @Test
+    public void checkstyle() {
+        assumeFalse("analyzeCheckstyle() not implemented.", checkstyleResult() == null);
+        assumeTrue("Checkstyle test excluded.", defaultTests().contains(CHECKSTYLE));
+        assertThat(checkstyleResult(), hasNoCheckstyleIssues());
+    }
+
+    @Test
+    public void checkstyleUnusedActions() {
+        assumeFalse("analyzeCheckstyle() not implemented.", checkstyleResult() == null);
+        assumeTrue("Checkstyle - unused actions test excluded.", defaultTests().contains(CHECKSTYLE_UNUSED_ACTIONS));
+        assertThat(checkstyleResult(), hasNoUnusedActions());
     }
 
 }

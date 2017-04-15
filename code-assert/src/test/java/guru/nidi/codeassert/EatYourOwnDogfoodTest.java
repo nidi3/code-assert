@@ -15,8 +15,13 @@
  */
 package guru.nidi.codeassert;
 
+import guru.nidi.codeassert.checkstyle.CheckstyleAnalyzer;
+import guru.nidi.codeassert.checkstyle.CheckstyleResult;
+import guru.nidi.codeassert.checkstyle.StyleEventCollector;
 import guru.nidi.codeassert.config.AnalyzerConfig;
+import guru.nidi.codeassert.config.BaseCollector;
 import guru.nidi.codeassert.config.In;
+import guru.nidi.codeassert.dependency.DependencyMap;
 import guru.nidi.codeassert.dependency.DependencyRule;
 import guru.nidi.codeassert.dependency.DependencyRuler;
 import guru.nidi.codeassert.dependency.DependencyRules;
@@ -58,7 +63,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
         }
 
         final DependencyRules rules = denyAll()
-                .withExternals("edu*", "java*", "net*", "org*","com*")
+                .withExternals("edu*", "java*", "net*", "org*", "com*")
                 .withRelativeRules(new GuruNidiCodeassert());
         assertThat(modelResult(), packagesMatchExactly(rules));
     }
@@ -112,5 +117,19 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                 .just(In.clazz(PmdAnalyzer.class).ignore("Map<String, Ruleset> newRuleset"));
 
         return new CpdAnalyzer(AnalyzerConfig.maven().main(), 27, collector).analyze();
+    }
+
+    @Override
+    protected CheckstyleResult analyzeCheckstyle() {
+        System.gc();
+        final StyleEventCollector collector = new StyleEventCollector()
+                .apply(PredefConfig.minimalCheckstyleIgnore())
+                .just(In.locs("Coverage", "Constant").ignore("empty.line.separator"))
+                .just(In.clazz(BaseCollector.class).ignore("overload.methods.declaration"))
+                .just(In.clazz(Rulesets.class).ignore("abbreviation.as.word"))
+                .just(In.loc("SignatureParser").ignore("name.invalidPattern"))
+                .just(In.clazz(DependencyMap.class).ignore("tag.continuation.indent"));
+
+        return new CheckstyleAnalyzer(AnalyzerConfig.maven().main(), PredefConfig.adjustedGoogleStyleChecks(), collector).analyze();
     }
 }

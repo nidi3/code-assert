@@ -22,7 +22,8 @@ import guru.nidi.codeassert.AnalyzerResult;
 import java.util.List;
 
 public class CheckstyleResult extends AnalyzerResult<List<AuditEvent>> {
-    public CheckstyleResult(Analyzer<List<AuditEvent>> analyzer, List<AuditEvent> findings, List<String> unusedActions) {
+    public CheckstyleResult(Analyzer<List<AuditEvent>> analyzer,
+                            List<AuditEvent> findings, List<String> unusedActions) {
         super(analyzer, findings, unusedActions);
     }
 }

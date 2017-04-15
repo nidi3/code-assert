@@ -188,7 +188,7 @@ If it does so, these standard checks will be executed:
 ```java
 public class CodeTest extends CodeAssertTest {
 
-    private static final AnalyzerConfig config = AnalyzerConfig.maven().main();
+    private static final AnalyzerConfig CONFIG = AnalyzerConfig.maven().main();
 
     @Test
     public void dependency() {
@@ -200,27 +200,28 @@ public class CodeTest extends CodeAssertTest {
                 //TODO
             }
         }
+
         final DependencyRules rules = denyAll().withExternals("java*").withRelativeRules(new MyProject());
         assertThat(modelResult(), packagesMatchExactly(rules));
     }
 
     @Override
     protected ModelResult analyzeModel() {
-        return new ModelAnalyzer(config).analyze();
+        return new ModelAnalyzer(CONFIG).analyze();
     }
 
     @Override
     protected FindBugsResult analyzeFindBugs() {
         final BugCollector bugCollector = new BugCollector().just(
                 In.loc("*Exception").ignore("SE_BAD_FIELD"));
-        return new FindBugsAnalyzer(config, bugCollector).analyze();
+        return new FindBugsAnalyzer(CONFIG, bugCollector).analyze();
     }
 
     @Override
     protected PmdResult analyzePmd() {
         final PmdViolationCollector collector = new PmdViolationCollector().just(
                 In.everywhere().ignore("MethodArgumentCouldBeFinal"));
-        return new PmdAnalyzer(config, collector).withRulesets(basic(), braces()).analyze();
+        return new PmdAnalyzer(CONFIG, collector).withRulesets(basic(), braces()).analyze();
     }
 }
 ```
