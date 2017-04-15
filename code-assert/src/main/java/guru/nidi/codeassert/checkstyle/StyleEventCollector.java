@@ -68,10 +68,10 @@ public class StyleEventCollector extends BaseCollector<AuditEvent, Ignore, Style
         //TODO can this heuristic be improved?
         final int slash = file.lastIndexOf('/');
         final int dot = file.lastIndexOf('.');
-        final int src = file.indexOf("src/") + 3;
-        final int java = file.indexOf("java/") + 4;
+        final int src = file.indexOf("/src/") + 4;
+        final int java = file.indexOf("/java/") + 5;
         final int later = Math.max(src, java);
-        final int start = later >= 4 ? later + 1 : slash + 1;
+        final int start = later >= 5 ? later + 1 : slash + 1;
         final String className = file.substring(start, dot).replace('/', '.');
         final String name = issue.getLocalizedMessage().getKey();
         return action.accept(new NamedLocation(name, className, "", false));

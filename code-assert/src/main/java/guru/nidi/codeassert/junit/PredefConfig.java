@@ -83,7 +83,7 @@ public final class PredefConfig {
     public static CollectorTemplate<Ignore> minimalCheckstyleIgnore() {
         return CollectorTemplate.of(Ignore.class)
                 .because("I don't agree", In.everywhere()
-                        .ignore("import.avoidStar", "custom.import.order.nonGroup.expected",
+                        .ignore("import.avoidStar", "custom.import.order.nonGroup.expected", "custom.import.order.lex",
                                 "javadoc.packageInfo", "javadoc.missing",
                                 "multiple.variable.declarations.comma", "final.parameter",
                                 "design.forExtension", "hidden.field", "inline.conditional.avoid", "magic.number"));
