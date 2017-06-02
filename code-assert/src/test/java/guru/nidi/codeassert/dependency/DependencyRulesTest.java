@@ -24,7 +24,6 @@ import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
@@ -135,7 +134,6 @@ public class DependencyRulesTest {
     @Test
     public void allow() {
         final DependencyRules rules = DependencyRules.allowAll();
-        rules.addRule(ca("dependency"));
         final DependencyRule a = rules.addRule(dep("a"));
         final DependencyRule b = rules.addRule(dep("b"));
         final DependencyRule c = rules.addRule(dep("c"));
@@ -166,7 +164,7 @@ public class DependencyRulesTest {
                         new DependencyMap().with(0, dep("a"), set(), dep("b")),
                         new DependencyMap().with(0, dep("b"), set(dep("b.B1")), dep("c")),
                         patterns(),
-                        without(UNDEFINED, ca("dependency"))),
+                        UNDEFINED),
                 result);
         assertMatcher("\n"
                         + "Found missing dependencies:\n"
@@ -221,7 +219,6 @@ public class DependencyRulesTest {
     @Test
     public void allowWithWildcard() {
         final DependencyRules rules = DependencyRules.allowAll();
-        rules.addRule(ca("dependency"));
         final DependencyRule a1 = rules.addRule(dep("a.a"));
         final DependencyRule a = rules.addRule(dep("a.*"));
         final DependencyRule b = rules.addRule(dep("b.*"));
@@ -260,7 +257,7 @@ public class DependencyRulesTest {
                                 .with(0, dep("b.b"), set(dep("b.b.Bb1")), dep("c.a"))
                                 .with(0, dep("b.b"), set(dep("b.b.Bb1")), dep("c.b")),
                         patterns(),
-                        without(WILDCARD_UNDEFINED, ca("dependency"))),
+                        WILDCARD_UNDEFINED),
                 result);
         assertMatcher("\n"
                         + "Found missing dependencies:\n"
@@ -337,13 +334,6 @@ public class DependencyRulesTest {
         Collections.addAll(res, ss);
         return res;
     }
-
-    private static Set<String> without(Set<String> set, String... ss) {
-        final Set<String> res = new TreeSet<>(set);
-        res.removeAll(Arrays.asList(ss));
-        return res;
-    }
-
 
     private static Set<LocationMatcher> patterns(String... ss) {
         final Set<LocationMatcher> res = new TreeSet<>();

@@ -131,7 +131,7 @@ public final class DependencyRules {
         try {
             final List<DependencyRule> ruleFields = initFields(basePackage, ruler);
             if (basePackage.length() > 0) {
-                ruler.base = addRule(addPackages(basePackage, ""));
+                ruler.base = rule(addPackages(basePackage, ""));
             }
             ruler.all = rule(addPackages(basePackage, "*"));
             ruler.defineRules();
