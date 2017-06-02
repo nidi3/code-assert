@@ -20,11 +20,11 @@ package guru.nidi.codeassert.dependency;
  * A typical example looks as follows:
  * <pre>
  *     class OrgMyProject implements DependencyRuler {
- *         DependencyRule $self, util, core_
+ *         DependencyRule util, core_
  *
  *         public void defineRules() {
- *             $self.mayUse(util, core_);
- *             util.mustNotUse($self, core_);
+ *             base().mayUse(util, core_);
+ *             util.mustNotUse(base(), core_);
  *         }
  *     }
  * </pre>
@@ -36,7 +36,7 @@ package guru.nidi.codeassert.dependency;
  * <th>Package</th>
  * </tr>
  * <tr>
- * <td>$self</td>
+ * <td>base()</td>
  * <td>org.my.project</td>
  * </tr>
  * <tr>
@@ -55,14 +55,23 @@ public class DependencyRuler {
     DependencyRule base;
     DependencyRule all;
 
+    /**
+     * @return the unnamed package (no package statement is used).
+     */
     public DependencyRule unnamed() {
         return DependencyRules.addRuleToCurrent(unnamed);
     }
 
+    /**
+     * @return the package this DependencyRuler is defined for.
+     */
     public DependencyRule base() {
         return DependencyRules.addRuleToCurrent(base);
     }
 
+    /**
+     * @return all packages inside this DependencyRuler.
+     */
     public DependencyRule all() {
         return DependencyRules.addRuleToCurrent(all);
     }

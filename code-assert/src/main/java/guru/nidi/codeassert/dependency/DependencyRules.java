@@ -158,14 +158,24 @@ public final class DependencyRules {
         for (final Field f : ruler.getClass().getDeclaredFields()) {
             f.setAccessible(true);
             if (f.getType() == DependencyRule.class) {
-                final String pack = addPackages(basePackage,
-                        f.getName().equals("$self") ? "" : camelCaseToDotCase(f.getName()));
+                final String name = f.getName();
+                deprecationWarnings(name);
+                final String pack = addPackages(basePackage, "$self".equals(name) ? "" : camelCaseToDotCase(name));
                 final DependencyRule rule = addRule(pack);
                 ruleFields.add(rule);
                 f.set(ruler, rule);
             }
         }
         return ruleFields;
+    }
+
+    private void deprecationWarnings(String name) {
+        if ("$self".equals(name)) {
+            System.out.println("***** WARN 'DependencyRule $self': $self is deprecated. Use base() instead.");
+        }
+        if ("_".equals(name)) {
+            System.out.println("***** WARN 'DependencyRule _': _ is deprecated. Use all() instead.");
+        }
     }
 
     private void postProcessFields(List<DependencyRule> ruleFields, boolean external) {
