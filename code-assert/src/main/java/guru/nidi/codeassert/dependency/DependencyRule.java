@@ -39,6 +39,10 @@ public class DependencyRule implements UsingElementMatcher {
         this.allowAll = allowAll;
     }
 
+    public static DependencyRule rule() {
+        return new DependencyRule("*", true);
+    }
+
     public static DependencyRule allowAll(String name) {
         return new DependencyRule(name, true);
     }
@@ -75,6 +79,12 @@ public class DependencyRule implements UsingElementMatcher {
     public DependencyRule mustNotBeUsedBy(DependencyRule... rules) {
         usedBy.mustNot(rules);
         return this;
+    }
+
+    public DependencyRule sub() {
+        final String newPattern = pattern.toString() + (pattern.toString().endsWith(".") ? "*" : ".*");
+        final DependencyRule rule = new DependencyRule(newPattern, allowAll);
+        return DependencyRules.addRuleToCurrent(rule);
     }
 
     public boolean matches(UsingElement<?> elem) {

@@ -26,6 +26,7 @@ import java.util.List;
 public final class DependencyRules {
     private final List<DependencyRule> rules = new ArrayList<>();
     private final boolean allowAll;
+    private static final ThreadLocal<DependencyRules> CURRENT = new ThreadLocal<>();
 
     private DependencyRules(boolean allowAll) {
         this.allowAll = allowAll;
@@ -40,7 +41,7 @@ public final class DependencyRules {
     }
 
     public DependencyRule addRule(String pack) {
-        return addRule(new DependencyRule(pack, allowAll));
+        return addRule(rule(pack));
     }
 
     public DependencyRule addRule(DependencyRule pack) {
@@ -55,8 +56,8 @@ public final class DependencyRules {
      * @return A DependencyRule with the given name.
      */
     public DependencyRule addExternal(String pack) {
-        final DependencyRule rule = new DependencyRule(pack, allowAll);
-        rule.mayBeUsedBy(new DependencyRule("*", allowAll));
+        final DependencyRule rule = rule(pack);
+        rule.mayBeUsedBy(rule("*"));
         return addRule(rule);
     }
 
@@ -126,14 +127,29 @@ public final class DependencyRules {
     }
 
     private DependencyRules doWithRules(String basePackage, boolean external, DependencyRuler ruler) {
+        CURRENT.set(this);
         try {
             final List<DependencyRule> ruleFields = initFields(basePackage, ruler);
+            if (basePackage.length() > 0) {
+                ruler.base = addRule(addPackages(basePackage, ""));
+            }
+            ruler.all = rule(addPackages(basePackage, "*"));
             ruler.defineRules();
             postProcessFields(ruleFields, external);
             return this;
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException("Could not access field", e);
+        } finally {
+            CURRENT.remove();
         }
+    }
+
+    static DependencyRule addRuleToCurrent(DependencyRule rule) {
+        final DependencyRules rules = DependencyRules.CURRENT.get();
+        if (rules != null) {
+            rules.addRule(rule);
+        }
+        return rule;
     }
 
     private List<DependencyRule> initFields(String basePackage, DependencyRuler ruler) throws IllegalAccessException {
@@ -155,7 +171,7 @@ public final class DependencyRules {
         if (external) {
             for (final DependencyRule rule : ruleFields) {
                 if (rule.isEmpty()) {
-                    rule.mayBeUsedBy(new DependencyRule("*", allowAll));
+                    rule.mayBeUsedBy(rule("*"));
                 }
             }
         }
@@ -164,7 +180,7 @@ public final class DependencyRules {
     private String addPackages(String base, Class<?> clazz) {
         final String name = clazz == null || clazz.isAnonymousClass()
                 ? ""
-                : camelCaseToDotCase(clazz.getSimpleName());
+                : camelCaseToDotCase(reallySimpleName(clazz));
         return addPackages(base, name);
     }
 
@@ -172,6 +188,12 @@ public final class DependencyRules {
         return p1.length() > 0 && !p1.endsWith(".") && p2.length() > 0
                 ? p1 + "." + p2
                 : p1 + p2;
+    }
+
+    private String reallySimpleName(Class<?> clazz) {
+        final String simple = clazz.getSimpleName();
+        final String prefix = clazz.getEnclosingMethod() == null ? "" : clazz.getEnclosingMethod().getName() + "$";
+        return simple.startsWith(prefix) ? simple.substring(prefix.length()) : simple;
     }
 
     private static String camelCaseToDotCase(String s) {
@@ -186,6 +208,10 @@ public final class DependencyRules {
             }
         }
         return res.toString();
+    }
+
+    private DependencyRule rule(String pattern) {
+        return new DependencyRule(pattern, allowAll);
     }
 
     private static String processChar(boolean dollarMode, boolean firstChar, char c) {

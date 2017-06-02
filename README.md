@@ -40,20 +40,20 @@ public class DependencyTest {
 
     @Test
     public void dependency() {
-        // Defines the dependency rules for package org.project
+        // Defines the dependency rules for package org.proj
         class OrgProj extends DependencyRuler {
-            // Rules for org.proj, org.proj.dependency (with sub packages), org.proj.model, org.proj.util
-            DependencyRule $self, dependency_, model, util;
+            // Rules for org.proj.dep, org.proj.model, org.proj.util
+            DependencyRule dep, model, util;
 
             @Override
             public void defineRules() {
-                $self.mayUse(util, dependency_);
-                dependency_.mustUse(model);
-                model.mayUse(util).mustNotUse($self);
+                base().mayUse(util, dep.sub()); //org.proj may use org.proj.util and all subpackages of org.proj.dep
+                dep.sub().mustUse(model); //all subpackages of org.proj.dep must use org.proj.model
+                model.mayUse(util).mustNotUse(base()); //org.proj.model may use org.proj.util but not org.proj
             }
         }
 
-        // All dependencies are forbidden, except the ones defined in OrgProject
+        // All dependencies are forbidden, except the ones defined in OrgProj
         // java, org, net packages are ignored
         DependencyRules rules = DependencyRules.denyAll()
                 .withRelativeRules(new OrgProj())

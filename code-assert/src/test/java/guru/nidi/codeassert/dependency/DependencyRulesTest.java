@@ -24,6 +24,7 @@ import org.hamcrest.StringDescription;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
@@ -34,7 +35,7 @@ import static org.junit.Assert.*;
 public class DependencyRulesTest {
     private static final String CODE_ASSERT = "guru.nidi.codeassert.";
     private static final String DEP = CODE_ASSERT + "dependency.";
-    private static final Set<String> WILDCARD_UNDEFINED = set("guru.nidi.codeassert", ca("config"), ca("model"), ca("dependency"), ca("junit"), dep("a"), dep("b"), dep("c"));
+    private static final Set<String> WILDCARD_UNDEFINED = set("guru.nidi.codeassert", ca("config"), ca("dependency"), ca("model"), ca("junit"), dep("a"), dep("b"), dep("c"));
     private static final Set<String> UNDEFINED = set("guru.nidi.codeassert", ca("config"), ca("dependency"), ca("junit"), ca("model"), dep("a.a"), dep("a.b"), dep("b.a"), dep("b.b"), dep("c.a"), dep("c.b"));
 
     private ModelResult model;
@@ -134,6 +135,7 @@ public class DependencyRulesTest {
     @Test
     public void allow() {
         final DependencyRules rules = DependencyRules.allowAll();
+        final DependencyRule base = rules.addRule(ca("dependency"));
         final DependencyRule a = rules.addRule(dep("a"));
         final DependencyRule b = rules.addRule(dep("b"));
         final DependencyRule c = rules.addRule(dep("c"));
@@ -164,7 +166,7 @@ public class DependencyRulesTest {
                         new DependencyMap().with(0, dep("a"), set(), dep("b")),
                         new DependencyMap().with(0, dep("b"), set(dep("b.B1")), dep("c")),
                         patterns(),
-                        UNDEFINED),
+                        without(UNDEFINED, ca("dependency"))),
                 result);
         assertMatcher("\n"
                         + "Found missing dependencies:\n"
@@ -219,6 +221,7 @@ public class DependencyRulesTest {
     @Test
     public void allowWithWildcard() {
         final DependencyRules rules = DependencyRules.allowAll();
+        final DependencyRule base = rules.addRule(ca("dependency"));
         final DependencyRule a1 = rules.addRule(dep("a.a"));
         final DependencyRule a = rules.addRule(dep("a.*"));
         final DependencyRule b = rules.addRule(dep("b.*"));
@@ -257,7 +260,7 @@ public class DependencyRulesTest {
                                 .with(0, dep("b.b"), set(dep("b.b.Bb1")), dep("c.a"))
                                 .with(0, dep("b.b"), set(dep("b.b.Bb1")), dep("c.b")),
                         patterns(),
-                        WILDCARD_UNDEFINED),
+                        without(WILDCARD_UNDEFINED, ca("dependency"))),
                 result);
         assertMatcher("\n"
                         + "Found missing dependencies:\n"
@@ -334,6 +337,13 @@ public class DependencyRulesTest {
         Collections.addAll(res, ss);
         return res;
     }
+
+    private static Set<String> without(Set<String> set, String... ss) {
+        final Set<String> res = new TreeSet<>(set);
+        res.removeAll(Arrays.asList(ss));
+        return res;
+    }
+
 
     private static Set<LocationMatcher> patterns(String... ss) {
         final Set<LocationMatcher> res = new TreeSet<>();
