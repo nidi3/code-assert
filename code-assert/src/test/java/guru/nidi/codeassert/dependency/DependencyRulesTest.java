@@ -135,7 +135,7 @@ public class DependencyRulesTest {
     @Test
     public void allow() {
         final DependencyRules rules = DependencyRules.allowAll();
-        final DependencyRule base = rules.addRule(ca("dependency"));
+        rules.addRule(ca("dependency"));
         final DependencyRule a = rules.addRule(dep("a"));
         final DependencyRule b = rules.addRule(dep("b"));
         final DependencyRule c = rules.addRule(dep("c"));
@@ -221,7 +221,7 @@ public class DependencyRulesTest {
     @Test
     public void allowWithWildcard() {
         final DependencyRules rules = DependencyRules.allowAll();
-        final DependencyRule base = rules.addRule(ca("dependency"));
+        rules.addRule(ca("dependency"));
         final DependencyRule a1 = rules.addRule(dep("a.a"));
         final DependencyRule a = rules.addRule(dep("a.*"));
         final DependencyRule b = rules.addRule(dep("b.*"));
