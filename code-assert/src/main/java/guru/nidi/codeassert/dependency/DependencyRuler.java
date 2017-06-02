@@ -56,21 +56,27 @@ public class DependencyRuler {
     DependencyRule all;
 
     /**
-     * @return the unnamed package (no package statement is used).
+     * The unnamed package (when no package statement is used).
+     *
+     * @return the unnamed package.
      */
     public DependencyRule unnamed() {
         return DependencyRules.addRuleToCurrent(unnamed);
     }
 
     /**
-     * @return the package this DependencyRuler is defined for.
+     * The package this DependencyRuler is defined for.
+     *
+     * @return the DependencyRuler's package.
      */
     public DependencyRule base() {
         return DependencyRules.addRuleToCurrent(base);
     }
 
     /**
-     * @return all packages inside this DependencyRuler.
+     * All packages inside this DependencyRuler.
+     *
+     * @return all DependencyRuler's subpackages.
      */
     public DependencyRule all() {
         return DependencyRules.addRuleToCurrent(all);
