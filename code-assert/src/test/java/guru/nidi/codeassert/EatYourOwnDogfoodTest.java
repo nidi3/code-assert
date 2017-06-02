@@ -46,19 +46,19 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
     public void dependency() {
         System.gc();
         class GuruNidiCodeassert extends DependencyRuler {
-            DependencyRule $self, config, dependency, findbugs, checkstyle, model, pmd, util, junit, jacoco;
+            DependencyRule config, dependency, findbugs, checkstyle, model, pmd, util, junit, jacoco;
 
             @Override
             public void defineRules() {
                 config.mayUse(util);
-                dependency.mayUse($self, util, config, model);
-                findbugs.mayUse($self, util, config);
-                checkstyle.mayUse($self, util, config);
-                model.mayUse($self, util, config);
-                pmd.mayUse($self, util, config);
-                jacoco.mayUse($self, util, config);
-                util.mayUse($self);
-                junit.mayUse($self, config, model, dependency, findbugs, checkstyle, pmd, jacoco);
+                dependency.mayUse(base(), util, config, model);
+                findbugs.mayUse(base(), util, config);
+                checkstyle.mayUse(base(), util, config);
+                model.mayUse(base(), util, config);
+                pmd.mayUse(base(), util, config);
+                jacoco.mayUse(base(), util, config);
+                util.mayUse(base());
+                junit.mayUse(base(), config, model, dependency, findbugs, checkstyle, pmd, jacoco);
             }
         }
 

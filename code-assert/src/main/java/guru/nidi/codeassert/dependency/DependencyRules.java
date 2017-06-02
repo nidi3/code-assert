@@ -133,6 +133,7 @@ public final class DependencyRules {
             if (basePackage.length() > 0) {
                 ruler.base = rule(addPackages(basePackage, ""));
             }
+            ruler.unnamed = rule(Model.UNNAMED_PACKAGE);
             ruler.all = rule(addPackages(basePackage, "*"));
             ruler.defineRules();
             postProcessFields(ruleFields, external);

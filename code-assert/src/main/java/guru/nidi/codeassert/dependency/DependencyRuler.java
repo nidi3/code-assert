@@ -51,8 +51,13 @@ package guru.nidi.codeassert.dependency;
  * The method #defineRules defines upon which packages a package may, must or must not depend.
  */
 public class DependencyRuler {
+    DependencyRule unnamed;
     DependencyRule base;
     DependencyRule all;
+
+    public DependencyRule unnamed() {
+        return DependencyRules.addRuleToCurrent(unnamed);
+    }
 
     public DependencyRule base() {
         return DependencyRules.addRuleToCurrent(base);

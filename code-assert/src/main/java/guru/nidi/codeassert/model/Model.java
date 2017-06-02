@@ -20,6 +20,8 @@ import guru.nidi.codeassert.config.LocationMatcher;
 import java.util.*;
 
 public class Model {
+    public static final String UNNAMED_PACKAGE = "<Unnamed Package>";
+
     final Map<String, JavaPackage> packages = new HashMap<>();
     final Map<String, JavaClass> classes = new HashMap<>();
 
@@ -45,7 +47,7 @@ public class Model {
 
     static String packageOf(String type) {
         final int pos = type.lastIndexOf('.');
-        return pos < 0 ? "<No Package>" : type.substring(0, pos);
+        return pos < 0 ? UNNAMED_PACKAGE : type.substring(0, pos);
     }
 
     @SuppressWarnings("unchecked")
