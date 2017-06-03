@@ -16,12 +16,16 @@
 package guru.nidi.codeassert.config;
 
 import guru.nidi.codeassert.util.ListUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class BaseCollector<S, A extends Action, T extends BaseCollector<S, A, T>> {
+    private static final Logger LOG = LoggerFactory.getLogger(BaseCollector.class);
+
     @SafeVarargs
     public final T because(String reason, A... actions) {
         return config(CollectorConfig.because(reason, actions));
@@ -100,8 +104,7 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
             }
             final String location = i == trace.length ? ""
                     : ("In " + trace[i].getClassName() + "#" + trace[i].getMethodName() + ": ");
-            System.out.println("WARN: " + location + "These collector actions have not been used:");
-            System.out.println(s);
+            LOG.warn(location + "These collector actions have not been used:\n" + s);
         }
     }
 

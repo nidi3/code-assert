@@ -27,12 +27,16 @@ import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.UsageCounter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.*;
 
 public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
+    private static final Logger LOG = LoggerFactory.getLogger(CheckstyleAnalyzer.class);
+
     private final AnalyzerConfig config;
     private final StyleChecks checks;
     private final StyleEventCollector collector;
@@ -74,7 +78,7 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
 
         @Override
         public void addException(AuditEvent event, Throwable throwable) {
-            System.out.println(event);
+            LOG.warn(event.getFileName() + ":" + event.getLine() + " " + event.getMessage(), throwable);
         }
     }
 

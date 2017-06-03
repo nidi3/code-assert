@@ -18,12 +18,16 @@ package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.model.UsingElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class DependencyRules {
+    private static final Logger LOG = LoggerFactory.getLogger(DependencyRules.class);
+
     private final List<DependencyRule> rules = new ArrayList<>();
     private final boolean allowAll;
     private static final ThreadLocal<DependencyRules> CURRENT = new ThreadLocal<>();
@@ -171,10 +175,10 @@ public final class DependencyRules {
 
     private void deprecationWarnings(String name) {
         if ("$self".equals(name)) {
-            System.out.println("***** WARN 'DependencyRule $self': $self is deprecated. Use base() instead.");
+            LOG.warn("'DependencyRule $self': $self is deprecated. Use base() instead.");
         }
         if ("_".equals(name)) {
-            System.out.println("***** WARN 'DependencyRule _': _ is deprecated. Use all() instead.");
+            LOG.warn("'DependencyRule _': _ is deprecated. Use all() instead.");
         }
     }
 

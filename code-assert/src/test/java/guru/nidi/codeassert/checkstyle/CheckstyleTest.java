@@ -73,8 +73,8 @@ public class CheckstyleTest {
                         + line(WARNING, "abbreviation.as.word", MAIN, "pmd/Rulesets", 165, "Abbreviation in name 'serialVersionUID' must contain no more than '1' capital letters.")
                         + line(WARNING, "abbreviation.as.word", MAIN, "pmd/Rulesets", 210, "Abbreviation in name 'serialVersionUID' must contain no more than '1' capital letters.")
                         + line(WARNING, "one.top.level.class", TEST, "model/ExampleConcreteClass", 79, "Top-level class ExamplePackageClass has to reside in its own source file.")
-                        + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 51, "Overload methods should not be split. Previous overloaded method located at line '45'.")
-                        + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 62, "Overload methods should not be split. Previous overloaded method located at line '49'.")
+                        + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 55, "Overload methods should not be split. Previous overloaded method located at line '49'.")
+                        + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 66, "Overload methods should not be split. Previous overloaded method located at line '53'.")
                         + line(WARNING, "tag.continuation.indent", MAIN, "dependency/DependencyMap", 95, "Line continuation have incorrect indentation level, expected level should be 4."),
                 analyzer.analyze(), hasNoCheckstyleIssues());
     }

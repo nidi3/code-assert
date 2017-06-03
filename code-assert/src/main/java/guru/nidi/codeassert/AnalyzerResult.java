@@ -15,9 +15,16 @@
  */
 package guru.nidi.codeassert;
 
+import org.slf4j.bridge.SLF4JBridgeHandler;
+
 import java.util.List;
 
 public class AnalyzerResult<T> {
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
+
     private final Analyzer<T> analyzer;
     private final T findings;
     private final List<String> unusedActions;

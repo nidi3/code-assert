@@ -25,10 +25,10 @@ import net.sourceforge.pmd.Report;
 import net.sourceforge.pmd.RuleViolation;
 import net.sourceforge.pmd.renderers.AbstractAccumulatingRenderer;
 import net.sourceforge.pmd.renderers.Renderer;
+import org.apache.commons.io.output.NullWriter;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.Writer;
 import java.util.*;
 
 public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
@@ -81,17 +81,10 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
             throw new AnalyzerException("No rulesets defined. Use the withRulesets methods to define some. "
                     + "See Rulesets class for predefined rule sets.");
         }
-        //avoid System.out from being closed
-        final PrintStream originalSysOut = System.out;
-        System.setOut(new NonCloseablePrintStream(originalSysOut));
-        try {
-            final PmdRenderer renderer = new PmdRenderer();
-            final PMDConfiguration pmdConfig = createPmdConfig(renderer);
-            PMD.doPMD(pmdConfig);
-            return processViolations(renderer);
-        } finally {
-            System.setOut(originalSysOut);
-        }
+        final PmdRenderer renderer = new PmdRenderer();
+        final PMDConfiguration pmdConfig = createPmdConfig(renderer);
+        PMD.doPMD(pmdConfig);
+        return processViolations(renderer);
     }
 
     private PmdResult processViolations(PmdRenderer renderer) {
@@ -140,6 +133,12 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     private static class PmdRenderer extends AbstractAccumulatingRenderer {
         PmdRenderer() {
             super("", "");
+            super.setWriter(new NullWriter());
+        }
+
+        @Override
+        public void setWriter(Writer writer) {
+            //we want to keep NullWriter, no logging whatsoever, we are only interested in report
         }
 
         @Override
@@ -156,16 +155,4 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
             return report;
         }
     }
-
-    private static class NonCloseablePrintStream extends PrintStream {
-        NonCloseablePrintStream(OutputStream out) {
-            super(out);
-        }
-
-        @Override
-        public void close() {
-            //do nothing
-        }
-    }
-
 }

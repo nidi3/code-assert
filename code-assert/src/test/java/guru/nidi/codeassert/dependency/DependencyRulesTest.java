@@ -93,7 +93,7 @@ public class DependencyRulesTest {
         rules.addRule(dep("a"));
         rules.addRule(dep("d"));
         final Set<String> undefined = new TreeSet<>(UNDEFINED);
-        undefined.addAll(set("org.junit", dep("b"), dep("c")));
+        undefined.addAll(set("org.junit", "org.slf4j", dep("b"), dep("c")));
 
         final RuleResult result = rules.analyzeRules(model.findings().packageView());
         assertEquals(new RuleResult(
@@ -114,7 +114,7 @@ public class DependencyRulesTest {
                         + "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, "
                         + "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, "
                         + "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, "
-                        + "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
+                        + "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit, org.slf4j\n",
                 packagesMatchExactly(rules));
 
         assertMatcher("\nFound elements which are not defined:\n"
@@ -123,7 +123,7 @@ public class DependencyRulesTest {
                         + "guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.b.a, "
                         + "guru.nidi.codeassert.dependency.b.b, guru.nidi.codeassert.dependency.c, "
                         + "guru.nidi.codeassert.dependency.c.a, guru.nidi.codeassert.dependency.c.b, "
-                        + "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit\n",
+                        + "guru.nidi.codeassert.junit, guru.nidi.codeassert.model, org.junit, org.slf4j\n",
                 packagesMatchIgnoringNonExisting(rules));
 
         assertMatcher("\nDefined, but not existing elements:\n"
