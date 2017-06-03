@@ -20,7 +20,7 @@ import guru.nidi.codeassert.model.UsingElement;
 
 import java.util.*;
 
-public class DependencyMap {
+class DependencyMap {
     private final Map<String, Map<String, Info>> map = new LinkedHashMap<>();
 
     public <T> void with(int specificity, UsingElement<T> from, UsingElement<T> to) {

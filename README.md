@@ -47,8 +47,8 @@ public class DependencyTest {
 
             @Override
             public void defineRules() {
-                base().mayUse(util, dep.sub()); //org.proj may use org.proj.util and all subpackages of org.proj.dep
-                dep.sub().mustUse(model); //all subpackages of org.proj.dep must use org.proj.model
+                base().mayUse(util, dep.allSub()); //org.proj may use org.proj.util and all subpackages of org.proj.dep
+                dep.allSub().mustUse(model); //all subpackages of org.proj.dep must use org.proj.model
                 model.mayUse(util).mustNotUse(base()); //org.proj.model may use org.proj.util but not org.proj
             }
         }
@@ -162,7 +162,7 @@ public class PmdTest {
                 .because("equals",
                         In.everywhere().ignore("public boolean equals(Object o) {"))
                 .just(
-                        In.classes(DependencyMap.class, RuleResult.class).ignoreAll(),
+                        In.classes(DependencyRule.class, RuleResult.class).ignoreAll(),
                         In.loc("SignatureParser").ignoreAll());
 
         // Only treat duplications with at least 20 tokens

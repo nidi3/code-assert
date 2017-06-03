@@ -321,6 +321,36 @@ public class DependencyRulesTest {
                 packagesMatchRules(rules));
     }
 
+    @Test
+    public void classLevel() {
+        final DependencyRules rules = DependencyRules.denyAll();
+        final DependencyRule m = rules.rule(ca("model"));
+        final DependencyRule c = rules.rule(ca("config"));
+        final DependencyRule a = rules.addRule(dep("CycleTest"));
+        rules.withExternals("java.*", "org*");
+        a.mayUse(m, c);
+
+        final DependencyRules rules2 = DependencyRules.denyAll()
+                .withRules("guru.nidi.codeassert", new DependencyRuler() {
+                    JavaElement model, config, dependency;
+
+                    @Override
+                    public void defineRules() {
+                        dependency.sub("CycleTest").mayUse(model, config);
+                    }
+                })
+                .withExternals("java.*", "org*");
+
+        final RuleResult result = rules.analyzeRules(model.findings().classView());
+        final RuleResult result2 = rules2.analyzeRules(model.findings().classView());
+        assertEquals(result, result2);
+        assertEquals(new DependencyMap()
+                        .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertMatchers"))
+                        .with(0, dep("CycleTest"), set(), ca("AnalyzerResult")),
+                result.denied);
+        assertEquals(53, result.undefined.size());
+    }
+
     private static String ca(String s) {
         return CODE_ASSERT + s;
     }

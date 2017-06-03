@@ -33,20 +33,20 @@ class Usage {
         return u;
     }
 
-    public void must(DependencyRule... rules) {
-        for (final DependencyRule rule : rules) {
+    public void must(JavaElement... rules) {
+        for (final JavaElement rule : rules) {
             must.add(rule.pattern);
         }
     }
 
-    public void may(DependencyRule... rules) {
-        for (final DependencyRule rule : rules) {
+    public void may(JavaElement... rules) {
+        for (final JavaElement rule : rules) {
             may.add(rule.pattern);
         }
     }
 
-    public void mustNot(DependencyRule... rules) {
-        for (final DependencyRule rule : rules) {
+    public void mustNot(JavaElement... rules) {
+        for (final JavaElement rule : rules) {
             mustNot.add(rule.pattern);
         }
     }

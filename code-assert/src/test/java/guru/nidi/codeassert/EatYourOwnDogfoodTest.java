@@ -21,7 +21,6 @@ import guru.nidi.codeassert.checkstyle.StyleEventCollector;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.BaseCollector;
 import guru.nidi.codeassert.config.In;
-import guru.nidi.codeassert.dependency.DependencyMap;
 import guru.nidi.codeassert.dependency.DependencyRule;
 import guru.nidi.codeassert.dependency.DependencyRuler;
 import guru.nidi.codeassert.dependency.DependencyRules;
@@ -128,7 +127,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                 .just(In.clazz(BaseCollector.class).ignore("overload.methods.declaration"))
                 .just(In.clazz(Rulesets.class).ignore("abbreviation.as.word"))
                 .just(In.loc("SignatureParser").ignore("name.invalidPattern"))
-                .just(In.clazz(DependencyMap.class).ignore("tag.continuation.indent"));
+                .just(In.loc("DependencyMap").ignore("tag.continuation.indent"));
 
         return new CheckstyleAnalyzer(AnalyzerConfig.maven().main(), PredefConfig.adjustedGoogleStyleChecks(), collector).analyze();
     }

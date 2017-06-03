@@ -18,29 +18,17 @@ package guru.nidi.codeassert.dependency;
 import guru.nidi.codeassert.config.LocationMatcher;
 import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.model.UsingElement;
-import guru.nidi.codeassert.model.UsingElementMatcher;
 
 import java.util.List;
 
 import static guru.nidi.codeassert.dependency.RuleAccessor.*;
 
-public class DependencyRule implements UsingElementMatcher {
-    final LocationMatcher pattern;
-    private final boolean allowAll;
+public class DependencyRule extends JavaElement {
     final Usage use = new Usage();
     final Usage usedBy = new Usage();
 
     DependencyRule(String pattern, boolean allowAll) {
-        final int starPos = pattern.indexOf('*');
-        if (starPos >= 0 && starPos != pattern.length() - 1) {
-            throw new IllegalArgumentException("Wildcard * is only allowed at the end (e.g. java*)");
-        }
-        this.pattern = new LocationMatcher(pattern);
-        this.allowAll = allowAll;
-    }
-
-    public static DependencyRule rule() {
-        return new DependencyRule("*", true);
+        super(pattern, allowAll);
     }
 
     public static DependencyRule allowAll(String name) {
@@ -51,44 +39,34 @@ public class DependencyRule implements UsingElementMatcher {
         return new DependencyRule(name, false);
     }
 
-    public DependencyRule mustUse(DependencyRule... rules) {
+    public DependencyRule mustUse(JavaElement... rules) {
         use.must(rules);
         return this;
     }
 
-    public DependencyRule mayUse(DependencyRule... rules) {
+    public DependencyRule mayUse(JavaElement... rules) {
         use.may(rules);
         return this;
     }
 
-    public DependencyRule mustNotUse(DependencyRule... rules) {
+    public DependencyRule mustNotUse(JavaElement... rules) {
         use.mustNot(rules);
         return this;
     }
 
-    public DependencyRule mustBeUsedBy(DependencyRule... rules) {
+    public DependencyRule mustBeUsedBy(JavaElement... rules) {
         usedBy.must(rules);
         return this;
     }
 
-    public DependencyRule mayBeUsedBy(DependencyRule... rules) {
+    public DependencyRule mayBeUsedBy(JavaElement... rules) {
         usedBy.may(rules);
         return this;
     }
 
-    public DependencyRule mustNotBeUsedBy(DependencyRule... rules) {
+    public DependencyRule mustNotBeUsedBy(JavaElement... rules) {
         usedBy.mustNot(rules);
         return this;
-    }
-
-    public DependencyRule sub() {
-        final String newPattern = pattern.toString() + (pattern.toString().endsWith(".") ? "*" : ".*");
-        final DependencyRule rule = new DependencyRule(newPattern, allowAll);
-        return DependencyRules.addRuleToCurrent(rule);
-    }
-
-    public boolean matches(UsingElement<?> elem) {
-        return elem.isMatchedBy(pattern);
     }
 
     public boolean isEmpty() {

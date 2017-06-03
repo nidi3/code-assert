@@ -82,6 +82,15 @@ public class DependencyRuler {
         return DependencyRules.addRuleToCurrent(all);
     }
 
+    /**
+     * An empty rule, can be used to initialize DependencyRule fields.
+     *
+     * @return an empty rule.
+     */
+    public DependencyRule rule() {
+        return new DependencyRule("*", true);
+    }
+
     public void defineRules() {
     }
 }

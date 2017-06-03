@@ -161,16 +161,23 @@ public final class DependencyRules {
         final List<DependencyRule> ruleFields = new ArrayList<>();
         for (final Field f : ruler.getClass().getDeclaredFields()) {
             f.setAccessible(true);
+            if (f.getType() == JavaElement.class) {
+                ruleFields.add(initField(basePackage, ruler, f));
+            }
             if (f.getType() == DependencyRule.class) {
-                final String name = f.getName();
-                deprecationWarnings(name);
-                final String pack = addPackages(basePackage, "$self".equals(name) ? "" : camelCaseToDotCase(name));
-                final DependencyRule rule = addRule(pack);
-                ruleFields.add(rule);
-                f.set(ruler, rule);
+                ruleFields.add(addRule(initField(basePackage, ruler, f)));
             }
         }
         return ruleFields;
+    }
+
+    private DependencyRule initField(String basePackage, DependencyRuler ruler, Field f) throws IllegalAccessException {
+        final String name = f.getName();
+        deprecationWarnings(name);
+        final String pack = addPackages(basePackage, "$self".equals(name) ? "" : camelCaseToDotCase(name));
+        final DependencyRule rule = rule(pack);
+        f.set(ruler, rule);
+        return rule;
     }
 
     private void deprecationWarnings(String name) {
@@ -225,7 +232,7 @@ public final class DependencyRules {
         return res.toString();
     }
 
-    private DependencyRule rule(String pattern) {
+    public DependencyRule rule(String pattern) {
         return new DependencyRule(pattern, allowAll);
     }
 
