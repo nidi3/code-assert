@@ -14,12 +14,12 @@ Violations of rules break the build and therefore, one is forced to either
 adjust the code to comply with the rules or to adapt the rules in a reasonable way.
 
 code-assert supports rules on the package structure and the test coverage.
-It also integrates findbugs, PMD and CPD.
+It also integrates findbugs, checkstyle, PMD and CPD.
 
 ## Dependency checks
 
 This is based on code from [JDepend](https://github.com/clarkware/jdepend).
-It can be checked if the package structure contains cycles and/or follows the defined rules.
+It checks if the package structure contains cycles and/or follows the defined rules.
 
 [//]: # (dependency)
 ```java
