@@ -63,6 +63,12 @@ class ClassFileParser {
         adder.addMethodRefs(methods);
         adder.addAttributeRefs(attributes);
 
+        if (className.endsWith(".package-info")) {
+            final JavaPackage pack = model.getOrCreatePackage(Model.packageOf(className));
+            for (final JavaClass ann : adder.clazz.getAnnotations()) {
+                pack.addAnnotation(ann);
+            }
+        }
         return adder.clazz;
     }
 

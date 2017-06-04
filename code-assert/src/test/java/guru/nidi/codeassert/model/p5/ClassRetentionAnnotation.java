@@ -13,26 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.model;
+package guru.nidi.codeassert.model.p5;
 
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import org.junit.Test;
 
-import java.io.IOException;
+import java.lang.annotation.Retention;
 
-import static org.junit.Assert.assertEquals;
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
-public class AnalyzerTest {
-    final Model model = new ModelAnalyzer(
-            AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model")).analyze().findings();
-
-    @Test
-    public void packages() throws IOException {
-        assertEquals(38, model.getPackages().size());
-    }
-
-    @Test
-    public void classes() throws IOException {
-        assertEquals(121, model.getClasses().size());
-    }
+@Retention(CLASS)
+public @interface ClassRetentionAnnotation {
 }

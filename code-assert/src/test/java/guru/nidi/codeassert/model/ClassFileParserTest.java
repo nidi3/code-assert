@@ -20,11 +20,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author <b>Mike Clark</b>
@@ -47,7 +45,7 @@ public class ClassFileParserTest {
     @Test
     public void className() throws IOException {
         final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
-        assertEquals("guru.nidi.codeassert.model.ExampleConcreteClass", clazz.getName());
+        assertEquals(model("ExampleConcreteClass"), clazz.getName());
     }
 
     @Test
@@ -59,34 +57,21 @@ public class ClassFileParserTest {
     @Test
     public void classImports() throws IOException {
         final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
-        assertCollectionEquals(clazz.getImports(),
-                new JavaPackage("java.net"),
-                new JavaPackage("java.text"),
-                new JavaPackage("java.sql"),
-                new JavaPackage("java.lang"),
-                new JavaPackage("java.io"),
-                new JavaPackage("java.rmi"),
-                new JavaPackage("java.util"),
-                new JavaPackage("java.util.jar"),
-                new JavaPackage("java.math"),
+        assertCollectionEquals(toString(clazz.getImports()),
+                "java.net", "java.text", "java.sql", "java.lang", "java.io",
+                "java.rmi", "java.util", "java.util.jar", "java.math",
 
                 // annotations
-                new JavaPackage("org.junit.runners"),
-                new JavaPackage("java.applet"),
-                new JavaPackage("org.junit"),
-                new JavaPackage("javax.crypto"),
-                new JavaPackage("java.awt.geom"),
-                new JavaPackage("java.awt.image.renderable"),
-                new JavaPackage("guru.nidi.codeassert.model.p1"),
-                new JavaPackage("guru.nidi.codeassert.model.p2"),
-                new JavaPackage("java.awt.im"),
-                new JavaPackage("java.awt.dnd.peer"));
+                "org.junit.runners", "org.junit",
+                "java.applet", "java.awt.geom", "java.awt.image.renderable",
+                "java.awt.im", "java.awt.dnd.peer", "javax.crypto",
+                model("p1"), model("p2"));
     }
 
     @Test
     public void innerClassName() throws IOException {
         final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
-        assertEquals("guru.nidi.codeassert.model.ExampleConcreteClass$ExampleInnerClass", clazz.getName());
+        assertEquals(model("ExampleConcreteClass$ExampleInnerClass"), clazz.getName());
     }
 
     @Test
@@ -104,7 +89,7 @@ public class ClassFileParserTest {
     @Test
     public void packageClassName() throws IOException {
         final JavaClass clazz = parse(Path.testClass("ExamplePackageClass"));
-        assertEquals("guru.nidi.codeassert.model.ExamplePackageClass", clazz.getName());
+        assertEquals(model("ExamplePackageClass"), clazz.getName());
     }
 
     @Test
@@ -132,19 +117,52 @@ public class ClassFileParserTest {
     @Test
     public void genericParameters() throws IOException {
         final JavaClass generic = parse(Path.testClass("p4/GenericParameters"));
-        assertEquals(11, generic.getImports().size());
+        assertCollectionEquals(toString(generic.getImports()),
+                "java.util", "java.lang",
+                model("p4.p4"), model("p4.p2"), model("p4.p1"), model("p4.p9"), model("p4.p10"),
+                model("p4.p5"), model("p4.p6"), model("p4.p7"), model("p4.p8"));
     }
 
     @Test
     public void subGenericParameters() throws IOException {
         final JavaClass subGeneric = parse(Path.testClass("p4/SubGenericParameters"));
-        assertEquals(1, subGeneric.getImports().size());
+        assertCollectionEquals(toString(subGeneric.getImports()), model("p4.p1"));
+    }
+
+    @Test
+    public void classAnnotation() throws IOException {
+        final JavaClass annotations = parse(Path.testClass("p5/Annotations"));
+        assertCollectionEquals(toString(annotations.getAnnotations()),
+                model("p5.ClassRetentionAnnotation"),
+                model("ExampleAnnotation"),
+                model("p1.ExampleInnerAnnotation"));
+    }
+
+    @Test
+    public void packageAnnotation() throws IOException {
+        final Model model = new Model();
+        parser.parse(Path.testClass("p5/package-info"), model);
+        assertCollectionEquals(toString(model.getOrCreatePackage(model("p5")).getAnnotations()),
+                model("p5.ClassRetentionAnnotation"),
+                model("ExampleAnnotation"),
+                model("p1.ExampleInnerAnnotation"));
+    }
+
+    private String model(String s) {
+        return "guru.nidi.codeassert.model." + s;
     }
 
     @SafeVarargs
     private static <T> void assertCollectionEquals(Collection<T> actual, T... expected) {
-        assertEquals(expected.length, actual.size());
-        assertTrue(actual.containsAll(Arrays.asList(expected)));
+        assertEquals(new HashSet<T>(Arrays.asList(expected)), new HashSet<T>(actual));
+    }
+
+    private List<String> toString(Collection<?> cs) {
+        final List<String> res = new ArrayList<>();
+        for (final Object c : cs) {
+            res.add(c.toString());
+        }
+        return res;
     }
 
     private JavaClass parse(File f) throws IOException {

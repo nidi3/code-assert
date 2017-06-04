@@ -30,11 +30,13 @@ public class JavaPackage extends UsingElement<JavaPackage> {
     private final String name;
     private final Set<JavaClass> classes;
     private final List<JavaPackage> uses;
+    private final Set<JavaClass> annotations;
 
     JavaPackage(String name) {
         this.name = name;
         classes = new HashSet<>();
         uses = new ArrayList<>();
+        annotations = new HashSet<>();
     }
 
     public String getName() {
@@ -45,8 +47,16 @@ public class JavaPackage extends UsingElement<JavaPackage> {
         classes.add(clazz);
     }
 
+    public void addAnnotation(JavaClass clazz) {
+        annotations.add(clazz);
+    }
+
     public Collection<JavaClass> getClasses() {
         return classes;
+    }
+
+    public Collection<JavaClass> getAnnotations() {
+        return annotations;
     }
 
     void addEfferent(JavaPackage jPackage) {

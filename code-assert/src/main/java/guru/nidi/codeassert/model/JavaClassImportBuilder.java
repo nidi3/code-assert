@@ -138,7 +138,7 @@ class JavaClassImportBuilder {
             i += 2;
             final int elements = u2(data, i);
             i += 2;
-            addImport(descriptorToType(constantPool.getUtf8(typeIndex)));
+            clazz.addAnnotation(getTypeName(descriptorToType(constantPool.getUtf8(typeIndex))), model);
             for (int e = 0; e < elements; e++) {
                 i = addAnnotationElementValueReferences(data, i + 2);
             }

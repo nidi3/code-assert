@@ -32,6 +32,7 @@ public class JavaClass extends UsingElement<JavaClass> {
     private final JavaPackage pack;
     private final Map<String, JavaPackage> imports;
     private final Set<JavaClass> importClasses;
+    private final Set<JavaClass> annotations;
     private String sourceFile;
 
     JavaClass(String name, JavaPackage pack) {
@@ -39,6 +40,7 @@ public class JavaClass extends UsingElement<JavaClass> {
         this.pack = pack;
         imports = new HashMap<>();
         importClasses = new HashSet<>();
+        annotations = new HashSet<>();
         sourceFile = "Unknown";
     }
 
@@ -62,6 +64,10 @@ public class JavaClass extends UsingElement<JavaClass> {
         return imports.values();
     }
 
+    public Set<JavaClass> getAnnotations() {
+        return annotations;
+    }
+
     public void addImport(String type, Model model) {
         final String packName = Model.packageOf(type);
         if (!packName.equals(pack.getName())) {
@@ -70,6 +76,11 @@ public class JavaClass extends UsingElement<JavaClass> {
             pack.addEfferent(p);
             importClasses.add(model.getOrCreateClass(type));
         }
+    }
+
+    public void addAnnotation(String type, Model model) {
+        addImport(type, model);
+        annotations.add(model.getOrCreateClass(type));
     }
 
     public boolean equals(Object other) {

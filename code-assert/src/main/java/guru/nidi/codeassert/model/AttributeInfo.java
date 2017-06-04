@@ -41,7 +41,7 @@ final class AttributeInfo {
     }
 
     public boolean isAnnotation() {
-        return "RuntimeVisibleAnnotations".equals(name);
+        return "RuntimeVisibleAnnotations".equals(name) || "RuntimeInvisibleAnnotations".equals(name);
     }
 
     public boolean isSignature() {
