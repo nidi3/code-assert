@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+    <suppress>
+        <notes>code-assert is only used during test phase, so vulnerable libs do not end in production code.</notes>
+        <sha1>c586cd0b44cae8c0239a977277f99d08d751a482</sha1>
+        <cpe>cpe:/a:apple:java:1.4</cpe>
+    </suppress>
+</suppressions>
