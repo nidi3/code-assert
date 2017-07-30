@@ -110,7 +110,7 @@ public class JacocoTest {
     public void explicit() {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.loc("org.springframework.handler.InputPersister").setMinima(30, 30, 30))
-                .just(For.packge("org.springframework.event").setMinima(30, 30, 30)));
+                .just(For.thePackage("org.springframework.event").setMinima(30, 30, 30)));
         assertOutput(result, ""
                 + "org.springframework.event                                    80 / 30      80 / 30      24 / 30     \n"
                 + "org.springframework.handler.InputPersister                   24 / 30      50 / 30      40 / 30     ");

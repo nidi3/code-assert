@@ -71,7 +71,7 @@ public class CycleTest {
 
     @Test
     public void packageCyclesWithExceptions() {
-        final Matcher<ModelResult> matcher = hasNoPackgeCyclesExcept(
+        final Matcher<ModelResult> matcher = hasNoPackageCyclesExcept(
                 packages(base("a"), base("b"), base("c")),
                 packages(base("a.a")),
                 packages(base("b.a"), base("c.a")));

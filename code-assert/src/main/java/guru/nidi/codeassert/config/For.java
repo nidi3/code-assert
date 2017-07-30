@@ -38,7 +38,7 @@ public final class For {
         return new For(null, "*", "*");
     }
 
-    public static For packge(String pack) {
+    public static For thePackage(String pack) {
         return new For(null, pack, "");
     }
 

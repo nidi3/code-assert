@@ -77,7 +77,7 @@ public final class CodeAssertMatchers {
     }
 
     @SafeVarargs
-    public static Matcher<ModelResult> hasNoPackgeCyclesExcept(Set<String>... cyclicGroups) {
+    public static Matcher<ModelResult> hasNoPackageCyclesExcept(Set<String>... cyclicGroups) {
         return new DependencyCycleMatcher<>(JavaPackage.class, cyclicGroups);
     }
 
