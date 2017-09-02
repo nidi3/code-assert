@@ -19,14 +19,9 @@ import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.DependencyRule;
 import guru.nidi.codeassert.dependency.RuleResult;
-import guru.nidi.codeassert.pmd.CpdAnalyzer;
-import guru.nidi.codeassert.pmd.CpdMatchCollector;
-import guru.nidi.codeassert.pmd.PmdAnalyzer;
-import guru.nidi.codeassert.pmd.PmdViolationCollector;
+import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 

@@ -15,13 +15,8 @@
  */
 package guru.nidi.codeassert.snippets;
 
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.CollectorTemplate;
-import guru.nidi.codeassert.config.Ignore;
-import guru.nidi.codeassert.config.In;
-import guru.nidi.codeassert.pmd.PmdAnalyzer;
-import guru.nidi.codeassert.pmd.PmdViolationCollector;
-import guru.nidi.codeassert.pmd.Ruleset;
+import guru.nidi.codeassert.config.*;
+import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.Test;
 

@@ -16,10 +16,7 @@
 package guru.nidi.codeassert.snippets;
 
 import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
-import guru.nidi.codeassert.checkstyle.CheckstyleAnalyzer;
-import guru.nidi.codeassert.checkstyle.CheckstyleResult;
-import guru.nidi.codeassert.checkstyle.StyleChecks;
-import guru.nidi.codeassert.checkstyle.StyleEventCollector;
+import guru.nidi.codeassert.checkstyle.*;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import org.junit.Ignore;

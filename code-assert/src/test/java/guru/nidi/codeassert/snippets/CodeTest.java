@@ -15,24 +15,15 @@
  */
 package guru.nidi.codeassert.snippets;
 
-import guru.nidi.codeassert.checkstyle.CheckstyleAnalyzer;
-import guru.nidi.codeassert.checkstyle.CheckstyleResult;
-import guru.nidi.codeassert.checkstyle.StyleChecks;
-import guru.nidi.codeassert.checkstyle.StyleEventCollector;
+import guru.nidi.codeassert.checkstyle.*;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
-import guru.nidi.codeassert.dependency.DependencyRule;
-import guru.nidi.codeassert.dependency.DependencyRuler;
-import guru.nidi.codeassert.dependency.DependencyRules;
-import guru.nidi.codeassert.findbugs.BugCollector;
-import guru.nidi.codeassert.findbugs.FindBugsAnalyzer;
-import guru.nidi.codeassert.findbugs.FindBugsResult;
+import guru.nidi.codeassert.dependency.*;
+import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.junit.CodeAssertTest;
 import guru.nidi.codeassert.model.ModelAnalyzer;
 import guru.nidi.codeassert.model.ModelResult;
-import guru.nidi.codeassert.pmd.PmdAnalyzer;
-import guru.nidi.codeassert.pmd.PmdResult;
-import guru.nidi.codeassert.pmd.PmdViolationCollector;
+import guru.nidi.codeassert.pmd.*;
 import org.junit.Ignore;
 import org.junit.Test;
 

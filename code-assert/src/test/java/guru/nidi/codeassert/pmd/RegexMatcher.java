@@ -15,9 +15,7 @@
  */
 package guru.nidi.codeassert.pmd;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.*;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -16,13 +16,9 @@
 package guru.nidi.codeassert.snippets;
 
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.dependency.DependencyRule;
-import guru.nidi.codeassert.dependency.DependencyRuler;
-import guru.nidi.codeassert.dependency.DependencyRules;
+import guru.nidi.codeassert.dependency.*;
 import guru.nidi.codeassert.model.ModelAnalyzer;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 
