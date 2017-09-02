@@ -60,7 +60,7 @@ public final class DependencyRules {
      * @return A DependencyRule with the given name.
      */
     public DependencyRule addExternal(String pack) {
-        final DependencyRule rule = rule(pack);
+        final DependencyRule rule = rule(pack).optional();
         rule.mayBeUsedBy(rule("*"));
         return addRule(rule);
     }
@@ -233,6 +233,10 @@ public final class DependencyRules {
     }
 
     public DependencyRule rule(String pattern) {
+        return new DependencyRule(pattern, allowAll);
+    }
+
+    public DependencyRule optRule(String pattern) {
         return new DependencyRule(pattern, allowAll);
     }
 

@@ -86,8 +86,7 @@ public class DependencyRulesTest {
 
     @Test
     public void matcherFlags() {
-        final DependencyRules rules = DependencyRules.allowAll();
-        rules.withExternals("java.*", "org.hamcrest*");
+        final DependencyRules rules = DependencyRules.allowAll().withExternals("java.*", "org.hamcrest*");
         rules.addRule(dep("a"));
         rules.addRule(dep("d"));
         final Set<String> undefined = new TreeSet<>(UNDEFINED);
@@ -131,11 +130,10 @@ public class DependencyRulesTest {
 
     @Test
     public void allow() {
-        final DependencyRules rules = DependencyRules.allowAll();
+        final DependencyRules rules = DependencyRules.allowAll().withExternals("java.*", "org*");
         final DependencyRule a = rules.addRule(dep("a"));
         final DependencyRule b = rules.addRule(dep("b"));
         final DependencyRule c = rules.addRule(dep("c"));
-        rules.withExternals("java.*", "org*");
 
         a.mustUse(b);
         b.mustNotUse(c);
@@ -177,11 +175,10 @@ public class DependencyRulesTest {
 
     @Test
     public void deny() {
-        final DependencyRules rules = DependencyRules.denyAll();
+        final DependencyRules rules = DependencyRules.denyAll().withExternals("java*", "org*");
         final DependencyRule a = rules.addRule(dep("a"));
         final DependencyRule b = rules.addRule(dep("b"));
         final DependencyRule c = rules.addRule(dep("c"));
-        rules.withExternals("java*", "org*");
 
         a.mustUse(b);
         b.mayUse(c);
@@ -216,12 +213,11 @@ public class DependencyRulesTest {
 
     @Test
     public void allowWithWildcard() {
-        final DependencyRules rules = DependencyRules.allowAll();
+        final DependencyRules rules = DependencyRules.allowAll().withExternals("java*", "org*");
         final DependencyRule a1 = rules.addRule(dep("a.a"));
         final DependencyRule a = rules.addRule(dep("a.*"));
         final DependencyRule b = rules.addRule(dep("b.*"));
         final DependencyRule c = rules.addRule(dep("c.*"));
-        rules.withExternals("java*", "org*");
 
         a.mustUse(b);
         b.mustNotUse(a, c).mayUse(a1);
@@ -278,12 +274,11 @@ public class DependencyRulesTest {
 
     @Test
     public void denyWithWildcard() {
-        final DependencyRules rules = DependencyRules.denyAll();
+        final DependencyRules rules = DependencyRules.denyAll().withExternals("java.*", "org*");
         final DependencyRule a1 = rules.addRule(dep("a.a"));
         final DependencyRule a = rules.addRule(dep("a.*"));
         final DependencyRule b = rules.addRule(dep("b.*"));
         final DependencyRule c = rules.addRule(dep("c.*"));
-        rules.withExternals("java.*", "org*");
 
         a.mustUse(b);
         b.mayUse(a, c).mustNotUse(a1);
@@ -320,12 +315,19 @@ public class DependencyRulesTest {
     }
 
     @Test
+    public void externalsAreOptional() {
+        final DependencyRules rules = DependencyRules.denyAll().withExternals("java*", "org.*", "blablu");
+        final DependencyRule all = rules.addRule("guru.nidi.codeassert*");
+        all.mayUse(all);
+        assertThat(model, packagesMatchExactly(rules));
+    }
+
+    @Test
     public void classLevel() {
-        final DependencyRules rules = DependencyRules.denyAll();
+        final DependencyRules rules = DependencyRules.denyAll().withExternals("java.*", "org*");
         final DependencyRule m = rules.rule(ca("model"));
         final DependencyRule c = rules.rule(ca("config"));
         final DependencyRule a = rules.addRule(dep("CycleTest"));
-        rules.withExternals("java.*", "org*");
         a.mayUse(m, c);
 
         final DependencyRules rules2 = DependencyRules.denyAll()

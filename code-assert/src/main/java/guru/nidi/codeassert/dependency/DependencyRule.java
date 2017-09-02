@@ -26,6 +26,7 @@ import static guru.nidi.codeassert.dependency.RuleAccessor.*;
 public class DependencyRule extends JavaElement {
     final Usage use = new Usage();
     final Usage usedBy = new Usage();
+    boolean optional;
 
     DependencyRule(String pattern, boolean allowAll) {
         super(pattern, allowAll);
@@ -69,6 +70,11 @@ public class DependencyRule extends JavaElement {
         return this;
     }
 
+    public DependencyRule optional() {
+        optional = true;
+        return this;
+    }
+
     public boolean isEmpty() {
         return use.isEmpty() && usedBy.isEmpty();
     }
@@ -97,7 +103,7 @@ public class DependencyRule extends JavaElement {
         }
 
         private void analyzeNotExisting() {
-            if (elems.isEmpty()) {
+            if (!optional && elems.isEmpty()) {
                 result.notExisting.add(pattern);
             }
         }
@@ -159,7 +165,6 @@ public class DependencyRule extends JavaElement {
                     rules.mostSpecificUsageMatch(thisPack, dep, MAY_BE_USED));
             return Math.max(useAllowed, usedByAllowed);
         }
-
     }
 
     @Override
