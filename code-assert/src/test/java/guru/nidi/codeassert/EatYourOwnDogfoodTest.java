@@ -15,18 +15,10 @@
  */
 package guru.nidi.codeassert;
 
-import guru.nidi.codeassert.checkstyle.CheckstyleAnalyzer;
-import guru.nidi.codeassert.checkstyle.CheckstyleResult;
-import guru.nidi.codeassert.checkstyle.StyleEventCollector;
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.BaseCollector;
-import guru.nidi.codeassert.config.In;
-import guru.nidi.codeassert.dependency.DependencyRule;
-import guru.nidi.codeassert.dependency.DependencyRuler;
-import guru.nidi.codeassert.dependency.DependencyRules;
-import guru.nidi.codeassert.findbugs.BugCollector;
-import guru.nidi.codeassert.findbugs.FindBugsAnalyzer;
-import guru.nidi.codeassert.findbugs.FindBugsResult;
+import guru.nidi.codeassert.checkstyle.*;
+import guru.nidi.codeassert.config.*;
+import guru.nidi.codeassert.dependency.*;
+import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertTest;
 import guru.nidi.codeassert.junit.PredefConfig;
@@ -83,7 +75,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
                         In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
                         In.loc("*Exception").ignore("SE_BAD_FIELD"),
                         In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"),
-                        In.everywhere().ignore("EI_EXPOSE_REP", "EI_EXPOSE_REP2"),
+                        In.everywhere().ignore("EI_EXPOSE_REP", "EI_EXPOSE_REP2", "PATH_TRAVERSAL_IN", "CRLF_INJECTION_LOGS"),
                         In.locs("ClassFileParser", "Constant", "MemberInfo", "Rulesets", "Reason").ignore("URF_UNREAD_FIELD"));
         return new FindBugsAnalyzer(AnalyzerConfig.maven().main(), bugCollector).analyze();
     }

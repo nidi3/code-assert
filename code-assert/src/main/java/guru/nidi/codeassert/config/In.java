@@ -15,10 +15,7 @@
  */
 package guru.nidi.codeassert.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public final class In {
     private final List<String> locs;

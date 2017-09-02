@@ -19,9 +19,7 @@ import guru.nidi.codeassert.util.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public abstract class BaseCollector<S, A extends Action, T extends BaseCollector<S, A, T>> {
     private static final Logger LOG = LoggerFactory.getLogger(BaseCollector.class);

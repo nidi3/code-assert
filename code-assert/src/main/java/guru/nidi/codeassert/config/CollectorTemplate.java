@@ -15,9 +15,7 @@
  */
 package guru.nidi.codeassert.config;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public final class CollectorTemplate<A extends Action>
         extends BaseCollector<Object, A, CollectorTemplate<A>> implements Iterable<CollectorConfig<A>> {

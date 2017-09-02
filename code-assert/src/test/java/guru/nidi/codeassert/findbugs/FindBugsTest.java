@@ -18,9 +18,7 @@ package guru.nidi.codeassert.findbugs;
 import edu.umd.cs.findbugs.Priorities;
 import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.AnalyzerConfigTest;
-import guru.nidi.codeassert.config.In;
+import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.pmd.Rulesets;
 import org.hamcrest.Matcher;
@@ -48,7 +46,8 @@ public class FindBugsTest {
                     In.loc("*Test").ignore("DM_GC"))
             .because("it's ok",
                     In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"),
-                    In.clazz(AnalyzerConfigTest.class).ignore("DMI_HARDCODED_ABSOLUTE_FILENAME"))
+                    In.clazz(AnalyzerConfigTest.class).ignore("DMI_HARDCODED_ABSOLUTE_FILENAME"),
+                    In.everywhere().ignore("PATH_TRAVERSAL_IN"))
             .because("is handled by annotation",
                     In.clazz(Rulesets.class).ignore("URF_UNREAD_FIELD"));
 
@@ -56,7 +55,7 @@ public class FindBugsTest {
     public void simple() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
-        assertThat(analyzer.analyze().findings().size(), either(equalTo(42)).or(equalTo(43)));
+        assertThat(analyzer.analyze().findings().size(), either(equalTo(46)).or(equalTo(47)));
     }
 
     @Test

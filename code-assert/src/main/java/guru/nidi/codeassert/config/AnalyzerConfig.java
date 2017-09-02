@@ -16,9 +16,7 @@
 package guru.nidi.codeassert.config;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class AnalyzerConfig {
     private final List<Path> sources;

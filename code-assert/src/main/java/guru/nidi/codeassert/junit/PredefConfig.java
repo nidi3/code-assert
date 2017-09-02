@@ -16,14 +16,9 @@
 package guru.nidi.codeassert.junit;
 
 import guru.nidi.codeassert.checkstyle.StyleChecks;
-import guru.nidi.codeassert.config.CollectorTemplate;
-import guru.nidi.codeassert.config.Ignore;
-import guru.nidi.codeassert.config.In;
+import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.findbugs.BugCollector;
-import guru.nidi.codeassert.pmd.CpdMatchCollector;
-import guru.nidi.codeassert.pmd.PmdViolationCollector;
-import guru.nidi.codeassert.pmd.Ruleset;
-import guru.nidi.codeassert.pmd.Rulesets;
+import guru.nidi.codeassert.pmd.*;
 
 import static com.puppycrawl.tools.checkstyle.api.TokenTypes.*;
 import static guru.nidi.codeassert.pmd.Rulesets.*;

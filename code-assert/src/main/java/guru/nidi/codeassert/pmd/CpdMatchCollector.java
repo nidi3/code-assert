@@ -20,9 +20,7 @@ import guru.nidi.codeassert.util.ListUtils;
 import net.sourceforge.pmd.cpd.Mark;
 import net.sourceforge.pmd.cpd.Match;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class CpdMatchCollector extends BaseCollector<Match, Ignore, CpdMatchCollector> {
     @Override

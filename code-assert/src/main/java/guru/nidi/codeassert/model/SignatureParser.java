@@ -17,9 +17,7 @@ package guru.nidi.codeassert.model;
 
 import guru.nidi.codeassert.AnalyzerException;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Parse a java type signature.

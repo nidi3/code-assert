@@ -15,9 +15,7 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class CycleResult {
     final Set<DependencyMap> cycles;

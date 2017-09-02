@@ -21,10 +21,7 @@ import guru.nidi.codeassert.config.UsageCounter;
 import guru.nidi.codeassert.config.ValuedLocation;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
     private final File jacocoCsv;

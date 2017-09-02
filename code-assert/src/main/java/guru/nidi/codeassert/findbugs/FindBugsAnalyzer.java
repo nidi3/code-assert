@@ -63,6 +63,8 @@ public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
 
     private Project createProject() {
         final Project project = new Project();
+        PluginLoader.addPluginsTo(project);
+
         for (final AnalyzerConfig.Path clazz : config.getClasses()) {
             project.addFile(clazz.getPath());
         }

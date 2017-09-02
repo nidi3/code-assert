@@ -16,9 +16,7 @@
 package guru.nidi.codeassert.pmd;
 
 import guru.nidi.codeassert.AnalyzerException;
-import net.sourceforge.pmd.PMDConfiguration;
-import net.sourceforge.pmd.PropertyDescriptor;
-import net.sourceforge.pmd.Rule;
+import net.sourceforge.pmd.*;
 
 import java.lang.reflect.Field;
 

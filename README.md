@@ -297,7 +297,7 @@ public class CodeCoverage {
         JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(BRANCH, LINE, METHOD)
                 .just(For.global().setMinima(70, 80, 90))
                 .just(For.allPackages().setMinima(70, 80, 90))
-                .just(For.packge("org.proj.entity.*").setNoMinima()));
+                .just(For.thePackage("org.proj.entity.*").setNoMinima()));
         assertThat(analyzer.analyze(), hasEnoughCoverage());
     }
 }
