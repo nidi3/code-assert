@@ -35,7 +35,7 @@ public class DependencyTest {
 
     @Test
     public void noCycles() {
-        assertThat(new ModelBuilder(config).build(), hasNoPackageCycles());
+        assertThat(Model.from(config.getClasses()), hasNoPackageCycles());
     }
 
     @Test
@@ -59,7 +59,7 @@ public class DependencyTest {
                 .withRelativeRules(new OrgProj())
                 .withExternals("java.*", "org.*", "net.*");
 
-        assertThat(new ModelBuilder(config).build(), packagesMatchExactly(rules));
+        assertThat(Model.from(config.getClasses()), packagesMatchExactly(rules));
     }
 }
 ```
@@ -142,7 +142,7 @@ public class PmdTest {
         PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
                 .because("It's not severe and occurs very often",
                         In.everywhere().ignore("MethodArgumentCouldBeFinal"),
-                        In.locs("JavaClassBuilder#build", "FindBugsMatchers").ignore("AvoidInstantiatingObjectsInLoops"))
+                        In.locs("JavaClassBuilder#from", "FindBugsMatchers").ignore("AvoidInstantiatingObjectsInLoops"))
                 .because("it'a an enum",
                         In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"))
                 .just(In.loc("*Test").ignore("TooManyStaticImports"));
@@ -235,7 +235,7 @@ public class CodeTest extends CodeAssertTest {
 
     @Override
     protected Model analyzeModel() {
-        return new ModelBuilder(CONFIG).build();
+        return Model.from(CONFIG.getClasses());
     }
 
     @Override

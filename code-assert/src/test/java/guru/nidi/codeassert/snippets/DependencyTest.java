@@ -17,7 +17,7 @@ package guru.nidi.codeassert.snippets;
 
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.dependency.*;
-import guru.nidi.codeassert.model.ModelBuilder;
+import guru.nidi.codeassert.model.Model;
 import org.junit.*;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class DependencyTest {
 
     @Test
     public void noCycles() {
-        assertThat(new ModelBuilder(config).build(), hasNoPackageCycles());
+        assertThat(Model.from(config.getClasses()), hasNoPackageCycles());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class DependencyTest {
                 .withRelativeRules(new OrgProj())
                 .withExternals("java.*", "org.*", "net.*");
 
-        assertThat(new ModelBuilder(config).build(), packagesMatchExactly(rules));
+        assertThat(Model.from(config.getClasses()), packagesMatchExactly(rules));
     }
 }
 //##

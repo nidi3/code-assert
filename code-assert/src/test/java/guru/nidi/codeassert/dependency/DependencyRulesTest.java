@@ -18,7 +18,6 @@ package guru.nidi.codeassert.dependency;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.LocationMatcher;
 import guru.nidi.codeassert.model.Model;
-import guru.nidi.codeassert.model.ModelBuilder;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.Before;
@@ -39,9 +38,7 @@ public class DependencyRulesTest {
 
     @Before
     public void analyze() {
-        final ModelBuilder analyzer = new ModelBuilder(
-                AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/dependency"));
-        model = analyzer.build();
+        model = Model.from(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/dependency").getClasses());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -347,7 +344,7 @@ public class DependencyRulesTest {
         assertEquals(new DependencyMap()
                         .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertMatchers")),
                 result.denied);
-        assertEquals(55, result.undefined.size());
+        assertEquals(54, result.undefined.size());
     }
 
     private static String ca(String s) {

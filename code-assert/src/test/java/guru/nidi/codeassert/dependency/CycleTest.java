@@ -17,7 +17,6 @@ package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.model.Model;
-import guru.nidi.codeassert.model.ModelBuilder;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.Before;
@@ -38,8 +37,7 @@ public class CycleTest {
 
     @Before
     public void analyze() {
-        final ModelBuilder analyzer = new ModelBuilder(AnalyzerConfig.maven().test("guru/nidi/codeassert/dependency"));
-        result = analyzer.build();
+        result = Model.from(AnalyzerConfig.maven().test("guru/nidi/codeassert/dependency").getClasses());
     }
 
     @Test

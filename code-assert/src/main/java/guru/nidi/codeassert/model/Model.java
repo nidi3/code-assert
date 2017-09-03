@@ -15,8 +15,11 @@
  */
 package guru.nidi.codeassert.model;
 
+import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.LocationMatcher;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class Model {
@@ -24,6 +27,19 @@ public class Model {
 
     final Map<String, JavaPackage> packages = new HashMap<>();
     final Map<String, JavaClass> classes = new HashMap<>();
+
+    public static Model from(List<File> files) {
+        try {
+            final Model model = new Model();
+            final ClassFileParser parser = new ClassFileParser();
+            for (final File file : files) {
+                parser.parse(file, model);
+            }
+            return model;
+        } catch (IOException e) {
+            throw new AnalyzerException("Problem creating a Model", e);
+        }
+    }
 
     JavaPackage getOrCreatePackage(String name) {
         JavaPackage pack = packages.get(name);
