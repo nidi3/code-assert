@@ -15,10 +15,9 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.model.ModelAnalyzer;
-import guru.nidi.codeassert.model.ModelResult;
+import guru.nidi.codeassert.model.Model;
+import guru.nidi.codeassert.model.ModelBuilder;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.Before;
@@ -35,17 +34,17 @@ import static org.junit.Assert.assertFalse;
 public class CycleTest {
     private static final String START = "Found these cyclic groups:\n\n";
     private static final String BASE = "guru.nidi.codeassert.dependency.";
-    private ModelResult result;
+    private Model result;
 
     @Before
     public void analyze() {
-        final ModelAnalyzer analyzer = new ModelAnalyzer(AnalyzerConfig.maven().test("guru/nidi/codeassert/dependency"));
-        result = analyzer.analyze();
+        final ModelBuilder analyzer = new ModelBuilder(AnalyzerConfig.maven().test("guru/nidi/codeassert/dependency"));
+        result = analyzer.build();
     }
 
     @Test
     public void packageCycles() {
-        final Matcher<ModelResult> matcher = hasNoPackageCycles();
+        final Matcher<Model> matcher = hasNoPackageCycles();
         assertMatcher(START
                         + "- Group of 3: guru.nidi.codeassert.dependency.a, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.c\n"
                         + "  guru.nidi.codeassert.dependency.a ->\n"
@@ -71,7 +70,7 @@ public class CycleTest {
 
     @Test
     public void packageCyclesWithExceptions() {
-        final Matcher<ModelResult> matcher = hasNoPackageCyclesExcept(
+        final Matcher<Model> matcher = hasNoPackageCyclesExcept(
                 packages(base("a"), base("b"), base("c")),
                 packages(base("a.a")),
                 packages(base("b.a"), base("c.a")));
@@ -90,7 +89,7 @@ public class CycleTest {
 
     @Test
     public void classCycles() {
-        final Matcher<ModelResult> matcher = hasNoClassCycles();
+        final Matcher<Model> matcher = hasNoClassCycles();
         assertMatcher(START
                         + "- Group of 3: guru.nidi.codeassert.dependency.a.A1, guru.nidi.codeassert.dependency.b.B1, guru.nidi.codeassert.dependency.c.C1\n"
                         + "  guru.nidi.codeassert.dependency.a.A1 ->\n"
@@ -112,7 +111,7 @@ public class CycleTest {
 
     @Test
     public void classCyclesExcept() {
-        final Matcher<ModelResult> matcher = hasNoClassCyclesExcept(new HashSet<>(
+        final Matcher<Model> matcher = hasNoClassCyclesExcept(new HashSet<>(
                 Arrays.asList("guru.nidi.codeassert.dependency.a.a.Aa1", "guru.nidi.codeassert.dependency.b.a.Ba1")));
         assertMatcher(START
                         + "- Group of 3: guru.nidi.codeassert.dependency.a.A1, guru.nidi.codeassert.dependency.b.B1, guru.nidi.codeassert.dependency.c.C1\n"
@@ -127,7 +126,7 @@ public class CycleTest {
                 matcher);
     }
 
-    private <T> void assertMatcher(String message, Matcher<? extends AnalyzerResult<T>> matcher) {
+    private void assertMatcher(String message, Matcher<Model> matcher) {
         assertFalse("Should not match", matcher.matches(result));
         final StringDescription sd = new StringDescription();
         matcher.describeMismatch(result, sd);

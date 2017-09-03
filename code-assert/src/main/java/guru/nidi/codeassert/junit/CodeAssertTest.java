@@ -17,7 +17,7 @@ package guru.nidi.codeassert.junit;
 
 import guru.nidi.codeassert.checkstyle.CheckstyleResult;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
-import guru.nidi.codeassert.model.ModelResult;
+import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.pmd.CpdResult;
 import guru.nidi.codeassert.pmd.PmdResult;
 import org.junit.Ignore;
@@ -41,7 +41,7 @@ public class CodeAssertTest {
         CHECKSTYLE, CHECKSTYLE_UNUSED_ACTIONS
     }
 
-    private static ModelResult modelResult;
+    private static Model modelResult;
     private static FindBugsResult findBugsResult;
     private static PmdResult pmdResult;
     private static CpdResult cpdResult;
@@ -51,7 +51,7 @@ public class CodeAssertTest {
         return EnumSet.allOf(Type.class);
     }
 
-    protected ModelResult analyzeModel() {
+    protected Model analyzeModel() {
         return null;
     }
 
@@ -71,7 +71,7 @@ public class CodeAssertTest {
         return null;
     }
 
-    protected synchronized ModelResult modelResult() {
+    protected synchronized Model modelResult() {
         if (modelResult == null) {
             modelResult = analyzeModel();
         }

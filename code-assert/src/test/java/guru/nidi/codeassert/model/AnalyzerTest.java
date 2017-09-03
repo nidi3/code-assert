@@ -23,8 +23,8 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 
 public class AnalyzerTest {
-    final Model model = new ModelAnalyzer(
-            AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model")).analyze().findings();
+    final Model model = new ModelBuilder(
+            AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model")).build();
 
     @Test
     public void packages() throws IOException {
@@ -33,6 +33,6 @@ public class AnalyzerTest {
 
     @Test
     public void classes() throws IOException {
-        assertEquals(120, model.getClasses().size());
+        assertEquals(117, model.getClasses().size());
     }
 }

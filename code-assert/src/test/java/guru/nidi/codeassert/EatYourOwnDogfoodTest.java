@@ -22,8 +22,8 @@ import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertTest;
 import guru.nidi.codeassert.junit.PredefConfig;
-import guru.nidi.codeassert.model.ModelAnalyzer;
-import guru.nidi.codeassert.model.ModelResult;
+import guru.nidi.codeassert.model.Model;
+import guru.nidi.codeassert.model.ModelBuilder;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.Test;
@@ -60,9 +60,9 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
     }
 
     @Override
-    protected ModelResult analyzeModel() {
+    protected Model analyzeModel() {
         System.gc();
-        return new ModelAnalyzer(AnalyzerConfig.maven().main()).analyze();
+        return new ModelBuilder(AnalyzerConfig.maven().main()).build();
     }
 
     @Override

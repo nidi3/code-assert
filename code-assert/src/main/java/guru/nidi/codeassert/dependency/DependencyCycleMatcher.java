@@ -15,7 +15,7 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.ModelResult;
+import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.model.UsingElement;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
@@ -24,7 +24,7 @@ import java.util.*;
 
 import static guru.nidi.codeassert.dependency.MatcherUtils.*;
 
-public class DependencyCycleMatcher<T extends UsingElement<T>> extends TypeSafeMatcher<ModelResult> {
+public class DependencyCycleMatcher<T extends UsingElement<T>> extends TypeSafeMatcher<Model> {
     private static final Comparator<DependencyMap> DEP_MAP_COMPARATOR = new DependencyMapComparator();
 
     private final Class<T> type;
@@ -37,8 +37,8 @@ public class DependencyCycleMatcher<T extends UsingElement<T>> extends TypeSafeM
     }
 
     @Override
-    protected boolean matchesSafely(ModelResult item) {
-        return result(item).isEmptyExcept(exceptions);
+    protected boolean matchesSafely(Model model) {
+        return result(model).isEmptyExcept(exceptions);
     }
 
     public void describeTo(Description description) {
@@ -46,8 +46,8 @@ public class DependencyCycleMatcher<T extends UsingElement<T>> extends TypeSafeM
     }
 
     @Override
-    protected void describeMismatchSafely(ModelResult item, Description description) {
-        final CycleResult result = result(item);
+    protected void describeMismatchSafely(Model model, Description description) {
+        final CycleResult result = result(model);
         if (!result.isEmptyExcept(exceptions)) {
             description.appendText("Found these cyclic groups:\n");
             for (final DependencyMap cycle : sortedDepMaps(result.getCyclesExcept(exceptions))) {
@@ -61,8 +61,8 @@ public class DependencyCycleMatcher<T extends UsingElement<T>> extends TypeSafeM
         }
     }
 
-    private CycleResult result(ModelResult item) {
-        return DependencyRules.analyzeCycles(item.findings().view(type));
+    private CycleResult result(Model model) {
+        return DependencyRules.analyzeCycles(model.view(type));
     }
 
     private static List<DependencyMap> sortedDepMaps(Collection<DependencyMap> maps) {

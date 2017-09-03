@@ -15,14 +15,14 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.ModelResult;
+import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.model.UsingElement;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
 import static guru.nidi.codeassert.dependency.MatcherUtils.*;
 
-public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMatcher<ModelResult> {
+public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMatcher<Model> {
     private final Class<T> type;
     private final DependencyRules rules;
     private final boolean nonExisting;
@@ -36,8 +36,8 @@ public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMa
     }
 
     @Override
-    protected boolean matchesSafely(ModelResult item) {
-        final RuleResult result = result(item);
+    protected boolean matchesSafely(Model model) {
+        final RuleResult result = result(model);
         return result.getMissing().isEmpty() && result.getDenied().isEmpty()
                 && (result.getNotExisting().isEmpty() || !nonExisting)
                 && (result.getUndefined().isEmpty() || !undefined);
@@ -48,16 +48,16 @@ public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMa
     }
 
     @Override
-    protected void describeMismatchSafely(ModelResult item, Description description) {
-        final RuleResult result = result(item);
+    protected void describeMismatchSafely(Model model, Description description) {
+        final RuleResult result = result(model);
         describeNotExisting(result, description);
         describeUndefined(result, description);
         describeMissing(result, description);
         describeForbidden(result, description);
     }
 
-    private RuleResult result(ModelResult item) {
-        return rules.analyzeRules(item.findings().view(type));
+    private RuleResult result(Model model) {
+        return rules.analyzeRules(model.view(type));
     }
 
     private void describeForbidden(RuleResult result, Description description) {

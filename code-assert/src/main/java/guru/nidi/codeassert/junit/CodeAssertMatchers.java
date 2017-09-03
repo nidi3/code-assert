@@ -33,53 +33,53 @@ public final class CodeAssertMatchers {
     private CodeAssertMatchers() {
     }
 
-    public static Matcher<ModelResult> packagesMatchRules(final DependencyRules rules) {
+    public static Matcher<Model> packagesMatchRules(final DependencyRules rules) {
         return new DependencyRuleMatcher<>(JavaPackage.class, rules, false, false);
     }
 
-    public static Matcher<ModelResult> packagesMatchExactly(final DependencyRules rules) {
+    public static Matcher<Model> packagesMatchExactly(final DependencyRules rules) {
         return new DependencyRuleMatcher<>(JavaPackage.class, rules, true, true);
     }
 
-    public static Matcher<ModelResult> packagesMatchIgnoringNonExisting(final DependencyRules rules) {
+    public static Matcher<Model> packagesMatchIgnoringNonExisting(final DependencyRules rules) {
         return new DependencyRuleMatcher<>(JavaPackage.class, rules, false, true);
     }
 
-    public static Matcher<ModelResult> packagesMatchIgnoringUndefined(final DependencyRules rules) {
+    public static Matcher<Model> packagesMatchIgnoringUndefined(final DependencyRules rules) {
         return new DependencyRuleMatcher<>(JavaPackage.class, rules, true, false);
     }
 
-    public static Matcher<ModelResult> classesMatchRules(final DependencyRules rules) {
+    public static Matcher<Model> classesMatchRules(final DependencyRules rules) {
         return new DependencyRuleMatcher<>(JavaClass.class, rules, false, false);
     }
 
-    public static Matcher<ModelResult> classesMatchExactly(final DependencyRules rules) {
+    public static Matcher<Model> classesMatchExactly(final DependencyRules rules) {
         return new DependencyRuleMatcher<>(JavaClass.class, rules, true, true);
     }
 
-    public static Matcher<ModelResult> classesMatchIgnoringNonExisting(final DependencyRules rules) {
+    public static Matcher<Model> classesMatchIgnoringNonExisting(final DependencyRules rules) {
         return new DependencyRuleMatcher<>(JavaClass.class, rules, false, true);
     }
 
-    public static Matcher<ModelResult> classesMatchIgnoringUndefined(final DependencyRules rules) {
+    public static Matcher<Model> classesMatchIgnoringUndefined(final DependencyRules rules) {
         return new DependencyRuleMatcher<>(JavaClass.class, rules, true, false);
     }
 
-    public static Matcher<ModelResult> hasNoPackageCycles() {
+    public static Matcher<Model> hasNoPackageCycles() {
         return new DependencyCycleMatcher<>(JavaPackage.class);
     }
 
     @SafeVarargs
-    public static Matcher<ModelResult> hasNoPackageCyclesExcept(Set<String>... cyclicGroups) {
+    public static Matcher<Model> hasNoPackageCyclesExcept(Set<String>... cyclicGroups) {
         return new DependencyCycleMatcher<>(JavaPackage.class, cyclicGroups);
     }
 
-    public static Matcher<ModelResult> hasNoClassCycles() {
+    public static Matcher<Model> hasNoClassCycles() {
         return new DependencyCycleMatcher<>(JavaClass.class);
     }
 
     @SafeVarargs
-    public static Matcher<ModelResult> hasNoClassCyclesExcept(Set<String>... cyclicGroups) {
+    public static Matcher<Model> hasNoClassCyclesExcept(Set<String>... cyclicGroups) {
         return new DependencyCycleMatcher<>(JavaClass.class, cyclicGroups);
     }
 

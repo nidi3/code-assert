@@ -44,7 +44,7 @@ public class FileManagerTest {
 
     @Test
     public void classFile() throws IOException {
-        assertTrue(new FileManager().acceptClassFile(Path.clazz("ModelAnalyzer")));
+        assertTrue(new FileManager().acceptClassFile(Path.clazz("ModelBuilder")));
     }
 
     @Test

@@ -21,8 +21,8 @@ import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.*;
 import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.junit.CodeAssertTest;
-import guru.nidi.codeassert.model.ModelAnalyzer;
-import guru.nidi.codeassert.model.ModelResult;
+import guru.nidi.codeassert.model.Model;
+import guru.nidi.codeassert.model.ModelBuilder;
 import guru.nidi.codeassert.pmd.*;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,8 +55,8 @@ public class CodeTest extends CodeAssertTest {
     }
 
     @Override
-    protected ModelResult analyzeModel() {
-        return new ModelAnalyzer(CONFIG).analyze();
+    protected Model analyzeModel() {
+        return new ModelBuilder(CONFIG).build();
     }
 
     @Override

@@ -15,31 +15,28 @@
  */
 package guru.nidi.codeassert.model;
 
-import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 
-public class ModelAnalyzer implements Analyzer<Model> {
+public class ModelBuilder {
     private final AnalyzerConfig config;
 
-    public ModelAnalyzer(AnalyzerConfig config) {
+    public ModelBuilder(AnalyzerConfig config) {
         this.config = config;
     }
 
-    public ModelResult analyze() {
+    public Model build() {
         try {
             final FileManager fm = new FileManager();
             for (final File clazz : config.getClasses()) {
                 fm.withFile(clazz.getAbsolutePath());
             }
-            final Model model = new JavaClassBuilder(fm).build();
-            return new ModelResult(this, model, Collections.<String>emptyList());
+            return new JavaClassBuilder(fm).build();
         } catch (IOException e) {
-            throw new AnalyzerException("Problem executing ModelAnalyzer", e);
+            throw new AnalyzerException("Problem executing ModelBuilder", e);
         }
     }
 }
