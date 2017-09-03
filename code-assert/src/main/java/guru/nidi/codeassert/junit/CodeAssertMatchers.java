@@ -66,19 +66,19 @@ public final class CodeAssertMatchers {
         return new ModelMatcher(Scope.CLASSES, rules, true, false);
     }
 
-    public static Matcher<DependencyResult> matchRules() {
+    public static Matcher<DependencyResult> matchesRules() {
         return new DependencyResultMatcher(false, false);
     }
 
-    public static Matcher<DependencyResult> matchExactly() {
+    public static Matcher<DependencyResult> matchesExactly() {
         return new DependencyResultMatcher(true, true);
     }
 
-    public static Matcher<DependencyResult> matchIgnoringNonExisting() {
+    public static Matcher<DependencyResult> matchesIgnoringNonExisting() {
         return new DependencyResultMatcher(false, true);
     }
 
-    public static Matcher<DependencyResult> matchIgnoringUndefined() {
+    public static Matcher<DependencyResult> matchesIgnoringUndefined() {
         return new DependencyResultMatcher(true, false);
     }
 
