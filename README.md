@@ -35,7 +35,7 @@ public class DependencyTest {
 
     @Test
     public void noCycles() {
-        assertThat(new ModelAnalyzer(config).analyze(), hasNoPackageCycles());
+        assertThat(new ModelBuilder(config).build(), hasNoPackageCycles());
     }
 
     @Test
@@ -59,7 +59,7 @@ public class DependencyTest {
                 .withRelativeRules(new OrgProj())
                 .withExternals("java.*", "org.*", "net.*");
 
-        assertThat(new ModelAnalyzer(config).analyze(), packagesMatchExactly(rules));
+        assertThat(new ModelBuilder(config).build(), packagesMatchExactly(rules));
     }
 }
 ```
@@ -162,7 +162,7 @@ public class PmdTest {
                 .because("equals",
                         In.everywhere().ignore("public boolean equals(Object o) {"))
                 .just(
-                        In.classes(DependencyRule.class, RuleResult.class).ignoreAll(),
+                        In.classes(DependencyRule.class, Dependencies.class).ignoreAll(),
                         In.loc("SignatureParser").ignoreAll());
 
         // Only treat duplications with at least 20 tokens
@@ -234,8 +234,8 @@ public class CodeTest extends CodeAssertTest {
     }
 
     @Override
-    protected ModelResult analyzeModel() {
-        return new ModelAnalyzer(CONFIG).analyze();
+    protected Model analyzeModel() {
+        return new ModelBuilder(CONFIG).build();
     }
 
     @Override

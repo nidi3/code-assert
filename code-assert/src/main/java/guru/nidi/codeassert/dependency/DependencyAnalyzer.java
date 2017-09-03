@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.model;
+package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import org.junit.Test;
+import guru.nidi.codeassert.Analyzer;
+import guru.nidi.codeassert.AnalyzerResult;
 
-import java.io.IOException;
+import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-
-public class AnalyzerTest {
-    final Model model = new ModelBuilder(
-            AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model")).build();
-
-    @Test
-    public void packages() throws IOException {
-        assertEquals(37, model.getPackages().size());
-    }
-
-    @Test
-    public void classes() throws IOException {
-        assertEquals(108, model.getClasses().size());
+public class DependencyAnalyzer implements Analyzer<Dependencies> {
+    @Override
+    public AnalyzerResult<Dependencies> analyze() {
+        return new DependencyResult(this, new Dependencies(), Collections.<String>emptyList());
     }
 }

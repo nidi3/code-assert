@@ -84,7 +84,7 @@ public class DependencyRule extends JavaElement {
     }
 
     public class Analyzer<T extends UsingElement<T>> {
-        final RuleResult result = new RuleResult();
+        final Dependencies result = new Dependencies();
         private final Model.View<T> view;
         private final DependencyRules rules;
         private final List<T> elems;
@@ -95,7 +95,7 @@ public class DependencyRule extends JavaElement {
             elems = view.matchingElements(pattern);
         }
 
-        public RuleResult analyze() {
+        public Dependencies analyze() {
             analyzeNotExisting();
             analyzeMissing();
             analyzeAllowAndDeny();

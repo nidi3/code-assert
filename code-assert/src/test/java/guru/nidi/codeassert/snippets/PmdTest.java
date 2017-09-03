@@ -17,8 +17,8 @@ package guru.nidi.codeassert.snippets;
 
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
+import guru.nidi.codeassert.dependency.Dependencies;
 import guru.nidi.codeassert.dependency.DependencyRule;
-import guru.nidi.codeassert.dependency.RuleResult;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.*;
@@ -69,7 +69,7 @@ public class PmdTest {
                 .because("equals",
                         In.everywhere().ignore("public boolean equals(Object o) {"))
                 .just(
-                        In.classes(DependencyRule.class, RuleResult.class).ignoreAll(),
+                        In.classes(DependencyRule.class, Dependencies.class).ignoreAll(),
                         In.loc("SignatureParser").ignoreAll());
 
         // Only treat duplications with at least 20 tokens

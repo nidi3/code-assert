@@ -30,11 +30,12 @@ public class ModelBuilder {
 
     public Model build() {
         try {
-            final FileManager fm = new FileManager();
+            final Model model = new Model();
+            final ClassFileParser parser = new ClassFileParser();
             for (final File clazz : config.getClasses()) {
-                fm.withFile(clazz.getAbsolutePath());
+                parser.parse(clazz, model);
             }
-            return new JavaClassBuilder(fm).build();
+            return model;
         } catch (IOException e) {
             throw new AnalyzerException("Problem executing ModelBuilder", e);
         }

@@ -37,7 +37,7 @@ public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMa
 
     @Override
     protected boolean matchesSafely(Model model) {
-        final RuleResult result = result(model);
+        final Dependencies result = result(model);
         return result.getMissing().isEmpty() && result.getDenied().isEmpty()
                 && (result.getNotExisting().isEmpty() || !nonExisting)
                 && (result.getUndefined().isEmpty() || !undefined);
@@ -49,18 +49,18 @@ public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMa
 
     @Override
     protected void describeMismatchSafely(Model model, Description description) {
-        final RuleResult result = result(model);
+        final Dependencies result = result(model);
         describeNotExisting(result, description);
         describeUndefined(result, description);
         describeMissing(result, description);
         describeForbidden(result, description);
     }
 
-    private RuleResult result(Model model) {
+    private Dependencies result(Model model) {
         return rules.analyzeRules(model.view(type));
     }
 
-    private void describeForbidden(RuleResult result, Description description) {
+    private void describeForbidden(Dependencies result, Description description) {
         if (!result.getDenied().isEmpty()) {
             description.appendText("\nFound forbidden dependencies:\n");
             for (final String elem : sorted(result.getDenied().getElements())) {
@@ -70,7 +70,7 @@ public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMa
         }
     }
 
-    private void describeMissing(RuleResult result, Description description) {
+    private void describeMissing(Dependencies result, Description description) {
         if (!result.getMissing().isEmpty()) {
             description.appendText("\nFound missing dependencies:\n");
             for (final String elem : sorted(result.getMissing().getElements())) {
@@ -82,14 +82,14 @@ public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMa
         }
     }
 
-    private void describeUndefined(RuleResult result, Description description) {
+    private void describeUndefined(Dependencies result, Description description) {
         if (undefined && !result.getUndefined().isEmpty()) {
             description.appendText("\nFound elements which are not defined:\n");
             description.appendText(join(sorted(result.getUndefined())) + "\n");
         }
     }
 
-    private void describeNotExisting(RuleResult result, Description description) {
+    private void describeNotExisting(Dependencies result, Description description) {
         if (nonExisting && !result.getNotExisting().isEmpty()) {
             description.appendText("\nDefined, but not existing elements:\n");
             description.appendText(join(sortedPatterns(result.getNotExisting())) + "\n");

@@ -22,7 +22,8 @@ import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.dependency.DependencyRules;
 import guru.nidi.codeassert.dependency.DependencyRulesTest;
 import guru.nidi.codeassert.findbugs.FindBugsTest;
-import guru.nidi.codeassert.model.*;
+import guru.nidi.codeassert.model.ClassFileParserTest;
+import guru.nidi.codeassert.model.ExampleInterface;
 import net.sourceforge.pmd.RulePriority;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -122,7 +123,7 @@ public class PmdTest {
                                 In.clazz(ExampleInterface.class).ignore("ShortMethodName"),
                                 In.clazz(Bugs.class).ignore("UnusedLocalVariable"),
                                 In.locs("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns", "AddEmptyString", "DoNotCallGarbageCollectionExplicitly", "AvoidDuplicateLiterals"),
-                                In.classes(ClassFileParserTest.class, FileManagerTest.class, JarFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert"),
+                                In.classes(ClassFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert"),
                                 In.classes(DependencyRulesTest.class, LocationMatcherTest.class, LocationNameMatcherTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.clazz(DependencyRulesTest.class).ignore("VariableNamingConventions"),
                                 In.classes(PmdTest.class, FindBugsTest.class, CheckstyleTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),

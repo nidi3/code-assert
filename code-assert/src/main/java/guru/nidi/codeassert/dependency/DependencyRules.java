@@ -253,8 +253,8 @@ public final class DependencyRules {
         return Character.toString(c);
     }
 
-    public <T extends UsingElement<T>> RuleResult analyzeRules(Model.View<T> view) {
-        final RuleResult result = new RuleResult();
+    public <T extends UsingElement<T>> Dependencies analyzeRules(Model.View<T> view) {
+        final Dependencies result = new Dependencies();
         for (final DependencyRule rule : rules) {
             result.merge(rule.analyzer(view, this).analyze());
         }
