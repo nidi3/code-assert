@@ -16,8 +16,7 @@
 package guru.nidi.codeassert.dependency;
 
 
-import guru.nidi.codeassert.model.Model;
-import guru.nidi.codeassert.model.UsingElement;
+import guru.nidi.codeassert.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -253,12 +252,12 @@ public final class DependencyRules {
         return Character.toString(c);
     }
 
-    public <T extends UsingElement<T>> Dependencies analyzeRules(Model.View<T> view) {
+    public <T extends UsingElement<T>> Dependencies analyzeRules(Scope<T> scope) {
         final Dependencies result = new Dependencies();
         for (final DependencyRule rule : rules) {
-            result.merge(rule.analyzer(view, this).analyze());
+            result.merge(rule.analyzer(scope, this).analyze());
         }
-        for (final T elem : view) {
+        for (final T elem : scope) {
             if (!elem.matchesAny(rules)) {
                 result.undefined.add(elem.getName());
             }
@@ -277,7 +276,7 @@ public final class DependencyRules {
         return s;
     }
 
-    public static <T extends UsingElement<T>> CycleResult analyzeCycles(Model.View<T> view) {
-        return new Tarjan<T>().analyzeCycles(view);
+    public static <T extends UsingElement<T>> CycleResult analyzeCycles(Scope<T> scope) {
+        return new Tarjan<T>().analyzeCycles(scope);
     }
 }

@@ -15,32 +15,29 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.Model;
-import guru.nidi.codeassert.model.UsingElement;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
 import static guru.nidi.codeassert.dependency.MatcherUtils.*;
 
-public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMatcher<Model> {
-    private final Class<T> type;
-    private final DependencyRules rules;
+public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
     private final boolean nonExisting;
     private final boolean undefined;
 
-    public DependencyRuleMatcher(Class<T> type, DependencyRules rules, boolean nonExisting, boolean undefined) {
-        this.type = type;
-        this.rules = rules;
+    public DependencyResultMatcher(boolean nonExisting, boolean undefined) {
         this.nonExisting = nonExisting;
         this.undefined = undefined;
     }
 
     @Override
-    protected boolean matchesSafely(Model model) {
-        final Dependencies result = result(model);
-        return result.getMissing().isEmpty() && result.getDenied().isEmpty()
-                && (result.getNotExisting().isEmpty() || !nonExisting)
-                && (result.getUndefined().isEmpty() || !undefined);
+    protected boolean matchesSafely(DependencyResult item) {
+        return matches(item.findings());
+    }
+
+    protected boolean matches(Dependencies dependencies) {
+        return dependencies.getMissing().isEmpty() && dependencies.getDenied().isEmpty()
+                && (dependencies.getNotExisting().isEmpty() || !nonExisting)
+                && (dependencies.getUndefined().isEmpty() || !undefined);
     }
 
     public void describeTo(Description description) {
@@ -48,16 +45,15 @@ public class DependencyRuleMatcher<T extends UsingElement<T>> extends TypeSafeMa
     }
 
     @Override
-    protected void describeMismatchSafely(Model model, Description description) {
-        final Dependencies result = result(model);
-        describeNotExisting(result, description);
-        describeUndefined(result, description);
-        describeMissing(result, description);
-        describeForbidden(result, description);
+    protected void describeMismatchSafely(DependencyResult item, Description description) {
+        describeMismatch(item.findings(), description);
     }
 
-    private Dependencies result(Model model) {
-        return rules.analyzeRules(model.view(type));
+    protected void describeMismatch(Dependencies dependencies, Description description) {
+        describeNotExisting(dependencies, description);
+        describeUndefined(dependencies, description);
+        describeMissing(dependencies, description);
+        describeForbidden(dependencies, description);
     }
 
     private void describeForbidden(Dependencies result, Description description) {

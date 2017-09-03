@@ -16,6 +16,7 @@
 package guru.nidi.codeassert.junit;
 
 import guru.nidi.codeassert.checkstyle.CheckstyleResult;
+import guru.nidi.codeassert.dependency.DependencyResult;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
 import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.pmd.CpdResult;
@@ -41,7 +42,8 @@ public class CodeAssertTest {
         CHECKSTYLE, CHECKSTYLE_UNUSED_ACTIONS
     }
 
-    private static Model modelResult;
+    private static Model model;
+    private static DependencyResult dependencyResult;
     private static FindBugsResult findBugsResult;
     private static PmdResult pmdResult;
     private static CpdResult cpdResult;
@@ -51,7 +53,11 @@ public class CodeAssertTest {
         return EnumSet.allOf(Type.class);
     }
 
-    protected Model analyzeModel() {
+    protected Model buildModel() {
+        return null;
+    }
+
+    protected DependencyResult analyzeDependencies() {
         return null;
     }
 
@@ -71,11 +77,18 @@ public class CodeAssertTest {
         return null;
     }
 
-    protected synchronized Model modelResult() {
-        if (modelResult == null) {
-            modelResult = analyzeModel();
+    protected synchronized Model model() {
+        if (model == null) {
+            model = buildModel();
         }
-        return modelResult;
+        return model;
+    }
+
+    protected synchronized DependencyResult dependencyResult() {
+        if (dependencyResult == null) {
+            dependencyResult = analyzeDependencies();
+        }
+        return dependencyResult;
     }
 
     protected synchronized FindBugsResult findBugsResult() {
@@ -108,9 +121,9 @@ public class CodeAssertTest {
 
     @Test
     public void circularDependencies() {
-        assumeFalse("analyzeModel() not implemented.", modelResult() == null);
+        assumeFalse("analyzeDependencies() not implemented.", model() == null);
         assumeTrue("Circular dependencies test excluded.", defaultTests().contains(CIRCULAR_DEPENDENCIES));
-        assertThat(modelResult(), hasNoPackageCycles());
+        assertThat(model(), hasNoPackageCycles());
     }
 
     @Test

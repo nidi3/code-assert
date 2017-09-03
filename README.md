@@ -230,11 +230,11 @@ public class CodeTest extends CodeAssertTest {
         }
 
         final DependencyRules rules = denyAll().withExternals("java*").withRelativeRules(new MyProject());
-        assertThat(modelResult(), packagesMatchExactly(rules));
+        assertThat(model(), packagesMatchExactly(rules));
     }
 
     @Override
-    protected Model analyzeModel() {
+    protected Model buildModel() {
         return Model.from(CONFIG.getClasses());
     }
 

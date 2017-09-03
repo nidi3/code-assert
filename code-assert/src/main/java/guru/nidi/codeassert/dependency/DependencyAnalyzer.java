@@ -16,13 +16,82 @@
 package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.Analyzer;
-import guru.nidi.codeassert.AnalyzerResult;
+import guru.nidi.codeassert.config.*;
+import guru.nidi.codeassert.model.Model;
+import guru.nidi.codeassert.model.Scope;
 
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import static guru.nidi.codeassert.dependency.DependencyCollector.*;
 
 public class DependencyAnalyzer implements Analyzer<Dependencies> {
+    private static final String DUMMY_CLASS = ".DummyClass";
+
+    private final AnalyzerConfig config;
+    private final DependencyRules rules;
+    private final Scope scope;
+    private final DependencyCollector collector;
+
+    public DependencyAnalyzer(AnalyzerConfig config, DependencyRules rules, Scope scope, DependencyCollector collect) {
+        this.config = config;
+        this.rules = rules;
+        this.scope = scope;
+        this.collector = collect;
+    }
+
     @Override
-    public AnalyzerResult<Dependencies> analyze() {
-        return new DependencyResult(this, new Dependencies(), Collections.<String>emptyList());
+    public DependencyResult analyze() {
+        final Model model = Model.from(config.getClasses());
+        final Dependencies dependencies = rules.analyzeRules(scope.in(model));
+        final UsageCounter counter = new UsageCounter();
+        final Dependencies filtered = new Dependencies(new DependencyMap(), new DependencyMap(), new DependencyMap(),
+                handleNotExisting(dependencies, counter),
+                handleUndefined(dependencies, counter));
+        handleMissing(dependencies, counter, filtered);
+        handleDenied(dependencies, counter, filtered);
+        collector.printUnusedWarning(counter);
+        return new DependencyResult(this, filtered, collector.unusedActions(counter));
+    }
+
+    private void handleDenied(Dependencies dependencies, UsageCounter counter, Dependencies filtered) {
+        for (final String name : dependencies.denied.getElements()) {
+            if (counter.accept(collector.accept(new DependencyEntry(DENIED, className(name))))) {
+                filtered.denied.with(name, dependencies.denied);
+            }
+        }
+    }
+
+    private void handleMissing(Dependencies dependencies, UsageCounter counter, Dependencies filtered) {
+        for (final String name : dependencies.missing.getElements()) {
+            if (counter.accept(collector.accept(new DependencyEntry(MISSING, className(name))))) {
+                filtered.missing.with(name, dependencies.missing);
+            }
+        }
+    }
+
+    private Set<String> handleUndefined(Dependencies dependencies, UsageCounter counter) {
+        final Set<String> res = new HashSet<>();
+        for (final String name : dependencies.undefined) {
+            if (counter.accept(collector.accept(new DependencyEntry(UNDEFINED, className(name))))) {
+                res.add(name);
+            }
+        }
+        return res;
+    }
+
+    private Set<LocationMatcher> handleNotExisting(Dependencies dependencies, UsageCounter counter) {
+        final Set<LocationMatcher> res = new HashSet<>();
+        for (final LocationMatcher name : dependencies.notExisting) {
+            if (counter.accept(collector.accept(new DependencyEntry(NOT_EXISTING, className(name))))) {
+                res.add(name);
+            }
+        }
+        return res;
+    }
+
+    private String className(Object name) {
+        //TODO not nice
+        return scope instanceof Scope.Packages ? name + DUMMY_CLASS : name.toString();
     }
 }

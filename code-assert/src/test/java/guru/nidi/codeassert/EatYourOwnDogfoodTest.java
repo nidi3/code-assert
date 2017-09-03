@@ -55,12 +55,11 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
         final DependencyRules rules = denyAll()
                 .withExternals("edu*", "java*", "net*", "org*", "com*")
                 .withRelativeRules(new GuruNidiCodeassert());
-        assertThat(modelResult(), packagesMatchExactly(rules));
+        assertThat(model(), packagesMatchExactly(rules));
     }
 
     @Override
-    protected Model analyzeModel() {
-        System.gc();
+    protected Model buildModel() {
         return Model.from(AnalyzerConfig.maven().main().getClasses());
     }
 

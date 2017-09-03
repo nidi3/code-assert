@@ -23,7 +23,8 @@ import guru.nidi.codeassert.findbugs.FindBugsMatcher;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
 import guru.nidi.codeassert.jacoco.CoverageMatcher;
 import guru.nidi.codeassert.jacoco.JacocoResult;
-import guru.nidi.codeassert.model.*;
+import guru.nidi.codeassert.model.Model;
+import guru.nidi.codeassert.model.Scope;
 import guru.nidi.codeassert.pmd.*;
 import org.hamcrest.Matcher;
 
@@ -34,53 +35,69 @@ public final class CodeAssertMatchers {
     }
 
     public static Matcher<Model> packagesMatchRules(final DependencyRules rules) {
-        return new DependencyRuleMatcher<>(JavaPackage.class, rules, false, false);
+        return new ModelMatcher(Scope.PACKAGES, rules, false, false);
     }
 
     public static Matcher<Model> packagesMatchExactly(final DependencyRules rules) {
-        return new DependencyRuleMatcher<>(JavaPackage.class, rules, true, true);
+        return new ModelMatcher(Scope.PACKAGES, rules, true, true);
     }
 
     public static Matcher<Model> packagesMatchIgnoringNonExisting(final DependencyRules rules) {
-        return new DependencyRuleMatcher<>(JavaPackage.class, rules, false, true);
+        return new ModelMatcher(Scope.PACKAGES, rules, false, true);
     }
 
     public static Matcher<Model> packagesMatchIgnoringUndefined(final DependencyRules rules) {
-        return new DependencyRuleMatcher<>(JavaPackage.class, rules, true, false);
+        return new ModelMatcher(Scope.PACKAGES, rules, true, false);
     }
 
     public static Matcher<Model> classesMatchRules(final DependencyRules rules) {
-        return new DependencyRuleMatcher<>(JavaClass.class, rules, false, false);
+        return new ModelMatcher(Scope.CLASSES, rules, false, false);
     }
 
     public static Matcher<Model> classesMatchExactly(final DependencyRules rules) {
-        return new DependencyRuleMatcher<>(JavaClass.class, rules, true, true);
+        return new ModelMatcher(Scope.CLASSES, rules, true, true);
     }
 
     public static Matcher<Model> classesMatchIgnoringNonExisting(final DependencyRules rules) {
-        return new DependencyRuleMatcher<>(JavaClass.class, rules, false, true);
+        return new ModelMatcher(Scope.CLASSES, rules, false, true);
     }
 
     public static Matcher<Model> classesMatchIgnoringUndefined(final DependencyRules rules) {
-        return new DependencyRuleMatcher<>(JavaClass.class, rules, true, false);
+        return new ModelMatcher(Scope.CLASSES, rules, true, false);
+    }
+
+    public static Matcher<DependencyResult> matchRules() {
+        return new DependencyResultMatcher(false, false);
+    }
+
+    public static Matcher<DependencyResult> matchExactly() {
+        return new DependencyResultMatcher(true, true);
+    }
+
+    public static Matcher<DependencyResult> matchIgnoringNonExisting() {
+        return new DependencyResultMatcher(false, true);
+    }
+
+    public static Matcher<DependencyResult> matchIgnoringUndefined() {
+        return new DependencyResultMatcher(true, false);
     }
 
     public static Matcher<Model> hasNoPackageCycles() {
-        return new DependencyCycleMatcher<>(JavaPackage.class);
+        return new DependencyCycleMatcher(Scope.PACKAGES);
     }
 
     @SafeVarargs
     public static Matcher<Model> hasNoPackageCyclesExcept(Set<String>... cyclicGroups) {
-        return new DependencyCycleMatcher<>(JavaPackage.class, cyclicGroups);
+        return new DependencyCycleMatcher(Scope.PACKAGES, cyclicGroups);
     }
 
     public static Matcher<Model> hasNoClassCycles() {
-        return new DependencyCycleMatcher<>(JavaClass.class);
+        return new DependencyCycleMatcher(Scope.CLASSES);
     }
 
     @SafeVarargs
     public static Matcher<Model> hasNoClassCyclesExcept(Set<String>... cyclicGroups) {
-        return new DependencyCycleMatcher<>(JavaClass.class, cyclicGroups);
+        return new DependencyCycleMatcher(Scope.CLASSES, cyclicGroups);
     }
 
     public static Matcher<FindBugsResult> hasNoBugs() {

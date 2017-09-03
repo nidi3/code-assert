@@ -19,6 +19,7 @@ package guru.nidi.codeassert.dependency;
 import guru.nidi.codeassert.model.UsingElement;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 class DependencyMap {
     private final Map<String, Map<String, Info>> map = new LinkedHashMap<>();
@@ -43,6 +44,15 @@ class DependencyMap {
         return this;
     }
 
+    DependencyMap with(String from, DependencyMap other) {
+        final Map<String, Info> infos = other.getDependencies(from);
+        for (final Entry<String, Info> entry : infos.entrySet()) {
+            final Info info = entry.getValue();
+            with(info.getSpecificity(), from, info.getVias(), entry.getKey());
+        }
+        return this;
+    }
+
     public DependencyMap without(int specificity, String from, String to) {
         final Map<String, Info> deps = map.get(from);
         if (deps != null) {
@@ -58,8 +68,8 @@ class DependencyMap {
     }
 
     public DependencyMap without(DependencyMap other) {
-        for (final Map.Entry<String, Map<String, Info>> entry : other.map.entrySet()) {
-            for (final Map.Entry<String, Info> to : entry.getValue().entrySet()) {
+        for (final Entry<String, Map<String, Info>> entry : other.map.entrySet()) {
+            for (final Entry<String, Info> to : entry.getValue().entrySet()) {
                 without(to.getValue().specificity, entry.getKey(), to.getKey());
             }
         }
@@ -67,7 +77,7 @@ class DependencyMap {
     }
 
     public void merge(DependencyMap deps) {
-        for (final Map.Entry<String, Map<String, Info>> entry : deps.map.entrySet()) {
+        for (final Entry<String, Map<String, Info>> entry : deps.map.entrySet()) {
             final Map<String, Info> ds = map.get(entry.getKey());
             if (ds == null) {
                 map.put(entry.getKey(), entry.getValue());

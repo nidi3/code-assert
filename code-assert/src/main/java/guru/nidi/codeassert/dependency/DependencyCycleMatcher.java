@@ -16,7 +16,7 @@
 package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.model.Model;
-import guru.nidi.codeassert.model.UsingElement;
+import guru.nidi.codeassert.model.Scope;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -24,15 +24,15 @@ import java.util.*;
 
 import static guru.nidi.codeassert.dependency.MatcherUtils.*;
 
-public class DependencyCycleMatcher<T extends UsingElement<T>> extends TypeSafeMatcher<Model> {
+public class DependencyCycleMatcher extends TypeSafeMatcher<Model> {
     private static final Comparator<DependencyMap> DEP_MAP_COMPARATOR = new DependencyMapComparator();
 
-    private final Class<T> type;
+    private final Scope scope;
     private final Set<String>[] exceptions;
 
     @SafeVarargs
-    public DependencyCycleMatcher(Class<T> type, Set<String>... exceptions) {
-        this.type = type;
+    public DependencyCycleMatcher(Scope scope, Set<String>... exceptions) {
+        this.scope = scope;
         this.exceptions = exceptions;
     }
 
@@ -62,7 +62,7 @@ public class DependencyCycleMatcher<T extends UsingElement<T>> extends TypeSafeM
     }
 
     private CycleResult result(Model model) {
-        return DependencyRules.analyzeCycles(model.view(type));
+        return DependencyRules.analyzeCycles(scope.in(model));
     }
 
     private static List<DependencyMap> sortedDepMaps(Collection<DependencyMap> maps) {

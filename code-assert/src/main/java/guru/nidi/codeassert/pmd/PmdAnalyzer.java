@@ -45,10 +45,10 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     private final Map<String, Ruleset> rulesets;
 
     public PmdAnalyzer(AnalyzerConfig config, PmdViolationCollector collector) {
-        this(config, collector, new HashMap<String, Ruleset>());
+        this(config, new HashMap<String, Ruleset>(), collector);
     }
 
-    private PmdAnalyzer(AnalyzerConfig config, PmdViolationCollector collector, Map<String, Ruleset> rulesets) {
+    private PmdAnalyzer(AnalyzerConfig config, Map<String, Ruleset> rulesets, PmdViolationCollector collector) {
         this.config = config;
         this.collector = collector;
         this.rulesets = rulesets;
@@ -60,7 +60,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
         for (final Ruleset ruleset : rulesets) {
             newRuleset.put(ruleset.name, ruleset);
         }
-        return new PmdAnalyzer(config, collector, newRuleset);
+        return new PmdAnalyzer(config, newRuleset, collector);
     }
 
     public PmdAnalyzer withoutRulesets(Ruleset... rulesets) {
@@ -69,7 +69,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
         for (final Ruleset ruleset : rulesets) {
             newRuleset.remove(ruleset.name);
         }
-        return new PmdAnalyzer(config, collector, newRuleset);
+        return new PmdAnalyzer(config, newRuleset, collector);
     }
 
     @Override

@@ -13,25 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.model;
+package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import org.junit.Test;
+class DependencyEntry {
+    final String name;
+    final String data;
 
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-
-public class AnalyzerTest {
-    final Model model = Model.from(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model").getClasses());
-
-    @Test
-    public void packages() throws IOException {
-        assertEquals(37, model.getPackages().size());
-    }
-
-    @Test
-    public void classes() throws IOException {
-        assertEquals(108, model.getClasses().size());
+    DependencyEntry(String name, String data) {
+        this.name = name;
+        this.data = data;
     }
 }

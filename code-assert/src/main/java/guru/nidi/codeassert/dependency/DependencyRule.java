@@ -16,7 +16,7 @@
 package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.config.LocationMatcher;
-import guru.nidi.codeassert.model.Model;
+import guru.nidi.codeassert.model.Scope;
 import guru.nidi.codeassert.model.UsingElement;
 
 import java.util.List;
@@ -79,20 +79,20 @@ public class DependencyRule extends JavaElement {
         return use.isEmpty() && usedBy.isEmpty();
     }
 
-    public <T extends UsingElement<T>> Analyzer analyzer(Model.View<T> view, DependencyRules rules) {
-        return new Analyzer<>(view, rules);
+    public <T extends UsingElement<T>> Analyzer analyzer(Scope<T> scope, DependencyRules rules) {
+        return new Analyzer<>(scope, rules);
     }
 
     public class Analyzer<T extends UsingElement<T>> {
         final Dependencies result = new Dependencies();
-        private final Model.View<T> view;
+        private final Scope<T> scope;
         private final DependencyRules rules;
         private final List<T> elems;
 
-        public Analyzer(Model.View<T> view, DependencyRules rules) {
-            this.view = view;
+        public Analyzer(Scope<T> scope, DependencyRules rules) {
+            this.scope = scope;
             this.rules = rules;
-            elems = view.matchingElements(pattern);
+            elems = scope.matchingElements(pattern);
         }
 
         public Dependencies analyze() {
@@ -111,7 +111,7 @@ public class DependencyRule extends JavaElement {
         private void analyzeMissing() {
             for (final T elem : elems) {
                 for (final LocationMatcher mustMatcher : use.must) {
-                    for (final T must : view.matchingElements(mustMatcher)) {
+                    for (final T must : scope.matchingElements(mustMatcher)) {
                         if (!elem.uses(must)) {
                             result.missing.with(pattern.specificity(), elem, must);
                         }
