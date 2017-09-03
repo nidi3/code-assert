@@ -65,10 +65,10 @@ public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
         final Project project = new Project();
         PluginLoader.addPluginsTo(project);
 
-        for (final AnalyzerConfig.Path clazz : config.getClasses()) {
+        for (final AnalyzerConfig.Path clazz : config.getClassPaths()) {
             project.addFile(clazz.getPath());
         }
-        for (final AnalyzerConfig.Path source : config.getSources()) {
+        for (final AnalyzerConfig.Path source : config.getSourcePaths()) {
             project.addSourceDir(source.getPath());
         }
         final String pathSeparator = System.getProperty("path.separator");

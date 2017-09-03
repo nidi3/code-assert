@@ -19,6 +19,7 @@ import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -32,12 +33,11 @@ public class ModelAnalyzer implements Analyzer<Model> {
     public ModelResult analyze() {
         try {
             final FileManager fm = new FileManager();
-            for (final AnalyzerConfig.Path path : config.getClasses()) {
-                fm.withDirectory(path.getPath());
+            for (final File clazz : config.getClasses()) {
+                fm.withFile(clazz.getAbsolutePath());
             }
-            final JavaClassBuilder builder = new JavaClassBuilder(new ClassFileParser(), fm);
-            builder.build();
-            return new ModelResult(this, builder.model, Collections.<String>emptyList());
+            final Model model = new JavaClassBuilder(fm).build();
+            return new ModelResult(this, model, Collections.<String>emptyList());
         } catch (IOException e) {
             throw new AnalyzerException("Problem executing ModelAnalyzer", e);
         }

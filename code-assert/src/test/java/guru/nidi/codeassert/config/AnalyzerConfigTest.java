@@ -32,32 +32,32 @@ public class AnalyzerConfigTest {
                 .withSources(new File("/etc"), "c", "/d")
                 .withClasses(new File("/tmp"), "a", "/b");
 
-        assertPath(config.getSources(), path("empty/path", ""), path("/etc", "/c"), path("/etc/", "d"));
-        assertPath(config.getClasses(), path("/tmp", "/a"), path("/tmp/", "b"));
+        assertPath(config.getSourcePaths(), path("empty/path", ""), path("/etc", "/c"), path("/etc/", "d"));
+        assertPath(config.getClassPaths(), path("/tmp", "/a"), path("/tmp/", "b"));
     }
 
     @Test
     public void mavenSimple() {
         final AnalyzerConfig config = AnalyzerConfig.maven().main();
-        assertPath(config.getSources(), path("src/main/java", ""));
+        assertPath(config.getSourcePaths(), path("src/main/java", ""));
     }
 
     @Test
     public void mavenModule() {
         final AnalyzerConfig config = AnalyzerConfig.maven("module").main();
-        assertPath(config.getSources(), path("module/src/main/java", ""));
+        assertPath(config.getSourcePaths(), path("module/src/main/java", ""));
     }
 
     @Test
     public void mavenOwnModule() {
         final AnalyzerConfig config = AnalyzerConfig.maven("code-assert").mainAndTest();
-        assertPath(config.getSources(), path("src/main/java", ""), path("src/test/java", ""));
+        assertPath(config.getSourcePaths(), path("src/main/java", ""), path("src/test/java", ""));
     }
 
     @Test
     public void mavenPackages() {
         final AnalyzerConfig config = AnalyzerConfig.maven().test("mypack");
-        assertPath(config.getSources(), path("src/test/java", "mypack"));
+        assertPath(config.getSourcePaths(), path("src/test/java", "mypack"));
     }
 
     @Test

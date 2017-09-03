@@ -51,12 +51,42 @@ public class AnalyzerConfig {
         return new AnalyzerConfig(sources, join(classes, Path.of(basedir, packages)));
     }
 
-    public List<Path> getSources() {
+    public List<Path> getSourcePaths() {
         return sources;
     }
 
-    public List<Path> getClasses() {
+    public List<Path> getClassPaths() {
         return classes;
+    }
+
+    public List<File> getSources() {
+        final List<File> files = new ArrayList<>();
+        for (final Path source : sources) {
+            crawlDir(new File(source.getPath()), ".java", files);
+        }
+        return files;
+    }
+
+    public List<File> getClasses() {
+        final List<File> files = new ArrayList<>();
+        for (final Path clazz : classes) {
+            crawlDir(new File(clazz.getPath()), ".class", files);
+        }
+        return files;
+    }
+
+    private void crawlDir(File base, String suffix, List<File> res) {
+        final File[] files = base.listFiles();
+        if (files != null) {
+            for (final File file : files) {
+                if (file.isFile() && file.getName().endsWith(suffix)) {
+                    res.add(file);
+                }
+                if (file.isDirectory()) {
+                    crawlDir(file, suffix, res);
+                }
+            }
+        }
     }
 
     private List<Path> join(List<Path> p1, List<Path> p2) {
@@ -180,7 +210,7 @@ public class AnalyzerConfig {
 
         @Override
         public String toString() {
-            return "Path(" + base + " , " + pack + ")";
+            return "Path(" + base + ", " + pack + ")";
         }
     }
 }

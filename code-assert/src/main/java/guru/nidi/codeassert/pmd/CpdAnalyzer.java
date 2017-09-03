@@ -45,7 +45,7 @@ public class CpdAnalyzer implements Analyzer<List<Match>> {
 
     private CPD createCpd() {
         final CPD cpd = new CPD(createCpdConfig());
-        for (final AnalyzerConfig.Path source : config.getSources()) {
+        for (final AnalyzerConfig.Path source : config.getSourcePaths()) {
             try {
                 cpd.addRecursively(new File(source.getPath()));
             } catch (IOException e) {

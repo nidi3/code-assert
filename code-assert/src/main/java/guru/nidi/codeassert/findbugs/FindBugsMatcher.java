@@ -32,7 +32,7 @@ public class FindBugsMatcher extends ResultMatcher<FindBugsResult, BugInstance> 
     protected void describeMismatchSafely(FindBugsResult item, Description description) {
         for (final BugInstance bug : item.findings()) {
             description.appendText("\n")
-                    .appendText(printBug(bug, ((FindBugsAnalyzer) item.analyzer()).config.getSources()));
+                    .appendText(printBug(bug, ((FindBugsAnalyzer) item.analyzer()).config.getSourcePaths()));
         }
     }
 

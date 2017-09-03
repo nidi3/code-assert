@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -44,22 +43,6 @@ public class FileManagerTest {
     }
 
     @Test
-    public void buildDirectory() throws IOException {
-        fileManager.withDirectories(Arrays.asList(Path.CLASSES, Path.TEST_CLASSES));
-        assertEquals(53, fileManager.extractFiles().size());
-    }
-
-    @Test(expected = IOException.class)
-    public void nonExistentDirectory() throws IOException {
-        fileManager.withDirectory(Path.clazz("junk").getAbsolutePath());
-    }
-
-    @Test(expected = IOException.class)
-    public void invalidDirectory() throws IOException {
-        fileManager.withDirectory(Path.testJava("ExampleTest").getAbsolutePath());
-    }
-
-    @Test
     public void classFile() throws IOException {
         assertTrue(new FileManager().acceptClassFile(Path.clazz("ModelAnalyzer")));
     }
@@ -77,21 +60,21 @@ public class FileManagerTest {
     @Test
     public void jar() throws IOException {
         File f = File.createTempFile("bogus", ".jar");
-        fileManager.withDirectory(f.getPath());
+        fileManager.withFile(f.getAbsolutePath());
         f.deleteOnExit();
     }
 
     @Test
     public void zip() throws IOException {
         File f = File.createTempFile("bogus", ".zip");
-        fileManager.withDirectory(f.getPath());
+        fileManager.withFile(f.getAbsolutePath());
         f.deleteOnExit();
     }
 
     @Test
     public void war() throws IOException {
         File f = File.createTempFile("bogus", ".war");
-        fileManager.withDirectory(f.getPath());
+        fileManager.withFile(f.getAbsolutePath());
         f.deleteOnExit();
     }
 }

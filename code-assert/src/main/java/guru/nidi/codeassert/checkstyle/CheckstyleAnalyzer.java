@@ -24,7 +24,6 @@ import guru.nidi.codeassert.config.UsageCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -89,7 +88,7 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
             checker.addListener(listener);
             checker.setModuleClassLoader(CheckstyleAnalyzer.class.getClassLoader());
             checker.configure(ConfigurationLoader.loadConfiguration(checks.location, createPropertyResolver()));
-            checker.process(inputFiles());
+            checker.process(config.getSources());
             return createResult(listener.events);
         } catch (CheckstyleException e) {
             throw new AnalyzerException("Problem executing Checkstyle.", e);
@@ -123,28 +122,6 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
             return tokens.toString();
         }
         return value.toString();
-    }
-
-    private List<File> inputFiles() {
-        final List<File> files = new ArrayList<>();
-        for (final AnalyzerConfig.Path path : config.getSources()) {
-            crawlDir(new File(path.getPath()), files);
-        }
-        return files;
-    }
-
-    private void crawlDir(File dir, List<File> files) {
-        final File[] fs = dir.listFiles();
-        if (fs != null) {
-            for (final File f : fs) {
-                if (f.isFile()) {
-                    files.add(f);
-                }
-                if (f.isDirectory()) {
-                    crawlDir(f, files);
-                }
-            }
-        }
     }
 
     private CheckstyleResult createResult(List<AuditEvent> events) {

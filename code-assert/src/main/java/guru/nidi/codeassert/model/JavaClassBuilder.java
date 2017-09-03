@@ -33,21 +33,17 @@ import java.util.zip.ZipEntry;
 class JavaClassBuilder {
     private final ClassFileParser parser;
     private final FileManager fileManager;
-    final Model model = new Model();
+    private final Model model = new Model();
 
-    JavaClassBuilder() {
-        this(new ClassFileParser(), new FileManager());
-    }
-
-    JavaClassBuilder(ClassFileParser parser, FileManager fm) {
-        this.parser = parser;
+    JavaClassBuilder(FileManager fm) {
+        this.parser = new ClassFileParser();
         this.fileManager = fm;
     }
 
     /**
      * Builds the <code>JavaClass</code> instances.
      */
-    public void build() {
+    public Model build() {
         for (final File nextFile : fileManager.extractFiles()) {
             try {
                 buildClasses(nextFile);
@@ -55,16 +51,10 @@ class JavaClassBuilder {
                 throw new AnalyzerException("could not parse class " + nextFile, e);
             }
         }
+        return model;
     }
 
-    /**
-     * Builds the <code>JavaClass</code> instances from the
-     * specified file.
-     *
-     * @param file Class or Jar file.
-     * @throws IOException when something goes wrong
-     */
-    public void buildClasses(File file) throws IOException {
+    private void buildClasses(File file) throws IOException {
         if (fileManager.acceptClassFile(file)) {
             try (final InputStream is = new BufferedInputStream(new FileInputStream(file))) {
                 parser.parse(is, model);
@@ -78,14 +68,7 @@ class JavaClassBuilder {
         }
     }
 
-    /**
-     * Builds the <code>JavaClass</code> instances from the specified
-     * jar, war, or zip file.
-     *
-     * @param file Jar, war, or zip file.
-     * @throws IOException when something goes wrong
-     */
-    public void buildClasses(JarFile file) throws IOException {
+    private void buildClasses(JarFile file) throws IOException {
         final Enumeration entries = file.entries();
         while (entries.hasMoreElements()) {
             final ZipEntry e = (ZipEntry) entries.nextElement();

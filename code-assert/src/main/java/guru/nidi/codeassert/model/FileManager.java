@@ -27,72 +27,34 @@ import java.util.*;
  * @author <b>Mike Clark</b>
  * @author Clarkware Consulting, Inc.
  */
+class FileManager {
+    private final List<File> files = new ArrayList<>();
 
-public class FileManager {
-    private final List<File> directories = new ArrayList<>();
-
-    public FileManager withDirectories(List<String> names) throws IOException {
-        for (final String name : names) {
-            withDirectory(name);
-        }
-        return this;
-    }
-
-    public FileManager withDirectory(String name) throws IOException {
-        final File directory = new File(name);
-        if (directory.isDirectory() || acceptJarFile(directory)) {
-            directories.add(directory);
-        } else {
+    FileManager withFile(String name) throws IOException {
+        final File file = new File(name);
+        if (!file.isFile() && !acceptJarFile(file)) {
             throw new IOException("Invalid directory or JAR file: " + name);
         }
+        files.add(file);
         return this;
     }
 
-    public boolean acceptFile(File file) {
-        return acceptClassFile(file) || acceptJarFile(file);
-    }
-
-    public boolean acceptClassFile(File file) {
+    boolean acceptClassFile(File file) {
         return file.isFile() && acceptClassFileName(file.getName());
     }
 
-    public boolean acceptClassFileName(String name) {
+    boolean acceptClassFileName(String name) {
         return name.toLowerCase(Locale.ENGLISH).endsWith(".class");
     }
 
-    public boolean acceptJarFile(File file) {
+    boolean acceptJarFile(File file) {
         return isJar(file) || isZip(file) || isWar(file);
     }
 
-    public Collection<File> extractFiles() {
-        final Collection<File> files = new TreeSet<>();
-        for (final File directory : directories) {
-            collectFiles(directory, files);
-        }
-        return files;
-    }
-
-    private void collectFiles(File directory, Collection<File> files) {
-        if (directory.isFile()) {
-            addFile(directory, files);
-        } else {
-            final File[] directoryFiles = directory.listFiles();
-            if (directoryFiles != null) {
-                for (final File file : directoryFiles) {
-                    if (acceptFile(file)) {
-                        addFile(file, files);
-                    } else if (file.isDirectory()) {
-                        collectFiles(file, files);
-                    }
-                }
-            }
-        }
-    }
-
-    private void addFile(File f, Collection<File> files) {
-        if (!files.contains(f)) {
-            files.add(f);
-        }
+    Collection<File> extractFiles() {
+        final Collection<File> res = new TreeSet<>();
+        res.addAll(files);
+        return res;
     }
 
     private boolean isWar(File file) {

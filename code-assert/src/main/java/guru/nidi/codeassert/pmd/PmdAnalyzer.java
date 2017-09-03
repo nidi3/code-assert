@@ -110,7 +110,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
             }
         };
         final StringBuilder inputs = new StringBuilder();
-        for (final AnalyzerConfig.Path source : config.getSources()) {
+        for (final AnalyzerConfig.Path source : config.getSourcePaths()) {
             inputs.append(',').append(source.getPath());
         }
         pmdConfig.setInputPaths(inputs.substring(1));
