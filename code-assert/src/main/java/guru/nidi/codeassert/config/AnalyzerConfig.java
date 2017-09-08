@@ -146,7 +146,7 @@ public class AnalyzerConfig {
         }
 
         private boolean runningInModuleDir() {
-            return new File(".").getAbsolutePath().endsWith("/" + module + "/.");
+            return new File("").getAbsoluteFile().getName().equals(module);
         }
     }
 
