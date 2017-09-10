@@ -21,13 +21,12 @@ import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.*;
 import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.junit.CodeAssertTest;
-import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.pmd.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
-import static guru.nidi.codeassert.junit.CodeAssertMatchers.packagesMatchExactly;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesRulesExactly;
 import static guru.nidi.codeassert.pmd.Rulesets.basic;
 import static guru.nidi.codeassert.pmd.Rulesets.braces;
 import static org.junit.Assert.assertThat;
@@ -40,6 +39,11 @@ public class CodeTest extends CodeAssertTest {
 
     @Test
     public void dependency() {
+        assertThat(dependencyResult(), matchesRulesExactly());
+    }
+
+    @Override
+    protected DependencyResult analyzeDependencies() {
         class MyProject extends DependencyRuler {
             DependencyRule packages;
 
@@ -50,12 +54,7 @@ public class CodeTest extends CodeAssertTest {
         }
 
         final DependencyRules rules = denyAll().withExternals("java*").withRelativeRules(new MyProject());
-        assertThat(model(), packagesMatchExactly(rules));
-    }
-
-    @Override
-    protected Model buildModel() {
-        return Model.from(CONFIG.getClasses());
+        return new DependencyAnalyzer(CONFIG).rules(rules).analyze();
     }
 
     @Override

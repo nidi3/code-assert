@@ -20,38 +20,65 @@ import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.model.Scope;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static guru.nidi.codeassert.dependency.DependencyCollector.*;
 
 public class DependencyAnalyzer implements Analyzer<Dependencies> {
     private static final String DUMMY_CLASS = ".DummyClass";
 
-    private final AnalyzerConfig config;
+    private final Model model;
     private final DependencyRules rules;
     private final Scope scope;
     private final DependencyCollector collector;
 
-    public DependencyAnalyzer(AnalyzerConfig config, DependencyRules rules, Scope scope, DependencyCollector collect) {
-        this.config = config;
+    public DependencyAnalyzer(AnalyzerConfig config) {
+        this(Model.from(config.getClasses()), DependencyRules.denyAll(), Scope.PACKAGES, new DependencyCollector());
+    }
+
+    public DependencyAnalyzer(Model model) {
+        this(model, DependencyRules.denyAll(), Scope.PACKAGES, new DependencyCollector());
+    }
+
+    private DependencyAnalyzer(Model model, DependencyRules rules, Scope scope, DependencyCollector collect) {
+        this.model = model;
         this.rules = rules;
         this.scope = scope;
         this.collector = collect;
     }
 
+    public DependencyAnalyzer rules(DependencyRules rules) {
+        return new DependencyAnalyzer(model, rules, scope, collector);
+    }
+
+    public DependencyAnalyzer scope(Scope scope) {
+        return new DependencyAnalyzer(model, rules, scope, collector);
+    }
+
+    public DependencyAnalyzer collector(DependencyCollector collector) {
+        return new DependencyAnalyzer(model, rules, scope, collector);
+    }
+
     @Override
     public DependencyResult analyze() {
-        final Model model = Model.from(config.getClasses());
         final Dependencies dependencies = rules.analyzeRules(scope.in(model));
         final UsageCounter counter = new UsageCounter();
         final Dependencies filtered = new Dependencies(new DependencyMap(), new DependencyMap(), new DependencyMap(),
                 handleNotExisting(dependencies, counter),
-                handleUndefined(dependencies, counter));
+                handleUndefined(dependencies, counter),
+                handleCycles(dependencies, counter));
         handleMissing(dependencies, counter, filtered);
         handleDenied(dependencies, counter, filtered);
         collector.printUnusedWarning(counter);
         return new DependencyResult(this, filtered, collector.unusedActions(counter));
+    }
+
+    private void handleMissing(Dependencies dependencies, UsageCounter counter, Dependencies filtered) {
+        for (final String name : dependencies.missing.getElements()) {
+            if (counter.accept(collector.accept(new DependencyEntry(MISSING, className(name))))) {
+                filtered.missing.with(name, dependencies.missing);
+            }
+        }
     }
 
     private void handleDenied(Dependencies dependencies, UsageCounter counter, Dependencies filtered) {
@@ -62,12 +89,24 @@ public class DependencyAnalyzer implements Analyzer<Dependencies> {
         }
     }
 
-    private void handleMissing(Dependencies dependencies, UsageCounter counter, Dependencies filtered) {
-        for (final String name : dependencies.missing.getElements()) {
-            if (counter.accept(collector.accept(new DependencyEntry(MISSING, className(name))))) {
-                filtered.missing.with(name, dependencies.missing);
+    private Set<DependencyMap> handleCycles(Dependencies dependencies, UsageCounter counter) {
+        final Set<DependencyMap> res = new HashSet<>();
+        for (final DependencyMap cycle : dependencies.cycles) {
+            final DependencyMap map = new DependencyMap();
+            for (final String from : cycle.getElements()) {
+                if (counter.accept(collector.accept(new DependencyEntry(CYCLE, className(from))))) {
+                    for (final Map.Entry<String, DependencyMap.Info> to : cycle.getDependencies(from).entrySet()) {
+                        if (counter.accept(collector.accept(new DependencyEntry(CYCLE, className(to.getKey()))))) {
+                            map.with(to.getValue().getSpecificity(), from, to.getValue().getVias(), to.getKey());
+                        }
+                    }
+                }
+            }
+            if (!map.isEmpty()) {
+                res.add(map);
             }
         }
+        return res;
     }
 
     private Set<String> handleUndefined(Dependencies dependencies, UsageCounter counter) {

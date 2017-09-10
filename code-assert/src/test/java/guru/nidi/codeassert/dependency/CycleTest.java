@@ -16,35 +16,28 @@
 package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.model.Model;
+import guru.nidi.codeassert.config.In;
+import guru.nidi.codeassert.model.Scope;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
-import static guru.nidi.codeassert.dependency.CycleResult.packages;
-import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
+import static guru.nidi.codeassert.dependency.DependencyCollector.CYCLE;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCycles;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 public class CycleTest {
-    private static final String START = "Found these cyclic groups:\n\n";
     private static final String BASE = "guru.nidi.codeassert.dependency.";
-    private Model result;
 
-    @Before
-    public void analyze() {
-        result = Model.from(AnalyzerConfig.maven().test("guru/nidi/codeassert/dependency").getClasses());
+    public DependencyResult analyze(Scope scope, DependencyCollector collector) {
+        return new DependencyAnalyzer(AnalyzerConfig.maven().test("guru/nidi/codeassert/dependency")).scope(scope).collector(collector).analyze();
     }
 
     @Test
     public void packageCycles() {
-        final Matcher<Model> matcher = hasNoPackageCycles();
-        assertMatcher(START
-                        + "- Group of 3: guru.nidi.codeassert.dependency.a, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.c\n"
+        assertMatcher(""
+                        + "CYCLE        guru.nidi.codeassert.dependency.a, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.c\n"
                         + "  guru.nidi.codeassert.dependency.a ->\n"
                         + "    guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.a.A1)\n"
                         + "  guru.nidi.codeassert.dependency.b ->\n"
@@ -53,8 +46,7 @@ public class CycleTest {
                         + "  guru.nidi.codeassert.dependency.c ->\n"
                         + "    guru.nidi.codeassert.dependency.a (by guru.nidi.codeassert.dependency.c.C1)\n"
                         + "    guru.nidi.codeassert.dependency.b (by guru.nidi.codeassert.dependency.c.C1, guru.nidi.codeassert.dependency.c.C2)\n"
-                        + "\n"
-                        + "- Group of 3: guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.c.a\n"
+                        + "CYCLE        guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.c.a\n"
                         + "  guru.nidi.codeassert.dependency.a.a ->\n"
                         + "    guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.a.a.Aa1)\n"
                         + "  guru.nidi.codeassert.dependency.b.a ->\n"
@@ -63,17 +55,15 @@ public class CycleTest {
                         + "  guru.nidi.codeassert.dependency.c.a ->\n"
                         + "    guru.nidi.codeassert.dependency.a.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n"
                         + "    guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n",
-                matcher);
+                analyze(Scope.PACKAGES, new DependencyCollector()), hasNoCycles());
     }
 
     @Test
     public void packageCyclesWithExceptions() {
-        final Matcher<Model> matcher = hasNoPackageCyclesExcept(
-                packages(base("a"), base("b"), base("c")),
-                packages(base("a.a")),
-                packages(base("b.a"), base("c.a")));
-        assertMatcher(START
-                        + "- Group of 3: guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.c.a\n"
+        final DependencyCollector collector = new DependencyCollector()
+                .just(In.locs(base("a"), base("b"), base("c")).ignore(CYCLE));
+        assertMatcher(""
+                        + "CYCLE        guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.c.a\n"
                         + "  guru.nidi.codeassert.dependency.a.a ->\n"
                         + "    guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.a.a.Aa1)\n"
                         + "  guru.nidi.codeassert.dependency.b.a ->\n"
@@ -82,14 +72,13 @@ public class CycleTest {
                         + "  guru.nidi.codeassert.dependency.c.a ->\n"
                         + "    guru.nidi.codeassert.dependency.a.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n"
                         + "    guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n",
-                matcher);
+                analyze(Scope.PACKAGES, collector), hasNoCycles());
     }
 
     @Test
     public void classCycles() {
-        final Matcher<Model> matcher = hasNoClassCycles();
-        assertMatcher(START
-                        + "- Group of 3: guru.nidi.codeassert.dependency.a.A1, guru.nidi.codeassert.dependency.b.B1, guru.nidi.codeassert.dependency.c.C1\n"
+        assertMatcher(""
+                        + "CYCLE        guru.nidi.codeassert.dependency.a.A1, guru.nidi.codeassert.dependency.b.B1, guru.nidi.codeassert.dependency.c.C1\n"
                         + "  guru.nidi.codeassert.dependency.a.A1 ->\n"
                         + "    guru.nidi.codeassert.dependency.c.C1\n"
                         + "  guru.nidi.codeassert.dependency.b.B1 ->\n"
@@ -98,21 +87,20 @@ public class CycleTest {
                         + "  guru.nidi.codeassert.dependency.c.C1 ->\n"
                         + "    guru.nidi.codeassert.dependency.a.A1\n"
                         + "    guru.nidi.codeassert.dependency.b.B1\n"
-                        + "\n"
-                        + "- Group of 2: guru.nidi.codeassert.dependency.a.a.Aa1, guru.nidi.codeassert.dependency.b.a.Ba1\n"
+                        + "CYCLE        guru.nidi.codeassert.dependency.a.a.Aa1, guru.nidi.codeassert.dependency.b.a.Ba1\n"
                         + "  guru.nidi.codeassert.dependency.a.a.Aa1 ->\n"
                         + "    guru.nidi.codeassert.dependency.b.a.Ba1\n"
                         + "  guru.nidi.codeassert.dependency.b.a.Ba1 ->\n"
                         + "    guru.nidi.codeassert.dependency.a.a.Aa1\n",
-                matcher);
+                analyze(Scope.CLASSES, new DependencyCollector()), hasNoCycles());
     }
 
     @Test
     public void classCyclesExcept() {
-        final Matcher<Model> matcher = hasNoClassCyclesExcept(new HashSet<>(
-                Arrays.asList("guru.nidi.codeassert.dependency.a.a.Aa1", "guru.nidi.codeassert.dependency.b.a.Ba1")));
-        assertMatcher(START
-                        + "- Group of 3: guru.nidi.codeassert.dependency.a.A1, guru.nidi.codeassert.dependency.b.B1, guru.nidi.codeassert.dependency.c.C1\n"
+        final DependencyCollector collector = new DependencyCollector()
+                .just(In.locs("guru.nidi.codeassert.dependency.a.a.Aa1", "guru.nidi.codeassert.dependency.b.a.Ba1").ignore(CYCLE));
+        assertMatcher(""
+                        + "CYCLE        guru.nidi.codeassert.dependency.a.A1, guru.nidi.codeassert.dependency.b.B1, guru.nidi.codeassert.dependency.c.C1\n"
                         + "  guru.nidi.codeassert.dependency.a.A1 ->\n"
                         + "    guru.nidi.codeassert.dependency.c.C1\n"
                         + "  guru.nidi.codeassert.dependency.b.B1 ->\n"
@@ -121,10 +109,10 @@ public class CycleTest {
                         + "  guru.nidi.codeassert.dependency.c.C1 ->\n"
                         + "    guru.nidi.codeassert.dependency.a.A1\n"
                         + "    guru.nidi.codeassert.dependency.b.B1\n",
-                matcher);
+                analyze(Scope.CLASSES, collector), hasNoCycles());
     }
 
-    private void assertMatcher(String message, Matcher<Model> matcher) {
+    private void assertMatcher(String message, DependencyResult result, Matcher<DependencyResult> matcher) {
         assertFalse("Should not match", matcher.matches(result));
         final StringDescription sd = new StringDescription();
         matcher.describeMismatch(result, sd);

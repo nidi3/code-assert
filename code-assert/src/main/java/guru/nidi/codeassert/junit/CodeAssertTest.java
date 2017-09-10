@@ -18,7 +18,6 @@ package guru.nidi.codeassert.junit;
 import guru.nidi.codeassert.checkstyle.CheckstyleResult;
 import guru.nidi.codeassert.dependency.DependencyResult;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
-import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.pmd.CpdResult;
 import guru.nidi.codeassert.pmd.PmdResult;
 import org.junit.Ignore;
@@ -42,7 +41,6 @@ public class CodeAssertTest {
         CHECKSTYLE, CHECKSTYLE_UNUSED_ACTIONS
     }
 
-    private static Model model;
     private static DependencyResult dependencyResult;
     private static FindBugsResult findBugsResult;
     private static PmdResult pmdResult;
@@ -51,10 +49,6 @@ public class CodeAssertTest {
 
     protected EnumSet<Type> defaultTests() {
         return EnumSet.allOf(Type.class);
-    }
-
-    protected Model buildModel() {
-        return null;
     }
 
     protected DependencyResult analyzeDependencies() {
@@ -75,13 +69,6 @@ public class CodeAssertTest {
 
     protected CheckstyleResult analyzeCheckstyle() {
         return null;
-    }
-
-    protected synchronized Model model() {
-        if (model == null) {
-            model = buildModel();
-        }
-        return model;
     }
 
     protected synchronized DependencyResult dependencyResult() {
@@ -121,9 +108,9 @@ public class CodeAssertTest {
 
     @Test
     public void circularDependencies() {
-        assumeFalse("analyzeDependencies() not implemented.", model() == null);
+        assumeFalse("analyzeDependencies() not implemented.", dependencyResult() == null);
         assumeTrue("Circular dependencies test excluded.", defaultTests().contains(CIRCULAR_DEPENDENCIES));
-        assertThat(model(), hasNoPackageCycles());
+        assertThat(dependencyResult(), hasNoCycles());
     }
 
     @Test

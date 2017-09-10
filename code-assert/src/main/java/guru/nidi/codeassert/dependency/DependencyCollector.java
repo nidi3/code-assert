@@ -21,11 +21,11 @@ import guru.nidi.codeassert.util.ListUtils;
 import java.util.List;
 
 public class DependencyCollector extends BaseCollector<DependencyEntry, Ignore, DependencyCollector> {
-    public static final String ALLOWED = "ALLOWED";
     public static final String MISSING = "MISSING";
     public static final String DENIED = "DENIED";
     public static final String NOT_EXISTING = "NOT_EXISTING";
     public static final String UNDEFINED = "UNDEFINED";
+    public static final String CYCLE = "CYCLE";
 
     @Override
     public DependencyCollector config(final CollectorConfig<Ignore>... configs) {
@@ -53,7 +53,7 @@ public class DependencyCollector extends BaseCollector<DependencyEntry, Ignore, 
 
     @Override
     protected ActionResult doAccept(DependencyEntry result, Ignore action) {
-        final NamedLocation loc = new NamedLocation(result.name, result.data, "", true);
+        final NamedLocation loc = new NamedLocation(result.name, result.className, "", true);
         return action.accept(loc);
     }
 

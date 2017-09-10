@@ -263,6 +263,7 @@ public final class DependencyRules {
             }
         }
         result.normalize();
+        result.cycles.addAll(new Tarjan<T>().analyzeCycles(scope));
         return result;
     }
 
@@ -274,9 +275,5 @@ public final class DependencyRules {
             }
         }
         return s;
-    }
-
-    public static <T extends UsingElement<T>> CycleResult analyzeCycles(Scope<T> scope) {
-        return new Tarjan<T>().analyzeCycles(scope);
     }
 }

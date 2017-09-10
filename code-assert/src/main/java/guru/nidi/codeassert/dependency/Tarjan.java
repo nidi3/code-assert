@@ -23,7 +23,7 @@ class Tarjan<T extends UsingElement<T>> {
     private int index;
     private final Stack<T> stack = new Stack<>();
     private final Map<String, Node> nodes = new HashMap<>();
-    private final CycleResult result = new CycleResult();
+    private final Set<DependencyMap> result = new HashSet<>();
 
     private static class Node {
         int index = -1;
@@ -31,7 +31,7 @@ class Tarjan<T extends UsingElement<T>> {
         boolean onStack;
     }
 
-    public CycleResult analyzeCycles(Iterable<T> elems) {
+    public Set<DependencyMap> analyzeCycles(Iterable<T> elems) {
         index = 0;
         for (final T elem : elems) {
             if (node(elem).index < 0) {
@@ -104,6 +104,6 @@ class Tarjan<T extends UsingElement<T>> {
                 }
             }
         }
-        result.cycles.add(g);
+        result.add(g);
     }
 }

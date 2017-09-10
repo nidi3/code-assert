@@ -15,30 +15,20 @@
  */
 package guru.nidi.codeassert.dependency;
 
-import guru.nidi.codeassert.model.Model;
-import guru.nidi.codeassert.model.Scope;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.util.*;
 
+import static guru.nidi.codeassert.dependency.DependencyCollector.CYCLE;
 import static guru.nidi.codeassert.dependency.MatcherUtils.*;
 
-public class DependencyCycleMatcher extends TypeSafeMatcher<Model> {
+public class DependencyCycleMatcher extends TypeSafeMatcher<DependencyResult> {
     private static final Comparator<DependencyMap> DEP_MAP_COMPARATOR = new DependencyMapComparator();
 
-    private final Scope scope;
-    private final Set<String>[] exceptions;
-
-    @SafeVarargs
-    public DependencyCycleMatcher(Scope scope, Set<String>... exceptions) {
-        this.scope = scope;
-        this.exceptions = exceptions;
-    }
-
     @Override
-    protected boolean matchesSafely(Model model) {
-        return result(model).isEmptyExcept(exceptions);
+    protected boolean matchesSafely(DependencyResult item) {
+        return item.findings().getCycles().isEmpty();
     }
 
     public void describeTo(Description description) {
@@ -46,23 +36,15 @@ public class DependencyCycleMatcher extends TypeSafeMatcher<Model> {
     }
 
     @Override
-    protected void describeMismatchSafely(Model model, Description description) {
-        final CycleResult result = result(model);
-        if (!result.isEmptyExcept(exceptions)) {
-            description.appendText("Found these cyclic groups:\n");
-            for (final DependencyMap cycle : sortedDepMaps(result.getCyclesExcept(exceptions))) {
-                description.appendText("\n- Group of " + cycle.getElements().size() + ": "
-                        + join(sorted(cycle.getElements())) + "\n");
-                for (final String elem : sorted(cycle.getElements())) {
-                    description.appendText("  " + elem + " ->\n");
-                    description.appendText(deps("    ", cycle.getDependencies(elem)));
-                }
+    protected void describeMismatchSafely(DependencyResult item, Description description) {
+        final Set<DependencyMap> result = item.findings().getCycles();
+        for (final DependencyMap cycle : sortedDepMaps(result)) {
+            description.appendText(String.format("%-12s %s%n", CYCLE, join(sorted(cycle.getElements()))));
+            for (final String elem : sorted(cycle.getElements())) {
+                description.appendText("  " + elem + " ->\n");
+                description.appendText(deps("    ", cycle.getDependencies(elem)));
             }
         }
-    }
-
-    private CycleResult result(Model model) {
-        return DependencyRules.analyzeCycles(scope.in(model));
     }
 
     private static List<DependencyMap> sortedDepMaps(Collection<DependencyMap> maps) {

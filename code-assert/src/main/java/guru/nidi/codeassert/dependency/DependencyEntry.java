@@ -17,10 +17,10 @@ package guru.nidi.codeassert.dependency;
 
 class DependencyEntry {
     final String name;
-    final String data;
+    final String className;
 
-    DependencyEntry(String name, String data) {
+    DependencyEntry(String name, String className) {
         this.name = name;
-        this.data = data;
+        this.className = className;
     }
 }

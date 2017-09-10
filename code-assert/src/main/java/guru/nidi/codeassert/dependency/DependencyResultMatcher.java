@@ -18,9 +18,12 @@ package guru.nidi.codeassert.dependency;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
+import static guru.nidi.codeassert.dependency.DependencyCollector.*;
 import static guru.nidi.codeassert.dependency.MatcherUtils.*;
 
 public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
+    private static final String SIMPLE_FORMAT = "%-12s %s%n";
+    private static final String ARROW_FORMAT = "%-12s %s ->%n";
     private final boolean nonExisting;
     private final boolean undefined;
 
@@ -57,38 +60,34 @@ public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
     }
 
     private void describeForbidden(Dependencies result, Description description) {
-        if (!result.getDenied().isEmpty()) {
-            description.appendText("\nFound forbidden dependencies:\n");
-            for (final String elem : sorted(result.getDenied().getElements())) {
-                description.appendText(elem + " ->\n");
-                description.appendText(deps("  ", result.getDenied().getDependencies(elem)));
-            }
+        for (final String elem : sorted(result.getDenied().getElements())) {
+            description.appendText(String.format(ARROW_FORMAT, DENIED, elem));
+            description.appendText(deps("  ", result.getDenied().getDependencies(elem)));
         }
     }
 
     private void describeMissing(Dependencies result, Description description) {
-        if (!result.getMissing().isEmpty()) {
-            description.appendText("\nFound missing dependencies:\n");
-            for (final String elem : sorted(result.getMissing().getElements())) {
-                description.appendText(elem + " ->\n");
-                for (final String dep : sorted(result.getMissing().getDependencies(elem).keySet())) {
-                    description.appendText("  " + dep + "\n");
-                }
+        for (final String elem : sorted(result.getMissing().getElements())) {
+            description.appendText(String.format(ARROW_FORMAT, MISSING, elem));
+            for (final String dep : sorted(result.getMissing().getDependencies(elem).keySet())) {
+                description.appendText("  " + dep + "\n");
             }
         }
     }
 
     private void describeUndefined(Dependencies result, Description description) {
-        if (undefined && !result.getUndefined().isEmpty()) {
-            description.appendText("\nFound elements which are not defined:\n");
-            description.appendText(join(sorted(result.getUndefined())) + "\n");
+        if (undefined) {
+            for (final String elem : sorted(result.getUndefined())) {
+                description.appendText(String.format(SIMPLE_FORMAT, UNDEFINED, elem));
+            }
         }
     }
 
     private void describeNotExisting(Dependencies result, Description description) {
-        if (nonExisting && !result.getNotExisting().isEmpty()) {
-            description.appendText("\nDefined, but not existing elements:\n");
-            description.appendText(join(sortedPatterns(result.getNotExisting())) + "\n");
+        if (nonExisting) {
+            for (final String elem : sortedPatterns(result.getNotExisting())) {
+                description.appendText(String.format(SIMPLE_FORMAT, NOT_EXISTING, elem));
+            }
         }
     }
 }

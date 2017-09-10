@@ -17,8 +17,7 @@ package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.config.LocationMatcher;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class Dependencies {
     final DependencyMap allowed;
@@ -26,19 +25,22 @@ public class Dependencies {
     final DependencyMap denied;
     final Set<LocationMatcher> notExisting;
     final Set<String> undefined;
+    final Set<DependencyMap> cycles;
 
     public Dependencies() {
         this(new DependencyMap(), new DependencyMap(), new DependencyMap(),
-                new TreeSet<LocationMatcher>(), new TreeSet<String>());
+                new TreeSet<LocationMatcher>(), new TreeSet<String>(),
+                new HashSet<DependencyMap>());
     }
 
     public Dependencies(DependencyMap allowed, DependencyMap missing, DependencyMap denied,
-                        Set<LocationMatcher> notExisting, Set<String> undefined) {
+                        Set<LocationMatcher> notExisting, Set<String> undefined, Set<DependencyMap> cycles) {
         this.allowed = allowed;
         this.missing = missing;
         this.denied = denied;
         this.notExisting = notExisting;
         this.undefined = undefined;
+        this.cycles = cycles;
     }
 
     public void merge(Dependencies cr) {
@@ -47,6 +49,7 @@ public class Dependencies {
         denied.merge(cr.denied);
         notExisting.addAll(cr.notExisting);
         undefined.addAll(cr.undefined);
+        cycles.addAll(cr.cycles);
     }
 
     // an explicitly allowed dependency is stronger than any denial
@@ -75,6 +78,10 @@ public class Dependencies {
         return undefined;
     }
 
+    public Set<DependencyMap> getCycles() {
+        return cycles;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -98,7 +105,10 @@ public class Dependencies {
         if (!notExisting.equals(that.notExisting)) {
             return false;
         }
-        return undefined.equals(that.undefined);
+        if (!undefined.equals(that.undefined)) {
+            return false;
+        }
+        return cycles.equals(that.cycles);
     }
 
     @Override
@@ -108,6 +118,7 @@ public class Dependencies {
         result = 31 * result + denied.hashCode();
         result = 31 * result + notExisting.hashCode();
         result = 31 * result + undefined.hashCode();
+        result = 31 * result + cycles.hashCode();
         return result;
     }
 
@@ -119,6 +130,7 @@ public class Dependencies {
                 + ", denied=" + denied
                 + ", notExisting=" + notExisting
                 + ", undefined=" + undefined
+                + ", cycles=" + cycles
                 + '}';
     }
 }

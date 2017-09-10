@@ -22,19 +22,23 @@ import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertTest;
 import guru.nidi.codeassert.junit.PredefConfig;
-import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
-import static guru.nidi.codeassert.junit.CodeAssertMatchers.packagesMatchExactly;
+import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesRulesExactly;
 import static org.junit.Assert.assertThat;
 
 public class EatYourOwnDogfoodTest extends CodeAssertTest {
     @Test
     public void dependency() {
         System.gc();
+        assertThat(dependencyResult(), matchesRulesExactly());
+    }
+
+    @Override
+    protected DependencyResult analyzeDependencies() {
         class GuruNidiCodeassert extends DependencyRuler {
             DependencyRule config, dependency, findbugs, checkstyle, model, pmd, util, junit, jacoco;
 
@@ -55,12 +59,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertTest {
         final DependencyRules rules = denyAll()
                 .withExternals("edu*", "java*", "net*", "org*", "com*")
                 .withRelativeRules(new GuruNidiCodeassert());
-        assertThat(model(), packagesMatchExactly(rules));
-    }
-
-    @Override
-    protected Model buildModel() {
-        return Model.from(AnalyzerConfig.maven().main().getClasses());
+        return new DependencyAnalyzer(AnalyzerConfig.maven().main()).rules(rules).analyze();
     }
 
     @Override
