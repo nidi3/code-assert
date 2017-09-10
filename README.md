@@ -35,7 +35,7 @@ public class DependencyTest {
 
     @Test
     public void noCycles() {
-        assertThat(Model.from(config.getClasses()), hasNoPackageCycles());
+        assertThat(new DependencyAnalyzer(config).analyze(), hasNoCycles());
     }
 
     @Test
@@ -59,7 +59,7 @@ public class DependencyTest {
                 .withRelativeRules(new OrgProj())
                 .withExternals("java.*", "org.*", "net.*");
 
-        assertThat(Model.from(config.getClasses()), packagesMatchExactly(rules));
+        assertThat(new DependencyAnalyzer(config).rules(rules).analyze(), matchesRulesExactly());
     }
 }
 ```
@@ -220,6 +220,11 @@ public class CodeTest extends CodeAssertTest {
 
     @Test
     public void dependency() {
+        assertThat(dependencyResult(), matchesRulesExactly());
+    }
+
+    @Override
+    protected DependencyResult analyzeDependencies() {
         class MyProject extends DependencyRuler {
             DependencyRule packages;
 
@@ -230,12 +235,7 @@ public class CodeTest extends CodeAssertTest {
         }
 
         final DependencyRules rules = denyAll().withExternals("java*").withRelativeRules(new MyProject());
-        assertThat(model(), packagesMatchExactly(rules));
-    }
-
-    @Override
-    protected Model buildModel() {
-        return Model.from(CONFIG.getClasses());
+        return new DependencyAnalyzer(CONFIG).rules(rules).analyze();
     }
 
     @Override
