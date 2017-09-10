@@ -17,9 +17,8 @@ package guru.nidi.codeassert.snippets;
 
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.dependency.*;
-import org.junit.*;
-
-import java.io.IOException;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCycles;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesRulesExactly;
@@ -29,13 +28,8 @@ import static org.junit.Assert.assertThat;
 //## dependency
 public class DependencyTest {
 
-    private AnalyzerConfig config;
-
-    @Before
-    public void setup() throws IOException {
-        // Analyze all sources in src/main/java
-        config = AnalyzerConfig.maven().main();
-    }
+    // Analyze all sources in src/main/java
+    private AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
     public void noCycles() {
@@ -63,7 +57,8 @@ public class DependencyTest {
                 .withRelativeRules(new OrgProj())
                 .withExternals("java.*", "org.*", "net.*");
 
-        assertThat(new DependencyAnalyzer(config).rules(rules).analyze(), matchesRulesExactly());
+        DependencyResult result = new DependencyAnalyzer(config).rules(rules).analyze();
+        assertThat(result, matchesRulesExactly());
     }
 }
 //##

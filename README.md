@@ -25,13 +25,8 @@ It checks if the package structure contains cycles and/or follows the defined ru
 ```java
 public class DependencyTest {
 
-    private AnalyzerConfig config;
-
-    @Before
-    public void setup() throws IOException {
-        // Analyze all sources in src/main/java
-        config = AnalyzerConfig.maven().main();
-    }
+    // Analyze all sources in src/main/java
+    private AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
     public void noCycles() {
@@ -59,7 +54,8 @@ public class DependencyTest {
                 .withRelativeRules(new OrgProj())
                 .withExternals("java.*", "org.*", "net.*");
 
-        assertThat(new DependencyAnalyzer(config).rules(rules).analyze(), matchesRulesExactly());
+        DependencyResult result = new DependencyAnalyzer(config).rules(rules).analyze();
+        assertThat(result, matchesRulesExactly());
     }
 }
 ```
@@ -127,13 +123,8 @@ Runs [PMD](https://pmd.github.io/) on the code and finds questionable constructs
 ```java
 public class PmdTest {
 
-    private AnalyzerConfig config;
-
-    @Before
-    public void setup() throws IOException {
-        // Analyze all sources in src/main/java
-        config = AnalyzerConfig.maven().main();
-    }
+    // Analyze all sources in src/main/java
+    private AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
     public void pmd() {

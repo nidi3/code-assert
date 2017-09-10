@@ -21,9 +21,8 @@ import guru.nidi.codeassert.dependency.Dependencies;
 import guru.nidi.codeassert.dependency.DependencyRule;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
-import org.junit.*;
-
-import java.io.IOException;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCodeDuplications;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoPmdViolations;
@@ -34,13 +33,8 @@ import static org.junit.Assert.assertThat;
 //## pmd
 public class PmdTest {
 
-    private AnalyzerConfig config;
-
-    @Before
-    public void setup() throws IOException {
-        // Analyze all sources in src/main/java
-        config = AnalyzerConfig.maven().main();
-    }
+    // Analyze all sources in src/main/java
+    private AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
     public void pmd() {
