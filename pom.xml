@@ -25,6 +25,7 @@
     <modules>
         <module>code-assert</module>
         <module>code-assert-maven-plugin</module>
+        <module>code-assert-gui</module>
     </modules>
 
     <scm>
