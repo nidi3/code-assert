@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 public class DependencyTest {
 
     // Analyze all sources in src/main/java
-    private AnalyzerConfig config = AnalyzerConfig.maven().main();
+    private final AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
     public void noCycles() {

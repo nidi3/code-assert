@@ -26,7 +26,7 @@ It checks if the package structure contains cycles and/or follows the defined ru
 public class DependencyTest {
 
     // Analyze all sources in src/main/java
-    private AnalyzerConfig config = AnalyzerConfig.maven().main();
+    private final AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
     public void noCycles() {
@@ -124,7 +124,7 @@ Runs [PMD](https://pmd.github.io/) on the code and finds questionable constructs
 public class PmdTest {
 
     // Analyze all sources in src/main/java
-    private AnalyzerConfig config = AnalyzerConfig.maven().main();
+    private final AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
     public void pmd() {
