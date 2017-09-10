@@ -65,6 +65,7 @@ public class PmdTest {
         assertMatcher(""
                         + pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", "A class which only has private constructors should be final")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "jacoco/JacocoAnalyzer", "Avoid assignments in operands")
+                        + pmd(MEDIUM, "AssignmentInOperand", MAIN, "model/Model", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 115")
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 154")
                         + pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", "Avoid using final local variables, turn them into fields")
@@ -76,6 +77,7 @@ public class PmdTest {
                         + pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", "enumCommentRequirement Required")
                         + pmd(MEDIUM, "CommentSize", MAIN, "config/LocationNameMatcher", "Comment is too large: Line too long")
                         + pmd(MEDIUM, "ExcessiveParameterList", MAIN, "jacoco/Coverage", "Avoid long parameter lists.")
+                        + pmd(MEDIUM, "LongVariable", MAIN, "dependency/Tarjan", "Avoid excessively long variable names like allowIntraPackageCycles")
                         + pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", "Class cannot be instantiated and does not provide any static methods or fields")
                         + pmd(MEDIUM, "NoPackage", TEST, "/CodeCoverage", "All classes and interfaces must belong to a named package")
                         + pmd(MEDIUM, "NullAssignment", MAIN, "dependency/DependencyRules", "Assigning an Object to null is a code smell.  Consider refactoring.")
@@ -123,9 +125,10 @@ public class PmdTest {
                                 In.clazz(ExampleInterface.class).ignore("ShortMethodName"),
                                 In.clazz(Bugs.class).ignore("UnusedLocalVariable"),
                                 In.locs("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns", "AddEmptyString", "DoNotCallGarbageCollectionExplicitly", "AvoidDuplicateLiterals"),
-                                In.classes(ClassFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert"),
+                                In.classes(ClassFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert", "JUnitTestContainsTooManyAsserts"),
                                 In.classes(DependencyRulesTest.class, LocationMatcherTest.class, LocationNameMatcherTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.clazz(DependencyRulesTest.class).ignore("VariableNamingConventions"),
+                                In.clazz(DependencyRules.class).ignore("LongVariable"),
                                 In.classes(PmdTest.class, FindBugsTest.class, CheckstyleTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
                                 In.classes(AnalyzerConfigTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.everywhere().ignore("UseConcurrentHashMap", "ArrayIsStoredDirectly", "MethodReturnsInternalArray", "AvoidLiteralsInIfCondition"),

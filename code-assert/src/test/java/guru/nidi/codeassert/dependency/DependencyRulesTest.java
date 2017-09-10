@@ -398,10 +398,17 @@ public class DependencyRulesTest {
 
         final Dependencies result = rules.analyzeRules(Scope.classes(model));
         final Dependencies result2 = rules2.analyzeRules(Scope.classes(model));
+        final Dependencies result3 = rules.allowIntraPackageDependencies(true).analyzeRules(Scope.classes(model));
         assertEquals(result, result2);
         assertEquals(new DependencyMap()
+                        .with(0, dep("CycleTest"), set(), dep("DependencyAnalyzer"))
+                        .with(0, dep("CycleTest"), set(), dep("DependencyResult"))
+                        .with(0, dep("CycleTest"), set(), dep("DependencyCollector"))
                         .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertMatchers")),
                 result.denied);
+        assertEquals(new DependencyMap()
+                        .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertMatchers")),
+                result3.denied);
         assertEquals(67, result.undefined.size());
     }
 

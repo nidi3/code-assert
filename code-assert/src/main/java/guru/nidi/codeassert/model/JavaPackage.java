@@ -39,6 +39,7 @@ public class JavaPackage extends UsingElement<JavaPackage> {
         annotations = new HashSet<>();
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -65,6 +66,7 @@ public class JavaPackage extends UsingElement<JavaPackage> {
         }
     }
 
+    @Override
     public Set<String> usedVia(UsingElement<JavaPackage> to) {
         final Set<String> res = new HashSet<>();
         for (final JavaClass jc : getClasses()) {
@@ -73,6 +75,11 @@ public class JavaPackage extends UsingElement<JavaPackage> {
             }
         }
         return res;
+    }
+
+    @Override
+    public String getPackageName() {
+        return name;
     }
 
     @Override

@@ -52,6 +52,10 @@ final class AttributeInfo {
         return "SourceFile".equals(name);
     }
 
+    public boolean isCode() {
+        return "Code".equals(name);
+    }
+
     public String sourceFile(ConstantPool constantPool) throws IOException {
         final int b0 = value[0] < 0 ? value[0] + 256 : value[0];
         final int b1 = value[1] < 0 ? value[1] + 256 : value[1];

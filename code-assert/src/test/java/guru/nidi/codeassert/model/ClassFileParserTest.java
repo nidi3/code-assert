@@ -55,9 +55,36 @@ public class ClassFileParserTest {
     }
 
     @Test
+    public void size() throws IOException {
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        assertEquals(538, clazz.getCodeSize());
+        assertEquals(2465, clazz.getTotalSize());
+    }
+
+    @Test
+    public void fields() throws IOException {
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        assertEquals(1, clazz.getFields().size());
+        final MemberInfo field = clazz.getFields().get(0);
+        assertEquals(2, field.getAccessFlags());
+        assertEquals(0, field.getCodeSize());
+        assertEquals("statements", field.getName());
+    }
+
+    @Test
+    public void methods() throws IOException {
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        assertEquals(7, clazz.getMethods().size());
+        final MemberInfo method = clazz.getMethods().get(0);
+        assertEquals(1, method.getAccessFlags());
+        assertEquals(51, method.getCodeSize());
+        assertEquals("<init>", method.getName());
+    }
+
+    @Test
     public void classImports() throws IOException {
         final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
-        assertCollectionEquals(toString(clazz.getImports()),
+        assertCollectionEquals(toString(clazz.usedForeignPackages()),
                 "java.net", "java.text", "java.sql", "java.lang", "java.io",
                 "java.rmi", "java.util", "java.util.jar", "java.math",
 
@@ -66,6 +93,50 @@ public class ClassFileParserTest {
                 "java.applet", "java.awt.geom", "java.awt.image.renderable",
                 "java.awt.im", "java.awt.dnd.peer", "javax.crypto",
                 model("p1"), model("p2"));
+    }
+
+    @Test
+    public void classImportCounts() throws IOException {
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        assertCollectionEquals(toString(clazz.usedPackageCounts()),
+                "java.net 1", "java.text 1", "java.sql 1", "java.lang 5", "java.io 3",
+                "java.rmi 1", "java.util 1", "java.util.jar 1", "java.math 1",
+
+                // annotations
+                "org.junit.runners 3", "org.junit 2",
+                "java.applet 1", "java.awt.geom 1", "java.awt.image.renderable 1",
+                "java.awt.im 1", "java.awt.dnd.peer 1", "javax.crypto 1",
+                "guru.nidi.codeassert.model 4", model("p1") + " 1", model("p2") + " 1");
+    }
+
+    @Test
+    public void usedClasses() throws IOException {
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        assertCollectionEquals(toString(clazz.usedClasses()),
+                "java.lang.String", "java.lang.Exception", "java.io.IOException", "java.io.File",
+                "java.math.BigDecimal", "java.util.Vector", "java.util.jar.JarFile", "java.net.URL",
+                "java.awt.im.InputContext", "java.awt.geom.AffineTransform",
+                "java.awt.image.renderable.ContextualRenderedImageFactory", "java.awt.dnd.peer.DragSourceContextPeer",
+                "java.applet.AppletStub", "java.rmi.RemoteException", "java.sql.Statement",
+                "javax.crypto.BadPaddingException", "java.text.NumberFormat",
+                "org.junit.Ignore", "org.junit.runners.Suite", "org.junit.Test", "org.junit.runners.Suite$SuiteClasses",
+                model("p2.ExampleEnum"), model("ExampleAbstractClass"), model("p1.ExampleInnerAnnotation"),
+                model("ExampleConcreteClass$ExampleInnerClass"), model("ExampleAnnotation"));
+    }
+
+    @Test
+    public void usedClassCount() throws IOException {
+        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        assertCollectionEquals(toString(clazz.usedClassCounts()),
+                "java.lang.String 3", "java.lang.Exception 2", "java.io.IOException 1", "java.io.File 2",
+                "java.math.BigDecimal 1", "java.util.Vector 1", "java.util.jar.JarFile 1", "java.net.URL 1",
+                "java.awt.im.InputContext 1", "java.awt.geom.AffineTransform 1",
+                "java.awt.image.renderable.ContextualRenderedImageFactory 1", "java.awt.dnd.peer.DragSourceContextPeer 1",
+                "java.applet.AppletStub 1", "java.rmi.RemoteException 1", "java.sql.Statement 1",
+                "javax.crypto.BadPaddingException 1", "java.text.NumberFormat 1",
+                "org.junit.Ignore 1", "org.junit.runners.Suite 1", "org.junit.Test 1", "org.junit.runners.Suite$SuiteClasses 2",
+                model("p2.ExampleEnum 1"), model("ExampleAbstractClass 2"), model("p1.ExampleInnerAnnotation 1"),
+                model("ExampleConcreteClass$ExampleInnerClass 1"), model("ExampleAnnotation 1"));
     }
 
     @Test
@@ -83,7 +154,7 @@ public class ClassFileParserTest {
     @Test
     public void innerClassImports() throws IOException {
         final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
-        assertCollectionEquals(clazz.getImports(), new JavaPackage("java.lang"));
+        assertCollectionEquals(clazz.usedForeignPackages(), new JavaPackage("java.lang"));
     }
 
     @Test
@@ -101,7 +172,7 @@ public class ClassFileParserTest {
     @Test
     public void packageClassImports() throws IOException {
         final JavaClass clazz = parse(Path.testClass("ExamplePackageClass"));
-        assertCollectionEquals(clazz.getImports(), new JavaPackage("java.lang"));
+        assertCollectionEquals(clazz.usedPackages(), new JavaPackage("java.lang"));
     }
 
     @Test
@@ -117,7 +188,7 @@ public class ClassFileParserTest {
     @Test
     public void genericParameters() throws IOException {
         final JavaClass generic = parse(Path.testClass("p4/GenericParameters"));
-        assertCollectionEquals(toString(generic.getImports()),
+        assertCollectionEquals(toString(generic.usedPackages()),
                 "java.util", "java.lang",
                 model("p4.p4"), model("p4.p2"), model("p4.p1"), model("p4.p9"), model("p4.p10"),
                 model("p4.p5"), model("p4.p6"), model("p4.p7"), model("p4.p8"));
@@ -126,7 +197,7 @@ public class ClassFileParserTest {
     @Test
     public void subGenericParameters() throws IOException {
         final JavaClass subGeneric = parse(Path.testClass("p4/SubGenericParameters"));
-        assertCollectionEquals(toString(subGeneric.getImports()), model("p4.p1"));
+        assertCollectionEquals(toString(subGeneric.usedForeignPackages()), model("p4.p1"));
     }
 
     @Test
@@ -161,6 +232,14 @@ public class ClassFileParserTest {
         final List<String> res = new ArrayList<>();
         for (final Object c : cs) {
             res.add(c.toString());
+        }
+        return res;
+    }
+
+    private List<String> toString(Map<?, Integer> cs) {
+        final List<String> res = new ArrayList<>();
+        for (final Map.Entry<?, Integer> c : cs.entrySet()) {
+            res.add(c.getKey().toString() + " " + c.getValue());
         }
         return res;
     }

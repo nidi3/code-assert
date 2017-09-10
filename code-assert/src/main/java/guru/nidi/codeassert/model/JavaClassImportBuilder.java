@@ -18,6 +18,7 @@ package guru.nidi.codeassert.model;
 import guru.nidi.codeassert.AnalyzerException;
 
 import java.io.IOException;
+import java.util.List;
 
 class JavaClassImportBuilder {
     private static final char CLASS_DESCRIPTOR = 'L';
@@ -37,7 +38,7 @@ class JavaClassImportBuilder {
         addImport(className);
     }
 
-    public void addInterfaces(String[] interfaceNames) {
+    public void addInterfaces(List<String> interfaceNames) {
         for (final String interfaceName : interfaceNames) {
             addImport(interfaceName);
         }
@@ -52,27 +53,29 @@ class JavaClassImportBuilder {
         }
     }
 
-    public void addMethodRefs(MemberInfo[] methods) throws IOException {
+    public void addMethodRefs(List<MemberInfo> methods) throws IOException {
         addMemberAnnotationRefs(methods);
         addMemberSignatureRefs(SignatureParser.Source.METHOD, methods);
         addMemberTypes(methods);
+        clazz.methods.addAll(methods);
     }
 
-    public void addFieldRefs(MemberInfo[] fields) throws IOException {
+    public void addFieldRefs(List<MemberInfo> fields) throws IOException {
         addMemberAnnotationRefs(fields);
         addMemberSignatureRefs(SignatureParser.Source.FIELD, fields);
         addMemberTypes(fields);
+        clazz.fields.addAll(fields);
     }
 
-    private void addMemberAnnotationRefs(MemberInfo[] info) throws IOException {
-        for (int j = 1; j < info.length; j++) {
-            if (info[j].annotations != null) {
-                addAnnotationReferences(info[j].annotations);
+    private void addMemberAnnotationRefs(List<MemberInfo> infos) throws IOException {
+        for (final MemberInfo info : infos) {
+            if (info.annotations != null) {
+                addAnnotationReferences(info.annotations);
             }
         }
     }
 
-    private void addMemberSignatureRefs(SignatureParser.Source source, MemberInfo[] infos) throws IOException {
+    private void addMemberSignatureRefs(SignatureParser.Source source, List<MemberInfo> infos) throws IOException {
         for (final MemberInfo info : infos) {
             if (info.signature != null) {
                 final String name = constantPool.getUtf8(u2(info.signature.value, 0));
@@ -83,10 +86,9 @@ class JavaClassImportBuilder {
         }
     }
 
-    private void addMemberTypes(MemberInfo[] infos) throws IOException {
+    private void addMemberTypes(List<MemberInfo> infos) throws IOException {
         for (final MemberInfo info : infos) {
-            final String descriptor = constantPool.getUtf8(info.descriptorIndex);
-            final String[] types = descriptorToTypes(descriptor);
+            final String[] types = descriptorToTypes(info.descriptor);
             for (final String type : types) {
                 if (type.length() > 0) {
                     addImport(type);
@@ -95,7 +97,7 @@ class JavaClassImportBuilder {
         }
     }
 
-    public void addAttributeRefs(AttributeInfo[] attributes) throws IOException {
+    public void addAttributeRefs(List<AttributeInfo> attributes) throws IOException {
         for (final AttributeInfo attribute : attributes) {
             addSourceAttribute(attribute);
             addAttributeAnnotationRefs(attribute);
@@ -105,7 +107,7 @@ class JavaClassImportBuilder {
 
     private void addSourceAttribute(AttributeInfo attribute) throws IOException {
         if (attribute.isSource()) {
-            clazz.setSourceFile(attribute.sourceFile(constantPool));
+            clazz.sourceFile = attribute.sourceFile(constantPool);
         }
     }
 

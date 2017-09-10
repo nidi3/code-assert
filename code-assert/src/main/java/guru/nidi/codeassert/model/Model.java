@@ -17,9 +17,10 @@ package guru.nidi.codeassert.model;
 
 import guru.nidi.codeassert.AnalyzerException;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
+import java.util.jar.JarInputStream;
+import java.util.zip.ZipEntry;
 
 public class Model {
     public static final String UNNAMED_PACKAGE = "<Unnamed Package>";
@@ -27,16 +28,40 @@ public class Model {
     final Map<String, JavaPackage> packages = new HashMap<>();
     final Map<String, JavaClass> classes = new HashMap<>();
 
+    public static Model from(File... files) {
+        return from(Arrays.asList(files));
+    }
+
     public static Model from(List<File> files) {
         try {
             final Model model = new Model();
             final ClassFileParser parser = new ClassFileParser();
             for (final File file : files) {
-                parser.parse(file, model);
+                try (final InputStream in = new FileInputStream(file)) {
+                    add(parser, model, file.getName(), in);
+                }
             }
             return model;
         } catch (IOException e) {
             throw new AnalyzerException("Problem creating a Model", e);
+        }
+    }
+
+    private static void add(ClassFileParser parser, Model model, String name, InputStream in) throws IOException {
+        if (name.endsWith(".jar") || name.endsWith(".zip") || name.endsWith(".war") || name.endsWith(".ear")) {
+            final JarInputStream jar = new JarInputStream(in);
+            ZipEntry entry;
+            while ((entry = jar.getNextEntry()) != null) {
+                try {
+                    if (!entry.isDirectory()) {
+                        add(parser, model, entry.getName(), jar);
+                    }
+                } finally {
+                    jar.closeEntry();
+                }
+            }
+        } else if (name.endsWith(".class")) {
+            parser.parse(in, model);
         }
     }
 

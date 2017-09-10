@@ -131,7 +131,7 @@ public class DependencyRule extends JavaElement {
                     if (isAllowed(allowed, denied)) {
                         result.allowed.with(pattern.specificity(), elem, dep);
                     }
-                    if (isDenied(allowed, denied)) {
+                    if (isDenied(allowed, denied) && !isAllowed(elem, dep)) {
                         //if deny if only because of !allowAll -> lowest specificity
                         final int spec = denied == 0 ? 0 : pattern.specificity();
                         result.denied.with(spec, elem, dep);
@@ -140,12 +140,16 @@ public class DependencyRule extends JavaElement {
             }
         }
 
-        private boolean isDenied(int allowed, int denied) {
-            return denied > allowed || (!allowAll && allowed == 0);
+        private boolean isAllowed(T elem, T dep) {
+            return rules.allowIntraPackageDeps && elem.getPackageName().equals(dep.getPackageName());
         }
 
         private boolean isAllowed(int allowed, int denied) {
             return allowed > denied || (allowAll && denied == 0);
+        }
+
+        private boolean isDenied(int allowed, int denied) {
+            return denied > allowed || (!allowAll && allowed == 0);
         }
 
         private boolean isAmbiguous(int allowed, int denied) {

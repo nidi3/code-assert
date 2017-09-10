@@ -26,21 +26,35 @@ import java.util.List;
 
 public final class DependencyRules {
     private static final Logger LOG = LoggerFactory.getLogger(DependencyRules.class);
-
-    private final List<DependencyRule> rules = new ArrayList<>();
-    private final boolean allowAll;
     private static final ThreadLocal<DependencyRules> CURRENT = new ThreadLocal<>();
 
-    private DependencyRules(boolean allowAll) {
+    private final List<DependencyRule> rules;
+    private final boolean allowAll;
+    private final boolean allowIntraPackageCycles;
+    final boolean allowIntraPackageDeps;
+
+    private DependencyRules(List<DependencyRule> rules, boolean allowAll,
+                            boolean allowIntraPackageCycles, boolean allowIntraPackageDeps) {
+        this.rules = rules;
         this.allowAll = allowAll;
+        this.allowIntraPackageCycles = allowIntraPackageCycles;
+        this.allowIntraPackageDeps = allowIntraPackageDeps;
     }
 
     public static DependencyRules allowAll() {
-        return new DependencyRules(true);
+        return new DependencyRules(new ArrayList<DependencyRule>(), true, true, true);
     }
 
     public static DependencyRules denyAll() {
-        return new DependencyRules(false);
+        return new DependencyRules(new ArrayList<DependencyRule>(), false, false, false);
+    }
+
+    public DependencyRules allowIntraPackageCycles(boolean allowIntraPackageCycles) {
+        return new DependencyRules(rules, allowAll, allowIntraPackageCycles, allowIntraPackageDeps);
+    }
+
+    public DependencyRules allowIntraPackageDependencies(boolean allowIntraPackageDeps) {
+        return new DependencyRules(rules, allowAll, allowIntraPackageCycles, allowIntraPackageDeps);
     }
 
     public DependencyRule addRule(String pack) {
@@ -235,10 +249,6 @@ public final class DependencyRules {
         return new DependencyRule(pattern, allowAll);
     }
 
-    public DependencyRule optRule(String pattern) {
-        return new DependencyRule(pattern, allowAll);
-    }
-
     private static String processChar(boolean dollarMode, boolean firstChar, char c) {
         if (dollarMode) {
             if (c == '$' && !firstChar) {
@@ -263,7 +273,7 @@ public final class DependencyRules {
             }
         }
         result.normalize();
-        result.cycles.addAll(new Tarjan<T>().analyzeCycles(scope));
+        result.cycles.addAll(new Tarjan<T>().analyzeCycles(scope, allowIntraPackageCycles));
         return result;
     }
 

@@ -25,6 +25,8 @@ public abstract class UsingElement<T> {
 
     public abstract String getName();
 
+    public abstract String getPackageName();
+
     public abstract Collection<String> usedVia(UsingElement<T> other);
 
     public abstract boolean isMatchedBy(LocationMatcher matcher);

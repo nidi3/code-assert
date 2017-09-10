@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.model;
+package guru.nidi.codeassert.util;
 
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import org.junit.Test;
+import java.util.*;
 
-import java.io.IOException;
+public class CountSet<T> {
+    private final Map<T, Integer> map = new HashMap<>();
 
-import static org.junit.Assert.assertEquals;
-
-public class AnalyzerTest {
-    final Model model = Model.from(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model").getClasses());
-
-    @Test
-    public void packages() throws IOException {
-        assertEquals(40, model.getPackages().size());
+    public void add(T elem) {
+        final Integer c = map.get(elem);
+        map.put(elem, (c == null ? 0 : c) + 1);
     }
 
-    @Test
-    public void classes() throws IOException {
-        assertEquals(114, model.getClasses().size());
+    public boolean contains(T elem) {
+        return map.containsKey(elem);
+    }
+
+    public Map<T, Integer> asMap() {
+        return map;
+    }
+
+    public Set<T> asSet() {
+        return map.keySet();
     }
 }

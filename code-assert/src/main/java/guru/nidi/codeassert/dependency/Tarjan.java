@@ -31,14 +31,45 @@ class Tarjan<T extends UsingElement<T>> {
         boolean onStack;
     }
 
-    public Set<DependencyMap> analyzeCycles(Iterable<T> elems) {
+    public Set<DependencyMap> analyzeCycles(Iterable<T> elems, boolean allowIntraPackageCycles) {
         index = 0;
+        final Map<String, T> map = new HashMap<>();
         for (final T elem : elems) {
+            map.put(elem.getName(), elem);
             if (node(elem).index < 0) {
                 strongConnect(elem);
             }
         }
-        return result;
+        return removeInnerCycles(map, true, allowIntraPackageCycles);
+    }
+
+    private Set<DependencyMap> removeInnerCycles(Map<String, T> elems, boolean innerClasses, boolean intraPackages) {
+        final Set<DependencyMap> res = new HashSet<>();
+        for (final DependencyMap map : result) {
+            final DependencyMap filtered = new DependencyMap();
+            for (final String from : map.getElements()) {
+                for (final Map.Entry<String, DependencyMap.Info> entry : map.getDependencies(from).entrySet()) {
+                    final String to = entry.getKey();
+                    final boolean innerClassOk = innerClasses && areInnerClasses(from, to);
+                    final boolean intraPackageOk = intraPackages && areSamePackage(elems, from, to);
+                    if (!innerClassOk && !intraPackageOk) {
+                        filtered.with(entry.getValue().getSpecificity(), from, entry.getValue().getVias(), to);
+                    }
+                }
+            }
+            if (!filtered.isEmpty()) {
+                res.add(filtered);
+            }
+        }
+        return res;
+    }
+
+    private boolean areSamePackage(Map<String, T> elems, String c1, String c2) {
+        return elems.get(c1).getPackageName().equals(elems.get(c2).getPackageName());
+    }
+
+    private boolean areInnerClasses(String c1, String c2) {
+        return c1.startsWith(c2 + "$") || c2.startsWith(c1 + "$");
     }
 
     private Node node(T elem) {

@@ -16,6 +16,7 @@
 package guru.nidi.codeassert.model;
 
 import guru.nidi.codeassert.config.LocationMatcher;
+import guru.nidi.codeassert.util.CountSet;
 
 import java.util.*;
 
@@ -26,20 +27,23 @@ import java.util.*;
  * @author <b>Mike Clark</b>
  * @author Clarkware Consulting, Inc.
  */
-
 public class JavaClass extends UsingElement<JavaClass> {
     private final String name;
     private final JavaPackage pack;
-    private final Map<String, JavaPackage> imports;
-    private final Set<JavaClass> importClasses;
+    private final CountSet<JavaPackage> usedPackages;
+    private final CountSet<JavaClass> usedClasses;
     private final Set<JavaClass> annotations;
-    private String sourceFile;
+    final List<MemberInfo> fields = new ArrayList<>();
+    final List<MemberInfo> methods = new ArrayList<>();
+    String sourceFile;
+    int codeSize;
+    int totalSize;
 
     JavaClass(String name, JavaPackage pack) {
         this.name = name;
         this.pack = pack;
-        imports = new HashMap<>();
-        importClasses = new HashSet<>();
+        usedPackages = new CountSet<>();
+        usedClasses = new CountSet<>();
         annotations = new HashSet<>();
         sourceFile = "Unknown";
     }
@@ -52,33 +56,92 @@ public class JavaClass extends UsingElement<JavaClass> {
         return pack;
     }
 
-    public void setSourceFile(String name) {
-        sourceFile = name;
-    }
-
     public String getSourceFile() {
         return sourceFile;
-    }
-
-    public Collection<JavaPackage> getImports() {
-        return imports.values();
     }
 
     public Set<JavaClass> getAnnotations() {
         return annotations;
     }
 
-    public void addImport(String type, Model model) {
-        final String packName = Model.packageOf(type);
-        if (!packName.equals(pack.getName())) {
+    public List<MemberInfo> getFields() {
+        return fields;
+    }
+
+    public List<MemberInfo> getMethods() {
+        return methods;
+    }
+
+    public int getCodeSize() {
+        return codeSize;
+    }
+
+    public int getTotalSize() {
+        return totalSize;
+    }
+
+    @Override
+    public JavaClass self() {
+        return this;
+    }
+
+    public Collection<JavaPackage> usedForeignPackages() {
+        final Set<JavaPackage> res = new HashSet<>(usedPackages());
+        res.remove(pack);
+        return res;
+    }
+
+    public Collection<JavaPackage> usedPackages() {
+        return usedPackages.asSet();
+    }
+
+    public Map<JavaPackage, Integer> usedPackageCounts() {
+        return usedPackages.asMap();
+    }
+
+    public Collection<JavaClass> usedClasses() {
+        return usedClasses.asSet();
+    }
+
+    public Map<JavaClass, Integer> usedClassCounts() {
+        return usedClasses.asMap();
+    }
+
+    public boolean uses(JavaPackage pack) {
+        return usedPackages.contains(pack);
+    }
+
+    @Override
+    public Collection<JavaClass> uses() {
+        return usedClasses();
+    }
+
+    @Override
+    public String getPackageName() {
+        return pack.getName();
+    }
+
+    @Override
+    public Collection<String> usedVia(UsingElement<JavaClass> other) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isMatchedBy(LocationMatcher matcher) {
+        return matcher.matchesClass(name);
+    }
+
+    void addImport(String type, Model model) {
+        if (!name.equals(type)) {
+            final String packName = Model.packageOf(type);
             final JavaPackage p = model.getOrCreatePackage(packName);
-            imports.put(packName, p);
+            usedPackages.add(p);
             pack.addEfferent(p);
-            importClasses.add(model.getOrCreateClass(type));
+            usedClasses.add(model.getOrCreateClass(type));
         }
     }
 
-    public void addAnnotation(String type, Model model) {
+    void addAnnotation(String type, Model model) {
         addImport(type, model);
         annotations.add(model.getOrCreateClass(type));
     }
@@ -98,29 +161,5 @@ public class JavaClass extends UsingElement<JavaClass> {
     @Override
     public String toString() {
         return name;
-    }
-
-    @Override
-    public JavaClass self() {
-        return this;
-    }
-
-    @Override
-    public Collection<JavaClass> uses() {
-        return importClasses;
-    }
-
-    public boolean uses(JavaPackage pack) {
-        return imports.containsValue(pack);
-    }
-
-    @Override
-    public Collection<String> usedVia(UsingElement<JavaClass> other) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public boolean isMatchedBy(LocationMatcher matcher) {
-        return matcher.matchesClass(name);
     }
 }

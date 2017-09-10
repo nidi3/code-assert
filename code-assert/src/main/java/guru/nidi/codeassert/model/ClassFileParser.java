@@ -15,7 +15,11 @@
  */
 package guru.nidi.codeassert.model;
 
+import org.apache.commons.io.input.CountingInputStream;
+
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <code>ClassFileParser</code> class is responsible for
@@ -29,6 +33,7 @@ class ClassFileParser {
     private static final int JAVA_MAGIC = 0xCAFEBABE;
 
     private ConstantPool constantPool;
+    private CountingInputStream counter;
     private DataInputStream in;
 
     public JavaClass parse(File file, Model model) throws IOException {
@@ -38,7 +43,8 @@ class ClassFileParser {
     }
 
     public JavaClass parse(InputStream is, Model model) throws IOException {
-        in = new DataInputStream(is);
+        counter = new CountingInputStream(is);
+        in = new DataInputStream(counter);
 
         parseMagic();
         parseMinorVersion();
@@ -50,10 +56,10 @@ class ClassFileParser {
 
         final String className = parseClassName();
         final String superClassName = parseSuperClassName();
-        final String[] interfaceNames = parseInterfaces();
-        final MemberInfo[] fields = parseMembers();
-        final MemberInfo[] methods = parseMembers();
-        final AttributeInfo[] attributes = parseAttributes();
+        final List<String> interfaceNames = parseInterfaces();
+        final List<MemberInfo> fields = parseMembers();
+        final List<MemberInfo> methods = parseMembers();
+        final List<AttributeInfo> attributes = parseAttributes();
 
         final JavaClassImportBuilder adder = new JavaClassImportBuilder(className, model, constantPool);
         adder.addClassConstantReferences();
@@ -63,13 +69,27 @@ class ClassFileParser {
         adder.addMethodRefs(methods);
         adder.addAttributeRefs(attributes);
 
+        handlePackageInfo(adder, model, className);
+        setSizes(adder, methods);
+        return adder.clazz;
+    }
+
+    private void handlePackageInfo(JavaClassImportBuilder adder, Model model, String className) {
         if (className.endsWith(".package-info")) {
             final JavaPackage pack = model.getOrCreatePackage(Model.packageOf(className));
             for (final JavaClass ann : adder.clazz.getAnnotations()) {
                 pack.addAnnotation(ann);
             }
         }
-        return adder.clazz;
+    }
+
+    private void setSizes(JavaClassImportBuilder adder, List<MemberInfo> methods) {
+        int codeSize = 0;
+        for (final MemberInfo method : methods) {
+            codeSize += method.codeSize;
+        }
+        adder.clazz.codeSize = codeSize;
+        adder.clazz.totalSize = this.counter.getCount();
     }
 
     private int parseMagic() throws IOException {
@@ -102,30 +122,30 @@ class ClassFileParser {
         return constantPool.getClassConstantName(entryIndex);
     }
 
-    private String[] parseInterfaces() throws IOException {
+    private List<String> parseInterfaces() throws IOException {
         final int count = in.readUnsignedShort();
-        final String[] names = new String[count];
+        final List<String> names = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             final int entryIndex = in.readUnsignedShort();
-            names[i] = constantPool.getClassConstantName(entryIndex);
+            names.add(constantPool.getClassConstantName(entryIndex));
         }
         return names;
     }
 
-    private MemberInfo[] parseMembers() throws IOException {
+    private List<MemberInfo> parseMembers() throws IOException {
         final int count = in.readUnsignedShort();
-        final MemberInfo[] infos = new MemberInfo[count];
+        final List<MemberInfo> infos = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            infos[i] = MemberInfo.fromData(in, constantPool);
+            infos.add(MemberInfo.fromData(in, constantPool));
         }
         return infos;
     }
 
-    private AttributeInfo[] parseAttributes() throws IOException {
+    private List<AttributeInfo> parseAttributes() throws IOException {
         final int count = in.readUnsignedShort();
-        final AttributeInfo[] attributes = new AttributeInfo[count];
+        final List<AttributeInfo> attributes = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            attributes[i] = AttributeInfo.fromData(in, constantPool);
+            attributes.add(AttributeInfo.fromData(in, constantPool));
         }
         return attributes;
     }

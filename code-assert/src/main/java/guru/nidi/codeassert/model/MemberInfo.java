@@ -18,29 +18,32 @@ package guru.nidi.codeassert.model;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-final class MemberInfo {
-    final int accessFlags;
-    final int nameIndex;
-    final int descriptorIndex;
+public final class MemberInfo {
+    private final int accessFlags;
+    private final String name;
+    final String descriptor;
     final AttributeInfo annotations;
     final AttributeInfo signature;
+    final int codeSize;
 
-    private MemberInfo(int accessFlags, int nameIndex, int descriptorIndex,
-                       AttributeInfo annotations, AttributeInfo signature) {
+    private MemberInfo(int accessFlags, String name, String descriptor,
+                       AttributeInfo annotations, AttributeInfo signature, int codeSize) {
         this.accessFlags = accessFlags;
-        this.nameIndex = nameIndex;
-        this.descriptorIndex = descriptorIndex;
+        this.name = name;
+        this.descriptor = descriptor;
         this.annotations = annotations;
         this.signature = signature;
+        this.codeSize = codeSize;
     }
 
-    public static MemberInfo fromData(DataInputStream in, ConstantPool constantPool) throws IOException {
+    static MemberInfo fromData(DataInputStream in, ConstantPool constantPool) throws IOException {
         final int access = in.readUnsignedShort();
-        final int nameIndex = in.readUnsignedShort();
-        final int descriptorIndex = in.readUnsignedShort();
+        final String name = constantPool.getUtf8(in.readUnsignedShort());
+        final String descriptor = constantPool.getUtf8(in.readUnsignedShort());
         final int attributesCount = in.readUnsignedShort();
         AttributeInfo annotations = null;
         AttributeInfo signature = null;
+        int codeSize = 0;
         for (int a = 0; a < attributesCount; a++) {
             final AttributeInfo attribute = AttributeInfo.fromData(in, constantPool);
             if (attribute.isAnnotation()) {
@@ -49,7 +52,22 @@ final class MemberInfo {
             if (attribute.isSignature()) {
                 signature = attribute;
             }
+            if (attribute.isCode()) {
+                codeSize = attribute.value.length;
+            }
         }
-        return new MemberInfo(access, nameIndex, descriptorIndex, annotations, signature);
+        return new MemberInfo(access, name, descriptor, annotations, signature, codeSize);
+    }
+
+    public int getAccessFlags() {
+        return accessFlags;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getCodeSize() {
+        return codeSize;
     }
 }
