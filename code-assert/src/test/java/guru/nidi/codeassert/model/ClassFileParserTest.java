@@ -57,8 +57,8 @@ public class ClassFileParserTest {
     @Test
     public void size() throws IOException {
         final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
-        assertEquals(538, clazz.getCodeSize());
-        assertEquals(2465, clazz.getTotalSize());
+        assertEquals(518, clazz.getCodeSize());
+        assertEquals(2398, clazz.getTotalSize());
     }
 
     @Test
