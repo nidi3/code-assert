@@ -22,8 +22,8 @@ import static guru.nidi.codeassert.dependency.DependencyCollector.*;
 import static guru.nidi.codeassert.dependency.MatcherUtils.*;
 
 public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
-    private static final String SIMPLE_FORMAT = "%-12s %s%n";
-    private static final String ARROW_FORMAT = "%-12s %s ->%n";
+    private static final String SIMPLE_FORMAT = "%-12s %-45s %s%n";
+    private static final String ARROW_FORMAT = "%-12s %-45s %s%n";
     private final boolean nonExisting;
     private final boolean undefined;
 
@@ -34,10 +34,7 @@ public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
 
     @Override
     protected boolean matchesSafely(DependencyResult item) {
-        return matches(item.findings());
-    }
-
-    protected boolean matches(Dependencies dependencies) {
+        final Dependencies dependencies = item.findings();
         return dependencies.getMissing().isEmpty() && dependencies.getDenied().isEmpty()
                 && (dependencies.getNotExisting().isEmpty() || !nonExisting)
                 && (dependencies.getUndefined().isEmpty() || !undefined);
@@ -49,10 +46,8 @@ public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
 
     @Override
     protected void describeMismatchSafely(DependencyResult item, Description description) {
-        describeMismatch(item.findings(), description);
-    }
-
-    protected void describeMismatch(Dependencies dependencies, Description description) {
+        final Dependencies dependencies = item.findings();
+        description.appendText("\n");
         describeNotExisting(dependencies, description);
         describeUndefined(dependencies, description);
         describeMissing(dependencies, description);
@@ -61,14 +56,14 @@ public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
 
     private void describeForbidden(Dependencies result, Description description) {
         for (final String elem : sorted(result.getDenied().getElements())) {
-            description.appendText(String.format(ARROW_FORMAT, DENIED, elem));
+            description.appendText(String.format(ARROW_FORMAT, DENIED, elem + " ->", "This dependency is forbidden."));
             description.appendText(deps("  ", result.getDenied().getDependencies(elem)));
         }
     }
 
     private void describeMissing(Dependencies result, Description description) {
         for (final String elem : sorted(result.getMissing().getElements())) {
-            description.appendText(String.format(ARROW_FORMAT, MISSING, elem));
+            description.appendText(String.format(ARROW_FORMAT, MISSING, elem + " ->", "This dependency is missing."));
             for (final String dep : sorted(result.getMissing().getDependencies(elem).keySet())) {
                 description.appendText("  " + dep + "\n");
             }
@@ -78,7 +73,8 @@ public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
     private void describeUndefined(Dependencies result, Description description) {
         if (undefined) {
             for (final String elem : sorted(result.getUndefined())) {
-                description.appendText(String.format(SIMPLE_FORMAT, UNDEFINED, elem));
+                description.appendText(String.format(SIMPLE_FORMAT, UNDEFINED, elem,
+                        "There is no rule given for this element."));
             }
         }
     }
@@ -86,7 +82,8 @@ public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
     private void describeNotExisting(Dependencies result, Description description) {
         if (nonExisting) {
             for (final String elem : sortedPatterns(result.getNotExisting())) {
-                description.appendText(String.format(SIMPLE_FORMAT, NOT_EXISTING, elem));
+                description.appendText(String.format(SIMPLE_FORMAT, NOT_EXISTING, elem,
+                        "There is a rule for this element, but it has not been found in the code."));
             }
         }
     }

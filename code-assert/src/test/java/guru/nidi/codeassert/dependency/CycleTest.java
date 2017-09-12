@@ -36,8 +36,8 @@ public class CycleTest {
 
     @Test
     public void packageCycles() {
-        assertMatcher(""
-                        + "CYCLE        guru.nidi.codeassert.dependency.a, guru.nidi.codeassert.dependency.b, guru.nidi.codeassert.dependency.c\n"
+        assertMatcher("\n"
+                        + "CYCLE        This group of elements has mutual dependencies:\n"
                         + "  guru.nidi.codeassert.dependency.a ->\n"
                         + "    guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.a.A1)\n"
                         + "  guru.nidi.codeassert.dependency.b ->\n"
@@ -46,7 +46,7 @@ public class CycleTest {
                         + "  guru.nidi.codeassert.dependency.c ->\n"
                         + "    guru.nidi.codeassert.dependency.a (by guru.nidi.codeassert.dependency.c.C1)\n"
                         + "    guru.nidi.codeassert.dependency.b (by guru.nidi.codeassert.dependency.c.C1, guru.nidi.codeassert.dependency.c.C2)\n"
-                        + "CYCLE        guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.c.a\n"
+                        + "CYCLE        This group of elements has mutual dependencies:\n"
                         + "  guru.nidi.codeassert.dependency.a.a ->\n"
                         + "    guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.a.a.Aa1)\n"
                         + "  guru.nidi.codeassert.dependency.b.a ->\n"
@@ -62,8 +62,8 @@ public class CycleTest {
     public void packageCyclesWithExceptions() {
         final DependencyCollector collector = new DependencyCollector()
                 .just(In.locs(base("a"), base("b"), base("c")).ignore(CYCLE));
-        assertMatcher(""
-                        + "CYCLE        guru.nidi.codeassert.dependency.a.a, guru.nidi.codeassert.dependency.b.a, guru.nidi.codeassert.dependency.c.a\n"
+        assertMatcher("\n"
+                        + "CYCLE        This group of elements has mutual dependencies:\n"
                         + "  guru.nidi.codeassert.dependency.a.a ->\n"
                         + "    guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.a.a.Aa1)\n"
                         + "  guru.nidi.codeassert.dependency.b.a ->\n"
@@ -77,8 +77,8 @@ public class CycleTest {
 
     @Test
     public void classCycles() {
-        assertMatcher(""
-                        + "CYCLE        guru.nidi.codeassert.dependency.a.A1, guru.nidi.codeassert.dependency.b.B1, guru.nidi.codeassert.dependency.c.C1\n"
+        assertMatcher("\n"
+                        + "CYCLE        This group of elements has mutual dependencies:\n"
                         + "  guru.nidi.codeassert.dependency.a.A1 ->\n"
                         + "    guru.nidi.codeassert.dependency.c.C1\n"
                         + "  guru.nidi.codeassert.dependency.b.B1 ->\n"
@@ -87,7 +87,7 @@ public class CycleTest {
                         + "  guru.nidi.codeassert.dependency.c.C1 ->\n"
                         + "    guru.nidi.codeassert.dependency.a.A1\n"
                         + "    guru.nidi.codeassert.dependency.b.B1\n"
-                        + "CYCLE        guru.nidi.codeassert.dependency.a.a.Aa1, guru.nidi.codeassert.dependency.b.a.Ba1\n"
+                        + "CYCLE        This group of elements has mutual dependencies:\n"
                         + "  guru.nidi.codeassert.dependency.a.a.Aa1 ->\n"
                         + "    guru.nidi.codeassert.dependency.b.a.Ba1\n"
                         + "  guru.nidi.codeassert.dependency.b.a.Ba1 ->\n"
@@ -99,8 +99,8 @@ public class CycleTest {
     public void classCyclesExcept() {
         final DependencyCollector collector = new DependencyCollector()
                 .just(In.locs("guru.nidi.codeassert.dependency.a.a.Aa1", "guru.nidi.codeassert.dependency.b.a.Ba1").ignore(CYCLE));
-        assertMatcher(""
-                        + "CYCLE        guru.nidi.codeassert.dependency.a.A1, guru.nidi.codeassert.dependency.b.B1, guru.nidi.codeassert.dependency.c.C1\n"
+        assertMatcher("\n"
+                        + "CYCLE        This group of elements has mutual dependencies:\n"
                         + "  guru.nidi.codeassert.dependency.a.A1 ->\n"
                         + "    guru.nidi.codeassert.dependency.c.C1\n"
                         + "  guru.nidi.codeassert.dependency.b.B1 ->\n"
