@@ -16,7 +16,6 @@
 package guru.nidi.codeassert.gui;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import guru.nidi.codeassert.model.JavaClass;
@@ -31,7 +30,7 @@ public class JavaClassSerializer extends StdSerializer<JavaClass> {
     }
 
     @Override
-    public void serialize(JavaClass value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
+    public void serialize(JavaClass value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
         gen.writeStringField("name", value.getName());
         gen.writeStringField("package", value.getPackage().getName());
