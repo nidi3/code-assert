@@ -19,17 +19,17 @@ import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
 import guru.nidi.codeassert.checkstyle.*;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCheckstyleIssues;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@Ignore
+@Disabled
 //## checkstyle
-public class CheckstyleTest {
+class CheckstyleTest {
     @Test
-    public void checkstyle() {
+    void checkstyle() {
         // Analyze all sources in src/main/java
         AnalyzerConfig config = AnalyzerConfig.maven().main();
 

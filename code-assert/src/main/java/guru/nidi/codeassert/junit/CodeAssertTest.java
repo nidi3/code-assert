@@ -20,18 +20,18 @@ import guru.nidi.codeassert.dependency.DependencyResult;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
 import guru.nidi.codeassert.pmd.CpdResult;
 import guru.nidi.codeassert.pmd.PmdResult;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.EnumSet;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static guru.nidi.codeassert.junit.CodeAssertTest.Type.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-@Ignore("This is made to be subclassed")
+@Disabled("This is made to be subclassed")
 public class CodeAssertTest {
     public enum Type {
         CIRCULAR_DEPENDENCIES,
@@ -108,64 +108,64 @@ public class CodeAssertTest {
 
     @Test
     public void circularDependencies() {
-        assumeFalse("analyzeDependencies() not implemented.", dependencyResult() == null);
-        assumeTrue("Circular dependencies test excluded.", defaultTests().contains(CIRCULAR_DEPENDENCIES));
+        assumeFalse(dependencyResult() == null, "analyzeDependencies() not implemented.");
+        assumeTrue(defaultTests().contains(CIRCULAR_DEPENDENCIES), "Circular dependencies test excluded.");
         assertThat(dependencyResult(), hasNoCycles());
     }
 
     @Test
     public void findBugs() {
-        assumeFalse("analyzeFindBugs() not implemented.", findBugsResult() == null);
-        assumeTrue("FindBugs test excluded.", defaultTests().contains(FIND_BUGS));
+        assumeFalse(findBugsResult() == null, "analyzeFindBugs() not implemented.");
+        assumeTrue(defaultTests().contains(FIND_BUGS), "FindBugs test excluded.");
         assertThat(findBugsResult(), hasNoBugs());
     }
 
     @Test
     public void findBugsUnusedActions() {
-        assumeFalse("analyzeFindBugs() not implemented.", findBugsResult() == null);
-        assumeTrue("FindBugs - unused actions test excluded.", defaultTests().contains(FIND_BUGS_UNUSED_ACTIONS));
+        assumeFalse(findBugsResult() == null, "analyzeFindBugs() not implemented.");
+        assumeTrue(defaultTests().contains(FIND_BUGS_UNUSED_ACTIONS), "FindBugs - unused actions test excluded.");
         assertThat(findBugsResult(), hasNoUnusedActions());
     }
 
     @Test
     public void pmdViolations() {
-        assumeFalse("analyzePmd() not implemented.", pmdResult() == null);
-        assumeTrue("PMD test excluded.", defaultTests().contains(PMD));
+        assumeFalse(pmdResult() == null, "analyzePmd() not implemented.");
+        assumeTrue(defaultTests().contains(PMD), "PMD test excluded.");
         assertThat(pmdResult(), hasNoPmdViolations());
     }
 
     @Test
     public void pmdUnusedActions() {
-        assumeFalse("analyzePmd() not implemented.", pmdResult() == null);
-        assumeTrue("PMD - unused actions test excluded.", defaultTests().contains(PMD_UNUSED_ACTIONS));
+        assumeFalse(pmdResult() == null, "analyzePmd() not implemented.");
+        assumeTrue(defaultTests().contains(PMD_UNUSED_ACTIONS), "PMD - unused actions test excluded.");
         assertThat(pmdResult(), hasNoUnusedActions());
     }
 
     @Test
     public void cpd() {
-        assumeFalse("analyzeCpd() not implemented.", cpdResult() == null);
-        assumeTrue("CPD test excluded.", defaultTests().contains(CPD));
+        assumeFalse(cpdResult() == null, "analyzeCpd() not implemented.");
+        assumeTrue(defaultTests().contains(CPD), "CPD test excluded.");
         assertThat(cpdResult(), hasNoCodeDuplications());
     }
 
     @Test
     public void cpdUnusedActions() {
-        assumeFalse("analyzeCpd() not implemented.", cpdResult() == null);
-        assumeTrue("CPD - unused actions test excluded.", defaultTests().contains(CPD_UNUSED_ACTIONS));
+        assumeFalse(cpdResult() == null, "analyzeCpd() not implemented.");
+        assumeTrue(defaultTests().contains(CPD_UNUSED_ACTIONS), "CPD - unused actions test excluded.");
         assertThat(cpdResult(), hasNoUnusedActions());
     }
 
     @Test
     public void checkstyle() {
-        assumeFalse("analyzeCheckstyle() not implemented.", checkstyleResult() == null);
-        assumeTrue("Checkstyle test excluded.", defaultTests().contains(CHECKSTYLE));
+        assumeFalse(checkstyleResult() == null, "analyzeCheckstyle() not implemented.");
+        assumeTrue(defaultTests().contains(CHECKSTYLE), "Checkstyle test excluded.");
         assertThat(checkstyleResult(), hasNoCheckstyleIssues());
     }
 
     @Test
     public void checkstyleUnusedActions() {
-        assumeFalse("analyzeCheckstyle() not implemented.", checkstyleResult() == null);
-        assumeTrue("Checkstyle - unused actions test excluded.", defaultTests().contains(CHECKSTYLE_UNUSED_ACTIONS));
+        assumeFalse(checkstyleResult() == null, "analyzeCheckstyle() not implemented.");
+        assumeTrue(defaultTests().contains(CHECKSTYLE_UNUSED_ACTIONS), "Checkstyle - unused actions test excluded.");
         assertThat(checkstyleResult(), hasNoUnusedActions());
     }
 

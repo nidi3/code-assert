@@ -20,12 +20,12 @@ import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.model.Scope;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyCollector.CYCLE;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCycles;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class CycleTest {
     private static final String BASE = "guru.nidi.codeassert.dependency.";
@@ -35,7 +35,7 @@ public class CycleTest {
     }
 
     @Test
-    public void packageCycles() {
+    void packageCycles() {
         assertMatcher("\n"
                         + "CYCLE        This group of elements has mutual dependencies:\n"
                         + "  guru.nidi.codeassert.dependency.a ->\n"
@@ -59,7 +59,7 @@ public class CycleTest {
     }
 
     @Test
-    public void packageCyclesWithExceptions() {
+    void packageCyclesWithExceptions() {
         final DependencyCollector collector = new DependencyCollector()
                 .just(In.locs(base("a"), base("b"), base("c")).ignore(CYCLE));
         assertMatcher("\n"
@@ -76,7 +76,7 @@ public class CycleTest {
     }
 
     @Test
-    public void classCycles() {
+    void classCycles() {
         assertMatcher("\n"
                         + "CYCLE        This group of elements has mutual dependencies:\n"
                         + "  guru.nidi.codeassert.dependency.a.A1 ->\n"
@@ -96,7 +96,7 @@ public class CycleTest {
     }
 
     @Test
-    public void classCyclesExcept() {
+    void classCyclesExcept() {
         final DependencyCollector collector = new DependencyCollector()
                 .just(In.locs("guru.nidi.codeassert.dependency.a.a.Aa1", "guru.nidi.codeassert.dependency.b.a.Ba1").ignore(CYCLE));
         assertMatcher("\n"
@@ -113,7 +113,7 @@ public class CycleTest {
     }
 
     private void assertMatcher(String message, DependencyResult result, Matcher<DependencyResult> matcher) {
-        assertFalse("Should not match", matcher.matches(result));
+        assertFalse(matcher.matches(result), "Should not match");
         final StringDescription sd = new StringDescription();
         matcher.describeMismatch(result, sd);
         assertEquals(message, sd.toString());

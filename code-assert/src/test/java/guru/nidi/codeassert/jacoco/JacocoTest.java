@@ -18,42 +18,43 @@ package guru.nidi.codeassert.jacoco;
 import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.For;
 import org.hamcrest.StringDescription;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
 import static guru.nidi.codeassert.jacoco.CoverageType.*;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class JacocoTest {
+class JacocoTest {
 
-    @Test(expected = AnalyzerException.class)
-    public void noData() {
-        new JacocoAnalyzer(new File("target"), new CoverageCollector());
-    }
-
-    @Test(expected = AnalyzerException.class)
-    public void wrongData() {
-        new JacocoAnalyzer(new File("target/text-classes/test.zip"), new CoverageCollector()).analyze();
+    @Test
+    void noData() {
+        assertThrows(AnalyzerException.class, () -> new JacocoAnalyzer(new File("target"), new CoverageCollector()));
     }
 
     @Test
-    public void global() {
+    void wrongData() {
+        assertThrows(AnalyzerException.class, () -> new JacocoAnalyzer(new File("target/text-classes/test.zip"), new CoverageCollector()).analyze());
+    }
+
+    @Test
+    void global() {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.global().setMinima(70, 70, 70)));
         assertOutput(result,
                 "<global>                                                     59 / 70      61 / 70      50 / 70     ");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void toManyValues() {
-        new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
-                .just(For.global().setMinima(70, 70, 70, 70)));
+    @Test
+    void toManyValues() {
+        assertThrows(IllegalArgumentException.class, () -> new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
+                .just(For.global().setMinima(70, 70, 70, 70))));
     }
 
     @Test
-    public void toLessValues() {
+    void toLessValues() {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allInPackage("org.springframework.handler").setMinima(40, 50)));
         assertOutput(result, ""
@@ -62,7 +63,7 @@ public class JacocoTest {
     }
 
     @Test
-    public void packages() {
+    void packages() {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allPackages().setMinima(40, 50, 40)));
         assertOutput(result, ""
@@ -73,7 +74,7 @@ public class JacocoTest {
     }
 
     @Test
-    public void packageClasses() {
+    void packageClasses() {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allInPackage("org.springframework.handler").setMinima(40, 50, 40)));
         assertOutput(result, ""
@@ -82,7 +83,7 @@ public class JacocoTest {
     }
 
     @Test
-    public void classes() {
+    void classes() {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allClasses().setMinima(30, 30, 30)));
         assertOutput(result, ""
@@ -96,7 +97,7 @@ public class JacocoTest {
     }
 
     @Test
-    public void classesWithWildcard() {
+    void classesWithWildcard() {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allClasses().setMinima(30, 30, 30))
                 .just(For.loc("org.springframework.p*").setNoMinima()));
@@ -107,7 +108,7 @@ public class JacocoTest {
     }
 
     @Test
-    public void explicit() {
+    void explicit() {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.loc("org.springframework.handler.InputPersister").setMinima(30, 30, 30))
                 .just(For.thePackage("org.springframework.event").setMinima(30, 30, 30)));

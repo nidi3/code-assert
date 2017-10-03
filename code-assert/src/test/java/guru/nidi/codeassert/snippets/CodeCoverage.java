@@ -18,18 +18,18 @@ package guru.nidi.codeassert.snippets;
 import guru.nidi.codeassert.config.For;
 import guru.nidi.codeassert.jacoco.CoverageCollector;
 import guru.nidi.codeassert.jacoco.JacocoAnalyzer;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.jacoco.CoverageType.*;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasEnoughCoverage;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@Ignore
+@Disabled
 //## codeCoverage
-public class CodeCoverage {
+class CodeCoverage {
     @Test
-    public void coverage() {
+    void coverage() {
         // Coverage of branches must be at least 70%, lines 80% and methods 90%
         // This is checked globally and for all packages except for entities.
         JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(BRANCH, LINE, METHOD)

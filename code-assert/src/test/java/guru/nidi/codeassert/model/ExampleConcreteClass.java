@@ -18,6 +18,7 @@ package guru.nidi.codeassert.model;
 
 import guru.nidi.codeassert.model.p1.ExampleInnerAnnotation;
 import guru.nidi.codeassert.model.p2.ExampleEnum;
+import org.junit.jupiter.api.*;
 
 import java.math.BigDecimal;
 
@@ -25,8 +26,7 @@ import java.math.BigDecimal;
  * @author <b>Mike Clark</b>
  * @author Clarkware Consulting, Inc.
  */
-
-@org.junit.runners.Suite.SuiteClasses(java.applet.AppletStub.class)
+@Tag("hula")
 public class ExampleConcreteClass extends ExampleAbstractClass {
 
     private java.sql.Statement[] statements;
@@ -60,15 +60,15 @@ public class ExampleConcreteClass extends ExampleAbstractClass {
         return new String[1];
     }
 
-    @org.junit.Test(expected = javax.crypto.BadPaddingException.class)
+    @Test
     @ExampleAnnotation(
             c1 = java.awt.geom.AffineTransform.class,
             c2 = java.awt.image.renderable.ContextualRenderedImageFactory.class,
             c3 = @ExampleInnerAnnotation({
                     java.awt.im.InputContext.class,
-                    java.awt.dnd.peer.DragSourceContextPeer.class}),
+                    java.awt.Checkbox.class}),
             c4 = ExampleEnum.E1)
-    @org.junit.Ignore
+    @Disabled
     public void f() {
     }
 

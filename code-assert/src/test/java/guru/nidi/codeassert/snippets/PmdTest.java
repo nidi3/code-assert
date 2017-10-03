@@ -21,23 +21,23 @@ import guru.nidi.codeassert.dependency.Dependencies;
 import guru.nidi.codeassert.dependency.DependencyRule;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCodeDuplications;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoPmdViolations;
 import static guru.nidi.codeassert.pmd.Rulesets.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@Ignore
+@Disabled
 //## pmd
-public class PmdTest {
+class PmdTest {
 
     // Analyze all sources in src/main/java
     private final AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
-    public void pmd() {
+    void pmd() {
         // Only treat violations with MEDIUM priority or higher
         // Ignore the given violations in the given classes / methods
         PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
@@ -57,7 +57,7 @@ public class PmdTest {
     }
 
     @Test
-    public void cpd() {
+    void cpd() {
         // Ignore duplications in the given classes
         CpdMatchCollector collector = new CpdMatchCollector()
                 .because("equals",

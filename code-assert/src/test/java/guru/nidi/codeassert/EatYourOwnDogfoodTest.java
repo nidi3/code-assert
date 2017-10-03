@@ -24,15 +24,15 @@ import guru.nidi.codeassert.junit.CodeAssertTest;
 import guru.nidi.codeassert.junit.PredefConfig;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesRulesExactly;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class EatYourOwnDogfoodTest extends CodeAssertTest {
     @Test
-    public void dependency() {
+    void dependency() {
         System.gc();
         assertThat(dependencyResult(), matchesRulesExactly());
     }

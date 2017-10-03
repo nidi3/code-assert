@@ -15,51 +15,51 @@
  */
 package guru.nidi.codeassert.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ListUtilsTest {
+class ListUtilsTest {
 
     @Test
-    public void emptyArray() {
+    void emptyArray() {
         assertEquals("", ListUtils.join(",", new String[]{}));
     }
 
     @Test
-    public void oneElementArray() {
+    void oneElementArray() {
         assertEquals("a", ListUtils.join(",", new String[]{"a"}));
     }
 
     @Test
-    public void multiElementArray() {
+    void multiElementArray() {
         assertEquals("a,b", ListUtils.join(",", new String[]{"a", "b"}));
     }
 
     @Test
-    public void notStringArray() {
+    void notStringArray() {
         assertEquals("1,2", ListUtils.join(",", new Integer[]{1, 2}));
     }
 
     @Test
-    public void emptyList() {
+    void emptyList() {
         assertEquals("", ListUtils.join(",", Arrays.asList()));
     }
 
     @Test
-    public void oneElementList() {
+    void oneElementList() {
         assertEquals("a", ListUtils.join(",", Arrays.asList("a")));
     }
 
     @Test
-    public void multiElementList() {
+    void multiElementList() {
         assertEquals("a,b", ListUtils.join(",", Arrays.asList("a", "b")));
     }
 
     @Test
-    public void notStringList() {
+    void notStringList() {
         assertEquals("1,2", ListUtils.join(",", Arrays.asList(1, 2)));
     }
 }

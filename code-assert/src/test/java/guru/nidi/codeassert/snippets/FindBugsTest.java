@@ -21,17 +21,17 @@ import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.DependencyRules;
 import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.pmd.Ruleset;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoBugs;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@Ignore
+@Disabled
 //## findBugs
-public class FindBugsTest {
+class FindBugsTest {
     @Test
-    public void findBugs() {
+    void findBugs() {
         // Analyze all sources in src/main/java
         AnalyzerConfig config = AnalyzerConfig.maven().main();
 

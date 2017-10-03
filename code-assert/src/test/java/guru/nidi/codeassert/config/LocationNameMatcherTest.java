@@ -15,17 +15,17 @@
  */
 package guru.nidi.codeassert.config;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LocationNameMatcherTest {
     @Test
-    public void basic() {
+    void basic() {
         final LocationNameMatcher m = new LocationNameMatcher(Arrays.asList("A", "a.B", "Y#c"), Arrays.asList("c", "d"));
         assertTrue(m.matches("c", "A", null, true));
         assertTrue(m.matches("d", "a.B", null, true));
@@ -36,23 +36,23 @@ public class LocationNameMatcherTest {
     }
 
     @Test
-    public void emptyLocs() {
-        final LocationNameMatcher m = new LocationNameMatcher(Collections.<String>emptyList(), Arrays.asList("c", "d"));
+    void emptyLocs() {
+        final LocationNameMatcher m = new LocationNameMatcher(Collections.emptyList(), Arrays.asList("c", "d"));
         assertTrue(m.matches("c", "X", null, true));
         assertTrue(m.matches("c", null, "#e", true));
         assertFalse(m.matches("e", "X", null, true));
     }
 
     @Test
-    public void emptyNames() {
-        final LocationNameMatcher m = new LocationNameMatcher(Arrays.asList("A", "a.B", "x.Y#c"), Collections.<String>emptyList());
+    void emptyNames() {
+        final LocationNameMatcher m = new LocationNameMatcher(Arrays.asList("A", "a.B", "x.Y#c"), Collections.emptyList());
         assertTrue(m.matches("c", "A", null, true));
         assertFalse(m.matches("c", "B", null, true));
     }
 
     @Test
-    public void nonStrictNames() {
-        final LocationNameMatcher m = new LocationNameMatcher(Collections.<String>emptyList(), Arrays.asList("cat"));
+    void nonStrictNames() {
+        final LocationNameMatcher m = new LocationNameMatcher(Collections.emptyList(), Arrays.asList("cat"));
         assertTrue(m.matches("cat", null, null, false));
         assertTrue(m.matches("xcat", null, null, false));
         assertTrue(m.matches("catx", null, null, false));

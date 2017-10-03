@@ -16,7 +16,5 @@
 package guru.nidi.codeassert.model.p1;
 
 public @interface ExampleInnerAnnotation {
-
     Class<?>[] value() default {};
-
 }

@@ -22,23 +22,23 @@ import guru.nidi.codeassert.dependency.*;
 import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.junit.CodeAssertTest;
 import guru.nidi.codeassert.pmd.*;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesRulesExactly;
 import static guru.nidi.codeassert.pmd.Rulesets.basic;
 import static guru.nidi.codeassert.pmd.Rulesets.braces;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@Ignore
+@Disabled
 //## codeTest
-public class CodeTest extends CodeAssertTest {
+class CodeTest extends CodeAssertTest {
 
     private static final AnalyzerConfig CONFIG = AnalyzerConfig.maven().main();
 
     @Test
-    public void dependency() {
+    void dependency() {
         assertThat(dependencyResult(), matchesRulesExactly());
     }
 

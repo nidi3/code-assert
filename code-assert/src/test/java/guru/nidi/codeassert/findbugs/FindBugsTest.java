@@ -23,7 +23,7 @@ import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.pmd.Rulesets;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
@@ -31,7 +31,9 @@ import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoBugs;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoUnusedActions;
 import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class FindBugsTest {
     private final AnalyzerConfig config = AnalyzerConfig.maven().mainAndTest();
@@ -52,20 +54,20 @@ public class FindBugsTest {
                     In.clazz(Rulesets.class).ignore("URF_UNREAD_FIELD"));
 
     @Test
-    public void simple() {
+    void simple() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
         assertThat(analyzer.analyze().findings().size(), either(equalTo(47)).or(equalTo(48)));
     }
 
     @Test
-    public void noUnusedActions() {
+    void noUnusedActions() {
         System.gc();
         assertThat(new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY)).analyze(), hasNoUnusedActions());
     }
 
     @Test
-    public void globalIgnore() {
+    void globalIgnore() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector);
         assertMatcher(""
@@ -78,7 +80,7 @@ public class FindBugsTest {
     }
 
     @Test
-    public void classNameIgnore() {
+    void classNameIgnore() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("Bugs").ignore("DM_NUMBER_CTOR")));
         assertMatcher(""
@@ -88,7 +90,7 @@ public class FindBugsTest {
     }
 
     @Test
-    public void classIgnore() {
+    void classIgnore() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.clazz(Bugs.class).ignore("DM_NUMBER_CTOR")));
         assertMatcher(""
@@ -98,7 +100,7 @@ public class FindBugsTest {
     }
 
     @Test
-    public void innerClassIgnore() {
+    void innerClassIgnore() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.clazz(Bugs.InnerBugs.class).ignore("DM_NUMBER_CTOR")));
         assertMatcher(""
@@ -110,7 +112,7 @@ public class FindBugsTest {
     }
 
     @Test
-    public void fullClassIgnore() {
+    void fullClassIgnore() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("guru.nidi.codeassert.Bugs").ignore("DM_NUMBER_CTOR")));
         assertMatcher(""
@@ -120,7 +122,7 @@ public class FindBugsTest {
     }
 
     @Test
-    public void fullClassMethodIgnore() {
+    void fullClassMethodIgnore() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("guru.nidi.codeassert.Bugs#bugs").ignore("DM_NUMBER_CTOR")));
         assertMatcher(""
@@ -132,7 +134,7 @@ public class FindBugsTest {
     }
 
     @Test
-    public void methodIgnore() {
+    void methodIgnore() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("#bugs").ignore("DM_NUMBER_CTOR")));
         assertMatcher(""
@@ -143,7 +145,7 @@ public class FindBugsTest {
     }
 
     @Test
-    public void unusedActions() {
+    void unusedActions() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("#bugs").ignore("BLA")));
         assertMatcher("Found unused actions:\n    ignore [BLA] in [#bugs]", analyzer.analyze(), hasNoUnusedActions());

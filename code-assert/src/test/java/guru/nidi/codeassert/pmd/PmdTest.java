@@ -27,7 +27,7 @@ import guru.nidi.codeassert.model.ExampleInterface;
 import net.sourceforge.pmd.RulePriority;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
@@ -36,10 +36,10 @@ import static guru.nidi.codeassert.pmd.RegexMatcher.matchesFormat;
 import static guru.nidi.codeassert.pmd.Rulesets.Comments.Requirement.Ignored;
 import static guru.nidi.codeassert.pmd.Rulesets.Comments.Requirement.Required;
 import static guru.nidi.codeassert.pmd.Rulesets.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class PmdTest {
+class PmdTest {
     private static final String MEDIUM = "Medium";
     private static final String HIGH = "High";
     private static final String MAIN = "main";
@@ -49,7 +49,7 @@ public class PmdTest {
     private final PmdResult pmdResult = pmdAnalyze();
 
     @Test
-    public void priority() {
+    void priority() {
         final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.maven().mainAndTest(),
                 new PmdViolationCollector().minPriority(RulePriority.MEDIUM_HIGH))
                 .withRulesets(basic(), braces(), design(), optimizations(), codesize(), empty(), coupling());
@@ -61,7 +61,7 @@ public class PmdTest {
     }
 
     @Test
-    public void pmdIgnore() {
+    void pmdIgnore() {
         assertMatcher(""
                         + pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", "A class which only has private constructors should be final")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "jacoco/JacocoAnalyzer", "Avoid assignments in operands")
@@ -87,12 +87,12 @@ public class PmdTest {
     }
 
     @Test
-    public void pmdUnused() {
+    void pmdUnused() {
         assertThat(pmdResult, hasNoUnusedActions());
     }
 
     @Test
-    public void duplications() {
+    void duplications() {
         assertMatcher(""
                         + cpd(40, "pmd/PmdAnalyzer")
                         + cpd("pmd/PmdAnalyzer")
@@ -104,7 +104,7 @@ public class PmdTest {
     }
 
     @Test
-    public void cpdUnused() {
+    void cpdUnused() {
         assertThat(cpdResult, hasNoUnusedActions());
     }
 

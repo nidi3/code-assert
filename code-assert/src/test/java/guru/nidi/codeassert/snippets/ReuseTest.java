@@ -18,14 +18,15 @@ package guru.nidi.codeassert.snippets;
 import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoPmdViolations;
 import static guru.nidi.codeassert.pmd.Rulesets.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@org.junit.Ignore
-public class ReuseTest {
+@Disabled
+class ReuseTest {
     private final AnalyzerConfig config = AnalyzerConfig.maven().main();
     private final Ruleset[] rules = new Ruleset[]{basic(), braces(), design(), empty(), optimizations()};
 
@@ -35,7 +36,7 @@ public class ReuseTest {
                     .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"));
 
     @Test
-    public void pmd() {
+    void pmd() {
         PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
                 .apply(pmdTestCollector)
                 .because("It's not severe and occurs often", In.everywhere().ignore("MethodArgumentCouldBeFinal"));

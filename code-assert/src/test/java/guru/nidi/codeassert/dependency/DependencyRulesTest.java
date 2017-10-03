@@ -20,14 +20,15 @@ import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.model.Scope;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DependencyRulesTest {
     private static final String CODE_ASSERT = "guru.nidi.codeassert.";
@@ -49,14 +50,14 @@ public class DependencyRulesTest {
 
     private Model model;
 
-    @Before
-    public void analyze() {
+    @BeforeEach
+    void analyze() {
         model = Model.from(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/dependency").getClasses());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void wildcardNotAtEnd() {
-        DependencyRule.allowAll("a*b");
+    @Test
+    void wildcardNotAtEnd() {
+        assertThrows(IllegalArgumentException.class, () -> DependencyRule.allowAll("a*b"));
     }
 
     //TODO test AmbiguousRuleException
@@ -95,12 +96,12 @@ public class DependencyRulesTest {
     */
 
     @Test
-    public void matcherFlags() {
+    void matcherFlags() {
         final DependencyRules rules = DependencyRules.allowAll().withExternals("java.*", "org.hamcrest*");
         rules.addRule(dep("a"));
         rules.addRule(dep("d"));
         final Set<String> undefined = new TreeSet<>(UNDEFINED);
-        undefined.addAll(set("org.junit", "org.slf4j", dep("b"), dep("c")));
+        undefined.addAll(set("org.junit.jupiter.api", "org.slf4j", dep("b"), dep("c")));
 
         final Dependencies result = rules.analyzeRules(Scope.packages(model));
         assertEquals(new Dependencies(
@@ -129,7 +130,7 @@ public class DependencyRulesTest {
                         + undef("guru.nidi.codeassert.junit")
                         + undef("guru.nidi.codeassert.model")
                         + undef("guru.nidi.codeassert.util")
-                        + undef("org.junit")
+                        + undef("org.junit.jupiter.api")
                         + undef("org.slf4j"),
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRulesExactly());
 
@@ -148,7 +149,7 @@ public class DependencyRulesTest {
                         + undef("guru.nidi.codeassert.junit")
                         + undef("guru.nidi.codeassert.model")
                         + undef("guru.nidi.codeassert.util")
-                        + undef("org.junit")
+                        + undef("org.junit.jupiter.api")
                         + undef("org.slf4j"),
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRulesIgnoringNonExisting());
 
@@ -157,7 +158,7 @@ public class DependencyRulesTest {
     }
 
     @Test
-    public void allow() {
+    void allow() {
         final DependencyRules rules = DependencyRules.allowAll().withExternals("java.*", "org*");
         final DependencyRule a = rules.addRule(dep("a"));
         final DependencyRule b = rules.addRule(dep("b"));
@@ -200,7 +201,7 @@ public class DependencyRulesTest {
     }
 
     @Test
-    public void denied() {
+    void denied() {
         final DependencyRules rules = DependencyRules.denyAll().withExternals("java*", "org*");
         final DependencyRule a = rules.addRule(dep("a"));
         final DependencyRule b = rules.addRule(dep("b"));
@@ -236,7 +237,7 @@ public class DependencyRulesTest {
     }
 
     @Test
-    public void allowWithWildcard() {
+    void allowWithWildcard() {
         final DependencyRules rules = DependencyRules.allowAll().withExternals("java*", "org*");
         final DependencyRule a1 = rules.addRule(dep("a.a"));
         final DependencyRule a = rules.addRule(dep("a.*"));
@@ -295,7 +296,7 @@ public class DependencyRulesTest {
     }
 
     @Test
-    public void denyWithWildcard() {
+    void denyWithWildcard() {
         final DependencyRules rules = DependencyRules.denyAll().withExternals("java.*", "org*");
         final DependencyRule a1 = rules.addRule(dep("a.a"));
         final DependencyRule a = rules.addRule(dep("a.*"));
@@ -335,7 +336,7 @@ public class DependencyRulesTest {
     }
 
     @Test
-    public void externalsAreOptional() {
+    void externalsAreOptional() {
         final DependencyRules rules = DependencyRules.denyAll().withExternals("java*", "org.*", "blablu");
         final DependencyRule all = rules.addRule("guru.nidi.codeassert*");
         all.mayUse(all);
@@ -343,7 +344,7 @@ public class DependencyRulesTest {
     }
 
     @Test
-    public void collector() {
+    void collector() {
         final DependencyCollector collector = new DependencyCollector()
                 .just(In.locs(dep("b*"), ca("x"), ca("dependency")).ignoreAll())
                 .just(In.locs(ca("z")).ignoreAll())
@@ -365,7 +366,7 @@ public class DependencyRulesTest {
                                 .with(0, dep("a.a"), set(dep("a.a.Aa1")), dep("b.a"))
                                 .with(0, dep("a"), set(dep("a.A1")), dep("c")),
                         new HashSet<>(asList(new LocationMatcher("guru.nidi.codeassert.y"))),
-                        new HashSet<String>(),
+                        new HashSet<>(),
                         new HashSet<>(asList(
                                 new DependencyMap()
                                         .with(1, dep("c.a"), set(dep("c.a.Ca1")), dep("a.a")),
@@ -377,7 +378,7 @@ public class DependencyRulesTest {
     }
 
     @Test
-    public void classLevel() {
+    void classLevel() {
         final DependencyRules rules = DependencyRules.denyAll().withExternals("java.*", "org*");
         final DependencyRule m = rules.rule(ca("model"));
         final DependencyRule c = rules.rule(ca("config"));

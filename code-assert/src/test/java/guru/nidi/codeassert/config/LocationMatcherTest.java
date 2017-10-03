@@ -15,54 +15,54 @@
  */
 package guru.nidi.codeassert.config;
 
-import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LocationMatcherTest {
-    @Test(expected = IllegalArgumentException.class)
-    public void emptyPattern() {
-        new LocationMatcher("");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void nullPattern() {
-        new LocationMatcher(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void wildcardInMiddle() {
-        new LocationMatcher("a*b");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void doubleWildcard() {
-        new LocationMatcher("**");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void wildcardBetweenPackageAndClass() {
-        new LocationMatcher("a*B");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void illegalWildcardInPackage3() {
-        new LocationMatcher("*a*b");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void illegalWildcardInClass() {
-        new LocationMatcher("A*b");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void illegalWildcardInMethod() {
-        new LocationMatcher("#a*b");
+    @Test
+    void emptyPattern() {
+        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher(""));
     }
 
     @Test
-    public void all() {
+    void nullPattern() {
+        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher(null));
+    }
+
+    @Test
+    void wildcardInMiddle() {
+        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("a*b"));
+    }
+
+    @Test
+    void doubleWildcard() {
+        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("**"));
+    }
+
+    @Test
+    void wildcardBetweenPackageAndClass() {
+        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("a*B"));
+    }
+
+    @Test
+    void illegalWildcardInPackage3() {
+        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("*a*b"));
+    }
+
+    @Test
+    void illegalWildcardInClass() {
+        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("A*b"));
+    }
+
+    @Test
+    void illegalWildcardInMethod() {
+        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("#a*b"));
+    }
+
+    @Test
+    void all() {
         final LocationMatcher m = new LocationMatcher("*");
         assertTrue(m.matchesPackage("pa"));
         assertTrue(m.matchesPackageClass("pa", "Cl"));
@@ -70,7 +70,7 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void methodOnly() {
+    void methodOnly() {
         final LocationMatcher m = new LocationMatcher("#me");
         assertFalse(m.matchesPackage("pa"));
         assertFalse(m.matchesPackageClass("pa", "Cl"));
@@ -79,7 +79,7 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void classOnlyUppercase() {
+    void classOnlyUppercase() {
         final LocationMatcher m = new LocationMatcher("Cl");
         assertFalse(m.matchesPackage("pa"));
         assertTrue(m.matchesPackageClass("pa", "Cl"));
@@ -88,7 +88,7 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void classOnlySlash() {
+    void classOnlySlash() {
         final LocationMatcher m = new LocationMatcher("/Cl");
         assertFalse(m.matchesPackage("pa"));
         assertTrue(m.matchesPackageClass("pa", "Cl"));
@@ -97,7 +97,7 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void classOnlyInner() {
+    void classOnlyInner() {
         final LocationMatcher m = new LocationMatcher("Cl");
         assertTrue(m.matchesClass("Cl$bla"));
         assertTrue(m.matchesPackageClass("pa", "Cl$blu"));
@@ -105,13 +105,13 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void classMethodInner() {
+    void classMethodInner() {
         final LocationMatcher m = new LocationMatcher("Cl#me");
         assertFalse(m.matches("pa", "Cl$bla", "me"));
     }
 
     @Test
-    public void packageOnly() {
+    void packageOnly() {
         final LocationMatcher m = new LocationMatcher("pa");
         assertTrue(m.matchesPackage("pa"));
         assertTrue(m.matchesPackageClass("pa", "Cl"));
@@ -120,7 +120,7 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void startWildcard() {
+    void startWildcard() {
         final LocationMatcher m = new LocationMatcher("*pa");
         assertTrue(m.matchesPackage("pa"));
         assertTrue(m.matchesPackage("xxxpa"));
@@ -128,7 +128,7 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void endWildcard() {
+    void endWildcard() {
         final LocationMatcher m = new LocationMatcher("pa*");
         assertTrue(m.matchesPackage("pa"));
         assertFalse(m.matchesPackage("xxxpa"));
@@ -136,7 +136,7 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void bothWildcard() {
+    void bothWildcard() {
         final LocationMatcher m = new LocationMatcher("*pa*");
         assertTrue(m.matchesPackage("pa"));
         assertTrue(m.matchesPackage("xxxpa"));
@@ -145,14 +145,14 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void onlyWildcard() {
+    void onlyWildcard() {
         final LocationMatcher m = new LocationMatcher("*");
         assertTrue(m.matchesPackage("pa"));
         assertTrue(m.matchesPackage(""));
     }
 
     @Test
-    public void packageAndClass() {
+    void packageAndClass() {
         final LocationMatcher m = new LocationMatcher("a.B");
         assertTrue(m.matchesPackageClass("a", "B"));
         assertFalse(m.matchesPackage("a"));
@@ -160,7 +160,7 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void wildcardPackageAndClass2() {
+    void wildcardPackageAndClass2() {
         final LocationMatcher m = new LocationMatcher("a*.B");
         assertTrue(m.matchesPackageClass("a", "B"));
         assertTrue(m.matchesPackageClass("ab", "B"));
@@ -170,7 +170,7 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void packageAndWildcardClass() {
+    void packageAndWildcardClass() {
         final LocationMatcher m = new LocationMatcher("a.*B");
         assertTrue(m.matchesPackageClass("a", "B"));
         assertTrue(m.matchesPackageClass("a", "xxxB"));
@@ -179,7 +179,7 @@ public class LocationMatcherTest {
     }
 
     @Test
-    public void wildcardPackageAndWildcardClass() {
+    void wildcardPackageAndWildcardClass() {
         final LocationMatcher m = new LocationMatcher("a*.*B");
         assertTrue(m.matchesPackageClass("a", "B"));
         assertTrue(m.matchesPackageClass("ab", "B"));

@@ -16,17 +16,17 @@
 package guru.nidi.codeassert.config;
 
 import guru.nidi.codeassert.config.AnalyzerConfig.Path;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AnalyzerConfigTest {
     @Test
-    public void withMethods() {
+    void withMethods() {
         final AnalyzerConfig config = new AnalyzerConfig()
                 .withSources(new File("empty/path"))
                 .withSources(new File("/etc"), "c", "/d")
@@ -37,31 +37,31 @@ public class AnalyzerConfigTest {
     }
 
     @Test
-    public void mavenSimple() {
+    void mavenSimple() {
         final AnalyzerConfig config = AnalyzerConfig.maven().main();
         assertPath(config.getSourcePaths(), path("src/main/java", ""));
     }
 
     @Test
-    public void mavenModule() {
+    void mavenModule() {
         final AnalyzerConfig config = AnalyzerConfig.maven("module").main();
         assertPath(config.getSourcePaths(), path("module/src/main/java", ""));
     }
 
     @Test
-    public void mavenOwnModule() {
+    void mavenOwnModule() {
         final AnalyzerConfig config = AnalyzerConfig.maven("code-assert").mainAndTest();
         assertPath(config.getSourcePaths(), path("src/main/java", ""), path("src/test/java", ""));
     }
 
     @Test
-    public void mavenPackages() {
+    void mavenPackages() {
         final AnalyzerConfig config = AnalyzerConfig.maven().test("mypack");
         assertPath(config.getSourcePaths(), path("src/test/java", "mypack"));
     }
 
     @Test
-    public void simplePath() {
+    void simplePath() {
         final Path path = new Path("a", "b");
         assertEquals("a", path.getBase());
         assertEquals("b", path.getPack());
@@ -69,7 +69,7 @@ public class AnalyzerConfigTest {
     }
 
     @Test
-    public void slashPath() {
+    void slashPath() {
         final Path path = new Path("/a/", "/b/");
         assertEquals("/a", path.getBase());
         assertEquals("b/", path.getPack());
@@ -77,7 +77,7 @@ public class AnalyzerConfigTest {
     }
 
     @Test
-    public void emptyPack() {
+    void emptyPack() {
         final Path path = new Path("/a/", "");
         assertEquals("/a", path.getBase());
         assertEquals("", path.getPack());

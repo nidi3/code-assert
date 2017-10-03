@@ -17,14 +17,14 @@ package guru.nidi.codeassert.snippets;
 
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.dependency.*;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCycles;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesRulesExactly;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@Ignore
+@Disabled
 //## dependency
 public class DependencyTest {
 
@@ -32,12 +32,12 @@ public class DependencyTest {
     private final AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
-    public void noCycles() {
+    void noCycles() {
         assertThat(new DependencyAnalyzer(config).analyze(), hasNoCycles());
     }
 
     @Test
-    public void dependency() {
+    void dependency() {
         // Defines the dependency rules for package org.proj
         class OrgProj extends DependencyRuler {
             // Rules for org.proj.dep, org.proj.model, org.proj.util

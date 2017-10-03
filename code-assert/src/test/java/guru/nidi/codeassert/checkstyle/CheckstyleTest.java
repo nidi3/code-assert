@@ -24,8 +24,8 @@ import guru.nidi.codeassert.dependency.DependencyRulesTest;
 import guru.nidi.codeassert.snippets.DependencyTest;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Locale;
@@ -35,8 +35,8 @@ import static com.puppycrawl.tools.checkstyle.api.SeverityLevel.WARNING;
 import static com.puppycrawl.tools.checkstyle.api.TokenTypes.*;
 import static guru.nidi.codeassert.config.CollectorConfig.just;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCheckstyleIssues;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class CheckstyleTest {
     private static final String MAIN = "main";
@@ -44,13 +44,13 @@ public class CheckstyleTest {
 
     private final AnalyzerConfig config = AnalyzerConfig.maven().mainAndTest();
 
-    @BeforeClass
-    public static void init() {
+    @BeforeAll
+    static void init() {
         Locale.setDefault(Locale.ENGLISH);
     }
 
     @Test
-    public void google() {
+    void google() {
         final CheckstyleAnalyzer analyzer = new CheckstyleAnalyzer(config, StyleChecks.google()
                 .maxLineLen(120).indentBasic(4).indentCase(4)
                 .paramName("^[a-z][a-zA-Z0-9]*$")
@@ -80,7 +80,7 @@ public class CheckstyleTest {
     }
 
     @Test
-    public void sun() {
+    void sun() {
         final CheckstyleAnalyzer analyzer = new CheckstyleAnalyzer(config, StyleChecks.sun()
                 .maxLineLen(120).allowDefaultAccessMembers(true),
                 new StyleEventCollector().severity(WARNING).config(
