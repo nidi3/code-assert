@@ -29,12 +29,12 @@ public class DependencyTest {
     private final AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
-    void noCycles() {
+    public void noCycles() {
         assertThat(new DependencyAnalyzer(config).analyze(), hasNoCycles());
     }
 
     @Test
-    void dependency() {
+    public void dependency() {
         // Defines the dependency rules for package org.proj
         class OrgProj extends DependencyRuler {
             // Rules for org.proj.dep, org.proj.model, org.proj.util
@@ -67,9 +67,9 @@ Runs [FindBugs](http://findbugs.sourceforge.net/) on the code and finds question
 
 [//]: # (findBugs)
 ```java
-class FindBugsTest {
+public class FindBugsTest {
     @Test
-    void findBugs() {
+    public void findBugs() {
         // Analyze all sources in src/main/java
         AnalyzerConfig config = AnalyzerConfig.maven().main();
 
@@ -94,9 +94,9 @@ Runs [checkstyle](http://checkstyle.sourceforge.net/) on the code and finds ques
 
 [//]: # (checkstyle)
 ```java
-class CheckstyleTest {
+public class CheckstyleTest {
     @Test
-    void checkstyle() {
+    public void checkstyle() {
         // Analyze all sources in src/main/java
         AnalyzerConfig config = AnalyzerConfig.maven().main();
 
@@ -121,13 +121,13 @@ Runs [PMD](https://pmd.github.io/) on the code and finds questionable constructs
 
 [//]: # (pmd)
 ```java
-class PmdTest {
+public class PmdTest {
 
     // Analyze all sources in src/main/java
     private final AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
-    void pmd() {
+    public void pmd() {
         // Only treat violations with MEDIUM priority or higher
         // Ignore the given violations in the given classes / methods
         PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
@@ -147,7 +147,7 @@ class PmdTest {
     }
 
     @Test
-    void cpd() {
+    public void cpd() {
         // Ignore duplications in the given classes
         CpdMatchCollector collector = new CpdMatchCollector()
                 .because("equals",
@@ -177,7 +177,7 @@ private final CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.for
                 .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"));
 
 @Test
-void pmd() {
+public void pmd() {
     PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
             .apply(pmdTestCollector)
             .because("It's not severe and occurs often", In.everywhere().ignore("MethodArgumentCouldBeFinal"));
@@ -205,12 +205,12 @@ If it does so, these standard checks will be executed:
 
 [//]: # (codeTest)
 ```java
-class CodeTest extends CodeAssertTest {
+public class CodeTest extends CodeAssertTest {
 
     private static final AnalyzerConfig CONFIG = AnalyzerConfig.maven().main();
 
     @Test
-    void dependency() {
+    public void dependency() {
         assertThat(dependencyResult(), matchesRulesExactly());
     }
 
@@ -280,9 +280,9 @@ The following steps are needed:
 
 [//]: # (codeCoverage)
 ```java
-class CodeCoverage {
+public class CodeCoverage {
     @Test
-    void coverage() {
+    public void coverage() {
         // Coverage of branches must be at least 70%, lines 80% and methods 90%
         // This is checked globally and for all packages except for entities.
         JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(BRANCH, LINE, METHOD)
