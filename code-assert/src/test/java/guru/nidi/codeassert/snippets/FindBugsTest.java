@@ -29,9 +29,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @Disabled
 //## findBugs
-class FindBugsTest {
+public class FindBugsTest {
     @Test
-    void findBugs() {
+    public void findBugs() {
         // Analyze all sources in src/main/java
         AnalyzerConfig config = AnalyzerConfig.maven().main();
 

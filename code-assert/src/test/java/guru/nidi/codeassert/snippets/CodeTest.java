@@ -33,12 +33,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @Disabled
 //## codeTest
-class CodeTest extends CodeAssertTest {
+public class CodeTest extends CodeAssertTest {
 
     private static final AnalyzerConfig CONFIG = AnalyzerConfig.maven().main();
 
     @Test
-    void dependency() {
+    public void dependency() {
         assertThat(dependencyResult(), matchesRulesExactly());
     }
 

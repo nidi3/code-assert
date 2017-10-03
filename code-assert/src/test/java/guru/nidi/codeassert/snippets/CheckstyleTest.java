@@ -27,9 +27,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @Disabled
 //## checkstyle
-class CheckstyleTest {
+public class CheckstyleTest {
     @Test
-    void checkstyle() {
+    public void checkstyle() {
         // Analyze all sources in src/main/java
         AnalyzerConfig config = AnalyzerConfig.maven().main();
 

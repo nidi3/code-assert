@@ -31,13 +31,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @Disabled
 //## pmd
-class PmdTest {
+public class PmdTest {
 
     // Analyze all sources in src/main/java
     private final AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
-    void pmd() {
+    public void pmd() {
         // Only treat violations with MEDIUM priority or higher
         // Ignore the given violations in the given classes / methods
         PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
@@ -57,7 +57,7 @@ class PmdTest {
     }
 
     @Test
-    void cpd() {
+    public void cpd() {
         // Ignore duplications in the given classes
         CpdMatchCollector collector = new CpdMatchCollector()
                 .because("equals",

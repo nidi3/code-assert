@@ -70,7 +70,7 @@ class PmdTest {
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 154")
                         + pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", "Avoid using final local variables, turn them into fields")
                         + pmd(MEDIUM, "CommentRequired", MAIN, "jacoco/CoverageType", "enumCommentRequirement Required")
-                        + pmd(MEDIUM, "CommentRequired", MAIN, "junit/CodeAssertTest", "enumCommentRequirement Required")
+                        + pmd(MEDIUM, "CommentRequired", MAIN, "junit/CodeAssertTestType", "enumCommentRequirement Required")
                         + pmd(MEDIUM, "CommentRequired", MAIN, "model/SignatureParser", "enumCommentRequirement Required")
                         + pmd(MEDIUM, "CommentRequired", MAIN, "pmd/Rulesets", "enumCommentRequirement Required")
                         + pmd(MEDIUM, "CommentRequired", TEST, "model/p2/ExampleEnum", "enumCommentRequirement Required")

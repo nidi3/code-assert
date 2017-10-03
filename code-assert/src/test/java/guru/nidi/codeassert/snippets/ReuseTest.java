@@ -26,7 +26,7 @@ import static guru.nidi.codeassert.pmd.Rulesets.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @Disabled
-class ReuseTest {
+public class ReuseTest {
     private final AnalyzerConfig config = AnalyzerConfig.maven().main();
     private final Ruleset[] rules = new Ruleset[]{basic(), braces(), design(), empty(), optimizations()};
 
@@ -36,7 +36,7 @@ class ReuseTest {
                     .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"));
 
     @Test
-    void pmd() {
+    public void pmd() {
         PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
                 .apply(pmdTestCollector)
                 .because("It's not severe and occurs often", In.everywhere().ignore("MethodArgumentCouldBeFinal"));

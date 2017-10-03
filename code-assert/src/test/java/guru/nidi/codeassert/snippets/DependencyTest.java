@@ -32,12 +32,12 @@ public class DependencyTest {
     private final AnalyzerConfig config = AnalyzerConfig.maven().main();
 
     @Test
-    void noCycles() {
+    public void noCycles() {
         assertThat(new DependencyAnalyzer(config).analyze(), hasNoCycles());
     }
 
     @Test
-    void dependency() {
+    public void dependency() {
         // Defines the dependency rules for package org.proj
         class OrgProj extends DependencyRuler {
             // Rules for org.proj.dep, org.proj.model, org.proj.util

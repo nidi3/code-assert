@@ -20,7 +20,7 @@ import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.*;
 import guru.nidi.codeassert.findbugs.*;
-import guru.nidi.codeassert.junit.CodeAssertTest;
+import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
 import guru.nidi.codeassert.junit.PredefConfig;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
@@ -30,7 +30,7 @@ import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesRulesExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class CodeTest extends CodeAssertTest {
+public class CodeTest extends CodeAssertJunit5Test {
     @Test
     void dependency() {
         assertThat(dependencyResult(), matchesRulesExactly());

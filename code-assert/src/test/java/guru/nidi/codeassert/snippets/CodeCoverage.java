@@ -27,9 +27,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @Disabled
 //## codeCoverage
-class CodeCoverage {
+public class CodeCoverage {
     @Test
-    void coverage() {
+    public void coverage() {
         // Coverage of branches must be at least 70%, lines 80% and methods 90%
         // This is checked globally and for all packages except for entities.
         JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(BRANCH, LINE, METHOD)
