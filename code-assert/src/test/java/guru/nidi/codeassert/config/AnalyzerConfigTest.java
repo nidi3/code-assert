@@ -40,25 +40,31 @@ public class AnalyzerConfigTest {
     void mavenSimple() {
         final AnalyzerConfig config = AnalyzerConfig.maven().main();
         assertPath(config.getSourcePaths(), path("src/main/java", ""));
+        assertPath(config.getClassPaths(), path("target/classes", ""));
     }
 
     @Test
     void mavenModule() {
         final AnalyzerConfig config = AnalyzerConfig.maven("module").main();
         assertPath(config.getSourcePaths(), path("module/src/main/java", ""));
+        assertPath(config.getClassPaths(), path("module/target/classes", ""));
     }
 
     @Test
     void mavenOwnModule() {
         final AnalyzerConfig config = AnalyzerConfig.maven("code-assert").mainAndTest();
         assertPath(config.getSourcePaths(), path("src/main/java", ""), path("src/test/java", ""));
+        assertPath(config.getClassPaths(), path("target/classes", ""), path("target/test-classes", ""));
     }
 
     @Test
     void mavenPackages() {
         final AnalyzerConfig config = AnalyzerConfig.maven().test("mypack");
         assertPath(config.getSourcePaths(), path("src/test/java", "mypack"));
+        assertPath(config.getClassPaths(), path("target/test-classes", "mypack"));
     }
+
+
 
     @Test
     void simplePath() {
