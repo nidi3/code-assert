@@ -211,11 +211,6 @@ public class CodeTest extends CodeAssertJunit5Test {
 
     private static final AnalyzerConfig CONFIG = AnalyzerConfig.maven().main();
 
-    @Test
-    public void dependency() {
-        assertThat(dependencyResult(), matchesRulesExactly());
-    }
-
     @Override
     protected DependencyResult analyzeDependencies() {
         class MyProject extends DependencyRuler {
