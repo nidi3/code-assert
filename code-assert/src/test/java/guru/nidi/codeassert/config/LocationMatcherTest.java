@@ -17,48 +17,81 @@ package guru.nidi.codeassert.config;
 
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LocationMatcherTest {
     @Test
     void emptyPattern() {
-        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher(""));
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() throws Throwable {
+                new LocationMatcher("");
+            }
+        });
     }
 
     @Test
     void nullPattern() {
-        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher(null));
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() throws Throwable {
+                new LocationMatcher(null);
+            }
+        });
     }
 
     @Test
     void wildcardInMiddle() {
-        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("a*b"));
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() throws Throwable {
+                new LocationMatcher("a*b");
+            }
+        });
     }
 
     @Test
     void doubleWildcard() {
-        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("**"));
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() throws Throwable {
+                new LocationMatcher("**");
+            }
+        });
     }
 
     @Test
     void wildcardBetweenPackageAndClass() {
-        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("a*B"));
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() throws Throwable {
+                new LocationMatcher("a*B");
+            }
+        });
     }
 
     @Test
     void illegalWildcardInPackage3() {
-        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("*a*b"));
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() throws Throwable {
+                new LocationMatcher("*a*b");
+            }
+        });
     }
 
     @Test
     void illegalWildcardInClass() {
-        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("A*b"));
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() throws Throwable {
+                new LocationMatcher("A*b");
+            }
+        });
     }
 
     @Test
     void illegalWildcardInMethod() {
-        assertThrows(IllegalArgumentException.class, () -> new LocationMatcher("#a*b"));
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() throws Throwable {
+                new LocationMatcher("#a*b");
+            }
+        });
     }
 
     @Test

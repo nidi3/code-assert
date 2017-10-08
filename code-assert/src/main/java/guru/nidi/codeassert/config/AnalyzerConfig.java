@@ -32,7 +32,7 @@ public class AnalyzerConfig {
     private final List<Path> classes;
 
     public AnalyzerConfig() {
-        this(EnumSet.of(JAVA), Collections.emptyList(), Collections.emptyList());
+        this(EnumSet.of(JAVA), Collections.<Path>emptyList(), Collections.<Path>emptyList());
     }
 
     public AnalyzerConfig(AnalyzerConfig config) {

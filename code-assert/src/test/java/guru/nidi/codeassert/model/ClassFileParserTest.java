@@ -17,6 +17,7 @@ package guru.nidi.codeassert.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +40,11 @@ public class ClassFileParserTest {
 
     @Test
     void invalidClassFile() throws IOException {
-        assertThrows(IOException.class, () -> parse(Path.testJava("ExampleTest")));
+        assertThrows(IOException.class, new Executable() {
+            public void execute() throws Throwable {
+                ClassFileParserTest.this.parse(Path.testJava("ExampleTest"));
+            }
+        });
     }
 
     @Test

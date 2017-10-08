@@ -37,7 +37,7 @@ public class LocationNameMatcherTest {
 
     @Test
     void emptyLocs() {
-        final LocationNameMatcher m = new LocationNameMatcher(Collections.emptyList(), Arrays.asList("c", "d"));
+        final LocationNameMatcher m = new LocationNameMatcher(Collections.<String>emptyList(), Arrays.asList("c", "d"));
         assertTrue(m.matches("c", "X", null, true));
         assertTrue(m.matches("c", null, "#e", true));
         assertFalse(m.matches("e", "X", null, true));
@@ -45,14 +45,14 @@ public class LocationNameMatcherTest {
 
     @Test
     void emptyNames() {
-        final LocationNameMatcher m = new LocationNameMatcher(Arrays.asList("A", "a.B", "x.Y#c"), Collections.emptyList());
+        final LocationNameMatcher m = new LocationNameMatcher(Arrays.asList("A", "a.B", "x.Y#c"), Collections.<String>emptyList());
         assertTrue(m.matches("c", "A", null, true));
         assertFalse(m.matches("c", "B", null, true));
     }
 
     @Test
     void nonStrictNames() {
-        final LocationNameMatcher m = new LocationNameMatcher(Collections.emptyList(), Arrays.asList("cat"));
+        final LocationNameMatcher m = new LocationNameMatcher(Collections.<String>emptyList(), Arrays.asList("cat"));
         assertTrue(m.matches("cat", null, null, false));
         assertTrue(m.matches("xcat", null, null, false));
         assertTrue(m.matches("catx", null, null, false));

@@ -22,6 +22,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.*;
 
@@ -57,7 +58,11 @@ public class DependencyRulesTest {
 
     @Test
     void wildcardNotAtEnd() {
-        assertThrows(IllegalArgumentException.class, () -> DependencyRule.allowAll("a*b"));
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() throws Throwable {
+                DependencyRule.allowAll("a*b");
+            }
+        });
     }
 
     //TODO test AmbiguousRuleException
@@ -366,7 +371,7 @@ public class DependencyRulesTest {
                                 .with(0, dep("a.a"), set(dep("a.a.Aa1")), dep("b.a"))
                                 .with(0, dep("a"), set(dep("a.A1")), dep("c")),
                         new HashSet<>(asList(new LocationMatcher("guru.nidi.codeassert.y"))),
-                        new HashSet<>(),
+                        new HashSet<String>(),
                         new HashSet<>(asList(
                                 new DependencyMap()
                                         .with(1, dep("c.a"), set(dep("c.a.Ca1")), dep("a.a")),

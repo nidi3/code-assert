@@ -19,6 +19,7 @@ import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.For;
 import org.hamcrest.StringDescription;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.io.File;
 
@@ -31,12 +32,20 @@ class JacocoTest {
 
     @Test
     void noData() {
-        assertThrows(AnalyzerException.class, () -> new JacocoAnalyzer(new File("target"), new CoverageCollector()));
+        assertThrows(AnalyzerException.class, new Executable() {
+            public void execute() throws Throwable {
+                new JacocoAnalyzer(new File("target"), new CoverageCollector());
+            }
+        });
     }
 
     @Test
     void wrongData() {
-        assertThrows(AnalyzerException.class, () -> new JacocoAnalyzer(new File("target/text-classes/test.zip"), new CoverageCollector()).analyze());
+        assertThrows(AnalyzerException.class, new Executable() {
+            public void execute() throws Throwable {
+                new JacocoAnalyzer(new File("target/text-classes/test.zip"), new CoverageCollector()).analyze();
+            }
+        });
     }
 
     @Test
@@ -49,8 +58,12 @@ class JacocoTest {
 
     @Test
     void toManyValues() {
-        assertThrows(IllegalArgumentException.class, () -> new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
-                .just(For.global().setMinima(70, 70, 70, 70))));
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() throws Throwable {
+                new JacocoAnalyzer(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
+                        .just(For.global().setMinima(70, 70, 70, 70)));
+            }
+        });
     }
 
     @Test
