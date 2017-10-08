@@ -15,8 +15,7 @@
  */
 package guru.nidi.codeassert.util;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public final class ListUtils {
     private ListUtils() {
@@ -32,5 +31,11 @@ public final class ListUtils {
             res.append(sep).append(o);
         }
         return os.isEmpty() ? "" : res.substring(sep.length());
+    }
+
+    public static <T> List<T> concat(List<T> a, List<T> b) {
+        final ArrayList<T> res = new ArrayList<>(a);
+        res.addAll(b);
+        return res;
     }
 }

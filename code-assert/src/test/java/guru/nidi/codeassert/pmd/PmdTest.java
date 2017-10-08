@@ -153,7 +153,8 @@ class PmdTest {
                                 "public static <T extends AnalyzerResult<?>> Matcher<T> hasNoUnusedActions() {"),
                         In.loc("*Matcher").ignore(
                                 "return item.findings().isEmpty();"),
-                        In.clazz(DependencyRules.class).ignoreAll())
+                        In.clazz(DependencyRules.class).ignoreAll(),
+                        In.clazz(ProjectLayout.class).ignoreAll())
         );
         return analyzer.analyze();
     }

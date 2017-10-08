@@ -102,7 +102,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
         System.gc();
         final CpdMatchCollector collector = new CpdMatchCollector()
                 .apply(PredefConfig.cpdIgnoreEqualsHashCodeToString())
-                .just(In.clazz(PmdAnalyzer.class).ignore("Map<String, Ruleset> newRuleset"));
+                .just(In.clazz(PmdAnalyzer.class).ignore("Map<String, Ruleset> newRuleset"))
+                .just(In.clazz(ProjectLayout.class).ignoreAll());
 
         return new CpdAnalyzer(AnalyzerConfig.maven().main(), 27, collector).analyze();
     }
