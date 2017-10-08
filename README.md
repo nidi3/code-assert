@@ -205,7 +205,8 @@ If it does so, these standard checks will be executed:
 
 [//]: # (codeTest)
 ```java
-public class CodeTest extends CodeAssertTest {
+//extend CodeAssertTest if you still use JUnit 4
+public class CodeTest extends CodeAssertJunit5Test {
 
     private static final AnalyzerConfig CONFIG = AnalyzerConfig.maven().main();
 
