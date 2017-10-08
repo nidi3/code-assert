@@ -38,4 +38,11 @@ public final class ListUtils {
         res.addAll(b);
         return res;
     }
+
+    public static <T extends Enum<T>> EnumSet<T> concat(EnumSet<T> a, EnumSet<T> b) {
+        final EnumSet<T> res = EnumSet.copyOf(a);
+        res.addAll(b);
+        return res;
+    }
+
 }

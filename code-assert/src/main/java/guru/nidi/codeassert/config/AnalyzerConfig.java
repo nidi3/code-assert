@@ -21,75 +21,102 @@ import guru.nidi.codeassert.config.ProjectLayout.Maven;
 import java.io.File;
 import java.util.*;
 
+import static guru.nidi.codeassert.config.AnalyzerConfig.Language.JAVA;
 import static guru.nidi.codeassert.util.ListUtils.concat;
+import static java.util.Arrays.asList;
 
 public class AnalyzerConfig {
+    private final EnumSet<Language> languages;
     private final List<Path> sources;
     private final List<Path> classes;
 
     public AnalyzerConfig() {
-        this(Collections.<Path>emptyList(), Collections.<Path>emptyList());
+        this(EnumSet.of(JAVA), Collections.emptyList(), Collections.emptyList());
     }
 
     public AnalyzerConfig(AnalyzerConfig config) {
-        this(config.sources, config.classes);
+        this(config.languages, config.sources, config.classes);
     }
 
-    protected AnalyzerConfig(List<Path> sources, List<Path> classes) {
+    protected AnalyzerConfig(EnumSet<Language> languages, List<Path> sources, List<Path> classes) {
+        this.languages = languages;
         this.sources = sources;
         this.classes = classes;
     }
 
     public AnalyzerConfig and(AnalyzerConfig config) {
-        return new AnalyzerConfig(concat(sources, config.sources), concat(classes, config.classes));
+        return new AnalyzerConfig(
+                concat(languages, config.languages),
+                concat(sources, config.sources),
+                concat(classes, config.classes));
     }
 
-    public static Maven maven() {
-        return maven(null);
+    public static Maven maven(Language... languages) {
+        return maven(null, languages);
     }
 
-    public static Maven maven(String module) {
-        return new Maven(module);
+    public static Maven maven(String module, Language... languages) {
+        return new Maven(module, languages);
     }
 
-    public static Gradle gradle() {
-        return gradle(null);
+    public static Gradle gradle(Language... languages) {
+        return gradle(null, languages);
     }
 
-    public static Gradle gradle(String module) {
-        return new Gradle(module);
+    public static Gradle gradle(String module, Language... languages) {
+        return new Gradle(module, languages);
     }
 
     public AnalyzerConfig withSources(File basedir, String... packages) {
-        return new AnalyzerConfig(concat(sources, Path.of(basedir, packages)), classes);
+        return new AnalyzerConfig(languages, concat(sources, Path.of(basedir, packages)), classes);
     }
 
     public AnalyzerConfig withClasses(File basedir, String... packages) {
-        return new AnalyzerConfig(sources, concat(classes, Path.of(basedir, packages)));
+        return new AnalyzerConfig(languages, sources, concat(classes, Path.of(basedir, packages)));
     }
 
-    public List<Path> getSourcePaths() {
-        return sources;
+    public List<Path> getSourcePaths(Language... languages) {
+        return getPaths(sources, languages);
     }
 
-    public List<Path> getClassPaths() {
-        return classes;
+    public List<Path> getClassPaths(Language... languages) {
+        return getPaths(classes, languages);
     }
 
-    public List<File> getSources() {
+    public List<File> getSources(Language... languages) {
+        return getFiles(sources, null, languages);
+    }
+
+    public List<File> getClasses(Language... languages) {
+        return getFiles(classes, ".class", languages);
+    }
+
+    private List<Path> getPaths(List<Path> paths, Language... languages) {
+        final Set<Path> res = new HashSet<>();
+        for (final Language language : calcLanguages(languages)) {
+            for (final Path path : paths) {
+                res.add(path.forLanguage(language));
+            }
+        }
+        return new ArrayList<>(res);
+    }
+
+    private List<File> getFiles(List<Path> paths, String suffix, Language... languages) {
         final List<File> files = new ArrayList<>();
-        for (final Path source : sources) {
-            crawlDir(new File(source.getPath()), ".java", files);
+        for (final Language language : calcLanguages(languages)) {
+            for (final Path path : paths) {
+                crawlDir(new File(path.forLanguage(language).getPath()), suffix != null ? suffix : language.suffix, files);
+            }
         }
         return files;
     }
 
-    public List<File> getClasses() {
-        final List<File> files = new ArrayList<>();
-        for (final Path clazz : classes) {
-            crawlDir(new File(clazz.getPath()), ".class", files);
+    private EnumSet<Language> calcLanguages(Language... languages) {
+        final EnumSet<Language> res = EnumSet.copyOf(this.languages);
+        if (languages.length > 0) {
+            res.retainAll(asList(languages));
         }
-        return files;
+        return res;
     }
 
     private void crawlDir(File base, String suffix, List<File> res) {
@@ -103,6 +130,18 @@ public class AnalyzerConfig {
                     crawlDir(file, suffix, res);
                 }
             }
+        }
+    }
+
+    public enum Language {
+        JAVA("java", ".java"), KOTLIN("kotlin", ".kt"), SCALA("scala", ".scala");
+
+        private final String path;
+        private final String suffix;
+
+        Language(String path, String suffix) {
+            this.path = path;
+            this.suffix = suffix;
         }
     }
 
@@ -125,6 +164,10 @@ public class AnalyzerConfig {
                 }
             }
             return sources;
+        }
+
+        public Path forLanguage(Language language) {
+            return new Path(base.replace("$language", language.path), pack);
         }
 
         public String getPath() {

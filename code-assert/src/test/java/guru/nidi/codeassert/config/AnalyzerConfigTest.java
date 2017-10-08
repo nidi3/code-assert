@@ -22,6 +22,10 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import static guru.nidi.codeassert.config.AnalyzerConfig.Language.JAVA;
+import static guru.nidi.codeassert.config.AnalyzerConfig.Language.KOTLIN;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AnalyzerConfigTest {
@@ -62,6 +66,13 @@ public class AnalyzerConfigTest {
         final AnalyzerConfig config = AnalyzerConfig.maven().test("mypack");
         assertPath(config.getSourcePaths(), path("src/test/java", "mypack"));
         assertPath(config.getClassPaths(), path("target/test-classes", "mypack"));
+    }
+
+    @Test
+    void multiLanguage() {
+        final AnalyzerConfig config = AnalyzerConfig.maven(JAVA, KOTLIN).main();
+        assertPath(config.getSourcePaths(), path("src/main/java", ""), path("src/main/kotlin", ""));
+        assertPath(config.getClassPaths(), path("target/classes", ""));
     }
 
     @Test
@@ -139,6 +150,7 @@ public class AnalyzerConfigTest {
     }
 
     private void assertPath(List<Path> paths, Path... expected) {
-        assertEquals(Arrays.asList(expected), paths);
+        assertThat(paths, hasItems(expected));
+        assertThat(Arrays.asList(expected), hasItems(paths.toArray(new Path[paths.size()])));
     }
 }
