@@ -24,6 +24,7 @@ import java.util.*;
 import static guru.nidi.codeassert.config.Language.JAVA;
 import static guru.nidi.codeassert.util.ListUtils.concat;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 public class AnalyzerConfig {
     private final EnumSet<Language> languages;
@@ -104,7 +105,7 @@ public class AnalyzerConfig {
     private List<File> getFiles(List<Path> paths, String suffix, Language... languages) {
         final List<File> files = new ArrayList<>();
         for (final Language language : calcLanguages(languages)) {
-            final String suff = suffix == null ? language.suffix : suffix;
+            final List<String> suff = suffix == null ? language.suffices : singletonList(suffix);
             for (final Path path : paths) {
                 crawlDir(new File(path.forLanguage(language).getPath()), suff, files);
             }
@@ -120,18 +121,27 @@ public class AnalyzerConfig {
         return res;
     }
 
-    private void crawlDir(File base, String suffix, List<File> res) {
+    private void crawlDir(File base, List<String> suffices, List<File> res) {
         final File[] files = base.listFiles();
         if (files != null) {
             for (final File file : files) {
-                if (file.isFile() && file.getName().endsWith(suffix)) {
+                if (file.isFile() && hasAnySuffix(file.getName(), suffices)) {
                     res.add(file);
                 }
                 if (file.isDirectory()) {
-                    crawlDir(file, suffix, res);
+                    crawlDir(file, suffices, res);
                 }
             }
         }
+    }
+
+    private boolean hasAnySuffix(String s, List<String> suffices) {
+        for (final String suffix : suffices) {
+            if (s.endsWith(suffix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static class Path {

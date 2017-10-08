@@ -15,14 +15,21 @@
  */
 package guru.nidi.codeassert.config;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 public enum Language {
-    JAVA("java", ".java"), KOTLIN("kotlin", ".kt"), SCALA("scala", ".scala"), GROOVY("groovy", ".groovy");
+    JAVA("java", asList(".java")),
+    KOTLIN("kotlin", asList(".kt", ".kts")),
+    SCALA("scala", asList(".scala")),
+    GROOVY("groovy", asList(".groovy", ".gvy", ".gy", ".gsh"));
 
     final String path;
-    final String suffix;
+    final List<String> suffices;
 
-    Language(String path, String suffix) {
+    Language(String path, List<String> suffices) {
         this.path = path;
-        this.suffix = suffix;
+        this.suffices = suffices;
     }
 }
