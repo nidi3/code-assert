@@ -23,13 +23,10 @@ import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
 import guru.nidi.codeassert.pmd.*;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
-import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesRulesExactly;
 import static guru.nidi.codeassert.pmd.Rulesets.basic;
 import static guru.nidi.codeassert.pmd.Rulesets.braces;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @Disabled
 //## codeTest
@@ -37,11 +34,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class CodeTest extends CodeAssertJunit5Test {
 
     private static final AnalyzerConfig CONFIG = AnalyzerConfig.maven().main();
-
-    @Test
-    public void dependency() {
-        assertThat(dependencyResult(), matchesRulesExactly());
-    }
 
     @Override
     protected DependencyResult analyzeDependencies() {

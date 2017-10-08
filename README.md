@@ -193,6 +193,7 @@ public void pmd() {
 
 A test can inherit from `CodeAssertTest`. It should override one or more `analyzeXXX` methods.
 If it does so, these standard checks will be executed:
+* dependency rules
 * circular dependencies
 * PMD
 * PMD - unused actions
