@@ -21,7 +21,7 @@ import guru.nidi.codeassert.config.ProjectLayout.Maven;
 import java.io.File;
 import java.util.*;
 
-import static guru.nidi.codeassert.config.AnalyzerConfig.Language.JAVA;
+import static guru.nidi.codeassert.config.Language.JAVA;
 import static guru.nidi.codeassert.util.ListUtils.concat;
 import static java.util.Arrays.asList;
 
@@ -104,8 +104,9 @@ public class AnalyzerConfig {
     private List<File> getFiles(List<Path> paths, String suffix, Language... languages) {
         final List<File> files = new ArrayList<>();
         for (final Language language : calcLanguages(languages)) {
+            final String suff = suffix == null ? language.suffix : suffix;
             for (final Path path : paths) {
-                crawlDir(new File(path.forLanguage(language).getPath()), suffix != null ? suffix : language.suffix, files);
+                crawlDir(new File(path.forLanguage(language).getPath()), suff, files);
             }
         }
         return files;
@@ -130,18 +131,6 @@ public class AnalyzerConfig {
                     crawlDir(file, suffix, res);
                 }
             }
-        }
-    }
-
-    public enum Language {
-        JAVA("java", ".java"), KOTLIN("kotlin", ".kt"), SCALA("scala", ".scala");
-
-        private final String path;
-        private final String suffix;
-
-        Language(String path, String suffix) {
-            this.path = path;
-            this.suffix = suffix;
         }
     }
 

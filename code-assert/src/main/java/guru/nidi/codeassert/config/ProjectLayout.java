@@ -15,13 +15,12 @@
  */
 package guru.nidi.codeassert.config;
 
-import guru.nidi.codeassert.config.AnalyzerConfig.Language;
 import guru.nidi.codeassert.config.AnalyzerConfig.Path;
 
 import java.io.File;
 import java.util.*;
 
-import static guru.nidi.codeassert.config.AnalyzerConfig.Language.JAVA;
+import static guru.nidi.codeassert.config.Language.JAVA;
 
 public class ProjectLayout {
     private final String module;

@@ -69,12 +69,6 @@ class PmdTest {
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 115")
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 154")
                         + pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", "Avoid using final local variables, turn them into fields")
-                        + pmd(MEDIUM, "CommentRequired", MAIN, "jacoco/CoverageType", "enumCommentRequirement Required")
-                        + pmd(MEDIUM, "CommentRequired", MAIN, "junit/CodeAssertTestType", "enumCommentRequirement Required")
-                        + pmd(MEDIUM, "CommentRequired", MAIN, "model/SignatureParser", "enumCommentRequirement Required")
-                        + pmd(MEDIUM, "CommentRequired", MAIN, "pmd/Rulesets", "enumCommentRequirement Required")
-                        + pmd(MEDIUM, "CommentRequired", TEST, "model/p2/ExampleEnum", "enumCommentRequirement Required")
-                        + pmd(MEDIUM, "CommentRequired", TEST, "model/p3/ExampleSecondEnum", "enumCommentRequirement Required")
                         + pmd(MEDIUM, "CommentSize", MAIN, "config/LocationNameMatcher", "Comment is too large: Line too long")
                         + pmd(MEDIUM, "ExcessiveParameterList", MAIN, "jacoco/Coverage", "Avoid long parameter lists.")
                         + pmd(MEDIUM, "LongVariable", MAIN, "dependency/Tarjan", "Avoid excessively long variable names like allowIntraPackageCycles")
@@ -117,7 +111,8 @@ class PmdTest {
                                 "AtLeastOneConstructor", "OnlyOneReturn", "DefaultPackage", "CallSuperInConstructor", "AbstractNaming",
                                 "AvoidFieldNameMatchingMethodName", "AvoidFieldNameMatchingTypeName", "BeanMembersShouldSerialize",
                                 "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith", "AvoidInstantiatingObjectsInLoops",
-                                "UseStringBufferForStringAppends", "AvoidSynchronizedAtMethodLevel", "VariableNamingConventions"))
+                                "UseStringBufferForStringAppends", "AvoidSynchronizedAtMethodLevel", "VariableNamingConventions",
+                                "CommentRequired"))
                         .because("They are snippets", In.loc("*.snippets.*").ignoreAll())
                         .just(
                                 In.clazz(DependencyRulesTest.class).ignore("ExcessiveMethodLength"),

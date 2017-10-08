@@ -13,25 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.model;
+package guru.nidi.codeassert.config;
 
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import org.junit.jupiter.api.Test;
+public enum Language {
+    JAVA("java", ".java"), KOTLIN("kotlin", ".kt"), SCALA("scala", ".scala"), GROOVY("groovy", ".groovy");
 
-import java.io.IOException;
+    final String path;
+    final String suffix;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-class AnalyzerTest {
-    final Model model = Model.from(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model").getClasses());
-
-    @Test
-    void packages() throws IOException {
-        assertEquals(38, model.getPackages().size());
-    }
-
-    @Test
-    void classes() throws IOException {
-        assertEquals(116, model.getClasses().size());
+    Language(String path, String suffix) {
+        this.path = path;
+        this.suffix = suffix;
     }
 }

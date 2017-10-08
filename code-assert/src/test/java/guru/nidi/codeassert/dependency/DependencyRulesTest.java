@@ -409,7 +409,7 @@ public class DependencyRulesTest {
         assertEquals(new DependencyMap()
                         .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertMatchers")),
                 result3.denied);
-        assertEquals(68, result.undefined.size());
+        assertEquals(69, result.undefined.size());
     }
 
     private static String ca(String s) {

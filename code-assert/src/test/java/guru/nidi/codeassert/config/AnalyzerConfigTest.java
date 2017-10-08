@@ -22,8 +22,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import static guru.nidi.codeassert.config.AnalyzerConfig.Language.JAVA;
-import static guru.nidi.codeassert.config.AnalyzerConfig.Language.KOTLIN;
+import static guru.nidi.codeassert.config.Language.JAVA;
+import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
