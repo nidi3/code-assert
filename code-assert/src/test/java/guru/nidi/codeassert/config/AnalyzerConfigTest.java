@@ -40,25 +40,75 @@ public class AnalyzerConfigTest {
     void mavenSimple() {
         final AnalyzerConfig config = AnalyzerConfig.maven().main();
         assertPath(config.getSourcePaths(), path("src/main/java", ""));
+        assertPath(config.getClassPaths(), path("target/classes", ""));
     }
 
     @Test
     void mavenModule() {
         final AnalyzerConfig config = AnalyzerConfig.maven("module").main();
         assertPath(config.getSourcePaths(), path("module/src/main/java", ""));
+        assertPath(config.getClassPaths(), path("module/target/classes", ""));
     }
 
     @Test
     void mavenOwnModule() {
         final AnalyzerConfig config = AnalyzerConfig.maven("code-assert").mainAndTest();
         assertPath(config.getSourcePaths(), path("src/main/java", ""), path("src/test/java", ""));
+        assertPath(config.getClassPaths(), path("target/classes", ""), path("target/test-classes", ""));
     }
 
     @Test
     void mavenPackages() {
         final AnalyzerConfig config = AnalyzerConfig.maven().test("mypack");
         assertPath(config.getSourcePaths(), path("src/test/java", "mypack"));
+        assertPath(config.getClassPaths(), path("target/test-classes", "mypack"));
     }
+
+    @Test
+    void gradleSimple() {
+        final AnalyzerConfig config = AnalyzerConfig.gradle().main();
+        assertPath(config.getSourcePaths(), path("src/main/java", ""));
+        assertPath(config.getClassPaths(),
+                path("build/classes/main", ""),
+                path("build/classes/java/main", ""),
+                path("out/production/classes", "")
+        );
+    }
+
+    @Test
+    void gradleModule() {
+        final AnalyzerConfig config = AnalyzerConfig.gradle("module").main();
+        assertPath(config.getSourcePaths(), path("module/src/main/java", ""));
+        assertPath(config.getClassPaths(),
+                path("module/build/classes/main", ""),
+                path("module/build/classes/java/main", ""),
+                path("module/out/production/classes", ""));
+    }
+
+    @Test
+    void gradleOwnModule() {
+        final AnalyzerConfig config = AnalyzerConfig.gradle("code-assert").mainAndTest();
+        assertPath(config.getSourcePaths(), path("src/main/java", ""), path("src/test/java", ""));
+        assertPath(config.getClassPaths(),
+                path("build/classes/main", ""),
+                path("build/classes/java/main", ""),
+                path("out/production/classes", ""),
+                path("build/classes/test", ""),
+                path("build/classes/java/test", ""),
+                path("out/test/classes", "")
+        );
+    }
+
+    @Test
+    void gradlePackages() {
+        final AnalyzerConfig config = AnalyzerConfig.gradle().test("mypack");
+        assertPath(config.getSourcePaths(), path("src/test/java", "mypack"));
+        assertPath(config.getClassPaths(),
+                path("build/classes/test", "mypack"),
+                path("build/classes/java/test", "mypack"),
+                path("out/test/classes", "mypack"));
+    }
+
 
     @Test
     void simplePath() {

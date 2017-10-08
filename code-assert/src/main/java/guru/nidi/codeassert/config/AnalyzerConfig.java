@@ -16,7 +16,9 @@
 package guru.nidi.codeassert.config;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class AnalyzerConfig {
     private final List<Path> sources;
@@ -42,6 +44,16 @@ public class AnalyzerConfig {
     public static Maven maven(String module) {
         return new Maven(module);
     }
+
+
+    public static Gradle gradle() {
+        return gradle(null);
+    }
+
+    public static Gradle gradle(String module) {
+        return new Gradle(module);
+    }
+
 
     public AnalyzerConfig withSources(File basedir, String... packages) {
         return new AnalyzerConfig(join(sources, Path.of(basedir, packages)), classes);
@@ -120,7 +132,7 @@ public class AnalyzerConfig {
                     path(packages, "target/classes/", "target/test-classes/"));
         }
 
-        private List<Path> path(String[] packs, String... paths) {
+        protected List<Path> path(String[] packs, String... paths) {
             final List<Path> res = new ArrayList<>();
             for (final String path : paths) {
                 final String normPath = path(path);
@@ -149,6 +161,50 @@ public class AnalyzerConfig {
             return new File("").getAbsoluteFile().getName().equals(module);
         }
     }
+
+
+    public static class Gradle extends Maven {
+
+        public Gradle(String module) {
+            super(module);
+        }
+
+        @Override
+        public AnalyzerConfig main(String... packages) {
+            return new AnalyzerConfig(
+                    path(packages, "src/main/java/"),
+                    path(packages,
+                            "build/classes/main/",
+                            "build/classes/java/main/",
+                            "out/production/classes"));
+        }
+
+        @Override
+        public AnalyzerConfig test(String... packages) {
+            return new AnalyzerConfig(
+                    path(packages, "src/test/java/"),
+                    path(packages,
+                            "build/classes/test/",
+                            "build/classes/java/test/",
+                            "out/test/classes"));
+        }
+
+        @Override
+        public AnalyzerConfig mainAndTest(String... packages) {
+            return new AnalyzerConfig(
+                    path(packages,
+                            "src/main/java/",
+                            "src/test/java"),
+                    path(packages,
+                            "build/classes/main/",
+                            "build/classes/java/main/",
+                            "out/production/classes",
+                            "build/classes/test/",
+                            "build/classes/java/test/",
+                            "out/test/classes"));
+        }
+    }
+
 
     public static class Path {
         private final String base;
