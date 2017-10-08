@@ -64,15 +64,7 @@ public class StyleEventCollector extends BaseCollector<AuditEvent, Ignore, Style
 
     @Override
     protected ActionResult doAccept(AuditEvent issue, Ignore action) {
-        final String file = issue.getFileName().replace('\\', '/');
-        //TODO can this heuristic be improved?
-        final int slash = file.lastIndexOf('/');
-        final int dot = file.lastIndexOf('.');
-        final int src = file.indexOf("/src/") + 4;
-        final int java = file.indexOf("/java/") + 5;
-        final int later = Math.max(src, java);
-        final int start = later >= 5 ? later + 1 : slash + 1;
-        final String className = file.substring(start, dot).replace('/', '.');
+        final String className = guessClassFromFile(issue.getFileName(), Language.JAVA);
         final String name = issue.getLocalizedMessage().getKey();
         return action.accept(new NamedLocation(name, className, "", false));
     }

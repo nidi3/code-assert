@@ -112,4 +112,15 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
                 : Collections.<A>emptyList();
     }
 
+    protected String guessClassFromFile(String filename, Language language) {
+        final String file = filename.replace('\\', '/');
+        //TODO can this heuristic be improved?
+        final int slash = file.lastIndexOf('/');
+        final int dot = file.lastIndexOf('.');
+        final int src = file.indexOf("/src/") + 4;
+        final int lang = file.indexOf("/" + language.path + "/") + language.path.length() + 1;
+        final int later = Math.max(src, lang);
+        final int start = later >= 5 ? later + 1 : slash + 1;
+        return file.substring(start, dot).replace('/', '.');
+    }
 }

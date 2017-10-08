@@ -92,6 +92,23 @@
             </exclusions>
         </dependency>
 
+        <!--<dependency>-->
+            <!--<groupId>io.gitlab.arturbosch.detekt</groupId>-->
+            <!--<artifactId>detekt-core</artifactId>-->
+            <!--<version>1.0.0.RC4</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>com.github.shyiko.ktlint</groupId>
+            <artifactId>ktlint-core</artifactId>
+            <version>0.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.shyiko.ktlint</groupId>
+            <artifactId>ktlint-ruleset-standard</artifactId>
+            <version>0.9.2</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
