@@ -16,7 +16,7 @@
 package guru.nidi.codeassert.junit;
 
 public enum CodeAssertTestType {
-    CIRCULAR_DEPENDENCIES,
+    DEPENDENCIES, CIRCULAR_DEPENDENCIES,
     FIND_BUGS, FIND_BUGS_UNUSED_ACTIONS,
     PMD, PMD_UNUSED_ACTIONS,
     CPD, CPD_UNUSED_ACTIONS,

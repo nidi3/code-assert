@@ -27,6 +27,13 @@ import static org.junit.Assume.assumeTrue;
 @Ignore("This is made to be subclassed")
 public class CodeAssertTest extends CodeAssertTestBase {
     @Test
+    public void dependencies() {
+        assumeFalse("analyzeDependencies() not implemented.", dependencyResult() == null);
+        assumeTrue("Dependencies test excluded.", defaultTests().contains(DEPENDENCIES));
+        assertThat(dependencyResult(), matchesRulesExactly());
+    }
+
+    @Test
     public void circularDependencies() {
         assumeFalse("analyzeDependencies() not implemented.", dependencyResult() == null);
         assumeTrue("Circular dependencies test excluded.", defaultTests().contains(CIRCULAR_DEPENDENCIES));

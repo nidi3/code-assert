@@ -27,6 +27,13 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 @Disabled("This is made to be subclassed")
 public class CodeAssertJunit5Test extends CodeAssertTestBase {
     @Test
+    void dependencies() {
+        assumeFalse(dependencyResult() == null, "analyzeDependencies() not implemented.");
+        assumeTrue(defaultTests().contains(DEPENDENCIES), "Dependencies test excluded.");
+        assertThat(dependencyResult(), matchesRulesExactly());
+    }
+
+    @Test
     void circularDependencies() {
         assumeFalse(dependencyResult() == null, "analyzeDependencies() not implemented.");
         assumeTrue(defaultTests().contains(CIRCULAR_DEPENDENCIES), "Circular dependencies test excluded.");
