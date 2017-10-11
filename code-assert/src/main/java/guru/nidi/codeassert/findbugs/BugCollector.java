@@ -79,7 +79,8 @@ public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollecto
         final MethodAnnotation method = issue.getPrimaryMethod();
         final String className = issue.getPrimaryClass().getClassName();
         final String methodName = method == null ? null : method.getMethodName();
-        return action.accept(new NamedLocation(issue.getType(), className, methodName, true));
+        final Language language = Language.byFilename(issue.getPrimaryClass().getSourceFileName());
+        return action.accept(new NamedLocation(issue.getType(), language, className, methodName, true));
     }
 
     @Override

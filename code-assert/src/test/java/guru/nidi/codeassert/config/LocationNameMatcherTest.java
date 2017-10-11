@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static guru.nidi.codeassert.config.Language.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,36 +28,45 @@ public class LocationNameMatcherTest {
     @Test
     void basic() {
         final LocationNameMatcher m = new LocationNameMatcher(Arrays.asList("A", "a.B", "Y#c"), Arrays.asList("c", "d"));
-        assertTrue(m.matches("c", "A", null, true));
-        assertTrue(m.matches("d", "a.B", null, true));
-        assertTrue(m.matches("d", "Y", "c", true));
-        assertTrue(m.matches("d", "A", "x", true));
-        assertFalse(m.matches("e", "Y", "c", true));
-        assertFalse(m.matches("d", "Y", "d", true));
+        assertTrue(m.matches("c", null, "A", null, true));
+        assertTrue(m.matches("d", null, "a.B", null, true));
+        assertTrue(m.matches("d", null, "Y", "c", true));
+        assertTrue(m.matches("d", null, "A", "x", true));
+        assertFalse(m.matches("e", null, "Y", "c", true));
+        assertFalse(m.matches("d", null, "Y", "d", true));
     }
 
     @Test
     void emptyLocs() {
         final LocationNameMatcher m = new LocationNameMatcher(Collections.<String>emptyList(), Arrays.asList("c", "d"));
-        assertTrue(m.matches("c", "X", null, true));
-        assertTrue(m.matches("c", null, "#e", true));
-        assertFalse(m.matches("e", "X", null, true));
+        assertTrue(m.matches("c", null, "X", null, true));
+        assertTrue(m.matches("c", null, null, "#e", true));
+        assertFalse(m.matches("e", null, "X", null, true));
     }
 
     @Test
     void emptyNames() {
         final LocationNameMatcher m = new LocationNameMatcher(Arrays.asList("A", "a.B", "x.Y#c"), Collections.<String>emptyList());
-        assertTrue(m.matches("c", "A", null, true));
-        assertFalse(m.matches("c", "B", null, true));
+        assertTrue(m.matches("c", null, "A", null, true));
+        assertFalse(m.matches("c", null, "B", null, true));
     }
 
     @Test
     void nonStrictNames() {
         final LocationNameMatcher m = new LocationNameMatcher(Collections.<String>emptyList(), Arrays.asList("cat"));
-        assertTrue(m.matches("cat", null, null, false));
-        assertTrue(m.matches("xcat", null, null, false));
-        assertTrue(m.matches("catx", null, null, false));
-        assertTrue(m.matches("xcatx", null, null, false));
-        assertFalse(m.matches("ca", null, null, false));
+        assertTrue(m.matches("cat", null, null, null, false));
+        assertTrue(m.matches("xcat", null, null, null, false));
+        assertTrue(m.matches("catx", null, null, null, false));
+        assertTrue(m.matches("xcatx", null, null, null, false));
+        assertFalse(m.matches("ca", null, null, null, false));
+    }
+
+    @Test
+    void language() {
+        final LocationNameMatcher m = new LocationNameMatcher(Arrays.asList("java:A", "kotlin:"), Arrays.asList("c"));
+        assertTrue(m.matches("c", null, "A", null, true));
+        assertTrue(m.matches("c", JAVA, "A", null, true));
+        assertTrue(m.matches("c", KOTLIN, "B", null, true));
+        assertFalse(m.matches("c", SCALA, "A", null, true));
     }
 }

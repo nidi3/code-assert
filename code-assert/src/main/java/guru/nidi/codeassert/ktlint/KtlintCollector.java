@@ -48,7 +48,8 @@ public class KtlintCollector extends BaseCollector<LocatedLintError, Ignore, Ktl
     @Override
     protected ActionResult doAccept(LocatedLintError issue, Ignore action) {
         final String className = guessClassFromFile(issue.file.getAbsolutePath(), Language.KOTLIN);
-        return action.accept(new NamedLocation(issue.ruleId, className, null, true));
+        final Language language = Language.byFilename(issue.file.getName());
+        return action.accept(new NamedLocation(issue.ruleId, language, className, null, true));
     }
 
     @Override

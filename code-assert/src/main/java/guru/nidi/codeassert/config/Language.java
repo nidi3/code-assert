@@ -32,4 +32,14 @@ public enum Language {
         this.path = path;
         this.suffices = suffices;
     }
+
+    public static Language byFilename(String filename) {
+        final String suffix = filename.substring(filename.lastIndexOf('.'));
+        for (final Language lang : values()) {
+            if (lang.suffices.contains(suffix)) {
+                return lang;
+            }
+        }
+        return null;
+    }
 }

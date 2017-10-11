@@ -44,8 +44,9 @@ public class CpdMatchCollector extends BaseCollector<Match, Ignore, CpdMatchColl
         final Iterator<Mark> it = issue.iterator();
         while (it.hasNext()) {
             final Mark mark = it.next();
+            final Language language = Language.byFilename(mark.getFilename());
             res = res.orMoreQuality(action.accept(
-                    new NamedLocation(mark.getSourceCodeSlice(), PmdUtils.className(mark), "", false)));
+                    new NamedLocation(mark.getSourceCodeSlice(), language, PmdUtils.className(mark), "", false)));
         }
         return res;
     }

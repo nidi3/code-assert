@@ -66,7 +66,7 @@ public class StyleEventCollector extends BaseCollector<AuditEvent, Ignore, Style
     protected ActionResult doAccept(AuditEvent issue, Ignore action) {
         final String className = guessClassFromFile(issue.getFileName(), Language.JAVA);
         final String name = issue.getLocalizedMessage().getKey();
-        return action.accept(new NamedLocation(name, className, "", false));
+        return action.accept(new NamedLocation(name, Language.byFilename(issue.getFileName()), className, "", false));
     }
 
     @Override

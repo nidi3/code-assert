@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 /**
  * The LocationMatcher is used to match a code location.
- * A pattern has the form [package][[/]class][#method].
+ * A pattern has the form [language:][package][[/]class][#method].
  * package and class are separated by the first occurrence of \.\*?[A-Z]
  * If this is not intended or clear, a / can be used to separate package and class.
  * All three elements may start and/or end with a wildcard *.
@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 public class LocationMatcher implements Comparable<LocationMatcher> {
     private static final Pattern CLASS_START = Pattern.compile("(^|\\.)\\*?[A-Z]");
     private final String pattern;
+    private final String languagePat;
     private final String packagePat;
     private final String classPat;
     private final String methodPat;
@@ -37,9 +38,12 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
             throw new IllegalArgumentException("Empty pattern");
         }
         this.pattern = pattern;
-        final int hash = pattern.indexOf('#');
-        methodPat = hash < 0 ? "" : pattern.substring(hash + 1);
-        final String qualif = hash < 0 ? pattern : pattern.substring(0, hash);
+        final int colon = pattern.indexOf(':');
+        languagePat = colon < 0 ? "" : pattern.substring(0, colon);
+        final String pure = colon < 0 ? pattern : pattern.substring(colon + 1);
+        final int hash = pure.indexOf('#');
+        methodPat = hash < 0 ? "" : pure.substring(hash + 1);
+        final String qualif = hash < 0 ? pure : pure.substring(0, hash);
         final int slash = qualif.indexOf('/');
         if (slash >= 0) {
             packagePat = qualif.substring(0, slash);
@@ -81,6 +85,10 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
                 ? matchesClassPattern(classPat, className)
                 : matchesPattern(classPat, className);
         return matchesPattern(packagePat, packageName) && matchesClass && matchesPattern(methodPat, methodName);
+    }
+
+    public boolean matchesLanguage(Language language) {
+        return language == null || languagePat.length() == 0 || languagePat.equalsIgnoreCase(language.name());
     }
 
     public int specificity() {

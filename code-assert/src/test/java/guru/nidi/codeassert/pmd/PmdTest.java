@@ -65,6 +65,7 @@ class PmdTest {
         assertMatcher(""
                         + pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", "A class which only has private constructors should be final")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "jacoco/JacocoAnalyzer", "Avoid assignments in operands")
+                        + pmd(MEDIUM, "AssignmentInOperand", MAIN, "ktlint/KtlintAnalyzer", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "model/Model", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 115")
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 154")
@@ -76,6 +77,7 @@ class PmdTest {
                         + pmd(MEDIUM, "NoPackage", TEST, "/CodeCoverage", "All classes and interfaces must belong to a named package")
                         + pmd(MEDIUM, "NullAssignment", MAIN, "dependency/DependencyRules", "Assigning an Object to null is a code smell.  Consider refactoring.")
                         + pmd(MEDIUM, "TooManyMethods", MAIN, "pmd/Rulesets", "This class has too many methods, consider refactoring it.")
+                        + pmd(MEDIUM, "TooManyMethods", TEST, "config/LocationMatcherTest", "This class has too many methods, consider refactoring it.")
                         + pmd(MEDIUM, "UseProperClassLoader", MAIN, "checkstyle/CheckstyleAnalyzer", "In J2EE, getClassLoader() might not work as expected.  Use Thread.currentThread().getContextClassLoader() instead."),
                 pmdResult, hasNoPmdViolations());
     }
@@ -93,6 +95,7 @@ class PmdTest {
                         + cpd(26, "checkstyle/StyleEventCollector")
                         + cpd("findbugs/BugCollector")
                         + cpd("jacoco/CoverageCollector")
+                        + cpd("ktlint/KtlintCollector")
                         + cpd("pmd/PmdViolationCollector"),
                 cpdResult, hasNoCodeDuplications());
     }

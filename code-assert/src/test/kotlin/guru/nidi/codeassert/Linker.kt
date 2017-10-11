@@ -29,7 +29,7 @@ object Linker {
     private fun newlines(s: String) = s.replace("\n", "<br>");
 
 
-    open fun url(s: String) =
+    fun url(s: String) =
             urlRegex.replace(s) { res ->
                 val value = res.value
                 val trim = value.trimEnd('.', ')', ',', '!', '?')

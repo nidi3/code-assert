@@ -63,7 +63,7 @@ public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f), UTF_8))) {
             String line;
             while ((line = in.readLine()) != null) {
-                sb.append(line).append("\n");
+                sb.append(line).append('\n');
             }
         }
         return sb.toString();
@@ -87,7 +87,7 @@ public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
 
         @Override
         public Unit invoke(LintError e) {
-            errors.add(new LocatedLintError(currentFile, e.getLine(), e.getCol(), e.getRuleId(), e.getDetail()));
+            errors.add(new LocatedLintError(currentFile, e.getLine(), e.getRuleId(), e.getDetail()));
             return null;
         }
     }

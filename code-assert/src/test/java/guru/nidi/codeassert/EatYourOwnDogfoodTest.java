@@ -24,40 +24,28 @@ import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
 import guru.nidi.codeassert.junit.PredefConfig;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
-import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
-import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesRulesExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
-    @Test
-    void dependency() {
-        System.gc();
-        assertThat(dependencyResult(), matchesRulesExactly());
-    }
-
     @Override
     protected DependencyResult analyzeDependencies() {
         class GuruNidiCodeassert extends DependencyRuler {
-            DependencyRule config, dependency, findbugs, checkstyle, model, pmd, util, junit, jacoco;
+            DependencyRule config, dependency, findbugs, checkstyle, model, pmd, ktlint, util, junit, junitKotlin, jacoco;
 
             @Override
             public void defineRules() {
-                config.mayUse(util);
-                dependency.mayUse(base(), util, config, model);
-                findbugs.mayUse(base(), util, config);
-                checkstyle.mayUse(base(), util, config);
-                model.mayUse(base(), util, config);
-                pmd.mayUse(base(), util, config);
-                jacoco.mayUse(base(), util, config);
-                util.mayUse(base());
-                junit.mayUse(base(), config, model, dependency, findbugs, checkstyle, pmd, jacoco);
+                base().mayBeUsedBy(all());
+                config.mayBeUsedBy(all());
+                util.mayBeUsedBy(all());
+                dependency.mayUse(model);
+                junit.mayUse(model, dependency, findbugs, checkstyle, pmd, jacoco);
+                junitKotlin.mayUse(ktlint);
             }
         }
 
         final DependencyRules rules = denyAll()
-                .withExternals("edu*", "java*", "net*", "org*", "com*")
+                .withExternals("edu*", "java*", "net*", "org*", "com*", "kotlin*")
                 .withRelativeRules(new GuruNidiCodeassert());
         return new DependencyAnalyzer(AnalyzerConfig.maven().main()).rules(rules).analyze();
     }

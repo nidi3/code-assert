@@ -29,7 +29,7 @@ public class LocationNameMatcher {
      * Empty lists match any input.
      *
      * @param locs  The locations to match against.
-     *              Has the form [package][[/]class][#method].
+     *              Has the form [language:][package][[/]class][#method].
      *              package and class are separated by the first uppercase letter.
      *              If this is not intended, a / can be used to separate package and class.
      *              All three elements may start and/or end with a wildcard *.
@@ -45,26 +45,27 @@ public class LocationNameMatcher {
 
     /**
      * @param name            the name to be matched
+     * @param lang            the language to be matched
      * @param className       the class name to be matched
      * @param methodName      the method to be matched
      * @param strictNameMatch if the name must match exactly (as opposed to 'contains')
      * @return If name and location (className and method) both match any of the predefined names and locations.
      */
-    public boolean matches(String name, String className, String methodName, boolean strictNameMatch) {
+    public boolean matches(String name, Language lang, String className, String methodName, boolean strictNameMatch) {
         if (matchers.isEmpty()) {
             return matchesName(name, strictNameMatch);
         }
         for (final LocationMatcher matcher : matchers) {
-            if (matches(matcher, name, className, methodName, strictNameMatch)) {
+            if (matches(matcher, name, lang, className, methodName, strictNameMatch)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean matches(LocationMatcher matcher, String name, String className,
+    private boolean matches(LocationMatcher matcher, String name, Language language, String className,
                             String methodName, boolean strictNameMatch) {
-        if (!matchesName(name, strictNameMatch)) {
+        if (!matchesName(name, strictNameMatch) || !matcher.matchesLanguage(language)) {
             return false;
         }
         final int pos = className.lastIndexOf('.');

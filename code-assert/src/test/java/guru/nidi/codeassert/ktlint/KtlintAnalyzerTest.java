@@ -35,15 +35,15 @@ class KtlintAnalyzerTest {
     void analyze() {
         final KtlintResult result = new KtlintAnalyzer(AnalyzerConfig.maven(KOTLIN).test(), new KtlintCollector()
                 .just(In.loc("Linker").ignore("no-semi"))).analyze();
-        assertMatcher(
-                line("no-unused-imports", "Linker", 18, "Unused import") +
-                        line("no-wildcard-imports", "Linker", 19, "Wildcard import") +
-                        line("no-consecutive-blank-lines", "Linker", 34, "Needless blank line(s)"),
+        assertMatcher(""
+                        + line("no-unused-imports", "Linker", 18, "Unused import")
+                        + line("no-wildcard-imports", "Linker", 19, "Wildcard import")
+                        + line("no-consecutive-blank-lines", "Linker", 34, "Needless blank line(s)"),
                 result, hasNoKtlintIssues());
     }
 
     private String line(String id, String file, int line, String desc) {
-        return String.format("\n%-35s %s:%d    %s",
+        return String.format("%n%-35s %s:%d    %s",
                 id, new File("src/test/kotlin/guru/nidi/codeassert/" + file + ".kt").getAbsolutePath(), line, desc);
     }
 

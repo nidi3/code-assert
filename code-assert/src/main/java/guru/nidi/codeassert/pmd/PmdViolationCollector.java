@@ -60,8 +60,9 @@ public class PmdViolationCollector extends BaseCollector<RuleViolation, Ignore, 
 
     @Override
     protected ActionResult doAccept(RuleViolation issue, Ignore action) {
+        final Language language = Language.byFilename(issue.getFilename());
         return action.accept(new NamedLocation(
-                issue.getRule().getName(), PmdUtils.className(issue), issue.getMethodName(), true));
+                issue.getRule().getName(), language, PmdUtils.className(issue), issue.getMethodName(), true));
     }
 
     @Override

@@ -53,7 +53,7 @@ public class DependencyCollector extends BaseCollector<DependencyEntry, Ignore, 
 
     @Override
     protected ActionResult doAccept(DependencyEntry result, Ignore action) {
-        final NamedLocation loc = new NamedLocation(result.name, result.className, "", true);
+        final NamedLocation loc = new NamedLocation(result.name, null, result.className, "", true);
         return action.accept(loc);
     }
 

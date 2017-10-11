@@ -20,14 +20,12 @@ import java.io.File;
 class LocatedLintError {
     final File file;
     final int line;
-    final int col;
     final String ruleId;
     final String detail;
 
-    LocatedLintError(File file, int line, int col, String ruleId, String detail) {
+    LocatedLintError(File file, int line, String ruleId, String detail) {
         this.file = file;
         this.line = line;
-        this.col = col;
         this.ruleId = ruleId;
         this.detail = detail;
     }

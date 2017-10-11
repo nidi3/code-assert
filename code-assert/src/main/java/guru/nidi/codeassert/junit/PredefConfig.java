@@ -61,7 +61,10 @@ public final class PredefConfig {
     public static CollectorTemplate<Ignore> minimalFindBugsIgnore() {
         return CollectorTemplate.forA(BugCollector.class)
                 .because("modern compilers are clever",
-                        In.everywhere().ignore("SBSC_USE_STRINGBUFFER_CONCATENATION"));
+                        In.everywhere().ignore("SBSC_USE_STRINGBUFFER_CONCATENATION"))
+                .because("it's compiler generated code",
+                        In.loc("kotlin:").ignore("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"));
+
     }
 
     public static Ruleset[] defaultPmdRulesets() {

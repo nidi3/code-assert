@@ -24,11 +24,11 @@ import guru.nidi.codeassert.pmd.PmdResult;
 import java.util.EnumSet;
 
 public class CodeAssertTestBase {
-    private static DependencyResult dependencyResult;
-    private static FindBugsResult findBugsResult;
-    private static PmdResult pmdResult;
-    private static CpdResult cpdResult;
-    private static CheckstyleResult checkstyleResult;
+    private DependencyResult dependencyResult;
+    private FindBugsResult findBugsResult;
+    private PmdResult pmdResult;
+    private CpdResult cpdResult;
+    private CheckstyleResult checkstyleResult;
 
     protected EnumSet<CodeAssertTestType> defaultTests() {
         return EnumSet.allOf(CodeAssertTestType.class);

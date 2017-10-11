@@ -106,7 +106,7 @@ public class DependencyRulesTest {
         rules.addRule(dep("a"));
         rules.addRule(dep("d"));
         final Set<String> undefined = new TreeSet<>(UNDEFINED);
-        undefined.addAll(set("org.junit.jupiter.api", "org.slf4j", dep("b"), dep("c")));
+        undefined.addAll(set("org.junit.jupiter.api", "org.junit.jupiter.api.function", "org.slf4j", dep("b"), dep("c")));
 
         final Dependencies result = rules.analyzeRules(Scope.packages(model));
         assertEquals(new Dependencies(
@@ -136,6 +136,7 @@ public class DependencyRulesTest {
                         + undef("guru.nidi.codeassert.model")
                         + undef("guru.nidi.codeassert.util")
                         + undef("org.junit.jupiter.api")
+                        + undef("org.junit.jupiter.api.function")
                         + undef("org.slf4j"),
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRulesExactly());
 
@@ -155,6 +156,7 @@ public class DependencyRulesTest {
                         + undef("guru.nidi.codeassert.model")
                         + undef("guru.nidi.codeassert.util")
                         + undef("org.junit.jupiter.api")
+                        + undef("org.junit.jupiter.api.function")
                         + undef("org.slf4j"),
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRulesIgnoringNonExisting());
 
@@ -414,7 +416,7 @@ public class DependencyRulesTest {
         assertEquals(new DependencyMap()
                         .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertMatchers")),
                 result3.denied);
-        assertEquals(69, result.undefined.size());
+        assertEquals(70, result.undefined.size());
     }
 
     private static String ca(String s) {
