@@ -43,7 +43,7 @@ public class FindBugsMatcher extends ResultMatcher<FindBugsResult, BugInstance> 
         final String msg = bug.getMessage();
         final int pos = msg.indexOf(':');
         final String message = msg.substring(pos + 2).replace('\n', ' ');
-        return String.format("%-2d %-8s %-45s %s:%d    %s",
+        return String.format("%2d %-8s %-45s %s:%d    %s",
                 rank, priority(bug), bug.getType(), sourcePath(line.getSourcePath(), sources), startLine, message);
     }
 
