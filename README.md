@@ -32,6 +32,7 @@ It also integrates several static code analysis tools.
 - [Configuration reuse](#user-content-configuration-reuse)
 - [Standard tests](#user-content-standard-tests)
 
+***
 
 ### Dependency
 
