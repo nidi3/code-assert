@@ -33,7 +33,7 @@ It also integrates several static code analysis tools.
 - [Standard tests](#user-content-standard-tests)
 
 
-### <a id="dependency">Dependency</a>
+### Dependency
 
 This is based on code from [JDepend](https://github.com/clarkware/jdepend).
 It checks if the package structure contains cycles and/or follows the defined rules.
@@ -78,7 +78,7 @@ public class DependencyTest {
 ```
 [//]: # (end)
 
-### <a id="coverage">Test coverage</a>
+### Test coverage
 
 To verify the test coverage of a project, [JaCoCo](http://eclemma.org/jacoco/trunk/index.html) can be used.
 The following steps are needed:
@@ -120,7 +120,7 @@ public class CodeCoverage {
 ```
 [//]: # (end)
 
-### <a id="findbugs">FindBugs</a>
+### FindBugs
 
 Runs [FindBugs](http://findbugs.sourceforge.net/) on the code and finds questionable constructs.
 
@@ -147,7 +147,7 @@ public class FindBugsTest {
 ```
 [//]: # (end)
 
-### <a id="checkstyle">Checkstyle</a>
+### Checkstyle
 
 Runs [checkstyle](http://checkstyle.sourceforge.net/) on the code and finds questionable constructs.
 
@@ -174,7 +174,7 @@ public class CheckstyleTest {
 ```
 [//]: # (end)
 
-### <a id="pmd">PMD</a>
+### PMD
 
 Runs [PMD](https://pmd.github.io/) on the code and finds questionable constructs and code duplications.
 
@@ -224,7 +224,7 @@ public class PmdTest {
 ```
 [//]: # (end)
 
-### <a id="ktlint">ktlint</a>
+### ktlint
 
 Runs [ktlint](https://ktlint.github.io/), a kotlin linter.
 
@@ -247,7 +247,7 @@ public class KtlintTest {
 ```
 [//]: # (end)
 
-### <a id="reuse">Configuration reuse</a>
+### Configuration reuse
 
 Collector configurations can be defined separately and thus reused.
 Some configurations are defined in [PredefConfig](code-assert/src/main/java/guru/nidi/codeassert/junit/PredefConfig.java).
@@ -271,7 +271,7 @@ public void pmd() {
 [//]: # (end)
 
 
-### <a id="standard">Standard tests</a>
+### Standard tests
 
 A test can inherit from `CodeAssertTest`. It should override one or more `analyzeXXX` methods.
 If it does so, these standard checks will be executed:
