@@ -18,8 +18,8 @@ It also integrates several static code analysis tools.
 
 ## Language independent checks
 - [Dependency](#dependency)
-- [FindBugs](#findbugs)
 - [Test coverage](#coverage)
+- [FindBugs](#findbugs)
 
 ## Java checks
 - [Checkstyle](#checkstyle)
@@ -78,6 +78,48 @@ public class DependencyTest {
 ```
 [//]: # (end)
 
+### <a id="coverage">Test coverage</a>
+
+To verify the test coverage of a project, [JaCoCo](http://eclemma.org/jacoco/trunk/index.html) can be used.
+The following steps are needed:
+* Add this to the `<build><plugins>` section of `pom.xml`:
+```xml
+<plugin>
+    <groupId>guru.nidi</groupId>
+    <artifactId>code-assert-maven-plugin</artifactId>
+    <version>0.0.6</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>prepare</goal>
+                <goal>assert</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```            
+* `prepare` sets up the surefire plugin to run the tests with the JaCoCo agent which collects coverage data.
+* `assert` generates a coverage report and runs a coverage test
+    (default is `src/test/java/CodeCoverage.java`, configurable through the `testClass` property).
+* Write a code coverage test:
+
+[//]: # (codeCoverage)
+```java
+public class CodeCoverage {
+    @Test
+    public void coverage() {
+        // Coverage of branches must be at least 70%, lines 80% and methods 90%
+        // This is checked globally and for all packages except for entities.
+        JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(BRANCH, LINE, METHOD)
+                .just(For.global().setMinima(70, 80, 90))
+                .just(For.allPackages().setMinima(70, 80, 90))
+                .just(For.thePackage("org.proj.entity.*").setNoMinima()));
+        assertThat(analyzer.analyze(), hasEnoughCoverage());
+    }
+}
+```
+[//]: # (end)
+
 ### <a id="findbugs">FindBugs</a>
 
 Runs [FindBugs](http://findbugs.sourceforge.net/) on the code and finds questionable constructs.
@@ -127,48 +169,6 @@ public class CheckstyleTest {
 
         CheckstyleResult result = new CheckstyleAnalyzer(config, checks, collector).analyze();
         assertThat(result, hasNoCheckstyleIssues());
-    }
-}
-```
-[//]: # (end)
-
-### <a id="coverage">Test coverage</a>
-
-To verify the test coverage of a project, [JaCoCo](http://eclemma.org/jacoco/trunk/index.html) can be used.
-The following steps are needed:
-* Add this to the `<build><plugins>` section of `pom.xml`:
-```xml
-<plugin>
-    <groupId>guru.nidi</groupId>
-    <artifactId>code-assert-maven-plugin</artifactId>
-    <version>0.0.6</version>
-    <executions>
-        <execution>
-            <goals>
-                <goal>prepare</goal>
-                <goal>assert</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
-```            
-* `prepare` sets up the surefire plugin to run the tests with the JaCoCo agent which collects coverage data.
-* `assert` generates a coverage report and runs a coverage test
-    (default is `src/test/java/CodeCoverage.java`, configurable through the `testClass` property).
-* Write a code coverage test:
-
-[//]: # (codeCoverage)
-```java
-public class CodeCoverage {
-    @Test
-    public void coverage() {
-        // Coverage of branches must be at least 70%, lines 80% and methods 90%
-        // This is checked globally and for all packages except for entities.
-        JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(BRANCH, LINE, METHOD)
-                .just(For.global().setMinima(70, 80, 90))
-                .just(For.allPackages().setMinima(70, 80, 90))
-                .just(For.thePackage("org.proj.entity.*").setNoMinima()));
-        assertThat(analyzer.analyze(), hasEnoughCoverage());
     }
 }
 ```
