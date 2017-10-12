@@ -1,10 +1,10 @@
-code-assert
-===========
+# code-assert
+
 [![Build Status](https://travis-ci.org/nidi3/code-assert.svg?branch=master)](https://travis-ci.org/nidi3/code-assert)
 [![codecov](https://codecov.io/gh/nidi3/code-assert/branch/master/graph/badge.svg)](https://codecov.io/gh/nidi3/code-assert)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Assert that the java code of a project satisfies certain rules.
+Assert that the source code of a project satisfies certain rules.
 
 Nobody follows rules that are not checked. 
 If they are only checked periodically / manually by an "architect", it's often too late because there are already too many violations.   
@@ -14,9 +14,26 @@ Violations of rules break the build and therefore, one is forced to either
 adjust the code to comply with the rules or to adapt the rules in a reasonable way.
 
 code-assert supports rules on the package structure and the test coverage.
-It also integrates findbugs, checkstyle, PMD and CPD.
+It also integrates several static code analysis tools.
 
-## Dependency checks
+## Language independent checks
+- [Dependency](#dependency)
+- [FindBugs](#findbugs)
+- [Test coverage](#coverage)
+
+## Java checks
+- [Checkstyle](#checkstyle)
+- [PMD](#pmd)
+
+## Kotlin checks
+- [ktlint](#ktlint)
+
+## Other
+- [Configuration reuse](#reuse)
+- [Standard tests](#standard)
+
+
+### <a id="dependency">Dependency</a>
 
 This is based on code from [JDepend](https://github.com/clarkware/jdepend).
 It checks if the package structure contains cycles and/or follows the defined rules.
@@ -61,7 +78,7 @@ public class DependencyTest {
 ```
 [//]: # (end)
 
-## FindBugs checks
+### <a id="findbugs">FindBugs</a>
 
 Runs [FindBugs](http://findbugs.sourceforge.net/) on the code and finds questionable constructs.
 
@@ -88,7 +105,7 @@ public class FindBugsTest {
 ```
 [//]: # (end)
 
-## Checkstyle checks
+### <a id="checkstyle">Checkstyle</a>
 
 Runs [checkstyle](http://checkstyle.sourceforge.net/) on the code and finds questionable constructs.
 
@@ -115,7 +132,49 @@ public class CheckstyleTest {
 ```
 [//]: # (end)
 
-## PMD checks
+### <a id="coverage">Test coverage</a>
+
+To verify the test coverage of a project, [JaCoCo](http://eclemma.org/jacoco/trunk/index.html) can be used.
+The following steps are needed:
+* Add this to the `<build><plugins>` section of `pom.xml`:
+```xml
+<plugin>
+    <groupId>guru.nidi</groupId>
+    <artifactId>code-assert-maven-plugin</artifactId>
+    <version>0.0.6</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>prepare</goal>
+                <goal>assert</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```            
+* `prepare` sets up the surefire plugin to run the tests with the JaCoCo agent which collects coverage data.
+* `assert` generates a coverage report and runs a coverage test
+    (default is `src/test/java/CodeCoverage.java`, configurable through the `testClass` property).
+* Write a code coverage test:
+
+[//]: # (codeCoverage)
+```java
+public class CodeCoverage {
+    @Test
+    public void coverage() {
+        // Coverage of branches must be at least 70%, lines 80% and methods 90%
+        // This is checked globally and for all packages except for entities.
+        JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(BRANCH, LINE, METHOD)
+                .just(For.global().setMinima(70, 80, 90))
+                .just(For.allPackages().setMinima(70, 80, 90))
+                .just(For.thePackage("org.proj.entity.*").setNoMinima()));
+        assertThat(analyzer.analyze(), hasEnoughCoverage());
+    }
+}
+```
+[//]: # (end)
+
+### <a id="pmd">PMD</a>
 
 Runs [PMD](https://pmd.github.io/) on the code and finds questionable constructs and code duplications.
 
@@ -165,7 +224,30 @@ public class PmdTest {
 ```
 [//]: # (end)
 
-## Configuration reuse
+### <a id="ktlint">ktlint</a>
+
+Runs [ktlint](https://ktlint.github.io/), a kotlin linter.
+
+[//]: # (ktlint)
+```java
+public class KtlintTest {
+    @Test
+    void analyze() {
+        // Analyze all sources in src/main/kotlin
+        AnalyzerConfig config = AnalyzerConfig.maven(KOTLIN).main();
+
+        KtlintCollector collector = new KtlintCollector()
+                .just(In.loc("Linker").ignore("no-semi"));
+
+        KtlintResult result = new KtlintAnalyzer(config, collector).analyze();
+
+        assertThat(result, hasNoKtlintIssues());
+    }
+}
+```
+[//]: # (end)
+
+### <a id="reuse">Configuration reuse</a>
 
 Collector configurations can be defined separately and thus reused.
 Some configurations are defined in [PredefConfig](code-assert/src/main/java/guru/nidi/codeassert/junit/PredefConfig.java).
@@ -189,7 +271,7 @@ public void pmd() {
 [//]: # (end)
 
 
-## Standard tests
+### <a id="standard">Standard tests</a>
 
 A test can inherit from `CodeAssertTest`. It should override one or more `analyzeXXX` methods.
 If it does so, these standard checks will be executed:
@@ -250,45 +332,4 @@ public class CodeTest extends CodeAssertJunit5Test {
 ```
 [//]: # (end)
 
-## Test coverage
-
-To verify the test coverage of a project, [JaCoCo](http://eclemma.org/jacoco/trunk/index.html) can be used.
-The following steps are needed:
-* Add this to the `<build><plugins>` section of `pom.xml`:
-```xml
-<plugin>
-    <groupId>guru.nidi</groupId>
-    <artifactId>code-assert-maven-plugin</artifactId>
-    <version>0.0.6</version>
-    <executions>
-        <execution>
-            <goals>
-                <goal>prepare</goal>
-                <goal>assert</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
-```            
-* `prepare` sets up the surefire plugin to run the tests with the JaCoCo agent which collects coverage data.
-* `assert` generates a coverage report and runs a coverage test
-    (default is `src/test/java/CodeCoverage.java`, configurable through the `testClass` property).
-* Write a code coverage test:
-
-[//]: # (codeCoverage)
-```java
-public class CodeCoverage {
-    @Test
-    public void coverage() {
-        // Coverage of branches must be at least 70%, lines 80% and methods 90%
-        // This is checked globally and for all packages except for entities.
-        JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(BRANCH, LINE, METHOD)
-                .just(For.global().setMinima(70, 80, 90))
-                .just(For.allPackages().setMinima(70, 80, 90))
-                .just(For.thePackage("org.proj.entity.*").setNoMinima()));
-        assertThat(analyzer.analyze(), hasEnoughCoverage());
-    }
-}
-```
-[//]: # (end)
 
