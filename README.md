@@ -17,20 +17,20 @@ code-assert supports rules on the package structure and the test coverage.
 It also integrates several static code analysis tools.
 
 ## Language independent checks
-- [Dependency](#dependency)
-- [Test coverage](#coverage)
-- [FindBugs](#findbugs)
+- [Dependency](#user-content-dependency)
+- [Test coverage](#user-content-test-coverage)
+- [FindBugs](#user-content-findbugs)
 
 ## Java checks
-- [Checkstyle](#checkstyle)
-- [PMD](#pmd)
+- [Checkstyle](#user-content-checkstyle)
+- [PMD](#user-content-pmd)
 
 ## Kotlin checks
-- [ktlint](#ktlint)
+- [ktlint](#user-content-ktlint)
 
 ## Other
-- [Configuration reuse](#reuse)
-- [Standard tests](#standard)
+- [Configuration reuse](#user-content-configuration-reuse)
+- [Standard tests](#user-content-standard-tests)
 
 
 ### <a id="dependency">Dependency</a>
