@@ -24,6 +24,8 @@ import static com.puppycrawl.tools.checkstyle.api.TokenTypes.*;
 import static guru.nidi.codeassert.pmd.Rulesets.*;
 
 public final class PredefConfig {
+    private static final String KOTLIN = "kotlin:";
+
     private PredefConfig() {
     }
 
@@ -60,17 +62,16 @@ public final class PredefConfig {
 
     public static CollectorTemplate<Ignore> minimalFindBugsIgnore() {
         return CollectorTemplate.forA(BugCollector.class)
-                .because("modern compilers are clever",
-                        In.everywhere().ignore("SBSC_USE_STRINGBUFFER_CONCATENATION"))
-                .because("it's compiler generated code",
-                        In.loc("kotlin:").ignore("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", "BC_BAD_CAST_TO_ABSTRACT_COLLECTION"))
-                .because("it's compiler generated code, but why?",
-                        In.loc("kotlin:").ignore("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"))
-                .because("findbugs seems to be cleverer than kotlin compiler",
-                        In.loc("kotlin:").ignore("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"))
-                .because("inline methods seem to cause this",
-                        In.loc("kotlin:").ignore("UPM_UNCALLED_PRIVATE_METHOD"));
-
+                .because("modern compilers are clever", In.everywhere().ignore(
+                        "SBSC_USE_STRINGBUFFER_CONCATENATION"))
+                .because("it's compiler generated code", In.loc(KOTLIN).ignore(
+                        "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", "BC_BAD_CAST_TO_ABSTRACT_COLLECTION"))
+                .because("it's compiler generated code, but why?", In.loc(KOTLIN).ignore(
+                        "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"))
+                .because("findbugs seems to be cleverer than kotlin compiler", In.loc(KOTLIN).ignore(
+                        "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"))
+                .because("inline methods seem to cause this", In.loc(KOTLIN).ignore(
+                        "UPM_UNCALLED_PRIVATE_METHOD"));
     }
 
     public static Ruleset[] defaultPmdRulesets() {
