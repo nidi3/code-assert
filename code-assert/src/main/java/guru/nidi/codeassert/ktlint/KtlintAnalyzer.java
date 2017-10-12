@@ -15,9 +15,7 @@
  */
 package guru.nidi.codeassert.ktlint;
 
-import com.github.shyiko.ktlint.core.KtLint;
-import com.github.shyiko.ktlint.core.LintError;
-import com.github.shyiko.ktlint.ruleset.standard.StandardRuleSetProvider;
+import com.github.shyiko.ktlint.core.*;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.UsageCounter;
@@ -27,22 +25,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singletonList;
 
 public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
     private static final Logger LOG = LoggerFactory.getLogger(KtlintAnalyzer.class);
 
     private final AnalyzerConfig config;
     private final KtlintCollector collector;
+    private final List<RuleSet> ruleSets;
 
     public KtlintAnalyzer(AnalyzerConfig config, KtlintCollector collector) {
+        this(config, collector, Collections.<RuleSet>emptyList());
+    }
+
+    private KtlintAnalyzer(AnalyzerConfig config, KtlintCollector collector, List<RuleSet> ruleSets) {
         this.config = config;
         this.collector = collector;
+        this.ruleSets = ruleSets;
+    }
+
+    public KtlintAnalyzer withRuleSets(RuleSet... ruleSets) {
+        return new KtlintAnalyzer(config, collector, Arrays.asList(ruleSets));
     }
 
     public KtlintResult analyze() {
@@ -50,12 +56,28 @@ public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
         for (final File src : config.getSources(KOTLIN)) {
             try {
                 listener.currentFile = src;
-                KtLint.INSTANCE.lint(readFile(src), singletonList(new StandardRuleSetProvider().get()), listener);
+                KtLint.INSTANCE.lint(readFile(src), findRuleSets(), listener);
             } catch (IOException e) {
                 LOG.error("Could not read file {}", src, e);
             }
         }
         return createResult(listener);
+    }
+
+    private List<RuleSet> findRuleSets() {
+        if (!ruleSets.isEmpty()) {
+            return ruleSets;
+        }
+        final List<RuleSet> res = new ArrayList<>();
+        for (final RuleSetProvider provider : ServiceLoader.load(RuleSetProvider.class)) {
+            final RuleSet ruleSet = provider.get();
+            if ("standard".equals(ruleSet.getId())) {
+                res.add(0, ruleSet);
+            } else {
+                res.add(ruleSet);
+            }
+        }
+        return res;
     }
 
     private String readFile(File f) throws IOException {

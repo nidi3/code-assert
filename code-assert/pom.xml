@@ -72,7 +72,6 @@
                                 <sourceDir>src/test/kotlin</sourceDir>
                             </sourceDirs>
                         </configuration>
-
                     </execution>
                 </executions>
             </plugin>
