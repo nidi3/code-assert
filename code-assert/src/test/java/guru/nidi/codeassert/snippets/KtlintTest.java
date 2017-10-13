@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 //## ktlint
 public class KtlintTest {
     @Test
-    void analyze() {
+    public void analyze() {
         // Analyze all sources in src/main/kotlin
         AnalyzerConfig config = AnalyzerConfig.maven(KOTLIN).main();
 

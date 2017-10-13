@@ -233,7 +233,7 @@ Runs [ktlint](https://ktlint.github.io/), a kotlin linter.
 ```java
 public class KtlintTest {
     @Test
-    void analyze() {
+    public void analyze() {
         // Analyze all sources in src/main/kotlin
         AnalyzerConfig config = AnalyzerConfig.maven(KOTLIN).main();
 
