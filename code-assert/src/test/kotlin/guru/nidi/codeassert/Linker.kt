@@ -15,6 +15,9 @@
  */
 package guru.nidi.codeassert
 
+import java.util.List
+import java.util.*
+
 object Linker {
     private val urlRegex = Regex("(https?://|www\\.)[^\\s\\p{Z}…|”“»<>]+")
     private val hashRegex = Regex("#([^\\s\\p{Z}-:;,+!?()…@#*\"'/|\\[\\]{}`<>\$%^&=”“»~’\u2013\u2014.]+)")
