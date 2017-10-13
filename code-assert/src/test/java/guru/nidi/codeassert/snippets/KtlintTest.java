@@ -34,7 +34,7 @@ public class KtlintTest {
         AnalyzerConfig config = AnalyzerConfig.maven(KOTLIN).main();
 
         KtlintCollector collector = new KtlintCollector()
-                .just(In.loc("Linker").ignore("no-semi"));
+                .just(In.classes("Linker").ignore("no-semi"));
 
         KtlintResult result = new KtlintAnalyzer(config, collector).analyze();
 

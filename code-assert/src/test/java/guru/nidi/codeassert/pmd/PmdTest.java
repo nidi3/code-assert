@@ -71,6 +71,7 @@ class PmdTest {
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/PmdRulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 154")
                         + pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", "Avoid using final local variables, turn them into fields")
                         + pmd(MEDIUM, "CommentSize", MAIN, "config/LocationNameMatcher", "Comment is too large: Line too long")
+                        + pmd(MEDIUM, "ConfusingTernary", MAIN, "config/Location", "Avoid if (x != y) ..; else ..;")
                         + pmd(MEDIUM, "ExcessiveParameterList", MAIN, "jacoco/Coverage", "Avoid long parameter lists.")
                         + pmd(MEDIUM, "LongVariable", MAIN, "dependency/Tarjan", "Avoid excessively long variable names like allowIntraPackageCycles")
                         + pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", "Class cannot be instantiated and does not provide any static methods or fields")
@@ -124,13 +125,13 @@ class PmdTest {
                                 "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith", "AvoidInstantiatingObjectsInLoops",
                                 "UseStringBufferForStringAppends", "AvoidSynchronizedAtMethodLevel", "VariableNamingConventions",
                                 "CommentRequired"))
-                        .because("They are snippets", In.loc("*.snippets.*").ignoreAll())
+                        .because("They are snippets", In.packages("*.snippets.*").ignoreAll())
                         .just(
                                 In.clazz(DependencyRulesTest.class).ignore("ExcessiveMethodLength"),
                                 In.classes(DependencyRulesTest.class, FindBugsTest.class).ignore("AvoidDuplicateLiterals"),
                                 In.clazz(ExampleInterface.class).ignore("ShortMethodName"),
                                 In.clazz(Bugs.class).ignore("UnusedLocalVariable"),
-                                In.locs("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns", "AddEmptyString", "DoNotCallGarbageCollectionExplicitly", "AvoidDuplicateLiterals"),
+                                In.classes("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns", "AddEmptyString", "DoNotCallGarbageCollectionExplicitly", "AvoidDuplicateLiterals"),
                                 In.classes(ClassFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert", "JUnitTestContainsTooManyAsserts"),
                                 In.classes(DependencyRulesTest.class, LocationMatcherTest.class, LocationNameMatcherTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.clazz(DependencyRulesTest.class).ignore("VariableNamingConventions"),
@@ -138,7 +139,7 @@ class PmdTest {
                                 In.classes(PmdTest.class, FindBugsTest.class, CheckstyleTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
                                 In.classes(AnalyzerConfigTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.everywhere().ignore("UseConcurrentHashMap", "ArrayIsStoredDirectly", "MethodReturnsInternalArray", "AvoidLiteralsInIfCondition"),
-                                In.locs("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))
+                                In.classes("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))
                 .withRulesets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
                         finalizers(), imports(), j2ee(), javabeans(), junit(), optimizations(),
                         exceptions(), strings(), sunSecure(), typeResolution(), unnecessary(), unused(),
@@ -157,7 +158,7 @@ class PmdTest {
                 .just(
                         In.everywhere().ignore(
                                 "public static <T extends AnalyzerResult<?>> Matcher<T> hasNoUnusedActions() {"),
-                        In.loc("*Matcher").ignore(
+                        In.classes("*Matcher").ignore(
                                 "return item.findings().isEmpty();"),
                         In.clazz(DependencyRules.class).ignoreAll(),
                         In.clazz(ProjectLayout.class).ignoreAll())

@@ -57,12 +57,12 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
         final BugCollector bugCollector = new BugCollector()
                 .apply(PredefConfig.minimalFindBugsIgnore())
                 .just(
-                        In.locs("DependencyRules#withRules", "PmdRuleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
-                        In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
-                        In.loc("*Exception").ignore("SE_BAD_FIELD"),
+                        In.clazz(DependencyRules.class).withMethods("withRules").and(In.clazz(PmdRuleset.class)).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
+                        In.classes("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
+                        In.classes("*Exception").ignore("SE_BAD_FIELD"),
                         In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"),
                         In.everywhere().ignore("EI_EXPOSE_REP", "EI_EXPOSE_REP2", "PATH_TRAVERSAL_IN", "CRLF_INJECTION_LOGS"),
-                        In.locs("ClassFileParser", "Constant", "MemberInfo", "PmdRulesets", "Reason").ignore("URF_UNREAD_FIELD"));
+                        In.classes("ClassFileParser", "Constant", "MemberInfo", "PmdRulesets", "Reason").ignore("URF_UNREAD_FIELD"));
         return new FindBugsAnalyzer(AnalyzerConfig.maven().main(), bugCollector).analyze();
     }
 
@@ -75,12 +75,12 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                         In.everywhere().ignore(
                                 "AvoidInstantiatingObjectsInLoops", "AvoidSynchronizedAtMethodLevel",
                                 "SimplifyStartsWith", "ArrayIsStoredDirectly", "MethodReturnsInternalArray"),
-                        In.locs("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
-                        In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),
+                        In.classes("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
+                        In.classes("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),
                         In.clazz(PmdRulesets.class).ignore("TooManyMethods", "AvoidDuplicateLiterals"),
-                        In.loc("Reason").ignore("SingularField"),
+                        In.classes("Reason").ignore("SingularField"),
                         In.clazz(Coverage.class).ignore("ExcessiveParameterList"),
-                        In.locs("DependencyRules", "JavaClassImportBuilder").ignore("GodClass"));
+                        In.classes("DependencyRules", "JavaClassImportBuilder").ignore("GodClass"));
         return new PmdAnalyzer(AnalyzerConfig.maven().main(), collector)
                 .withRulesets(PredefConfig.defaultPmdRulesets())
                 .analyze();
@@ -103,11 +103,11 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
         System.gc();
         final StyleEventCollector collector = new StyleEventCollector()
                 .apply(PredefConfig.minimalCheckstyleIgnore())
-                .just(In.locs("Coverage", "Constant").ignore("empty.line.separator"))
-                .just(In.clazz(BaseCollector.class).ignore("overload.methods.declaration"))
+                .just(In.classes("Coverage", "Constant").ignore("empty.line.separator"))
+                .just(In.classes(BaseCollector.class, In.class, Location.class).ignore("overload.methods.declaration"))
                 .just(In.clazz(PmdRulesets.class).ignore("abbreviation.as.word"))
-                .just(In.loc("SignatureParser").ignore("name.invalidPattern"))
-                .just(In.loc("DependencyMap").ignore("tag.continuation.indent"));
+                .just(In.classes("SignatureParser").ignore("name.invalidPattern"))
+                .just(In.classes("DependencyMap").ignore("tag.continuation.indent"));
 
         return new CheckstyleAnalyzer(AnalyzerConfig.maven().main(), PredefConfig.adjustedGoogleStyleChecks(), collector).analyze();
     }

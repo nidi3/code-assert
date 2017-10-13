@@ -34,7 +34,7 @@ public class DetektTest {
         AnalyzerConfig config = AnalyzerConfig.maven(KOTLIN).main();
 
         DetektCollector collector = new DetektCollector()
-                .just(In.loc("Linker").ignore("MaxLineLength"));
+                .just(In.classes("Linker").ignore("MaxLineLength"));
 
         DetektResult result = new DetektAnalyzer(config, collector).analyze();
 

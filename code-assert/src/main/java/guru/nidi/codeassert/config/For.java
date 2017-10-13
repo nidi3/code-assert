@@ -16,11 +16,11 @@
 package guru.nidi.codeassert.config;
 
 public final class For {
-    private final String loc;
+    private final Location loc;
     private final String pack;
     private final String clazz;
 
-    private For(String loc, String pack, String clazz) {
+    private For(Location loc, String pack, String clazz) {
         this.loc = loc;
         this.pack = pack;
         this.clazz = clazz;
@@ -47,7 +47,7 @@ public final class For {
     }
 
     public static For loc(String loc) {
-        return new For(loc, null, null);
+        return new For(Location.of(loc), null, null);
     }
 
     public static For clazz(Class<?> clazz) {

@@ -37,7 +37,7 @@ class DetektAnalyzerTest {
     @Test
     void analyze() {
         final DetektResult result = new DetektAnalyzer(AnalyzerConfig.maven(KOTLIN).mainAndTest(), new DetektCollector()
-                .just(In.loc("Linker").ignore("MaxLineLength")))
+                .just(In.classes("Linker").ignore("MaxLineLength")))
                 .analyze();
         assertMatcher(""
                         + line(Defect, "exceptions", "TooGenericExceptionCatched", "Linker", 45, "Thrown exception is too generic. Prefer throwing project specific exceptions to handle error cases.")

@@ -36,7 +36,7 @@ public class CheckstyleTest {
         // Only treat issues with severity WARNING or higher
         StyleEventCollector collector = new StyleEventCollector().severity(SeverityLevel.WARNING)
                 .just(In.everywhere().ignore("import.avoidStar", "javadoc.missing"))
-                .because("in tests, long lines are ok", In.loc("*Test").ignore("maxLineLen"));
+                .because("in tests, long lines are ok", In.classes("*Test").ignore("maxLineLen"));
 
         //use google checks, but adjust max line length
         final StyleChecks checks = StyleChecks.google().maxLineLen(120);

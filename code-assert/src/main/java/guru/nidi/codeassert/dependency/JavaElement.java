@@ -15,6 +15,7 @@
  */
 package guru.nidi.codeassert.dependency;
 
+import guru.nidi.codeassert.config.Location;
 import guru.nidi.codeassert.config.LocationMatcher;
 import guru.nidi.codeassert.model.UsingElement;
 import guru.nidi.codeassert.model.UsingElementMatcher;
@@ -28,7 +29,7 @@ public class JavaElement implements UsingElementMatcher {
         if (starPos >= 0 && starPos != pattern.length() - 1) {
             throw new IllegalArgumentException("Wildcard * is only allowed at the end (e.g. java*)");
         }
-        this.pattern = new LocationMatcher(pattern);
+        this.pattern = new LocationMatcher(Location.of(pattern));
         this.allowAll = allowAll;
     }
 

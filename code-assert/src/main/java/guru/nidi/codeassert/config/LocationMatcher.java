@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert.config;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * The LocationMatcher is used to match a code location.
  * A pattern has the form [language:][package][[/]class][#method].
@@ -26,73 +23,45 @@ import java.util.regex.Pattern;
  * All three elements may start and/or end with a wildcard *.
  */
 public class LocationMatcher implements Comparable<LocationMatcher> {
-    private static final Pattern CLASS_START = Pattern.compile("(^|\\.)\\*?[A-Z]");
-    private final String pattern;
-    private final String languagePat;
-    private final String packagePat;
-    private final String classPat;
-    private final String methodPat;
+    private final Location loc;
 
-    public LocationMatcher(String pattern) {
-        if (pattern == null || pattern.length() == 0) {
-            throw new IllegalArgumentException("Empty pattern");
+    public LocationMatcher(Location location) {
+        if (location == null) {
+            throw new IllegalArgumentException("location must not be null");
         }
-        this.pattern = pattern;
-        final int colon = pattern.indexOf(':');
-        languagePat = colon < 0 ? "" : pattern.substring(0, colon);
-        final String pure = colon < 0 ? pattern : pattern.substring(colon + 1);
-        final int hash = pure.indexOf('#');
-        methodPat = hash < 0 ? "" : pure.substring(hash + 1);
-        final String qualif = hash < 0 ? pure : pure.substring(0, hash);
-        final int slash = qualif.indexOf('/');
-        if (slash >= 0) {
-            packagePat = qualif.substring(0, slash);
-            classPat = qualif.substring(slash + 1);
-        } else {
-            final Matcher matcher = CLASS_START.matcher(qualif);
-            if (matcher.find()) {
-                packagePat = qualif.substring(0, matcher.start());
-                classPat = qualif.substring(matcher.start() + matcher.group(1).length());
-            } else {
-                packagePat = qualif;
-                classPat = "";
-            }
-        }
-        checkPattern(packagePat);
-        checkPattern(classPat);
-        checkPattern(methodPat);
+        this.loc = location;
     }
 
     public boolean matchesPackage(String packageName) {
-        return matchesPattern(packagePat, packageName)
-                && matchesAll(classPat) && matchesAll(methodPat);
+        return matchesPattern(loc.pack, packageName)
+                && matchesAll(loc.clazz) && matchesAll(loc.method);
     }
 
     public boolean matchesClass(String className) {
         final int pos = className.lastIndexOf('.');
         return pos < 0
-                ? matchesAll(methodPat) && matchesAll(packagePat) && matchesClassPattern(classPat, className)
+                ? matchesAll(loc.method) && matchesAll(loc.pack) && matchesClassPattern(loc.clazz, className)
                 : matchesPackageClass(className.substring(0, pos), className.substring(pos + 1));
     }
 
     public boolean matchesPackageClass(String packageName, String className) {
-        return matchesPattern(packagePat, packageName)
-                && matchesClassPattern(classPat, className) && matchesAll(methodPat);
+        return matchesPattern(loc.pack, packageName)
+                && matchesClassPattern(loc.clazz, className) && matchesAll(loc.method);
     }
 
     public boolean matches(String packageName, String className, String methodName) {
-        final boolean matchesClass = matchesAll(methodPat)
-                ? matchesClassPattern(classPat, className)
-                : matchesPattern(classPat, className);
-        return matchesPattern(packagePat, packageName) && matchesClass && matchesPattern(methodPat, methodName);
+        final boolean matchesClass = matchesAll(loc.method)
+                ? matchesClassPattern(loc.clazz, className)
+                : matchesPattern(loc.clazz, className);
+        return matchesPattern(loc.pack, packageName) && matchesClass && matchesPattern(loc.method, methodName);
     }
 
     public boolean matchesLanguage(Language language) {
-        return language == null || languagePat.length() == 0 || languagePat.equalsIgnoreCase(language.name());
+        return language == null || loc.language == null || loc.language == language;
     }
 
     public int specificity() {
-        return specificity(packagePat) + specificity(classPat) + specificity(methodPat);
+        return specificity(loc.pack) + specificity(loc.clazz) + specificity(loc.method);
     }
 
     private int specificity(String pattern) {
@@ -110,7 +79,7 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
     }
 
     public String getPattern() {
-        return pattern;
+        return loc.getPattern();
     }
 
     private boolean matchesAll(String pattern) {
@@ -144,20 +113,6 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
         return name.equals(pat);
     }
 
-    private void checkPattern(String pattern) {
-        if ("**".equals(pattern)) {
-            throw new IllegalArgumentException("Wildcard ** is illegal");
-        }
-        checkPattern(pattern, pattern.indexOf('*'));
-        checkPattern(pattern, pattern.lastIndexOf('*'));
-    }
-
-    private void checkPattern(String pattern, int pos) {
-        if (pos > 0 && pos != pattern.length() - 1) {
-            throw new IllegalArgumentException("Wildcard * must be at begin or end of pattern");
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -169,22 +124,21 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
 
         final LocationMatcher that = (LocationMatcher) o;
 
-        return pattern.equals(that.pattern);
-
+        return loc.equals(that.loc);
     }
 
     @Override
     public int hashCode() {
-        return pattern.hashCode();
+        return loc.hashCode();
     }
 
     @Override
     public String toString() {
-        return pattern;
+        return loc.toString();
     }
 
     @Override
     public int compareTo(LocationMatcher p) {
-        return pattern.compareTo(p.pattern);
+        return loc.compareTo(p.loc);
     }
 }

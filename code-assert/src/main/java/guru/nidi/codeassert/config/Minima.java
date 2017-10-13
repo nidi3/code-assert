@@ -23,7 +23,7 @@ public class Minima implements Action<ValuedLocation> {
     private final String clazz;
     private final int[] values;
 
-    Minima(String loc, String pack, String clazz, int... values) {
+    Minima(Location loc, String pack, String clazz, int... values) {
         locationMatcher = loc == null ? null : new LocationMatcher(loc);
         this.pack = pack;
         this.clazz = clazz;

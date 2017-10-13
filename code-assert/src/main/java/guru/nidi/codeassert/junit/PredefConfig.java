@@ -21,17 +21,16 @@ import guru.nidi.codeassert.findbugs.BugCollector;
 import guru.nidi.codeassert.pmd.*;
 
 import static com.puppycrawl.tools.checkstyle.api.TokenTypes.*;
+import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static guru.nidi.codeassert.pmd.PmdRulesets.*;
 
 public final class PredefConfig {
-    private static final String KOTLIN = "kotlin:";
-
     private PredefConfig() {
     }
 
     public static CollectorTemplate<Ignore> minimalPmdIgnore() {
         return CollectorTemplate.forA(PmdViolationCollector.class)
-                .because("junit", In.locs("*Test", "Test*")
+                .because("junit", In.classes("*Test", "Test*")
                         .ignore("JUnitSpelling", "JUnitAssertionsShouldIncludeMessage", "AvoidDuplicateLiterals",
                                 "SignatureDeclareThrowsException", "TooManyStaticImports"))
                 .because("I don't agree", In.everywhere()
@@ -39,10 +38,10 @@ public final class PredefConfig {
                                 "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName",
                                 "UncommentedEmptyConstructor", "UseStringBufferForStringAppends",
                                 "UncommentedEmptyMethodBody", "EmptyMethodInAbstractClassShouldBeAbstract"))
-                .because("it's equals", In.loc("#equals")
+                .because("it's equals", In.methods("equals")
                         .ignore("NPathComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity",
                                 "CyclomaticComplexity", "ConfusingTernary"))
-                .because("it's hashCode", In.loc("#hashCode")
+                .because("it's hashCode", In.methods("hashCode")
                         .ignore("ConfusingTernary"));
     }
 
@@ -64,13 +63,13 @@ public final class PredefConfig {
         return CollectorTemplate.forA(BugCollector.class)
                 .because("modern compilers are clever", In.everywhere().ignore(
                         "SBSC_USE_STRINGBUFFER_CONCATENATION"))
-                .because("it's compiler generated code", In.loc(KOTLIN).ignore(
+                .because("it's compiler generated code", In.languages(KOTLIN).ignore(
                         "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", "BC_BAD_CAST_TO_ABSTRACT_COLLECTION"))
-                .because("it's compiler generated code, but why?", In.loc(KOTLIN).ignore(
+                .because("it's compiler generated code, but why?", In.languages(KOTLIN).ignore(
                         "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"))
-                .because("findbugs seems to be cleverer than kotlin compiler", In.loc(KOTLIN).ignore(
+                .because("findbugs seems to be cleverer than kotlin compiler", In.languages(KOTLIN).ignore(
                         "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"))
-                .because("inline methods seem to cause this", In.loc(KOTLIN).ignore(
+                .because("inline methods seem to cause this", In.languages(KOTLIN).ignore(
                         "UPM_UNCALLED_PRIVATE_METHOD"));
     }
 

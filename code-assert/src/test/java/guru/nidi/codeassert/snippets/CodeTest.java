@@ -53,7 +53,7 @@ public class CodeTest extends CodeAssertJunit5Test {
     @Override
     protected FindBugsResult analyzeFindBugs() {
         final BugCollector bugCollector = new BugCollector().just(
-                In.loc("*Exception").ignore("SE_BAD_FIELD"));
+                In.classes("*Exception").ignore("SE_BAD_FIELD"));
         return new FindBugsAnalyzer(CONFIG, bugCollector).analyze();
     }
 

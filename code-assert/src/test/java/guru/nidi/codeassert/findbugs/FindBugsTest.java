@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoBugs;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoUnusedActions;
 import static org.hamcrest.CoreMatchers.either;
@@ -39,15 +40,15 @@ public class FindBugsTest {
     private final AnalyzerConfig config = AnalyzerConfig.maven().mainAndTest();
     private final BugCollector bugCollector = new BugCollector().minPriority(Priorities.NORMAL_PRIORITY)
             .because("the compiler generates this code",
-                    In.loc("kotlin:").ignore("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"))
+                    In.languages(KOTLIN).ignore("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"))
             .because("is not useful",
                     In.everywhere().ignore(
                             "UWF_UNWRITTEN_FIELD", "NP_UNWRITTEN_FIELD", "UUF_UNUSED_FIELD",
                             "DLS_DEAD_LOCAL_STORE", "SIC_INNER_SHOULD_BE_STATIC", "UC_USELESS_OBJECT",
                             "OBL_UNSATISFIED_OBLIGATION", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"),
-                    In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"))
+                    In.classes("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"))
             .because("avoid jvm killed on travis",
-                    In.loc("*Test").ignore("DM_GC"))
+                    In.classes("*Test").ignore("DM_GC"))
             .because("it's ok",
                     In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"),
                     In.clazz(AnalyzerConfigTest.class).ignore("DMI_HARDCODED_ABSOLUTE_FILENAME"),
@@ -84,7 +85,7 @@ public class FindBugsTest {
     @Test
     void classNameIgnore() {
         System.gc();
-        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("Bugs").ignore("DM_NUMBER_CTOR")));
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.classes("Bugs").ignore("DM_NUMBER_CTOR")));
         assertMatcher(""
                         + line(15, "H", "UC_USELESS_VOID_METHOD", "model/ExampleConcreteClass", 52, "Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless")
                         + line(18, "M", "URF_UNREAD_FIELD", "model/p4/GenericParameters", 34, "Unread field: guru.nidi.codeassert.model.p4.GenericParameters.l2"),
@@ -116,7 +117,7 @@ public class FindBugsTest {
     @Test
     void fullClassIgnore() {
         System.gc();
-        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("guru.nidi.codeassert.Bugs").ignore("DM_NUMBER_CTOR")));
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.clazz(Bugs.class).ignore("DM_NUMBER_CTOR")));
         assertMatcher(""
                         + line(15, "H", "UC_USELESS_VOID_METHOD", "model/ExampleConcreteClass", 52, "Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless")
                         + line(18, "M", "URF_UNREAD_FIELD", "model/p4/GenericParameters", 34, "Unread field: guru.nidi.codeassert.model.p4.GenericParameters.l2"),
@@ -138,7 +139,7 @@ public class FindBugsTest {
     @Test
     void methodIgnore() {
         System.gc();
-        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("#bugs").ignore("DM_NUMBER_CTOR")));
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.methods("bugs").ignore("DM_NUMBER_CTOR")));
         assertMatcher(""
                         + line(15, "H", "UC_USELESS_VOID_METHOD", "model/ExampleConcreteClass", 52, "Method guru.nidi.codeassert.model.ExampleConcreteClass.c(BigDecimal, byte[]) seems to be useless")
                         + line(18, "M", "DM_NUMBER_CTOR", "Bugs", 24, "guru.nidi.codeassert.Bugs.more() invokes inefficient new Integer(int) constructor; use Integer.valueOf(int) instead")
@@ -149,7 +150,7 @@ public class FindBugsTest {
     @Test
     void unusedActions() {
         System.gc();
-        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.loc("#bugs").ignore("BLA")));
+        final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.methods("bugs").ignore("BLA")));
         assertMatcher("Found unused actions:\n    ignore [BLA] in [#bugs]", analyzer.analyze(), hasNoUnusedActions());
     }
 

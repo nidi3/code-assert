@@ -32,7 +32,7 @@ public class ReuseTest {
 
     //## reuse
     private final CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.forA(PmdViolationCollector.class)
-            .because("It's a test", In.loc("*Test")
+            .because("It's a test", In.classes("*Test")
                     .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"));
 
     @Test

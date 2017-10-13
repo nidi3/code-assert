@@ -355,7 +355,7 @@ public class DependencyRulesTest {
         final DependencyCollector collector = new DependencyCollector()
                 .just(In.locs(dep("b*"), ca("x"), ca("dependency")).ignoreAll())
                 .just(In.locs(ca("z")).ignoreAll())
-                .just(In.loc("guru.nidi.codeassert").ignore(DependencyCollector.UNDEFINED))
+                .just(In.packages("guru.nidi.codeassert").ignore(DependencyCollector.UNDEFINED))
                 .just(In.loc(dep("c*")).ignore(DependencyCollector.DENIED));
         final AnalyzerConfig config = AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/dependency");
         final DependencyRules rules = DependencyRules.denyAll().withExternals("java*", "org.*");
@@ -372,7 +372,7 @@ public class DependencyRulesTest {
                         new DependencyMap()
                                 .with(0, dep("a.a"), set(dep("a.a.Aa1")), dep("b.a"))
                                 .with(0, dep("a"), set(dep("a.A1")), dep("c")),
-                        new HashSet<>(asList(new LocationMatcher("guru.nidi.codeassert.y"))),
+                        new HashSet<>(asList(new LocationMatcher(Location.of("guru.nidi.codeassert.y")))),
                         new HashSet<String>(),
                         new HashSet<>(asList(
                                 new DependencyMap()
@@ -416,7 +416,7 @@ public class DependencyRulesTest {
         assertEquals(new DependencyMap()
                         .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertMatchers")),
                 result3.denied);
-        assertEquals(70, result.undefined.size());
+        assertEquals(71, result.undefined.size());
     }
 
     private static String ca(String s) {
@@ -436,7 +436,7 @@ public class DependencyRulesTest {
     private static Set<LocationMatcher> patterns(String... ss) {
         final Set<LocationMatcher> res = new TreeSet<>();
         for (final String s : ss) {
-            res.add(new LocationMatcher(s));
+            res.add(new LocationMatcher(Location.of(s)));
         }
         return res;
     }

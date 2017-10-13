@@ -20,7 +20,7 @@ import java.util.List;
 public class Ignore implements Action<NamedLocation> {
     private final LocationNameMatcher matcher;
 
-    Ignore(List<String> locs, List<String> names) {
+    Ignore(List<Location> locs, List<String> names) {
         matcher = new LocationNameMatcher(locs, names);
     }
 

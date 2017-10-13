@@ -45,8 +45,8 @@ public class PmdTest {
                         In.everywhere().ignore("MethodArgumentCouldBeFinal"),
                         In.locs("JavaClassBuilder#from", "FindBugsMatchers").ignore("AvoidInstantiatingObjectsInLoops"))
                 .because("it'a an enum",
-                        In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"))
-                .just(In.loc("*Test").ignore("TooManyStaticImports"));
+                        In.classes("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"))
+                .just(In.classes("*Test").ignore("TooManyStaticImports"));
 
         // Define and configure the rule sets to be used
         PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRulesets(
@@ -64,7 +64,7 @@ public class PmdTest {
                         In.everywhere().ignore("public boolean equals(Object o) {"))
                 .just(
                         In.classes(DependencyRule.class, Dependencies.class).ignoreAll(),
-                        In.loc("SignatureParser").ignoreAll());
+                        In.classes("SignatureParser").ignoreAll());
 
         // Only treat duplications with at least 20 tokens
         CpdAnalyzer analyzer = new CpdAnalyzer(config, 20, collector);

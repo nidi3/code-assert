@@ -35,9 +35,9 @@ public class LocationNameMatcher {
      *              All three elements may start and/or end with a wildcard *.
      * @param names The names to match against.
      */
-    public LocationNameMatcher(List<String> locs, List<String> names) {
+    public LocationNameMatcher(List<Location> locs, List<String> names) {
         this.matchers = new ArrayList<>();
-        for (final String loc : locs) {
+        for (final Location loc : locs) {
             this.matchers.add(new LocationMatcher(loc));
         }
         this.names = names;

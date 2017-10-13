@@ -61,10 +61,10 @@ public class CheckstyleTest {
                 new StyleEventCollector().severity(WARNING).config(
                         just(In.everywhere().ignore("import.avoidStar", "javadoc.missing",
                                 "multiple.variable.declarations.comma", "custom.import.order.nonGroup.expected")),
-                        just(In.locs("Coverage", "Constant", "DependencyRulesTest", "DependencyTest", "EatYourOwnDogfoodTest")
+                        just(In.classes("Coverage", "Constant", "DependencyRulesTest", "DependencyTest", "EatYourOwnDogfoodTest")
                                 .ignore("empty.line.separator")),
-                        just(In.loc("*Test").ignore("maxLineLen")),
-                        just(In.locs("DependencyRulesTest", "ExampleAbstractClass", "ExampleConcreteClass",
+                        just(In.classes("*Test").ignore("maxLineLen")),
+                        just(In.classes("DependencyRulesTest", "ExampleAbstractClass", "ExampleConcreteClass",
                                 "ExampleInterface", "SignatureParser", "DependencyTest", "EatYourOwnDogfoodTest")
                                 .ignore("name.invalidPattern"))
                 ));
@@ -87,8 +87,8 @@ public class CheckstyleTest {
                         just(In.everywhere().ignore("final.parameter", "javadoc.packageInfo", "javadoc.missing",
                                 "design.forExtension", "hidden.field", "import.avoidStar", "inline.conditional.avoid",
                                 "magic.number")),
-                        just(In.loc("*Test").ignore("maxLineLen")),
-                        just(In.loc("Bugs*").ignore("final.class")),
+                        just(In.classes("*Test").ignore("maxLineLen")),
+                        just(In.classes("Bugs*").ignore("final.class")),
                         just(In.classes(DependencyRulesTest.class, DependencyTest.class, EatYourOwnDogfoodTest.class).ignore("name.invalidPattern"))
                 ));
 

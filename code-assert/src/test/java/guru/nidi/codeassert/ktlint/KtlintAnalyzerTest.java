@@ -34,7 +34,7 @@ class KtlintAnalyzerTest {
     @Test
     void analyze() {
         final KtlintResult result = new KtlintAnalyzer(AnalyzerConfig.maven(KOTLIN).test(), new KtlintCollector()
-                .just(In.loc("Linker").ignore("no-semi"))).analyze();
+                .just(In.classes("Linker").ignore("no-semi"))).analyze();
         assertMatcher(""
                         + line("no-unused-imports", "Linker", 18, "Unused import")
                         + line("no-wildcard-imports", "Linker", 19, "Wildcard import")

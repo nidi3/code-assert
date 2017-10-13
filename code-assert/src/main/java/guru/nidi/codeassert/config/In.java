@@ -17,35 +17,112 @@ package guru.nidi.codeassert.config;
 
 import java.util.*;
 
-public final class In {
-    private final List<String> locs;
+import static java.util.Collections.singletonList;
 
-    private In(List<String> locs) {
+public final class In {
+    private final List<Location> locs;
+
+    private In(List<Location> locs) {
         this.locs = locs;
     }
 
-    public static In classes(final Class<?>... classes) {
-        final List<String> ls = new ArrayList<>();
-        for (final Class<?> loc : classes) {
-            ls.add(loc.getName());
+    public static In locs(String... locs) {
+        final List<Location> ls = new ArrayList<>();
+        for (final String loc : locs) {
+            ls.add(Location.of(loc));
         }
         return new In(ls);
     }
 
-    public static In clazz(final Class<?> clazz) {
-        return loc(clazz.getName());
-    }
-
-    public static In locs(final String... locs) {
-        return new In(Arrays.asList(locs));
-    }
-
-    public static In loc(final String loc) {
-        return new In(Collections.singletonList(loc));
+    public static In loc(String loc) {
+        return new In(singletonList(Location.of(loc)));
     }
 
     public static In everywhere() {
         return locs();
+    }
+
+    public static In languages(Language... languages) {
+        return In.everywhere().withLanguages(languages);
+    }
+
+    public static In packages(String... packages) {
+        return In.everywhere().withPackages(packages);
+    }
+
+    public static In classes(String... classes) {
+        return In.everywhere().withClasses(classes);
+    }
+
+    public static In classes(Class<?>... classes) {
+        final List<Location> ls = new ArrayList<>();
+        for (final Class<?> loc : classes) {
+            ls.add(Location.ofClass(loc));
+        }
+        return new In(ls);
+    }
+
+    public static In clazz(Class<?> clazz) {
+        return loc(clazz.getName());
+    }
+
+    public static In methods(String... methods) {
+        return In.everywhere().withMethods(methods);
+    }
+
+    public In and(In in) {
+        final List<Location> res = new ArrayList<>(locs);
+        res.addAll(in.locs);
+        return new In(res);
+    }
+
+    public In withLanguages(Language... languages) {
+        final List<Location> res = new ArrayList<>();
+        for (final Language language : languages) {
+            for (final Location loc : baseLocs()) {
+                res.add(loc.andLanguage(language));
+            }
+        }
+        return new In(res);
+    }
+
+    public In withPackages(String... packages) {
+        final List<Location> res = new ArrayList<>();
+        for (final String pack : packages) {
+            for (final Location loc : baseLocs()) {
+                res.add(loc.andPackage(pack));
+            }
+        }
+        return new In(res);
+    }
+
+    public In withClasses(String... classes) {
+        final List<Location> res = new ArrayList<>();
+        for (final String clazz : classes) {
+            for (final Location loc : baseLocs()) {
+                res.add(loc.andClass(clazz));
+            }
+        }
+        return new In(res);
+    }
+
+    public In withMethods(String... methods) {
+        final List<Location> res = new ArrayList<>();
+        for (final String method : methods) {
+            for (final Location loc : baseLocs()) {
+                res.add(loc.andMethod(method));
+            }
+        }
+        return new In(res);
+    }
+
+    private List<Location> baseLocs() {
+        if (locs.isEmpty()) {
+            final List<Location> res = new ArrayList<>(locs);
+            res.add(Location.all());
+            return res;
+        }
+        return locs;
     }
 
     public Ignore ignore(String... names) {

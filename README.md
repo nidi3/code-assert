@@ -140,7 +140,9 @@ public class FindBugsTest {
                 .just(In.everywhere().ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"))
                 .because("It's checked and OK like this",
                         In.classes(DependencyRules.class, PmdRuleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
-                        In.locs("ClassFileParser#parse", "*Test", "Rulesets").ignore("URF_UNREAD_FIELD"));
+                        In.classes("*Test", "Rulesets")
+                                .and(In.classes("ClassFileParser").withMethods("parse"))
+                                .ignore("URF_UNREAD_FIELD"));
 
         FindBugsResult result = new FindBugsAnalyzer(config, collector).analyze();
         assertThat(result, hasNoBugs());
@@ -164,7 +166,7 @@ public class CheckstyleTest {
         // Only treat issues with severity WARNING or higher
         StyleEventCollector collector = new StyleEventCollector().severity(SeverityLevel.WARNING)
                 .just(In.everywhere().ignore("import.avoidStar", "javadoc.missing"))
-                .because("in tests, long lines are ok", In.loc("*Test").ignore("maxLineLen"));
+                .because("in tests, long lines are ok", In.classes("*Test").ignore("maxLineLen"));
 
         //use google checks, but adjust max line length
         final StyleChecks checks = StyleChecks.google().maxLineLen(120);
@@ -196,8 +198,8 @@ public class PmdTest {
                         In.everywhere().ignore("MethodArgumentCouldBeFinal"),
                         In.locs("JavaClassBuilder#from", "FindBugsMatchers").ignore("AvoidInstantiatingObjectsInLoops"))
                 .because("it'a an enum",
-                        In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"))
-                .just(In.loc("*Test").ignore("TooManyStaticImports"));
+                        In.classes("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"))
+                .just(In.classes("*Test").ignore("TooManyStaticImports"));
 
         // Define and configure the rule sets to be used
         PmdAnalyzer analyzer = new PmdAnalyzer(config, collector).withRulesets(
@@ -215,7 +217,7 @@ public class PmdTest {
                         In.everywhere().ignore("public boolean equals(Object o) {"))
                 .just(
                         In.classes(DependencyRule.class, Dependencies.class).ignoreAll(),
-                        In.loc("SignatureParser").ignoreAll());
+                        In.classes("SignatureParser").ignoreAll());
 
         // Only treat duplications with at least 20 tokens
         CpdAnalyzer analyzer = new CpdAnalyzer(config, 20, collector);
@@ -239,7 +241,7 @@ public class KtlintTest {
         AnalyzerConfig config = AnalyzerConfig.maven(KOTLIN).main();
 
         KtlintCollector collector = new KtlintCollector()
-                .just(In.loc("Linker").ignore("no-semi"));
+                .just(In.classes("Linker").ignore("no-semi"));
 
         KtlintResult result = new KtlintAnalyzer(config, collector).analyze();
 
@@ -262,7 +264,7 @@ public class DetektTest {
         AnalyzerConfig config = AnalyzerConfig.maven(KOTLIN).main();
 
         DetektCollector collector = new DetektCollector()
-                .just(In.loc("Linker").ignore("MaxLineLength"));
+                .just(In.classes("Linker").ignore("MaxLineLength"));
 
         DetektResult result = new DetektAnalyzer(config, collector).analyze();
 
@@ -280,7 +282,7 @@ Some configurations are defined in [PredefConfig](code-assert/src/main/java/guru
 [//]: # (reuse)
 ```java
 private final CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.forA(PmdViolationCollector.class)
-        .because("It's a test", In.loc("*Test")
+        .because("It's a test", In.classes("*Test")
                 .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"));
 
 @Test
@@ -336,7 +338,7 @@ public class CodeTest extends CodeAssertJunit5Test {
     @Override
     protected FindBugsResult analyzeFindBugs() {
         final BugCollector bugCollector = new BugCollector().just(
-                In.loc("*Exception").ignore("SE_BAD_FIELD"));
+                In.classes("*Exception").ignore("SE_BAD_FIELD"));
         return new FindBugsAnalyzer(CONFIG, bugCollector).analyze();
     }
 
