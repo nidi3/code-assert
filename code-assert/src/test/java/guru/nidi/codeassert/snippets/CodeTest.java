@@ -25,8 +25,8 @@ import guru.nidi.codeassert.pmd.*;
 import org.junit.jupiter.api.Disabled;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
-import static guru.nidi.codeassert.pmd.Rulesets.basic;
-import static guru.nidi.codeassert.pmd.Rulesets.braces;
+import static guru.nidi.codeassert.pmd.PmdRulesets.basic;
+import static guru.nidi.codeassert.pmd.PmdRulesets.braces;
 
 @Disabled
 //## codeTest

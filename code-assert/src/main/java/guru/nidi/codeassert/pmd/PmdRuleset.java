@@ -20,10 +20,10 @@ import net.sourceforge.pmd.*;
 
 import java.lang.reflect.Field;
 
-public class Ruleset {
+public class PmdRuleset {
     final String name;
 
-    public Ruleset(String name) {
+    public PmdRuleset(String name) {
         this.name = name;
     }
 

@@ -15,24 +15,24 @@
  */
 package guru.nidi.codeassert.pmd;
 
-public final class Rulesets {
-    private Rulesets() {
+public final class PmdRulesets {
+    private PmdRulesets() {
     }
 
-    public static Ruleset android() {
-        return new Ruleset("rulesets/java/android.xml");
+    public static PmdRuleset android() {
+        return new PmdRuleset("rulesets/java/android.xml");
     }
 
-    public static Ruleset basic() {
-        return new Ruleset("rulesets/java/basic.xml");
+    public static PmdRuleset basic() {
+        return new PmdRuleset("rulesets/java/basic.xml");
     }
 
-    public static Ruleset braces() {
-        return new Ruleset("rulesets/java/braces.xml");
+    public static PmdRuleset braces() {
+        return new PmdRuleset("rulesets/java/braces.xml");
     }
 
-    public static Ruleset cloning() {
-        return new Ruleset("rulesets/java/clone.xml");
+    public static PmdRuleset cloning() {
+        return new PmdRuleset("rulesets/java/clone.xml");
     }
 
     public static Codesize codesize() {
@@ -43,75 +43,75 @@ public final class Rulesets {
         return new Comments();
     }
 
-    public static Ruleset controversial() {
-        return new Ruleset("rulesets/java/controversial.xml");
+    public static PmdRuleset controversial() {
+        return new PmdRuleset("rulesets/java/controversial.xml");
     }
 
-    public static Ruleset coupling() {
-        return new Ruleset("rulesets/java/coupling.xml");
+    public static PmdRuleset coupling() {
+        return new PmdRuleset("rulesets/java/coupling.xml");
     }
 
-    public static Ruleset design() {
-        return new Ruleset("rulesets/java/design.xml");
+    public static PmdRuleset design() {
+        return new PmdRuleset("rulesets/java/design.xml");
     }
 
     public static Empty empty() {
         return new Empty();
     }
 
-    public static Ruleset finalizers() {
-        return new Ruleset("rulesets/java/finalizers.xml");
+    public static PmdRuleset finalizers() {
+        return new PmdRuleset("rulesets/java/finalizers.xml");
     }
 
-    public static Ruleset imports() {
-        return new Ruleset("rulesets/java/imports.xml");
+    public static PmdRuleset imports() {
+        return new PmdRuleset("rulesets/java/imports.xml");
     }
 
-    public static Ruleset j2ee() {
-        return new Ruleset("rulesets/java/j2ee.xml");
+    public static PmdRuleset j2ee() {
+        return new PmdRuleset("rulesets/java/j2ee.xml");
     }
 
-    public static Ruleset javabeans() {
-        return new Ruleset("rulesets/java/javabeans.xml");
+    public static PmdRuleset javabeans() {
+        return new PmdRuleset("rulesets/java/javabeans.xml");
     }
 
-    public static Ruleset junit() {
-        return new Ruleset("rulesets/java/junit.xml");
+    public static PmdRuleset junit() {
+        return new PmdRuleset("rulesets/java/junit.xml");
     }
 
     public static Naming naming() {
         return new Naming();
     }
 
-    public static Ruleset optimizations() {
-        return new Ruleset("rulesets/java/optimizations.xml");
+    public static PmdRuleset optimizations() {
+        return new PmdRuleset("rulesets/java/optimizations.xml");
     }
 
-    public static Ruleset exceptions() {
-        return new Ruleset("rulesets/java/strictexception.xml");
+    public static PmdRuleset exceptions() {
+        return new PmdRuleset("rulesets/java/strictexception.xml");
     }
 
-    public static Ruleset strings() {
-        return new Ruleset("rulesets/java/strings.xml");
+    public static PmdRuleset strings() {
+        return new PmdRuleset("rulesets/java/strings.xml");
     }
 
-    public static Ruleset sunSecure() {
-        return new Ruleset("rulesets/java/sunsecure.xml");
+    public static PmdRuleset sunSecure() {
+        return new PmdRuleset("rulesets/java/sunsecure.xml");
     }
 
-    public static Ruleset typeResolution() {
-        return new Ruleset("rulesets/java/typeresolution.xml");
+    public static PmdRuleset typeResolution() {
+        return new PmdRuleset("rulesets/java/typeresolution.xml");
     }
 
-    public static Ruleset unnecessary() {
-        return new Ruleset("rulesets/java/unnecessary.xml");
+    public static PmdRuleset unnecessary() {
+        return new PmdRuleset("rulesets/java/unnecessary.xml");
     }
 
-    public static Ruleset unused() {
-        return new Ruleset("rulesets/java/unusedcode.xml");
+    public static PmdRuleset unused() {
+        return new PmdRuleset("rulesets/java/unusedcode.xml");
     }
 
-    public static class Codesize extends Ruleset {
+    public static class Codesize extends PmdRuleset {
         @PropertyField(rule = "ExcessiveMethodLength", property = "minimum")
         private Double methodLength;
         @PropertyField(rule = "TooManyMethods", property = "maxmethods")
@@ -132,7 +132,7 @@ public final class Rulesets {
         }
     }
 
-    public static class Empty extends Ruleset {
+    public static class Empty extends PmdRuleset {
         @PropertyField(rule = "EmptyCatchBlock", property = "allowCommentedBlocks")
         private Boolean allowCommented;
 
@@ -146,7 +146,7 @@ public final class Rulesets {
         }
     }
 
-    public static class Comments extends Ruleset {
+    public static class Comments extends PmdRuleset {
         public enum Requirement {
             Required, Ignored, Unwanted
         }
@@ -223,7 +223,7 @@ public final class Rulesets {
         }
     }
 
-    public static class Naming extends Ruleset {
+    public static class Naming extends PmdRuleset {
         @PropertyField(rule = "ShortVariable", property = "minimum")
         private Integer varMinLen;
         @PropertyField(rule = "LongVariable", property = "minimum")

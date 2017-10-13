@@ -18,6 +18,7 @@ package guru.nidi.codeassert;
 import guru.nidi.codeassert.checkstyle.*;
 import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.dependency.*;
+import guru.nidi.codeassert.detekt.DetektMatcher;
 import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
@@ -31,7 +32,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
     @Override
     protected DependencyResult analyzeDependencies() {
         class GuruNidiCodeassert extends DependencyRuler {
-            DependencyRule config, dependency, findbugs, checkstyle, model, pmd, ktlint, util, junit, junitKotlin, jacoco;
+            DependencyRule config, dependency, findbugs, checkstyle, detekt, model, pmd, ktlint, util, junit, junitKotlin, jacoco;
 
             @Override
             public void defineRules() {
@@ -40,12 +41,12 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                 util.mayBeUsedBy(all());
                 dependency.mayUse(model);
                 junit.mayUse(model, dependency, findbugs, checkstyle, pmd, jacoco);
-                junitKotlin.mayUse(ktlint);
+                junitKotlin.mayUse(ktlint, detekt);
             }
         }
 
         final DependencyRules rules = denyAll()
-                .withExternals("edu*", "java*", "net*", "org*", "com*", "kotlin*")
+                .withExternals("edu*", "java*", "net*", "org*", "com*", "kotlin*", "io*")
                 .withRelativeRules(new GuruNidiCodeassert());
         return new DependencyAnalyzer(AnalyzerConfig.maven().main()).rules(rules).analyze();
     }
@@ -56,12 +57,12 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
         final BugCollector bugCollector = new BugCollector()
                 .apply(PredefConfig.minimalFindBugsIgnore())
                 .just(
-                        In.locs("DependencyRules#withRules", "Ruleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
+                        In.locs("DependencyRules#withRules", "PmdRuleset").ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
                         In.loc("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
                         In.loc("*Exception").ignore("SE_BAD_FIELD"),
                         In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"),
                         In.everywhere().ignore("EI_EXPOSE_REP", "EI_EXPOSE_REP2", "PATH_TRAVERSAL_IN", "CRLF_INJECTION_LOGS"),
-                        In.locs("ClassFileParser", "Constant", "MemberInfo", "Rulesets", "Reason").ignore("URF_UNREAD_FIELD"));
+                        In.locs("ClassFileParser", "Constant", "MemberInfo", "PmdRulesets", "Reason").ignore("URF_UNREAD_FIELD"));
         return new FindBugsAnalyzer(AnalyzerConfig.maven().main(), bugCollector).analyze();
     }
 
@@ -76,7 +77,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                                 "SimplifyStartsWith", "ArrayIsStoredDirectly", "MethodReturnsInternalArray"),
                         In.locs("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
                         In.loc("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),
-                        In.clazz(Rulesets.class).ignore("TooManyMethods", "AvoidDuplicateLiterals"),
+                        In.clazz(PmdRulesets.class).ignore("TooManyMethods", "AvoidDuplicateLiterals"),
                         In.loc("Reason").ignore("SingularField"),
                         In.clazz(Coverage.class).ignore("ExcessiveParameterList"),
                         In.locs("DependencyRules", "JavaClassImportBuilder").ignore("GodClass"));
@@ -90,7 +91,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
         System.gc();
         final CpdMatchCollector collector = new CpdMatchCollector()
                 .apply(PredefConfig.cpdIgnoreEqualsHashCodeToString())
-                .just(In.clazz(PmdAnalyzer.class).ignore("Map<String, Ruleset> newRuleset"))
+                .just(In.clazz(DetektMatcher.class).ignoreAll())
+                .just(In.clazz(PmdAnalyzer.class).ignore("Map<String, PmdRuleset> newRuleset"))
                 .just(In.clazz(ProjectLayout.class).ignoreAll());
 
         return new CpdAnalyzer(AnalyzerConfig.maven().main(), 27, collector).analyze();
@@ -103,7 +105,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                 .apply(PredefConfig.minimalCheckstyleIgnore())
                 .just(In.locs("Coverage", "Constant").ignore("empty.line.separator"))
                 .just(In.clazz(BaseCollector.class).ignore("overload.methods.declaration"))
-                .just(In.clazz(Rulesets.class).ignore("abbreviation.as.word"))
+                .just(In.clazz(PmdRulesets.class).ignore("abbreviation.as.word"))
                 .just(In.loc("SignatureParser").ignore("name.invalidPattern"))
                 .just(In.loc("DependencyMap").ignore("tag.continuation.indent"));
 

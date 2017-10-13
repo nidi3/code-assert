@@ -181,6 +181,28 @@ public class AnalyzerConfig {
             return pack;
         }
 
+        public Path commonBase(Path path) {
+            final String[] thisParts = getPath().split("/");
+            final String[] otherParts = path.getPath().split("/");
+            int i = 0;
+            final StringBuilder res = new StringBuilder();
+            while (i < Math.min(thisParts.length, otherParts.length) && thisParts[i].equals(otherParts[i])) {
+                res.append(thisParts[i]).append('/');
+                i++;
+            }
+            return res.length() < base.length()
+                    ? new Path(res.substring(0, res.length() - 1), "")
+                    : new Path(base, pack.substring(0, res.length() - base.length() - 2));
+        }
+
+        public static Path commonBase(Iterable<Path> paths) {
+            Path base = null;
+            for (final Path path : paths) {
+                base = base == null ? path : base.commonBase(path);
+            }
+            return base;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) {

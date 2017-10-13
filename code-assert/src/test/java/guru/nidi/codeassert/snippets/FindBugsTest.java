@@ -20,7 +20,7 @@ import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.DependencyRules;
 import guru.nidi.codeassert.findbugs.*;
-import guru.nidi.codeassert.pmd.Ruleset;
+import guru.nidi.codeassert.pmd.PmdRuleset;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,7 @@ public class FindBugsTest {
         BugCollector collector = new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY)
                 .just(In.everywhere().ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"))
                 .because("It's checked and OK like this",
-                        In.classes(DependencyRules.class, Ruleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
+                        In.classes(DependencyRules.class, PmdRuleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
                         In.locs("ClassFileParser#parse", "*Test", "Rulesets").ignore("URF_UNREAD_FIELD"));
 
         FindBugsResult result = new FindBugsAnalyzer(config, collector).analyze();

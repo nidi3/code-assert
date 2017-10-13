@@ -145,6 +145,14 @@ public class AnalyzerConfigTest {
         assertEquals("/a", path.getPath());
     }
 
+    @Test
+    void commonBase() {
+        assertEquals(new Path("a/b", "c/d"), new Path("a/b", "c/d").commonBase(new Path("a/b", "c/d")));
+        assertEquals(new Path("/a/b", "c"), new Path("/a/b", "c/d").commonBase(new Path("/a/b", "c")));
+        assertEquals(new Path("a/b", "c"), new Path("a/b", "c/d").commonBase(new Path("a/b", "c")));
+        assertEquals(new Path("a", ""), new Path("a/b", "c/d").commonBase(new Path("a", "c")));
+    }
+
     private Path path(String base, String pack) {
         return new Path(base, pack);
     }

@@ -13,43 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.ktlint;
+package guru.nidi.codeassert.detekt;
 
 import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.util.ListUtils;
 
+import java.io.File;
 import java.util.List;
 
-public class KtlintCollector extends BaseCollector<LocatedLintError, Ignore, KtlintCollector> {
+import static guru.nidi.codeassert.config.Language.KOTLIN;
+
+public class DetektCollector extends BaseCollector<TypedDetektFinding, Ignore, DetektCollector> {
     @Override
-    public KtlintCollector config(final CollectorConfig<Ignore>... configs) {
-        return new KtlintCollector() {
+    public DetektCollector config(final CollectorConfig<Ignore>... configs) {
+        return new DetektCollector() {
             @Override
-            public ActionResult accept(LocatedLintError issue) {
-                return accept(issue, KtlintCollector.this, configs);
+            public ActionResult accept(TypedDetektFinding issue) {
+                return accept(issue, DetektCollector.this, configs);
             }
 
             public List<Ignore> unused(UsageCounter counter) {
-                return unused(counter, KtlintCollector.this, configs);
+                return unused(counter, DetektCollector.this, configs);
             }
 
             @Override
             public String toString() {
-                return KtlintCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
+                return DetektCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
             }
         };
     }
 
     @Override
-    public ActionResult accept(LocatedLintError issue) {
+    public ActionResult accept(TypedDetektFinding issue) {
         return ActionResult.accept(null, 1);
     }
 
     @Override
-    protected ActionResult doAccept(LocatedLintError issue, Ignore action) {
-        final String className = guessClassFromFile(issue.file.getAbsolutePath(), Language.KOTLIN);
-        final Language language = Language.byFilename(issue.file.getName());
-        return action.accept(new NamedLocation(issue.ruleId, language, className, null, true));
+    protected ActionResult doAccept(TypedDetektFinding issue, Ignore action) {
+        final File file = new File(issue.basedir, issue.entity.getLocation().getFile());
+        final String className = guessClassFromFile(file.getAbsolutePath(), KOTLIN);
+        return action.accept(new NamedLocation(issue.name, KOTLIN, className, null, true));
     }
 
     @Override

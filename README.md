@@ -27,6 +27,7 @@ It also integrates several static code analysis tools.
 
 ## Kotlin checks
 - [ktlint](#user-content-ktlint)
+- [detekt](#user-content-detekt)
 
 ## Other
 - [Configuration reuse](#user-content-configuration-reuse)
@@ -138,7 +139,7 @@ public class FindBugsTest {
         BugCollector collector = new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY)
                 .just(In.everywhere().ignore("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"))
                 .because("It's checked and OK like this",
-                        In.classes(DependencyRules.class, Ruleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
+                        In.classes(DependencyRules.class, PmdRuleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
                         In.locs("ClassFileParser#parse", "*Test", "Rulesets").ignore("URF_UNREAD_FIELD"));
 
         FindBugsResult result = new FindBugsAnalyzer(config, collector).analyze();
@@ -243,6 +244,29 @@ public class KtlintTest {
         KtlintResult result = new KtlintAnalyzer(config, collector).analyze();
 
         assertThat(result, hasNoKtlintIssues());
+    }
+}
+```
+[//]: # (end)
+
+### detekt
+
+Runs [detekt](https://github.com/arturbosch/detekt), a static code analysis tool for kotlin.
+
+[//]: # (detekt)
+```java
+public class DetektTest {
+    @Test
+    public void analyze() {
+        // Analyze all sources in src/main/kotlin
+        AnalyzerConfig config = AnalyzerConfig.maven(KOTLIN).main();
+
+        DetektCollector collector = new DetektCollector()
+                .just(In.loc("Linker").ignore("MaxLineLength"));
+
+        DetektResult result = new DetektAnalyzer(config, collector).analyze();
+
+        assertThat(result, hasNoDetektIssues());
     }
 }
 ```

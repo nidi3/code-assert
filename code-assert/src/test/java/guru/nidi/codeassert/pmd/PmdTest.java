@@ -32,10 +32,10 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
+import static guru.nidi.codeassert.pmd.PmdRulesets.Comments.Requirement.Ignored;
+import static guru.nidi.codeassert.pmd.PmdRulesets.Comments.Requirement.Required;
+import static guru.nidi.codeassert.pmd.PmdRulesets.*;
 import static guru.nidi.codeassert.pmd.RegexMatcher.matchesFormat;
-import static guru.nidi.codeassert.pmd.Rulesets.Comments.Requirement.Ignored;
-import static guru.nidi.codeassert.pmd.Rulesets.Comments.Requirement.Required;
-import static guru.nidi.codeassert.pmd.Rulesets.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -67,8 +67,8 @@ class PmdTest {
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "jacoco/JacocoAnalyzer", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "ktlint/KtlintAnalyzer", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "model/Model", "Avoid assignments in operands")
-                        + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 115")
-                        + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/Rulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 154")
+                        + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/PmdRulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 115")
+                        + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/PmdRulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 154")
                         + pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", "Avoid using final local variables, turn them into fields")
                         + pmd(MEDIUM, "CommentSize", MAIN, "config/LocationNameMatcher", "Comment is too large: Line too long")
                         + pmd(MEDIUM, "ExcessiveParameterList", MAIN, "jacoco/Coverage", "Avoid long parameter lists.")
@@ -76,9 +76,9 @@ class PmdTest {
                         + pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", "Class cannot be instantiated and does not provide any static methods or fields")
                         + pmd(MEDIUM, "NoPackage", TEST, "/CodeCoverage", "All classes and interfaces must belong to a named package")
                         + pmd(MEDIUM, "NullAssignment", MAIN, "dependency/DependencyRules", "Assigning an Object to null is a code smell.  Consider refactoring.")
-                        + pmd(MEDIUM, "TooManyMethods", MAIN, "pmd/Rulesets", "This class has too many methods, consider refactoring it.")
+                        + pmd(MEDIUM, "TooManyMethods", MAIN, "pmd/PmdRulesets", "This class has too many methods, consider refactoring it.")
                         + pmd(MEDIUM, "TooManyMethods", TEST, "config/LocationMatcherTest", "This class has too many methods, consider refactoring it.")
-                        + pmd(MEDIUM, "UseProperClassLoader", MAIN, "checkstyle/CheckstyleAnalyzer", "In J2EE, getClassLoader() might not work as expected.  Use Thread.currentThread().getContextClassLoader() instead."),
+                        + pmd(MEDIUM, "UseObjectForClearerAPI", TEST, "detekt/DetektAnalyzerTest", "Rather than using a lot of String arguments, consider using a container object for those values."),
                 pmdResult, hasNoPmdViolations());
     }
 
@@ -90,9 +90,17 @@ class PmdTest {
     @Test
     void duplications() {
         assertMatcher(""
+                        + cpd(42, "detekt/DetektCollector")
+                        + cpd("ktlint/KtlintCollector")
                         + cpd(40, "pmd/PmdAnalyzer")
                         + cpd("pmd/PmdAnalyzer")
+                        + cpd(35, "dependency/DependencyCollector")
+                        + cpd("detekt/DetektCollector")
+                        + cpd("ktlint/KtlintCollector")
+                        + cpd(29, "detekt/DetektMatcher")
+                        + cpd("ktlint/KtlintMatcher")
                         + cpd(26, "checkstyle/StyleEventCollector")
+                        + cpd("detekt/DetektCollector")
                         + cpd("findbugs/BugCollector")
                         + cpd("jacoco/CoverageCollector")
                         + cpd("ktlint/KtlintCollector")

@@ -20,7 +20,7 @@ import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.Bugs;
 import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.jacoco.Coverage;
-import guru.nidi.codeassert.pmd.Rulesets;
+import guru.nidi.codeassert.pmd.PmdRulesets;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.jupiter.api.Test;
@@ -53,13 +53,13 @@ public class FindBugsTest {
                     In.clazz(AnalyzerConfigTest.class).ignore("DMI_HARDCODED_ABSOLUTE_FILENAME"),
                     In.everywhere().ignore("PATH_TRAVERSAL_IN"))
             .because("is handled by annotation",
-                    In.clazz(Rulesets.class).ignore("URF_UNREAD_FIELD"));
+                    In.clazz(PmdRulesets.class).ignore("URF_UNREAD_FIELD"));
 
     @Test
     void simple() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, new BugCollector().maxRank(17).minPriority(Priorities.NORMAL_PRIORITY));
-        assertThat(analyzer.analyze().findings().size(), either(equalTo(49)).or(equalTo(50)));
+        assertThat(analyzer.analyze().findings().size(), either(equalTo(52)).or(equalTo(53)));
     }
 
     @Test

@@ -86,7 +86,7 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
         try {
             final LoggingAuditListener listener = new LoggingAuditListener();
             checker.addListener(listener);
-            checker.setModuleClassLoader(CheckstyleAnalyzer.class.getClassLoader());
+            checker.setModuleClassLoader(Thread.currentThread().getContextClassLoader());
             checker.configure(ConfigurationLoader.loadConfiguration(checks.location, createPropertyResolver()));
             checker.process(config.getSources());
             return createResult(listener.events);

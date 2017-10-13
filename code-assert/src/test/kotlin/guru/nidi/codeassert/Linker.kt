@@ -15,9 +15,6 @@
  */
 package guru.nidi.codeassert
 
-import java.util.List
-import java.util.*
-
 object Linker {
     private val urlRegex = Regex("(https?://|www\\.)[^\\s\\p{Z}…|”“»<>]+")
     private val hashRegex = Regex("#([^\\s\\p{Z}-:;,+!?()…@#*\"'/|\\[\\]{}`<>\$%^&=”“»~’\u2013\u2014.]+)")
@@ -40,8 +37,11 @@ object Linker {
                 """<a href="$trim" target="_blank">$trim</a>$rest"""
             }
 
-    fun hash(s: String, base: String) =
-            hashRegex.replace(s, """<a href="$base$1" target="_blank" rel="nofollow">#$1</a>""")
+    fun hash(s: String, base: String) = try {
+        hashRegex.replace(s, """<a href="$base$1" target="_blank" rel="nofollow">#$1</a>""")
+    } catch (e: Exception) {
+        ""
+    }
 
     fun user(s: String, base: String) =
             userRegex.replace(s) { res ->

@@ -42,31 +42,31 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
 
     private final AnalyzerConfig config;
     private final PmdViolationCollector collector;
-    private final Map<String, Ruleset> rulesets;
+    private final Map<String, PmdRuleset> rulesets;
 
     public PmdAnalyzer(AnalyzerConfig config, PmdViolationCollector collector) {
-        this(config, new HashMap<String, Ruleset>(), collector);
+        this(config, new HashMap<String, PmdRuleset>(), collector);
     }
 
-    private PmdAnalyzer(AnalyzerConfig config, Map<String, Ruleset> rulesets, PmdViolationCollector collector) {
+    private PmdAnalyzer(AnalyzerConfig config, Map<String, PmdRuleset> rulesets, PmdViolationCollector collector) {
         this.config = config;
         this.collector = collector;
         this.rulesets = rulesets;
     }
 
-    public PmdAnalyzer withRulesets(Ruleset... rulesets) {
-        final Map<String, Ruleset> newRuleset = new HashMap<>();
+    public PmdAnalyzer withRulesets(PmdRuleset... rulesets) {
+        final Map<String, PmdRuleset> newRuleset = new HashMap<>();
         newRuleset.putAll(this.rulesets);
-        for (final Ruleset ruleset : rulesets) {
+        for (final PmdRuleset ruleset : rulesets) {
             newRuleset.put(ruleset.name, ruleset);
         }
         return new PmdAnalyzer(config, newRuleset, collector);
     }
 
-    public PmdAnalyzer withoutRulesets(Ruleset... rulesets) {
-        final Map<String, Ruleset> newRuleset = new HashMap<>();
+    public PmdAnalyzer withoutRulesets(PmdRuleset... rulesets) {
+        final Map<String, PmdRuleset> newRuleset = new HashMap<>();
         newRuleset.putAll(this.rulesets);
-        for (final Ruleset ruleset : rulesets) {
+        for (final PmdRuleset ruleset : rulesets) {
             newRuleset.remove(ruleset.name);
         }
         return new PmdAnalyzer(config, newRuleset, collector);
@@ -103,7 +103,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
         final PMDConfiguration pmdConfig = new PMDConfiguration() {
             @Override
             public Renderer createRenderer() {
-                for (final Ruleset ruleset : rulesets.values()) {
+                for (final PmdRuleset ruleset : rulesets.values()) {
                     ruleset.apply(this);
                 }
                 return renderer;
@@ -121,7 +121,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
 
     private String ruleSetNames() {
         final StringBuilder s = new StringBuilder();
-        for (final Ruleset ruleset : rulesets.values()) {
+        for (final PmdRuleset ruleset : rulesets.values()) {
             s.append(',').append(ruleset.name);
         }
         return rulesets.isEmpty() ? "" : s.substring(1);

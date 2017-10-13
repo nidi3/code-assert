@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -13,6 +14,11 @@
 
     <properties>
         <slf4j.version>1.7.25</slf4j.version>
+        <checkstyle.version>6.19</checkstyle.version>
+        <findbugs.version>3.0.1</findbugs.version>
+        <pmd.version>5.4.1</pmd.version>
+        <detekt.version>1.0.0.RC4</detekt.version>
+        <ktlint.version>0.9.2</ktlint.version>
     </properties>
 
     <build>
@@ -20,7 +26,7 @@
             <plugin>
                 <groupId>guru.nidi</groupId>
                 <artifactId>code-assert-maven-plugin</artifactId>
-                <version>0.8.2</version>
+                <version>0.8.5</version>
                 <executions>
                     <execution>
                         <goals>
@@ -86,7 +92,7 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>findbugs</artifactId>
-            <version>3.0.1</version>
+            <version>${findbugs.version}</version>
         </dependency>
         <dependency>
             <groupId>com.h3xstream.findsecbugs</groupId>
@@ -96,12 +102,12 @@
         <dependency>
             <groupId>net.sourceforge.pmd</groupId>
             <artifactId>pmd-java</artifactId>
-            <version>5.4.1</version>
+            <version>${pmd.version}</version>
         </dependency>
         <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>6.19</version>
+            <version>${checkstyle.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -110,21 +116,26 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>io.gitlab.arturbosch.detekt</groupId>-->
-        <!--<artifactId>detekt-core</artifactId>-->
-        <!--<version>1.0.0.RC4</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>io.gitlab.arturbosch.detekt</groupId>
+            <artifactId>detekt-core</artifactId>
+            <version>${detekt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.gitlab.arturbosch.detekt</groupId>
+            <artifactId>detekt-rules</artifactId>
+            <version>${detekt.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.github.shyiko.ktlint</groupId>
             <artifactId>ktlint-core</artifactId>
-            <version>0.9.2</version>
+            <version>${ktlint.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.shyiko.ktlint</groupId>
             <artifactId>ktlint-ruleset-standard</artifactId>
-            <version>0.9.2</version>
+            <version>${ktlint.version}</version>
         </dependency>
 
         <dependency>
@@ -161,4 +172,20 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>arturbosch-code-analysis</id>
+            <name>arturbosch-code-analysis (for detekt)</name>
+            <url>https://dl.bintray.com/arturbosch/code-analysis/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

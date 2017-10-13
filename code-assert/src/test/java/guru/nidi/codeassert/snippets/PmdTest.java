@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCodeDuplications;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoPmdViolations;
-import static guru.nidi.codeassert.pmd.Rulesets.*;
+import static guru.nidi.codeassert.pmd.PmdRulesets.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @Disabled

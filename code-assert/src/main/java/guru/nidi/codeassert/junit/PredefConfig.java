@@ -21,7 +21,7 @@ import guru.nidi.codeassert.findbugs.BugCollector;
 import guru.nidi.codeassert.pmd.*;
 
 import static com.puppycrawl.tools.checkstyle.api.TokenTypes.*;
-import static guru.nidi.codeassert.pmd.Rulesets.*;
+import static guru.nidi.codeassert.pmd.PmdRulesets.*;
 
 public final class PredefConfig {
     private static final String KOTLIN = "kotlin:";
@@ -74,10 +74,10 @@ public final class PredefConfig {
                         "UPM_UNCALLED_PRIVATE_METHOD"));
     }
 
-    public static Ruleset[] defaultPmdRulesets() {
-        return new Ruleset[]{
+    public static PmdRuleset[] defaultPmdRulesets() {
+        return new PmdRuleset[]{
                 basic(), braces(),
-                comments().maxLines(35).maxLineLen(120).requirement(Rulesets.Comments.Requirement.Ignored),
+                comments().maxLines(35).maxLineLen(120).requirement(PmdRulesets.Comments.Requirement.Ignored),
                 codesize().excessiveMethodLength(40).tooManyMethods(30),
                 design(), empty().allowCommentedEmptyCatch(true), exceptions(), imports(), junit(),
                 naming().variableLen(1, 25).methodLen(2),

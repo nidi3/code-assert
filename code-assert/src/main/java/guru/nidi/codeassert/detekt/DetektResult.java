@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert.junit.kotlin;
+package guru.nidi.codeassert.detekt;
 
-import guru.nidi.codeassert.detekt.DetektMatcher;
-import guru.nidi.codeassert.detekt.DetektResult;
-import guru.nidi.codeassert.ktlint.KtlintMatcher;
-import guru.nidi.codeassert.ktlint.KtlintResult;
-import org.hamcrest.Matcher;
+import guru.nidi.codeassert.Analyzer;
+import guru.nidi.codeassert.AnalyzerResult;
 
-public final class KotlinCodeAssertMatchers {
-    private KotlinCodeAssertMatchers() {
-    }
+import java.util.List;
 
-    public static Matcher<KtlintResult> hasNoKtlintIssues() {
-        return new KtlintMatcher();
-    }
-
-    public static Matcher<DetektResult> hasNoDetektIssues() {
-        return new DetektMatcher();
+public class DetektResult extends AnalyzerResult<List<TypedDetektFinding>> {
+    public DetektResult(Analyzer<List<TypedDetektFinding>> analyzer,
+                        List<TypedDetektFinding> findings, List<String> unusedActions) {
+        super(analyzer, findings, unusedActions);
     }
 }

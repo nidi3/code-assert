@@ -70,8 +70,8 @@ public class CheckstyleTest {
                 ));
 
         assertMatcher(""
-                        + line(WARNING, "abbreviation.as.word", MAIN, "pmd/Rulesets", 165, "Abbreviation in name 'serialVersionUID' must contain no more than '1' capital letters.")
-                        + line(WARNING, "abbreviation.as.word", MAIN, "pmd/Rulesets", 210, "Abbreviation in name 'serialVersionUID' must contain no more than '1' capital letters.")
+                        + line(WARNING, "abbreviation.as.word", MAIN, "pmd/PmdRulesets", 165, "Abbreviation in name 'serialVersionUID' must contain no more than '1' capital letters.")
+                        + line(WARNING, "abbreviation.as.word", MAIN, "pmd/PmdRulesets", 210, "Abbreviation in name 'serialVersionUID' must contain no more than '1' capital letters.")
                         + line(WARNING, "one.top.level.class", TEST, "model/ExampleConcreteClass", 79, "Top-level class ExamplePackageClass has to reside in its own source file.")
                         + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 53, "Overload methods should not be split. Previous overloaded method located at line '47'.")
                         + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 64, "Overload methods should not be split. Previous overloaded method located at line '51'.")
