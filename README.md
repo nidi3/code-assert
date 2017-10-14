@@ -283,7 +283,9 @@ Some configurations are defined in [PredefConfig](code-assert/src/main/java/guru
 ```java
 private final CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.forA(PmdViolationCollector.class)
         .because("It's a test", In.classes("*Test")
-                .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"));
+                .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"))
+        .because("It's compiler generated code", In.languages(KOTLIN)
+                .ignore("BC_BAD_CAST_TO_ABSTRACT_COLLECTION"));
 
 @Test
 public void pmd() {

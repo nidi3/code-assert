@@ -21,6 +21,7 @@ import net.sourceforge.pmd.RulePriority;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoPmdViolations;
 import static guru.nidi.codeassert.pmd.PmdRulesets.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,7 +34,9 @@ public class ReuseTest {
     //## reuse
     private final CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.forA(PmdViolationCollector.class)
             .because("It's a test", In.classes("*Test")
-                    .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"));
+                    .ignore("JUnitSpelling", "AvoidDuplicateLiterals", "SignatureDeclareThrowsException"))
+            .because("It's compiler generated code", In.languages(KOTLIN)
+                    .ignore("BC_BAD_CAST_TO_ABSTRACT_COLLECTION"));
 
     @Test
     public void pmd() {
