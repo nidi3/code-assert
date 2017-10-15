@@ -52,7 +52,7 @@ class ClassFileParser {
 
         constantPool = ConstantPool.fromData(in);
 
-        parseAccessFlags();
+        final int flags = parseAccessFlags();
 
         final String className = parseClassName();
         final String superClassName = parseSuperClassName();
@@ -61,35 +61,17 @@ class ClassFileParser {
         final List<MemberInfo> methods = parseMembers();
         final List<AttributeInfo> attributes = parseAttributes();
 
-        final JavaClassImportBuilder adder = new JavaClassImportBuilder(className, model, constantPool);
-        adder.addClassConstantReferences();
-        adder.addSuperClass(superClassName);
-        adder.addInterfaces(interfaceNames);
-        adder.addFieldRefs(fields);
-        adder.addMethodRefs(methods);
-        adder.addAttributeRefs(attributes);
-
-        handlePackageInfo(adder, model, className);
-        setSizes(adder, methods);
-        return adder.clazz;
-    }
-
-    private void handlePackageInfo(JavaClassImportBuilder adder, Model model, String className) {
-        if (className.endsWith(".package-info")) {
-            final JavaPackage pack = model.getOrCreatePackage(Model.packageOf(className));
-            for (final JavaClass ann : adder.clazz.getAnnotations()) {
-                pack.addAnnotation(ann);
-            }
-        }
-    }
-
-    private void setSizes(JavaClassImportBuilder adder, List<MemberInfo> methods) {
-        int codeSize = 0;
-        for (final MemberInfo method : methods) {
-            codeSize += method.codeSize;
-        }
-        adder.clazz.codeSize = codeSize;
-        adder.clazz.totalSize = this.counter.getCount();
+        return new JavaClassBuilder(className, model, constantPool)
+                .addClassConstantReferences()
+                .addFlags(flags)
+                .addSuperClass(superClassName)
+                .addInterfaces(interfaceNames)
+                .addFieldRefs(fields)
+                .addMethodRefs(methods)
+                .addAttributeRefs(attributes)
+                .addPackageInfo(model, className)
+                .addSizes(counter.getCount(), methods)
+                .clazz;
     }
 
     private int parseMagic() throws IOException {
@@ -108,8 +90,8 @@ class ClassFileParser {
         return in.readUnsignedShort();
     }
 
-    private void parseAccessFlags() throws IOException {
-        in.readUnsignedShort();
+    private int parseAccessFlags() throws IOException {
+        return in.readUnsignedShort();
     }
 
     private String parseClassName() throws IOException {

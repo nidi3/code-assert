@@ -18,9 +18,10 @@ package guru.nidi.codeassert.model;
 import guru.nidi.codeassert.AnalyzerException;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
-class JavaClassImportBuilder {
+class JavaClassBuilder {
     private static final char CLASS_DESCRIPTOR = 'L';
     private static final char TYPE_END = ';';
 
@@ -28,43 +29,82 @@ class JavaClassImportBuilder {
     private final Model model;
     private final ConstantPool constantPool;
 
-    JavaClassImportBuilder(String className, Model model, ConstantPool constantPool) {
+    JavaClassBuilder(String className, Model model, ConstantPool constantPool) {
         this.model = model;
         this.clazz = model.getOrCreateClass(className);
         this.constantPool = constantPool;
     }
 
-    public void addSuperClass(String className) {
+    public JavaClassBuilder addSuperClass(String className) {
         addImport(className);
+        return this;
     }
 
-    public void addInterfaces(List<String> interfaceNames) {
+    public JavaClassBuilder addInterfaces(List<String> interfaceNames) {
         for (final String interfaceName : interfaceNames) {
             addImport(interfaceName);
         }
+        return this;
     }
 
-    public void addClassConstantReferences() throws IOException {
+    public JavaClassBuilder addClassConstantReferences() throws IOException {
         for (final Constant constant : constantPool) {
             if (constant.tag == Constant.CLASS) {
                 final String name = constantPool.getUtf8(constant.nameIndex);
                 addImport(name);
             }
         }
+        return this;
     }
 
-    public void addMethodRefs(List<MemberInfo> methods) throws IOException {
+    public JavaClassBuilder addFlags(int flags) {
+        clazz.concrete = !Modifier.isAbstract(flags) && !Modifier.isInterface(flags);
+        return this;
+    }
+
+    public JavaClassBuilder addMethodRefs(List<MemberInfo> methods) throws IOException {
         addMemberAnnotationRefs(methods);
         addMemberSignatureRefs(SignatureParser.Source.METHOD, methods);
         addMemberTypes(methods);
         clazz.methods.addAll(methods);
+        return this;
     }
 
-    public void addFieldRefs(List<MemberInfo> fields) throws IOException {
+    public JavaClassBuilder addFieldRefs(List<MemberInfo> fields) throws IOException {
         addMemberAnnotationRefs(fields);
         addMemberSignatureRefs(SignatureParser.Source.FIELD, fields);
         addMemberTypes(fields);
         clazz.fields.addAll(fields);
+        return this;
+    }
+
+    public JavaClassBuilder addAttributeRefs(List<AttributeInfo> attributes) throws IOException {
+        for (final AttributeInfo attribute : attributes) {
+            addSourceAttribute(attribute);
+            addAttributeAnnotationRefs(attribute);
+            addAttributeSignatureRefs(attribute);
+        }
+        return this;
+    }
+
+    public JavaClassBuilder addPackageInfo(Model model, String className) {
+        if (className.endsWith(".package-info")) {
+            final JavaPackage pack = model.getOrCreatePackage(Model.packageOf(className));
+            for (final JavaClass ann : clazz.getAnnotations()) {
+                pack.addAnnotation(ann);
+            }
+        }
+        return this;
+    }
+
+    public JavaClassBuilder addSizes(int totalSize, List<MemberInfo> methods) {
+        int codeSize = 0;
+        for (final MemberInfo method : methods) {
+            codeSize += method.codeSize;
+        }
+        clazz.codeSize = codeSize;
+        clazz.totalSize = totalSize;
+        return this;
     }
 
     private void addMemberAnnotationRefs(List<MemberInfo> infos) throws IOException {
@@ -94,14 +134,6 @@ class JavaClassImportBuilder {
                     addImport(type);
                 }
             }
-        }
-    }
-
-    public void addAttributeRefs(List<AttributeInfo> attributes) throws IOException {
-        for (final AttributeInfo attribute : attributes) {
-            addSourceAttribute(attribute);
-            addAttributeAnnotationRefs(attribute);
-            addAttributeSignatureRefs(attribute);
         }
     }
 

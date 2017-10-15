@@ -38,6 +38,7 @@ public class JavaClass extends UsingElement<JavaClass> {
     String sourceFile;
     int codeSize;
     int totalSize;
+    boolean concrete;
 
     JavaClass(String name, JavaPackage pack) {
         this.name = name;
@@ -78,6 +79,10 @@ public class JavaClass extends UsingElement<JavaClass> {
 
     public int getTotalSize() {
         return totalSize;
+    }
+
+    public boolean isConcrete() {
+        return concrete;
     }
 
     @Override
