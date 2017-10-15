@@ -27,12 +27,12 @@ import java.util.*;
  * @author <b>Mike Clark</b>
  * @author Clarkware Consulting, Inc.
  */
-public class JavaClass extends UsingElement<JavaClass> {
+public class CodeClass extends UsingElement<CodeClass> {
     private final String name;
-    private final JavaPackage pack;
-    private final CountSet<JavaPackage> usedPackages;
-    private final CountSet<JavaClass> usedClasses;
-    private final Set<JavaClass> annotations;
+    private final CodePackage pack;
+    private final CountSet<CodePackage> usedPackages;
+    private final CountSet<CodeClass> usedClasses;
+    private final Set<CodeClass> annotations;
     final List<MemberInfo> fields = new ArrayList<>();
     final List<MemberInfo> methods = new ArrayList<>();
     String sourceFile;
@@ -40,7 +40,7 @@ public class JavaClass extends UsingElement<JavaClass> {
     int totalSize;
     boolean concrete;
 
-    JavaClass(String name, JavaPackage pack) {
+    CodeClass(String name, CodePackage pack) {
         this.name = name;
         this.pack = pack;
         usedPackages = new CountSet<>();
@@ -53,7 +53,7 @@ public class JavaClass extends UsingElement<JavaClass> {
         return name;
     }
 
-    public JavaPackage getPackage() {
+    public CodePackage getPackage() {
         return pack;
     }
 
@@ -61,7 +61,7 @@ public class JavaClass extends UsingElement<JavaClass> {
         return sourceFile;
     }
 
-    public Set<JavaClass> getAnnotations() {
+    public Set<CodeClass> getAnnotations() {
         return annotations;
     }
 
@@ -86,38 +86,38 @@ public class JavaClass extends UsingElement<JavaClass> {
     }
 
     @Override
-    public JavaClass self() {
+    public CodeClass self() {
         return this;
     }
 
-    public Collection<JavaPackage> usedForeignPackages() {
-        final Set<JavaPackage> res = new HashSet<>(usedPackages());
+    public Collection<CodePackage> usedForeignPackages() {
+        final Set<CodePackage> res = new HashSet<>(usedPackages());
         res.remove(pack);
         return res;
     }
 
-    public Collection<JavaPackage> usedPackages() {
+    public Collection<CodePackage> usedPackages() {
         return usedPackages.asSet();
     }
 
-    public Map<JavaPackage, Integer> usedPackageCounts() {
+    public Map<CodePackage, Integer> usedPackageCounts() {
         return usedPackages.asMap();
     }
 
-    public Collection<JavaClass> usedClasses() {
+    public Collection<CodeClass> usedClasses() {
         return usedClasses.asSet();
     }
 
-    public Map<JavaClass, Integer> usedClassCounts() {
+    public Map<CodeClass, Integer> usedClassCounts() {
         return usedClasses.asMap();
     }
 
-    public boolean uses(JavaPackage pack) {
+    public boolean uses(CodePackage pack) {
         return usedPackages.contains(pack);
     }
 
     @Override
-    public Collection<JavaClass> uses() {
+    public Collection<CodeClass> uses() {
         return usedClasses();
     }
 
@@ -127,7 +127,7 @@ public class JavaClass extends UsingElement<JavaClass> {
     }
 
     @Override
-    public Collection<String> usedVia(UsingElement<JavaClass> other) {
+    public Collection<String> usedVia(UsingElement<CodeClass> other) {
         return Collections.emptyList();
     }
 
@@ -139,7 +139,7 @@ public class JavaClass extends UsingElement<JavaClass> {
     void addImport(String type, Model model) {
         if (!name.equals(type)) {
             final String packName = Model.packageOf(type);
-            final JavaPackage p = model.getOrCreatePackage(packName);
+            final CodePackage p = model.getOrCreatePackage(packName);
             usedPackages.add(p);
             pack.addEfferent(p);
             usedClasses.add(model.getOrCreateClass(type));
@@ -152,8 +152,8 @@ public class JavaClass extends UsingElement<JavaClass> {
     }
 
     public boolean equals(Object other) {
-        if (other instanceof JavaClass) {
-            final JavaClass otherClass = (JavaClass) other;
+        if (other instanceof CodeClass) {
+            final CodeClass otherClass = (CodeClass) other;
             return otherClass.getName().equals(getName());
         }
         return false;

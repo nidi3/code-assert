@@ -17,8 +17,8 @@ package guru.nidi.codeassert.gui;
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import guru.nidi.codeassert.model.JavaClass;
-import guru.nidi.codeassert.model.JavaPackage;
+import guru.nidi.codeassert.model.CodeClass;
+import guru.nidi.codeassert.model.CodePackage;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +33,7 @@ public class Application extends WebMvcConfigurerAdapter {
     @Bean
     Module jacksonModule() {
         return new SimpleModule()
-                .addSerializer(new JavaPackageSerializer(JavaPackage.class))
-                .addSerializer(new JavaClassSerializer(JavaClass.class));
+                .addSerializer(new CodePackageSerializer(CodePackage.class))
+                .addSerializer(new CodeClassSerializer(CodeClass.class));
     }
 }

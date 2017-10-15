@@ -26,13 +26,13 @@ import java.util.*;
  * @author Clarkware Consulting, Inc.
  */
 
-public class JavaPackage extends UsingElement<JavaPackage> {
+public class CodePackage extends UsingElement<CodePackage> {
     private final String name;
-    private final Set<JavaClass> classes;
-    private final List<JavaPackage> uses;
-    private final Set<JavaClass> annotations;
+    private final Set<CodeClass> classes;
+    private final List<CodePackage> uses;
+    private final Set<CodeClass> annotations;
 
-    JavaPackage(String name) {
+    CodePackage(String name) {
         this.name = name;
         classes = new HashSet<>();
         uses = new ArrayList<>();
@@ -44,32 +44,32 @@ public class JavaPackage extends UsingElement<JavaPackage> {
         return name;
     }
 
-    public void addClass(JavaClass clazz) {
+    public void addClass(CodeClass clazz) {
         classes.add(clazz);
     }
 
-    public void addAnnotation(JavaClass clazz) {
+    public void addAnnotation(CodeClass clazz) {
         annotations.add(clazz);
     }
 
-    public Collection<JavaClass> getClasses() {
+    public Collection<CodeClass> getClasses() {
         return classes;
     }
 
-    public Collection<JavaClass> getAnnotations() {
+    public Collection<CodeClass> getAnnotations() {
         return annotations;
     }
 
-    void addEfferent(JavaPackage jPackage) {
+    void addEfferent(CodePackage jPackage) {
         if (!jPackage.getName().equals(getName()) && !uses.contains(jPackage)) {
             uses.add(jPackage);
         }
     }
 
     @Override
-    public Set<String> usedVia(UsingElement<JavaPackage> to) {
+    public Set<String> usedVia(UsingElement<CodePackage> to) {
         final Set<String> res = new HashSet<>();
-        for (final JavaClass jc : getClasses()) {
+        for (final CodeClass jc : getClasses()) {
             if (jc.uses(to.self())) {
                 res.add(jc.getName());
             }
@@ -88,18 +88,18 @@ public class JavaPackage extends UsingElement<JavaPackage> {
     }
 
     @Override
-    public JavaPackage self() {
+    public CodePackage self() {
         return this;
     }
 
     @Override
-    public Collection<JavaPackage> uses() {
+    public Collection<CodePackage> uses() {
         return uses;
     }
 
     public boolean equals(Object other) {
-        if (other instanceof JavaPackage) {
-            final JavaPackage otherPackage = (JavaPackage) other;
+        if (other instanceof CodePackage) {
+            final CodePackage otherPackage = (CodePackage) other;
             return otherPackage.getName().equals(getName());
         }
         return false;

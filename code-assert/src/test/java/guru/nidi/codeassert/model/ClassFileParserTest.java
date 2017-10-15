@@ -49,26 +49,26 @@ public class ClassFileParserTest {
 
     @Test
     void className() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertEquals(model("ExampleConcreteClass"), clazz.getName());
     }
 
     @Test
     void classSource() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
     }
 
     @Test
     void size() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertEquals(518, clazz.getCodeSize());
         assertEquals(2221, clazz.getTotalSize());
     }
 
     @Test
     void fields() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertEquals(1, clazz.getFields().size());
         final MemberInfo field = clazz.getFields().get(0);
         assertEquals(2, field.getAccessFlags());
@@ -78,7 +78,7 @@ public class ClassFileParserTest {
 
     @Test
     void methods() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertEquals(7, clazz.getMethods().size());
         final MemberInfo method = clazz.getMethods().get(0);
         assertEquals(1, method.getAccessFlags());
@@ -88,7 +88,7 @@ public class ClassFileParserTest {
 
     @Test
     void classImports() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertCollectionEquals(toString(clazz.usedForeignPackages()),
                 "java.net", "java.text", "java.sql", "java.lang", "java.io",
                 "java.rmi", "java.util", "java.util.jar", "java.math",
@@ -101,7 +101,7 @@ public class ClassFileParserTest {
 
     @Test
     void classImportCounts() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertCollectionEquals(toString(clazz.usedPackageCounts()),
                 "java.net 1", "java.text 1", "java.sql 1", "java.lang 5", "java.io 3",
                 "java.rmi 1", "java.util 1", "java.util.jar 1", "java.math 1",
@@ -114,7 +114,7 @@ public class ClassFileParserTest {
 
     @Test
     void usedClasses() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertCollectionEquals(toString(clazz.usedClasses()),
                 "java.lang.String", "java.lang.Exception", "java.io.IOException", "java.io.File",
                 "java.math.BigDecimal", "java.util.Vector", "java.util.jar.JarFile", "java.net.URL",
@@ -129,7 +129,7 @@ public class ClassFileParserTest {
 
     @Test
     void usedClassCount() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertCollectionEquals(toString(clazz.usedClassCounts()),
                 "java.lang.String 3", "java.lang.Exception 2", "java.io.IOException 1", "java.io.File 2",
                 "java.math.BigDecimal 1", "java.util.Vector 1", "java.util.jar.JarFile 1", "java.net.URL 1",
@@ -144,38 +144,38 @@ public class ClassFileParserTest {
 
     @Test
     void innerClassName() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
         assertEquals(model("ExampleConcreteClass$ExampleInnerClass"), clazz.getName());
     }
 
     @Test
     void innerClassSource() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
     }
 
     @Test
     void innerClassImports() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
-        assertCollectionEquals(clazz.usedForeignPackages(), new JavaPackage("java.lang"));
+        final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass$ExampleInnerClass"));
+        assertCollectionEquals(clazz.usedForeignPackages(), new CodePackage("java.lang"));
     }
 
     @Test
     void packageClassName() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExamplePackageClass"));
+        final CodeClass clazz = parse(Path.testClass("ExamplePackageClass"));
         assertEquals(model("ExamplePackageClass"), clazz.getName());
     }
 
     @Test
     void packageClassSource() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExamplePackageClass"));
+        final CodeClass clazz = parse(Path.testClass("ExamplePackageClass"));
         assertEquals("ExampleConcreteClass.java", clazz.getSourceFile());
     }
 
     @Test
     void packageClassImports() throws IOException {
-        final JavaClass clazz = parse(Path.testClass("ExamplePackageClass"));
-        assertCollectionEquals(clazz.usedPackages(), new JavaPackage("java.lang"));
+        final CodeClass clazz = parse(Path.testClass("ExamplePackageClass"));
+        assertCollectionEquals(clazz.usedPackages(), new CodePackage("java.lang"));
     }
 
     @Test
@@ -190,7 +190,7 @@ public class ClassFileParserTest {
 
     @Test
     void genericParameters() throws IOException {
-        final JavaClass generic = parse(Path.testClass("p4/GenericParameters"));
+        final CodeClass generic = parse(Path.testClass("p4/GenericParameters"));
         assertCollectionEquals(toString(generic.usedPackages()),
                 "java.util", "java.lang",
                 model("p4.p4"), model("p4.p2"), model("p4.p1"), model("p4.p9"), model("p4.p10"),
@@ -199,13 +199,13 @@ public class ClassFileParserTest {
 
     @Test
     void subGenericParameters() throws IOException {
-        final JavaClass subGeneric = parse(Path.testClass("p4/SubGenericParameters"));
+        final CodeClass subGeneric = parse(Path.testClass("p4/SubGenericParameters"));
         assertCollectionEquals(toString(subGeneric.usedForeignPackages()), model("p4.p1"));
     }
 
     @Test
     void classAnnotation() throws IOException {
-        final JavaClass annotations = parse(Path.testClass("p5/Annotations"));
+        final CodeClass annotations = parse(Path.testClass("p5/Annotations"));
         assertCollectionEquals(toString(annotations.getAnnotations()),
                 model("p5.ClassRetentionAnnotation"),
                 model("ExampleAnnotation"),
@@ -247,7 +247,7 @@ public class ClassFileParserTest {
         return res;
     }
 
-    private JavaClass parse(File f) throws IOException {
+    private CodeClass parse(File f) throws IOException {
         return parser.parse(f, new Model());
     }
 }

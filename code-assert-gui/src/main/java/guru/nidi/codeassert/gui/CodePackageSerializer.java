@@ -18,33 +18,31 @@ package guru.nidi.codeassert.gui;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import guru.nidi.codeassert.model.JavaClass;
-import guru.nidi.codeassert.model.JavaPackage;
+import guru.nidi.codeassert.model.CodeClass;
+import guru.nidi.codeassert.model.CodePackage;
 
 import java.io.IOException;
-import java.util.Map;
 
-public class JavaClassSerializer extends StdSerializer<JavaClass> {
-    protected JavaClassSerializer(Class<JavaClass> t) {
+public class CodePackageSerializer extends StdSerializer<CodePackage> {
+    protected CodePackageSerializer(Class<CodePackage> t) {
         super(t);
     }
 
     @Override
-    public void serialize(JavaClass value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+    public void serialize(CodePackage value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
         gen.writeStringField("name", value.getName());
-        gen.writeStringField("package", value.getPackage().getName());
-        gen.writeNumberField("size", value.getTotalSize());
-        gen.writeArrayFieldStart("usePackages");
-        for (final JavaPackage pack : value.usedPackages()) {
+        gen.writeArrayFieldStart("classes");
+        for (final CodeClass clazz : value.getClasses()) {
+            gen.writeString(clazz.getName());
+        }
+        gen.writeEndArray();
+        gen.writeArrayFieldStart("uses");
+        for (final CodePackage pack : value.uses()) {
             gen.writeString(pack.getName());
         }
         gen.writeEndArray();
-        gen.writeObjectFieldStart("useClasses");
-        for (final Map.Entry<JavaClass, Integer> entry : value.usedClassCounts().entrySet()) {
-            gen.writeNumberField(entry.getKey().getName(), entry.getValue());
-        }
-        gen.writeEndObject();
         gen.writeEndObject();
     }
+
 }

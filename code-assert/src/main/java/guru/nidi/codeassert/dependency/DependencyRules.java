@@ -174,7 +174,7 @@ public final class DependencyRules {
         final List<DependencyRule> ruleFields = new ArrayList<>();
         for (final Field f : ruler.getClass().getDeclaredFields()) {
             f.setAccessible(true);
-            if (f.getType() == JavaElement.class) {
+            if (f.getType() == CodeElement.class) {
                 ruleFields.add(initField(basePackage, ruler, f));
             }
             if (f.getType() == DependencyRule.class) {

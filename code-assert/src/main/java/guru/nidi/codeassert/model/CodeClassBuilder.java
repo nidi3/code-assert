@@ -21,33 +21,33 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-class JavaClassBuilder {
+class CodeClassBuilder {
     private static final char CLASS_DESCRIPTOR = 'L';
     private static final char TYPE_END = ';';
 
-    final JavaClass clazz;
+    final CodeClass clazz;
     private final Model model;
     private final ConstantPool constantPool;
 
-    JavaClassBuilder(String className, Model model, ConstantPool constantPool) {
+    CodeClassBuilder(String className, Model model, ConstantPool constantPool) {
         this.model = model;
         this.clazz = model.getOrCreateClass(className);
         this.constantPool = constantPool;
     }
 
-    public JavaClassBuilder addSuperClass(String className) {
+    public CodeClassBuilder addSuperClass(String className) {
         addImport(className);
         return this;
     }
 
-    public JavaClassBuilder addInterfaces(List<String> interfaceNames) {
+    public CodeClassBuilder addInterfaces(List<String> interfaceNames) {
         for (final String interfaceName : interfaceNames) {
             addImport(interfaceName);
         }
         return this;
     }
 
-    public JavaClassBuilder addClassConstantReferences() throws IOException {
+    public CodeClassBuilder addClassConstantReferences() throws IOException {
         for (final Constant constant : constantPool) {
             if (constant.tag == Constant.CLASS) {
                 final String name = constantPool.getUtf8(constant.nameIndex);
@@ -57,12 +57,12 @@ class JavaClassBuilder {
         return this;
     }
 
-    public JavaClassBuilder addFlags(int flags) {
+    public CodeClassBuilder addFlags(int flags) {
         clazz.concrete = !Modifier.isAbstract(flags) && !Modifier.isInterface(flags);
         return this;
     }
 
-    public JavaClassBuilder addMethodRefs(List<MemberInfo> methods) throws IOException {
+    public CodeClassBuilder addMethodRefs(List<MemberInfo> methods) throws IOException {
         addMemberAnnotationRefs(methods);
         addMemberSignatureRefs(SignatureParser.Source.METHOD, methods);
         addMemberTypes(methods);
@@ -70,7 +70,7 @@ class JavaClassBuilder {
         return this;
     }
 
-    public JavaClassBuilder addFieldRefs(List<MemberInfo> fields) throws IOException {
+    public CodeClassBuilder addFieldRefs(List<MemberInfo> fields) throws IOException {
         addMemberAnnotationRefs(fields);
         addMemberSignatureRefs(SignatureParser.Source.FIELD, fields);
         addMemberTypes(fields);
@@ -78,7 +78,7 @@ class JavaClassBuilder {
         return this;
     }
 
-    public JavaClassBuilder addAttributeRefs(List<AttributeInfo> attributes) throws IOException {
+    public CodeClassBuilder addAttributeRefs(List<AttributeInfo> attributes) throws IOException {
         for (final AttributeInfo attribute : attributes) {
             addSourceAttribute(attribute);
             addAttributeAnnotationRefs(attribute);
@@ -87,17 +87,17 @@ class JavaClassBuilder {
         return this;
     }
 
-    public JavaClassBuilder addPackageInfo(Model model, String className) {
+    public CodeClassBuilder addPackageInfo(Model model, String className) {
         if (className.endsWith(".package-info")) {
-            final JavaPackage pack = model.getOrCreatePackage(Model.packageOf(className));
-            for (final JavaClass ann : clazz.getAnnotations()) {
+            final CodePackage pack = model.getOrCreatePackage(Model.packageOf(className));
+            for (final CodeClass ann : clazz.getAnnotations()) {
                 pack.addAnnotation(ann);
             }
         }
         return this;
     }
 
-    public JavaClassBuilder addSizes(int totalSize, List<MemberInfo> methods) {
+    public CodeClassBuilder addSizes(int totalSize, List<MemberInfo> methods) {
         int codeSize = 0;
         for (final MemberInfo method : methods) {
             codeSize += method.codeSize;

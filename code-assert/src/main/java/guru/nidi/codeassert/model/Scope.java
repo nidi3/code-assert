@@ -31,11 +31,11 @@ public abstract class Scope<T extends UsingElement<T>> implements Iterable<T> {
         this.model = model;
     }
 
-    public static Scope<JavaPackage> packages(final Model model) {
+    public static Scope<CodePackage> packages(final Model model) {
         return new Packages(model);
     }
 
-    public static Scope<JavaClass> classes(final Model model) {
+    public static Scope<CodeClass> classes(final Model model) {
         return new Classes(model);
     }
 
@@ -58,24 +58,24 @@ public abstract class Scope<T extends UsingElement<T>> implements Iterable<T> {
         return res;
     }
 
-    public static class Packages extends Scope<JavaPackage> {
+    public static class Packages extends Scope<CodePackage> {
         protected Packages(Model model) {
             super(model);
         }
 
         @Override
-        public Iterator<JavaPackage> iterator() {
+        public Iterator<CodePackage> iterator() {
             return model.packages.values().iterator();
         }
     }
 
-    public static class Classes extends Scope<JavaClass> {
+    public static class Classes extends Scope<CodeClass> {
         public Classes(Model model) {
             super(model);
         }
 
         @Override
-        public Iterator<JavaClass> iterator() {
+        public Iterator<CodeClass> iterator() {
             return model.classes.values().iterator();
         }
     }

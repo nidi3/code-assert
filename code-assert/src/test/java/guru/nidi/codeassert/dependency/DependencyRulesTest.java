@@ -394,7 +394,7 @@ public class DependencyRulesTest {
 
         final DependencyRules rules2 = DependencyRules.denyAll()
                 .withRules("guru.nidi.codeassert", new DependencyRuler() {
-                    JavaElement model, config, dependency;
+                    CodeElement model, config, dependency;
 
                     @Override
                     public void defineRules() {

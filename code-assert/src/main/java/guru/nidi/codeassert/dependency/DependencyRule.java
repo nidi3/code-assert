@@ -23,7 +23,7 @@ import java.util.List;
 
 import static guru.nidi.codeassert.dependency.RuleAccessor.*;
 
-public class DependencyRule extends JavaElement {
+public class DependencyRule extends CodeElement {
     final Usage use = new Usage();
     final Usage usedBy = new Usage();
     boolean optional;
@@ -40,32 +40,32 @@ public class DependencyRule extends JavaElement {
         return new DependencyRule(name, false);
     }
 
-    public DependencyRule mustUse(JavaElement... rules) {
+    public DependencyRule mustUse(CodeElement... rules) {
         use.must(rules);
         return this;
     }
 
-    public DependencyRule mayUse(JavaElement... rules) {
+    public DependencyRule mayUse(CodeElement... rules) {
         use.may(rules);
         return this;
     }
 
-    public DependencyRule mustNotUse(JavaElement... rules) {
+    public DependencyRule mustNotUse(CodeElement... rules) {
         use.mustNot(rules);
         return this;
     }
 
-    public DependencyRule mustBeUsedBy(JavaElement... rules) {
+    public DependencyRule mustBeUsedBy(CodeElement... rules) {
         usedBy.must(rules);
         return this;
     }
 
-    public DependencyRule mayBeUsedBy(JavaElement... rules) {
+    public DependencyRule mayBeUsedBy(CodeElement... rules) {
         usedBy.may(rules);
         return this;
     }
 
-    public DependencyRule mustNotBeUsedBy(JavaElement... rules) {
+    public DependencyRule mustNotBeUsedBy(CodeElement... rules) {
         usedBy.mustNot(rules);
         return this;
     }

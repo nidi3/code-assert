@@ -20,11 +20,11 @@ import guru.nidi.codeassert.config.LocationMatcher;
 import guru.nidi.codeassert.model.UsingElement;
 import guru.nidi.codeassert.model.UsingElementMatcher;
 
-public class JavaElement implements UsingElementMatcher {
+public class CodeElement implements UsingElementMatcher {
     final LocationMatcher pattern;
     final boolean allowAll;
 
-    JavaElement(String pattern, boolean allowAll) {
+    CodeElement(String pattern, boolean allowAll) {
         final int starPos = pattern.indexOf('*');
         if (starPos >= 0 && starPos != pattern.length() - 1) {
             throw new IllegalArgumentException("Wildcard * is only allowed at the end (e.g. java*)");

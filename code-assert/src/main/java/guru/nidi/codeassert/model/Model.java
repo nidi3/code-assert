@@ -25,8 +25,8 @@ import java.util.zip.ZipEntry;
 public class Model {
     public static final String UNNAMED_PACKAGE = "<Unnamed Package>";
 
-    final Map<String, JavaPackage> packages = new HashMap<>();
-    final Map<String, JavaClass> classes = new HashMap<>();
+    final Map<String, CodePackage> packages = new HashMap<>();
+    final Map<String, CodeClass> classes = new HashMap<>();
 
     public static Model from(File... files) {
         return from(Arrays.asList(files));
@@ -65,20 +65,20 @@ public class Model {
         }
     }
 
-    JavaPackage getOrCreatePackage(String name) {
-        JavaPackage pack = packages.get(name);
+    CodePackage getOrCreatePackage(String name) {
+        CodePackage pack = packages.get(name);
         if (pack == null) {
-            pack = new JavaPackage(name);
+            pack = new CodePackage(name);
             packages.put(name, pack);
         }
         return pack;
     }
 
-    JavaClass getOrCreateClass(String name) {
-        JavaClass clazz = classes.get(name);
+    CodeClass getOrCreateClass(String name) {
+        CodeClass clazz = classes.get(name);
         if (clazz == null) {
-            final JavaPackage pack = getOrCreatePackage(packageOf(name));
-            clazz = new JavaClass(name, pack);
+            final CodePackage pack = getOrCreatePackage(packageOf(name));
+            clazz = new CodeClass(name, pack);
             classes.put(name, clazz);
             pack.addClass(clazz);
         }
@@ -90,11 +90,11 @@ public class Model {
         return pos < 0 ? UNNAMED_PACKAGE : type.substring(0, pos);
     }
 
-    public Collection<JavaPackage> getPackages() {
+    public Collection<CodePackage> getPackages() {
         return packages.values();
     }
 
-    public Collection<JavaClass> getClasses() {
+    public Collection<CodeClass> getClasses() {
         return classes.values();
     }
 

@@ -36,13 +36,13 @@ class ClassFileParser {
     private CountingInputStream counter;
     private DataInputStream in;
 
-    public JavaClass parse(File file, Model model) throws IOException {
+    public CodeClass parse(File file, Model model) throws IOException {
         try (final InputStream in = new FileInputStream(file)) {
             return parse(in, model);
         }
     }
 
-    public JavaClass parse(InputStream is, Model model) throws IOException {
+    public CodeClass parse(InputStream is, Model model) throws IOException {
         counter = new CountingInputStream(is);
         in = new DataInputStream(counter);
 
@@ -61,7 +61,7 @@ class ClassFileParser {
         final List<MemberInfo> methods = parseMembers();
         final List<AttributeInfo> attributes = parseAttributes();
 
-        return new JavaClassBuilder(className, model, constantPool)
+        return new CodeClassBuilder(className, model, constantPool)
                 .addClassConstantReferences()
                 .addFlags(flags)
                 .addSuperClass(superClassName)
