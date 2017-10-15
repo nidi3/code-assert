@@ -22,31 +22,58 @@ import io.gitlab.arturbosch.detekt.api.*;
 import io.gitlab.arturbosch.detekt.core.*;
 
 import java.io.File;
-import java.net.URL;
 import java.util.*;
 
 import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static io.gitlab.arturbosch.detekt.api.Severity.*;
 import static java.lang.Boolean.FALSE;
+import static java.util.Arrays.asList;
 
 public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
     private final AnalyzerConfig config;
     private final DetektCollector collector;
+    private final Config detektConfig;
+    private final List<RuleSetProvider> ruleSetProviders;
 
     public DetektAnalyzer(AnalyzerConfig config, DetektCollector collector) {
+        this(config, collector, null, Collections.emptyList());
+    }
+
+    private DetektAnalyzer(AnalyzerConfig config, DetektCollector collector, Config detektConfig,
+                           List<RuleSetProvider> ruleSetProviders) {
         this.config = config;
         this.collector = collector;
+        this.detektConfig = detektConfig;
+        this.ruleSetProviders = ruleSetProviders;
+    }
+
+    public DetektAnalyzer withConfig(Config detektConfig) {
+        return new DetektAnalyzer(config, collector, detektConfig, ruleSetProviders);
+    }
+
+    public DetektAnalyzer withRuleSets(RuleSetProvider... providers) {
+        return new DetektAnalyzer(config, collector, detektConfig, asList(providers));
     }
 
     public DetektResult analyze() {
-        final URL defaultConfig = DetektAnalyzer.class.getResource("default-detekt-config.yml");
-        final Config detektConfig = new NoFormat(YamlConfig.Companion.loadResource(defaultConfig));
         final File baseDir = new File(AnalyzerConfig.Path.commonBase(config.getSourcePaths(KOTLIN)).getPath());
         final ProcessingSettings settings = new ProcessingSettings(baseDir.toPath(),
-                detektConfig, Collections.emptyList(), false, false, Collections.emptyList());
-        final KtTreeCompiler compiler = KtTreeCompiler.Companion.instance(settings);
-        final Detektion detektion = DetektFacade.INSTANCE.instance(settings).run(compiler);
+                calcDetektConfig(), Collections.emptyList(), false, false, Collections.emptyList());
+        final Detektor detektor = new Detektor(settings, calcRuleSetProviders(settings), Collections.emptyList());
+        final Detektion detektion = detektor.run(KtTreeCompiler.Companion.instance(settings));
         return createResult(baseDir, detektion);
+    }
+
+    private Config calcDetektConfig() {
+        return new NoFormat(detektConfig == null
+                ? YamlConfig.Companion.loadResource(DetektAnalyzer.class.getResource("default-detekt-config.yml"))
+                : detektConfig);
+    }
+
+    private List<RuleSetProvider> calcRuleSetProviders(ProcessingSettings settings) {
+        final List<RuleSetProvider> res = new RuleSetLocator(settings).load();
+        res.addAll(ruleSetProviders);
+        return res;
     }
 
     private DetektResult createResult(File baseDir, Detektion detektion) {
@@ -87,7 +114,7 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
     private static class SeverityComparator implements Comparator<Severity> {
         static final SeverityComparator INSTANCE = new SeverityComparator();
 
-        private static final List<Severity> SEVERITIES = Arrays.asList(
+        private static final List<Severity> SEVERITIES = asList(
                 Style, CodeSmell, Minor, Performance, Maintainability, Warning, Security, Defect);
 
         public int compare(Severity s1, Severity s2) {
