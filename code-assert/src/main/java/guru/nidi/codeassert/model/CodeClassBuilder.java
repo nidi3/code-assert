@@ -29,10 +29,18 @@ class CodeClassBuilder {
     private final Model model;
     private final ConstantPool constantPool;
 
-    CodeClassBuilder(String className, Model model, ConstantPool constantPool) {
+    private CodeClassBuilder(CodeClass clazz, Model model, ConstantPool constantPool) {
+        this.clazz = clazz;
         this.model = model;
-        this.clazz = model.getOrCreateClass(className);
         this.constantPool = constantPool;
+    }
+
+    CodeClassBuilder(String className, Model model, ConstantPool constantPool) {
+        this(model.getOrCreateClass(className), model, constantPool);
+    }
+
+    CodeClassBuilder(CodeClass clazz) {
+        this(clazz, null, null);
     }
 
     public CodeClassBuilder addSuperClass(String className) {
@@ -97,13 +105,21 @@ class CodeClassBuilder {
         return this;
     }
 
-    public CodeClassBuilder addSizes(int totalSize, List<MemberInfo> methods) {
+    public CodeClassBuilder addCodeSizes(int totalSize, List<MemberInfo> methods) {
         int codeSize = 0;
         for (final MemberInfo method : methods) {
             codeSize += method.codeSize;
         }
         clazz.codeSize = codeSize;
         clazz.totalSize = totalSize;
+        return this;
+    }
+
+    public CodeClassBuilder addSourceSizes(int codeLines, int commentLines, int emptyLines, int totalLines) {
+        clazz.codeLines = codeLines;
+        clazz.commentLines = commentLines;
+        clazz.emptyLines = emptyLines;
+        clazz.totalLines = totalLines;
         return this;
     }
 

@@ -39,6 +39,10 @@ public class CodeClass extends UsingElement<CodeClass> {
     int codeSize;
     int totalSize;
     boolean concrete;
+    int codeLines;
+    int commentLines;
+    int emptyLines;
+    int totalLines;
 
     CodeClass(String name, CodePackage pack) {
         this.name = name;
@@ -83,6 +87,22 @@ public class CodeClass extends UsingElement<CodeClass> {
 
     public boolean isConcrete() {
         return concrete;
+    }
+
+    public int getCodeLines() {
+        return codeLines;
+    }
+
+    public int getCommentLines() {
+        return commentLines;
+    }
+
+    public int getEmptyLines() {
+        return emptyLines;
+    }
+
+    public int getTotalLines() {
+        return totalLines;
     }
 
     @Override

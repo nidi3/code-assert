@@ -16,9 +16,9 @@
 package guru.nidi.codeassert;
 
 import guru.nidi.codeassert.checkstyle.*;
-import guru.nidi.codeassert.config.*;
+import guru.nidi.codeassert.config.AnalyzerConfig;
+import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.*;
-import guru.nidi.codeassert.detekt.DetektMatcher;
 import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
@@ -80,7 +80,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                         In.clazz(PmdRulesets.class).ignore("TooManyMethods", "AvoidDuplicateLiterals"),
                         In.classes("Reason").ignore("SingularField"),
                         In.clazz(Coverage.class).ignore("ExcessiveParameterList"),
-                        In.classes("DependencyRules", "JavaClassImportBuilder").ignore("GodClass"));
+                        In.classes("SourceFileParser").ignore("CyclomaticComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity"),
+                        In.classes("DependencyRules", "CodeClassBuilder").ignore("GodClass"));
         return new PmdAnalyzer(AnalyzerConfig.maven().main(), collector)
                 .withRulesets(PredefConfig.defaultPmdRulesets())
                 .analyze();
@@ -91,9 +92,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
         System.gc();
         final CpdMatchCollector collector = new CpdMatchCollector()
                 .apply(PredefConfig.cpdIgnoreEqualsHashCodeToString())
-                .just(In.clazz(DetektMatcher.class).ignoreAll())
-                .just(In.clazz(PmdAnalyzer.class).ignore("Map<String, PmdRuleset> newRuleset"))
-                .just(In.clazz(ProjectLayout.class).ignoreAll());
+                .just(In.classes("DetektMatcher", "ProjectLayout", "SourceFileParser").ignoreAll())
+                .just(In.clazz(PmdAnalyzer.class).ignore("Map<String, PmdRuleset> newRuleset"));
 
         return new CpdAnalyzer(AnalyzerConfig.maven().main(), 27, collector).analyze();
     }
@@ -104,7 +104,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
         final StyleEventCollector collector = new StyleEventCollector()
                 .apply(PredefConfig.minimalCheckstyleIgnore())
                 .just(In.classes("Coverage", "Constant").ignore("empty.line.separator"))
-                .just(In.classes(BaseCollector.class, In.class, Location.class).ignore("overload.methods.declaration"))
+                .just(In.classes("BaseCollector", "In", "Location", "SourceFileParser").ignore("overload.methods.declaration"))
                 .just(In.clazz(PmdRulesets.class).ignore("abbreviation.as.word"))
                 .just(In.classes("SignatureParser").ignore("name.invalidPattern"))
                 .just(In.classes("DependencyMap").ignore("tag.continuation.indent"));

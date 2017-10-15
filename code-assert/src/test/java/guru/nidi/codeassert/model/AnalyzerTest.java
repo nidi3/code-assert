@@ -27,11 +27,11 @@ class AnalyzerTest {
 
     @Test
     void packages() throws IOException {
-        assertEquals(38, model.getPackages().size());
+        assertEquals(40, model.getPackages().size());
     }
 
     @Test
     void classes() throws IOException {
-        assertEquals(115, model.getClasses().size());
+        assertEquals(129, model.getClasses().size());
     }
 }

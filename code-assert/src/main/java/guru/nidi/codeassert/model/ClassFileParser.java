@@ -33,17 +33,16 @@ class ClassFileParser {
     private static final int JAVA_MAGIC = 0xCAFEBABE;
 
     private ConstantPool constantPool;
-    private CountingInputStream counter;
     private DataInputStream in;
 
-    public CodeClass parse(File file, Model model) throws IOException {
+    CodeClass parse(File file, Model model) throws IOException {
         try (final InputStream in = new FileInputStream(file)) {
             return parse(in, model);
         }
     }
 
-    public CodeClass parse(InputStream is, Model model) throws IOException {
-        counter = new CountingInputStream(is);
+    CodeClass parse(InputStream is, Model model) throws IOException {
+        final CountingInputStream counter = new CountingInputStream(is);
         in = new DataInputStream(counter);
 
         parseMagic();
@@ -70,7 +69,7 @@ class ClassFileParser {
                 .addMethodRefs(methods)
                 .addAttributeRefs(attributes)
                 .addPackageInfo(model, className)
-                .addSizes(counter.getCount(), methods)
+                .addCodeSizes(counter.getCount(), methods)
                 .clazz;
     }
 

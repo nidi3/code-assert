@@ -67,12 +67,14 @@ class PmdTest {
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "jacoco/JacocoAnalyzer", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "ktlint/KtlintAnalyzer", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "model/Model", "Avoid assignments in operands")
+                        + pmd(MEDIUM, "AssignmentInOperand", MAIN, "model/SourceFileParser", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/PmdRulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 115")
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/PmdRulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 154")
-                        + pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/JavaClassImportBuilder", "Avoid using final local variables, turn them into fields")
+                        + pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/CodeClassBuilder", "Avoid using final local variables, turn them into fields")
                         + pmd(MEDIUM, "CommentSize", MAIN, "config/LocationNameMatcher", "Comment is too large: Line too long")
                         + pmd(MEDIUM, "ConfusingTernary", MAIN, "config/Location", "Avoid if (x != y) ..; else ..;")
                         + pmd(MEDIUM, "ExcessiveParameterList", MAIN, "jacoco/Coverage", "Avoid long parameter lists.")
+                        + pmd(MEDIUM, "InefficientEmptyStringCheck", MAIN, "model/SourceFileParser", "String.trim().length()==0 is an inefficient way to validate an empty String.")
                         + pmd(MEDIUM, "LongVariable", MAIN, "dependency/Tarjan", "Avoid excessively long variable names like allowIntraPackageCycles")
                         + pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", "Class cannot be instantiated and does not provide any static methods or fields")
                         + pmd(MEDIUM, "NoPackage", TEST, "/CodeCoverage", "All classes and interfaces must belong to a named package")
@@ -131,13 +133,14 @@ class PmdTest {
                                 In.classes(DependencyRulesTest.class, FindBugsTest.class).ignore("AvoidDuplicateLiterals"),
                                 In.clazz(ExampleInterface.class).ignore("ShortMethodName"),
                                 In.clazz(Bugs.class).ignore("UnusedLocalVariable"),
-                                In.classes("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns", "AddEmptyString", "DoNotCallGarbageCollectionExplicitly", "AvoidDuplicateLiterals"),
+                                In.classes("*Test").ignore("TooManyStaticImports", "AvoidDollarSigns", "AddEmptyString", "DoNotCallGarbageCollectionExplicitly", "AvoidDuplicateLiterals", "JUnitTestContainsTooManyAsserts"),
                                 In.classes(ClassFileParserTest.class).ignore("JUnitTestsShouldIncludeAssert", "JUnitTestContainsTooManyAsserts"),
                                 In.classes(DependencyRulesTest.class, LocationMatcherTest.class, LocationNameMatcherTest.class).ignore("JUnitTestContainsTooManyAsserts"),
                                 In.clazz(DependencyRulesTest.class).ignore("VariableNamingConventions"),
                                 In.clazz(DependencyRules.class).ignore("LongVariable"),
                                 In.classes(PmdTest.class, FindBugsTest.class, CheckstyleTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
                                 In.classes(AnalyzerConfigTest.class).ignore("JUnitTestContainsTooManyAsserts"),
+                                In.classes("SourceFileParser").ignore("CyclomaticComplexity", "StdCyclomaticComplexity", "ModifiedCyclomaticComplexity"),
                                 In.everywhere().ignore("UseConcurrentHashMap", "ArrayIsStoredDirectly", "MethodReturnsInternalArray", "AvoidLiteralsInIfCondition"),
                                 In.classes("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))
                 .withRulesets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
@@ -160,8 +163,7 @@ class PmdTest {
                                 "public static <T extends AnalyzerResult<?>> Matcher<T> hasNoUnusedActions() {"),
                         In.classes("*Matcher").ignore(
                                 "return item.findings().isEmpty();"),
-                        In.clazz(DependencyRules.class).ignoreAll(),
-                        In.clazz(ProjectLayout.class).ignoreAll())
+                        In.classes("DependencyRules", "ProjectLayout", "SourceFileParser").ignoreAll())
         );
         return analyzer.analyze();
     }

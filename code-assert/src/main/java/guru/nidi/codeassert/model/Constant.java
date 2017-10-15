@@ -19,7 +19,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 final class Constant {
-    public static final int
+    static final int
             UTF8 = 1,
             UNICODE = 2,
             INTEGER = 3,
@@ -41,7 +41,7 @@ final class Constant {
     final int typeIndex;
     final Object value;
 
-    public static Constant fromData(DataInputStream in) throws IOException {
+    static Constant fromData(DataInputStream in) throws IOException {
         final byte tag = in.readByte();
         switch (tag) {
             case CLASS:
@@ -90,7 +90,7 @@ final class Constant {
         this.value = value;
     }
 
-    public boolean isBig() {
+    boolean isBig() {
         return tag == DOUBLE || tag == LONG;
     }
 }

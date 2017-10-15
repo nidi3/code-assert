@@ -37,7 +37,8 @@ public final class PredefConfig {
                         .ignore("MethodArgumentCouldBeFinal", "AvoidFieldNameMatchingMethodName",
                                 "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName",
                                 "UncommentedEmptyConstructor", "UseStringBufferForStringAppends",
-                                "UncommentedEmptyMethodBody", "EmptyMethodInAbstractClassShouldBeAbstract"))
+                                "UncommentedEmptyMethodBody", "EmptyMethodInAbstractClassShouldBeAbstract",
+                                "InefficientEmptyStringCheck"))
                 .because("it's equals", In.methods("equals")
                         .ignore("NPathComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity",
                                 "CyclomaticComplexity", "ConfusingTernary"))
