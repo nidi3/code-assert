@@ -75,7 +75,7 @@ public class CheckstyleTest {
                         + line(WARNING, "one.top.level.class", TEST, "model/ExampleConcreteClass", 79, "Top-level class ExamplePackageClass has to reside in its own source file.")
                         + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 53, "Overload methods should not be split. Previous overloaded method located at line '47'.")
                         + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 64, "Overload methods should not be split. Previous overloaded method located at line '51'.")
-                        + line(WARNING, "overload.methods.declaration", MAIN, "model/SourceFileParser", 91, "Overload methods should not be split. Previous overloaded method located at line '66'.")
+                        + line(WARNING, "overload.methods.declaration", MAIN, "model/SourceFileParser", 88, "Overload methods should not be split. Previous overloaded method located at line '65'.")
                         + line(WARNING, "tag.continuation.indent", MAIN, "dependency/DependencyMap", 105, "Line continuation have incorrect indentation level, expected level should be 4."),
                 analyzer.analyze(), hasNoCheckstyleIssues());
     }

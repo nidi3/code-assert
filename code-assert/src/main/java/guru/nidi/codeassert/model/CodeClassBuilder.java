@@ -31,6 +31,7 @@ class CodeClassBuilder {
 
     private CodeClassBuilder(CodeClass clazz, Model model, ConstantPool constantPool) {
         this.clazz = clazz;
+        this.clazz.analyzed = true;
         this.model = model;
         this.constantPool = constantPool;
     }
@@ -112,14 +113,6 @@ class CodeClassBuilder {
         }
         clazz.codeSize = codeSize;
         clazz.totalSize = totalSize;
-        return this;
-    }
-
-    public CodeClassBuilder addSourceSizes(int codeLines, int commentLines, int emptyLines, int totalLines) {
-        clazz.codeLines = codeLines;
-        clazz.commentLines = commentLines;
-        clazz.emptyLines = emptyLines;
-        clazz.totalLines = totalLines;
         return this;
     }
 

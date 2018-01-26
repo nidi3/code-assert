@@ -141,7 +141,7 @@ public class FindBugsTest {
                 .because("It's checked and OK like this",
                         In.classes(DependencyRules.class, PmdRuleset.class).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
                         In.classes("*Test", "Rulesets")
-                                .and(In.classes("ClassFileParser").withMethods("parse"))
+                                .and(In.classes("ClassFileParser").withMethods("doParse"))
                                 .ignore("URF_UNREAD_FIELD"));
 
         FindBugsResult result = new FindBugsAnalyzer(config, collector).analyze();

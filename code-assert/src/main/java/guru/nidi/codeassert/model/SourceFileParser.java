@@ -45,35 +45,32 @@ abstract class SourceFileParser {
     int emptyLines;
     int totalLines;
 
-    static CodeClass parse(CodeClass clazz, File file, Charset charset) throws IOException {
+    static SourceFile parse(File file, Charset charset) throws IOException {
         try (final InputStream in = new FileInputStream(file)) {
             final Language language = Language.byFilename(file.getName());
             if (language == null) {
                 LOG.info("Unknown source file type {}. Ignoring it", file);
-            } else {
-                parse(clazz, language, in, charset);
+                return null;
             }
-            return clazz;
+            return parse(language, file.getName(), in, charset);
         }
     }
 
-    static CodeClass parse(CodeClass clazz, Language language, InputStream is, Charset charset) throws IOException {
+    static SourceFile parse(Language language, String name, InputStream is, Charset charset) throws IOException {
         try (final Reader in = new InputStreamReader(is, charset)) {
-            return parse(clazz, language, in);
+            return parse(language, name, in);
         }
     }
 
-    static CodeClass parse(CodeClass clazz, Language language, Reader reader) throws IOException {
+    static SourceFile parse(Language language, String name, Reader reader) throws IOException {
         try (final BufferedReader in = new BufferedReader(reader)) {
             final SourceFileParser parser = parser(language);
             if (parser == null) {
                 LOG.info("No parser for language {}. Ignoring it", language);
-            } else {
-                parser.parse(in);
-                new CodeClassBuilder(clazz)
-                        .addSourceSizes(parser.codeLines, parser.commentLines, parser.emptyLines, parser.totalLines);
+                return null;
             }
-            return clazz;
+            parser.parse(in);
+            return new SourceFile(name, parser.codeLines, parser.commentLines, parser.emptyLines, parser.totalLines);
         }
     }
 

@@ -57,3 +57,5 @@ object Linker {
                 }
             }
 }
+
+fun nop() = 0

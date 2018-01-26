@@ -15,64 +15,14 @@
  */
 package guru.nidi.codeassert.model;
 
-import guru.nidi.codeassert.AnalyzerException;
-
-import java.io.*;
 import java.util.*;
-import java.util.jar.JarInputStream;
-import java.util.zip.ZipEntry;
-
-import static java.util.Arrays.asList;
 
 public class Model {
     public static final String UNNAMED_PACKAGE = "<Unnamed Package>";
 
     final Map<String, CodePackage> packages = new HashMap<>();
     final Map<String, CodeClass> classes = new HashMap<>();
-
-    public static Model from(File... files) {
-        return from(asList(files));
-    }
-
-    public static Model from(List<File> files) {
-        return new Model().and(files);
-    }
-
-    public Model and(File... files) {
-        return and(asList(files));
-    }
-
-    public Model and(List<File> files) {
-        try {
-            final ClassFileParser classParser = new ClassFileParser();
-            for (final File file : files) {
-                try (final InputStream in = new FileInputStream(file)) {
-                    add(classParser, file.getName(), in);
-                }
-            }
-            return this;
-        } catch (IOException e) {
-            throw new AnalyzerException("Problem creating a Model", e);
-        }
-    }
-
-    private void add(ClassFileParser parser, String name, InputStream in) throws IOException {
-        if (name.endsWith(".jar") || name.endsWith(".zip") || name.endsWith(".war") || name.endsWith(".ear")) {
-            final JarInputStream jar = new JarInputStream(in);
-            ZipEntry entry;
-            while ((entry = jar.getNextEntry()) != null) {
-                try {
-                    if (!entry.isDirectory()) {
-                        add(parser, entry.getName(), jar);
-                    }
-                } finally {
-                    jar.closeEntry();
-                }
-            }
-        } else if (name.endsWith(".class")) {
-            parser.parse(in, this);
-        }
-    }
+    final Map<String, SourceFile> sources = new HashMap<>();
 
     CodePackage getOrCreatePackage(String name) {
         CodePackage pack = packages.get(name);
@@ -107,4 +57,7 @@ public class Model {
         return classes.values();
     }
 
+    public Collection<SourceFile> getSources() {
+        return sources.values();
+    }
 }

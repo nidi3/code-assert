@@ -35,14 +35,12 @@ public class CodeClass extends UsingElement<CodeClass> {
     private final Set<CodeClass> annotations;
     final List<MemberInfo> fields = new ArrayList<>();
     final List<MemberInfo> methods = new ArrayList<>();
+    SourceFile source;
+    boolean analyzed;
     String sourceFile;
     int codeSize;
     int totalSize;
     boolean concrete;
-    int codeLines;
-    int commentLines;
-    int emptyLines;
-    int totalLines;
 
     CodeClass(String name, CodePackage pack) {
         this.name = name;
@@ -63,6 +61,10 @@ public class CodeClass extends UsingElement<CodeClass> {
 
     public String getSourceFile() {
         return sourceFile;
+    }
+
+    public SourceFile getSource() {
+        return source;
     }
 
     public Set<CodeClass> getAnnotations() {
@@ -87,22 +89,6 @@ public class CodeClass extends UsingElement<CodeClass> {
 
     public boolean isConcrete() {
         return concrete;
-    }
-
-    public int getCodeLines() {
-        return codeLines;
-    }
-
-    public int getCommentLines() {
-        return commentLines;
-    }
-
-    public int getEmptyLines() {
-        return emptyLines;
-    }
-
-    public int getTotalLines() {
-        return totalLines;
     }
 
     @Override

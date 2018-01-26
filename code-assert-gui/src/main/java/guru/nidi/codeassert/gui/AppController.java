@@ -16,6 +16,7 @@
 package guru.nidi.codeassert.gui;
 
 import guru.nidi.codeassert.model.Model;
+import guru.nidi.codeassert.model.ModelBuilder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
@@ -25,6 +26,6 @@ public class AppController {
 
     @GetMapping("model")
     public Model model(@RequestParam String jarfile) {
-        return Model.from(new File(jarfile));
+        return new ModelBuilder().files(new File(jarfile)).build();
     }
 }

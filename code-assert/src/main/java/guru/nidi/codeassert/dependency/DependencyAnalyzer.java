@@ -17,8 +17,7 @@ package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.config.*;
-import guru.nidi.codeassert.model.Model;
-import guru.nidi.codeassert.model.Scope;
+import guru.nidi.codeassert.model.*;
 
 import java.util.*;
 
@@ -33,7 +32,8 @@ public class DependencyAnalyzer implements Analyzer<Dependencies> {
     private final DependencyCollector collector;
 
     public DependencyAnalyzer(AnalyzerConfig config) {
-        this(Model.from(config.getClasses()), DependencyRules.denyAll(), Scope.PACKAGES, new DependencyCollector());
+        this(new ModelBuilder().files(config.getClasses()).build(),
+                DependencyRules.denyAll(), Scope.PACKAGES, new DependencyCollector());
     }
 
     public DependencyAnalyzer(Model model) {

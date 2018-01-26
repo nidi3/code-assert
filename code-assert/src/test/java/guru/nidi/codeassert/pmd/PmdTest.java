@@ -66,7 +66,7 @@ class PmdTest {
                         + pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", "A class which only has private constructors should be final")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "jacoco/JacocoAnalyzer", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "ktlint/KtlintAnalyzer", "Avoid assignments in operands")
-                        + pmd(MEDIUM, "AssignmentInOperand", MAIN, "model/Model", "Avoid assignments in operands")
+                        + pmd(MEDIUM, "AssignmentInOperand", MAIN, "model/ModelBuilder", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "model/SourceFileParser", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/PmdRulesets", "The String literal \"minimum\" appears 5 times in this file; the first occurrence is on line 115")
                         + pmd(MEDIUM, "AvoidDuplicateLiterals", MAIN, "pmd/PmdRulesets", "The String literal \"CommentRequired\" appears 6 times in this file; the first occurrence is on line 154")

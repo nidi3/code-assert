@@ -23,7 +23,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AnalyzerTest {
-    final Model model = Model.from(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model").getClasses());
+    final Model model = new ModelBuilder().files(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model").getClasses()).build();
 
     @Test
     void packages() throws IOException {
@@ -32,6 +32,6 @@ class AnalyzerTest {
 
     @Test
     void classes() throws IOException {
-        assertEquals(129, model.getClasses().size());
+        assertEquals(135, model.getClasses().size());
     }
 }

@@ -49,7 +49,7 @@ class SourceFileParserTest {
 
     @Test
     void multilineStrings() throws IOException {
-        assertLines(4, 3, 0, 6, JAVA,   "line\n\"\"\"\"\n// line comment\n/*comment*/\n\"\"\"\" //line comment\nlast");
+        assertLines(4, 3, 0, 6, JAVA, "line\n\"\"\"\"\n// line comment\n/*comment*/\n\"\"\"\" //line comment\nlast");
         assertLines(6, 1, 0, 6, KOTLIN, "line\n\"\"\"\"\n// line comment\n/*comment*/\n\"\"\" //line comment\nlast");
     }
 
@@ -60,12 +60,11 @@ class SourceFileParserTest {
     }
 
     private void assertLines(int code, int comment, int empty, int total, Language language, String source) throws IOException {
-        final CodeClass clazz = new CodeClass("test", null);
-        SourceFileParser.parse(clazz, language, new StringReader(source));
-        assertEquals(code, clazz.codeLines);
-        assertEquals(comment, clazz.commentLines);
-        assertEquals(empty, clazz.emptyLines);
-        assertEquals(total, clazz.totalLines);
+        final SourceFile sf = SourceFileParser.parse(language, "dummy", new StringReader(source));
+        assertEquals(code, sf.codeLines);
+        assertEquals(comment, sf.commentLines);
+        assertEquals(empty, sf.emptyLines);
+        assertEquals(total, sf.totalLines);
     }
 
 }
