@@ -20,9 +20,16 @@ import net.sourceforge.pmd.cpd.Mark;
 import net.sourceforge.pmd.cpd.Match;
 import org.hamcrest.Description;
 
-import java.util.Iterator;
+import java.util.*;
 
 public class CpdMatcher extends ResultMatcher<CpdResult, Match> {
+    private static final Comparator<Mark> MARK_COMPARATOR = new Comparator<Mark>() {
+        @Override
+        public int compare(Mark m1, Mark m2) {
+            return m1.getFilename().compareTo(m2.getFilename());
+        }
+    };
+
     public void describeTo(Description description) {
         description.appendText("Has no code duplications");
     }
@@ -37,13 +44,21 @@ public class CpdMatcher extends ResultMatcher<CpdResult, Match> {
     private String printMatch(Match match) {
         final StringBuilder s = new StringBuilder();
         boolean first = true;
-        final Iterator<Mark> marks = match.iterator();
-        while (marks.hasNext()) {
-            final Mark mark = marks.next();
+        for (final Mark mark : getMarks(match)) {
             s.append(first ? String.format("%-4d ", match.getTokenCount()) : "     ");
             first = false;
             s.append(String.format("%s:%d-%d%n", mark.getFilename(), mark.getBeginLine(), mark.getEndLine()));
         }
         return s.substring(0, s.length() - 1);
+    }
+
+    private List<Mark> getMarks(Match match) {
+        final List<Mark> marks = new ArrayList<>();
+        final Iterator<Mark> iter = match.iterator();
+        while (iter.hasNext()) {
+            marks.add(iter.next());
+        }
+        Collections.sort(marks, MARK_COMPARATOR);
+        return marks;
     }
 }

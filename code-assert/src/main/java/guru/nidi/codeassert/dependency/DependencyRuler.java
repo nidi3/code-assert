@@ -95,6 +95,7 @@ public class DependencyRuler {
      * Create a rule for a package allowing everything.
      * Shortcut for DependencyRule.allowAll(name);
      *
+     * @param name the package name
      * @return the rule.
      */
     public DependencyRule allowRule(String name) {
@@ -105,6 +106,7 @@ public class DependencyRuler {
      * Create a rule for a package denying everything.
      * Shortcut for DependencyRule.denyAll(name);
      *
+     * @param name the package name
      * @return the rule.
      */
     public DependencyRule denyRule(String name) {
