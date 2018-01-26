@@ -186,6 +186,10 @@ public final class DependencyRules {
 
     private DependencyRule initField(String basePackage, DependencyRuler ruler, Field f) throws IllegalAccessException {
         final String name = f.getName();
+        final CodeElement value = (CodeElement) f.get(ruler);
+        if (value instanceof DependencyRule && !"*".equals(value.pattern.getPattern())) {
+            return (DependencyRule) value;
+        }
         deprecationWarnings(name);
         final String pack = addPackages(basePackage, "$self".equals(name) ? "" : camelCaseToDotCase(name));
         final DependencyRule rule = rule(pack);

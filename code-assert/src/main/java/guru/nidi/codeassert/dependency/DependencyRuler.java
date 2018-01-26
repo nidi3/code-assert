@@ -91,6 +91,26 @@ public class DependencyRuler {
         return new DependencyRule("*", true);
     }
 
+    /**
+     * Create a rule for a package allowing everything.
+     * Shortcut for DependencyRule.allowAll(name);
+     *
+     * @return the rule.
+     */
+    public DependencyRule allowRule(String name) {
+        return new DependencyRule(name, true);
+    }
+
+    /**
+     * Create a rule for a package denying everything.
+     * Shortcut for DependencyRule.denyAll(name);
+     *
+     * @return the rule.
+     */
+    public DependencyRule denyRule(String name) {
+        return new DependencyRule(name, false);
+    }
+
     public void defineRules() {
     }
 }
