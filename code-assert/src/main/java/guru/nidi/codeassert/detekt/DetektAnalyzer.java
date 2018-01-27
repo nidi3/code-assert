@@ -59,8 +59,7 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
         final File baseDir = new File(AnalyzerConfig.Path.commonBase(config.getSourcePaths(KOTLIN)).getPath());
         final ProcessingSettings settings = new ProcessingSettings(baseDir.toPath(),
                 calcDetektConfig(), Collections.emptyList(), false, false, Collections.emptyList());
-        final Detektor detektor = new Detektor(settings, calcRuleSetProviders(settings), Collections.emptyList());
-        final Detektion detektion = detektor.run(KtTreeCompiler.Companion.instance(settings));
+        final Detektion detektion = DetektFacade.Companion.create(settings, calcRuleSetProviders(settings), Collections.emptyList()).run();
         return createResult(baseDir, detektion);
     }
 

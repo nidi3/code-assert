@@ -19,160 +19,109 @@ public final class PmdRulesets {
     private PmdRulesets() {
     }
 
-    public static PmdRuleset android() {
-        return new PmdRuleset("rulesets/java/android.xml");
+    public static PmdRuleset bestPractices() {
+        return new PmdRuleset("category/java/bestpractices.xml");
     }
 
-    public static PmdRuleset basic() {
-        return new PmdRuleset("rulesets/java/basic.xml");
+    public static CodeStyle codeStyle() {
+        return new CodeStyle();
     }
 
-    public static PmdRuleset braces() {
-        return new PmdRuleset("rulesets/java/braces.xml");
+    public static Design design() {
+        return new Design();
     }
 
-    public static PmdRuleset cloning() {
-        return new PmdRuleset("rulesets/java/clone.xml");
+    public static Documentation documentation() {
+        return new Documentation();
     }
 
-    public static Codesize codesize() {
-        return new Codesize();
+    public static ErrorProne errorProne() {
+        return new ErrorProne();
     }
 
-    public static Comments comments() {
-        return new Comments();
+    public static PmdRuleset multithreading() {
+        return new PmdRuleset("category/java/multithreading.xml");
     }
 
-    public static PmdRuleset controversial() {
-        return new PmdRuleset("rulesets/java/controversial.xml");
+    public static PmdRuleset performance() {
+        return new PmdRuleset("category/java/performance.xml");
     }
 
-    public static PmdRuleset coupling() {
-        return new PmdRuleset("rulesets/java/coupling.xml");
+    public static PmdRuleset security() {
+        return new PmdRuleset("category/java/security.xml");
     }
 
-    public static PmdRuleset design() {
-        return new PmdRuleset("rulesets/java/design.xml");
-    }
 
-    public static Empty empty() {
-        return new Empty();
-    }
-
-    public static PmdRuleset finalizers() {
-        return new PmdRuleset("rulesets/java/finalizers.xml");
-    }
-
-    public static PmdRuleset imports() {
-        return new PmdRuleset("rulesets/java/imports.xml");
-    }
-
-    public static PmdRuleset j2ee() {
-        return new PmdRuleset("rulesets/java/j2ee.xml");
-    }
-
-    public static PmdRuleset javabeans() {
-        return new PmdRuleset("rulesets/java/javabeans.xml");
-    }
-
-    public static PmdRuleset junit() {
-        return new PmdRuleset("rulesets/java/junit.xml");
-    }
-
-    public static Naming naming() {
-        return new Naming();
-    }
-
-    public static PmdRuleset optimizations() {
-        return new PmdRuleset("rulesets/java/optimizations.xml");
-    }
-
-    public static PmdRuleset exceptions() {
-        return new PmdRuleset("rulesets/java/strictexception.xml");
-    }
-
-    public static PmdRuleset strings() {
-        return new PmdRuleset("rulesets/java/strings.xml");
-    }
-
-    public static PmdRuleset sunSecure() {
-        return new PmdRuleset("rulesets/java/sunsecure.xml");
-    }
-
-    public static PmdRuleset typeResolution() {
-        return new PmdRuleset("rulesets/java/typeresolution.xml");
-    }
-
-    public static PmdRuleset unnecessary() {
-        return new PmdRuleset("rulesets/java/unnecessary.xml");
-    }
-
-    public static PmdRuleset unused() {
-        return new PmdRuleset("rulesets/java/unusedcode.xml");
-    }
-
-    public static class Codesize extends PmdRuleset {
+    public static class Design extends PmdRuleset {
         @PropertyField(rule = "ExcessiveMethodLength", property = "minimum")
         private Double methodLength;
         @PropertyField(rule = "TooManyMethods", property = "maxmethods")
         private Integer methodCount;
 
-        public Codesize() {
-            super("rulesets/java/codesize.xml");
+        public Design() {
+            super("category/java/design.xml");
         }
 
-        public Codesize excessiveMethodLength(int limit) {
+        public Design excessiveMethodLength(int limit) {
             methodLength = (double) limit;
             return this;
         }
 
-        public Codesize tooManyMethods(int limit) {
+        public Design tooManyMethods(int limit) {
             methodCount = limit;
             return this;
         }
     }
 
-    public static class Empty extends PmdRuleset {
+    public static class ErrorProne extends PmdRuleset {
         @PropertyField(rule = "EmptyCatchBlock", property = "allowCommentedBlocks")
         private Boolean allowCommented;
 
-        public Empty() {
-            super("rulesets/java/empty.xml");
+        public ErrorProne() {
+            super("category/java/errorprone.xml");
         }
 
-        public Empty allowCommentedEmptyCatch(boolean allow) {
+        public ErrorProne allowCommentedEmptyCatch(boolean allow) {
             this.allowCommented = allow;
             return this;
         }
     }
 
-    public static class Comments extends PmdRuleset {
+    public static class Documentation extends PmdRuleset {
+        private final Enum[] realRequirements;
+
         public enum Requirement {
-            Required, Ignored, Unwanted
+            REQUIRED, IGNORED, UNWANTED
         }
 
         @PropertyField(rule = "CommentRequired", property = "headerCommentRequirement")
-        private Requirement header;
+        private Object header;
         @PropertyField(rule = "CommentRequired", property = "fieldCommentRequirement")
-        private Requirement field;
+        private Object field;
         @PropertyField(rule = "CommentRequired", property = "publicMethodCommentRequirement")
-        private Requirement publicMethod;
+        private Object publicMethod;
         @PropertyField(rule = "CommentRequired", property = "protectedMethodCommentRequirement")
-        private Requirement protectedMethod;
+        private Object protectedMethod;
         @PropertyField(rule = "CommentRequired", property = "enumCommentRequirement")
-        private Requirement enums;
+        private Object enums;
         @PropertyField(rule = "CommentRequired", property = "serialVersionUIDCommentRequired")
-        private Requirement serialVersionUID;
+        private Object serialVersionUID;
         @PropertyField(rule = "CommentSize", property = "maxLines")
         private Integer maxLines;
         @PropertyField(rule = "CommentSize", property = "maxLineLength")
         private Integer maxLineLength;
 
-        public Comments() {
-            super("rulesets/java/comments.xml");
+        public Documentation() {
+            super("category/java/documentation.xml");
+            try {
+                final Class<?> reqClass = Class.forName("net.sourceforge.pmd.lang.java.rule.documentation.CommentRequiredRule$CommentRequirement");
+                realRequirements = (Enum[]) reqClass.getEnumConstants();
+            } catch (ClassNotFoundException e) {
+                throw new AssertionError(e);
+            }
         }
 
-        public Comments requirement(Requirement requirement) {
+        public Documentation requirement(Requirement requirement) {
             header(requirement);
             field(requirement);
             publicMethod(requirement);
@@ -182,48 +131,57 @@ public final class PmdRulesets {
             return this;
         }
 
-        public Comments header(Requirement requirement) {
-            header = requirement;
+        private Object transform(Requirement req) {
+            for (final Enum real : realRequirements) {
+                if (real.name().equals(req.name())) {
+                    return real;
+                }
+            }
+            return null;
+        }
+
+        public Documentation header(Requirement requirement) {
+            header = transform(requirement);
             return this;
         }
 
-        public Comments field(Requirement requirement) {
-            field = requirement;
+        public Documentation field(Requirement requirement) {
+            field = transform(requirement);
             return this;
         }
 
-        public Comments publicMethod(Requirement requirement) {
-            publicMethod = requirement;
+        public Documentation publicMethod(Requirement requirement) {
+            publicMethod = transform(requirement);
             return this;
         }
 
-        public Comments protectedMethod(Requirement requirement) {
-            protectedMethod = requirement;
+        public Documentation protectedMethod(Requirement requirement) {
+            protectedMethod = transform(requirement);
             return this;
         }
 
-        public Comments enums(Requirement requirement) {
-            enums = requirement;
+        public Documentation enums(Requirement requirement) {
+            enums = transform(requirement);
             return this;
         }
 
-        public Comments serialVersionUID(Requirement requirement) {
-            serialVersionUID = requirement;
+        public Documentation serialVersionUID(Requirement requirement) {
+            serialVersionUID = transform(requirement);
             return this;
         }
 
-        public Comments maxLines(int lines) {
+        public Documentation maxLines(int lines) {
             maxLines = lines;
             return this;
         }
 
-        public Comments maxLineLen(int maxLen) {
+        public Documentation maxLineLen(int maxLen) {
             maxLineLength = maxLen;
             return this;
         }
     }
 
-    public static class Naming extends PmdRuleset {
+    public static class CodeStyle extends PmdRuleset {
         @PropertyField(rule = "ShortVariable", property = "minimum")
         private Integer varMinLen;
         @PropertyField(rule = "LongVariable", property = "minimum")
@@ -233,22 +191,22 @@ public final class PmdRulesets {
         @PropertyField(rule = "ShortClassName", property = "minimum")
         private Integer classMinLen;
 
-        public Naming() {
-            super("rulesets/java/naming.xml");
+        public CodeStyle() {
+            super("category/java/codestyle.xml");
         }
 
-        public Naming variableLen(int min, int max) {
+        public CodeStyle variableLen(int min, int max) {
             varMinLen = min;
             varMaxLen = max;
             return this;
         }
 
-        public Naming methodLen(int min) {
+        public CodeStyle methodLen(int min) {
             methodMinLen = min;
             return this;
         }
 
-        public Naming classLen(int min) {
+        public CodeStyle classLen(int min) {
             classMinLen = min;
             return this;
         }

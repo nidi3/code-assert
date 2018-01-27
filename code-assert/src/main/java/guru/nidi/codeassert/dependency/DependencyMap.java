@@ -134,8 +134,8 @@ class DependencyMap {
     }
 
     public static class Info {
-        private final Set<String> vias;
-        private final int specificity;
+        final Set<String> vias;
+        final int specificity;
 
         Info(Collection<String> vias, int specificity) {
             this.vias = new HashSet<>(vias);

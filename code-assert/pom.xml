@@ -14,11 +14,13 @@
 
     <properties>
         <slf4j.version>1.7.25</slf4j.version>
-        <checkstyle.version>6.19</checkstyle.version>
+        <checkstyle.version>8.7</checkstyle.version>
         <findbugs.version>3.0.1</findbugs.version>
-        <pmd.version>5.4.1</pmd.version>
-        <detekt.version>1.0.0.RC4</detekt.version>
-        <ktlint.version>0.9.2</ktlint.version>
+        <findsecbugs.version>1.7.1</findsecbugs.version>
+        <pmd.version>6.0.1</pmd.version>
+        <kotlin.version>1.2.20</kotlin.version>
+        <detekt.version>1.0.0.RC6-2</detekt.version>
+        <ktlint.version>0.15.0</ktlint.version>
     </properties>
 
     <build>
@@ -65,7 +67,7 @@
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
-                <version>1.1.50</version>
+                <version>${kotlin.version}</version>
                 <executions>
                     <execution>
                         <id>test-compile</id>
@@ -93,11 +95,17 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>findbugs</artifactId>
             <version>${findbugs.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-debug-all</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.h3xstream.findsecbugs</groupId>
             <artifactId>findsecbugs-plugin</artifactId>
-            <version>1.7.1</version>
+            <version>${findsecbugs.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.pmd</groupId>
@@ -114,6 +122,13 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

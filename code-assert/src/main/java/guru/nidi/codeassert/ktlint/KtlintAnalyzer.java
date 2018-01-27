@@ -104,8 +104,8 @@ public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
     }
 
     private static class ErrorListener implements Function1<LintError, Unit> {
-        private final List<LocatedLintError> errors = new ArrayList<>();
-        private File currentFile;
+        final List<LocatedLintError> errors = new ArrayList<>();
+        File currentFile;
 
         @Override
         public Unit invoke(LintError e) {

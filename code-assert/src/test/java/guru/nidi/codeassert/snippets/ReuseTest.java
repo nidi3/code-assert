@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Disabled
 public class ReuseTest {
     private final AnalyzerConfig config = AnalyzerConfig.maven().main();
-    private final PmdRuleset[] rules = new PmdRuleset[]{basic(), braces(), design(), empty(), optimizations()};
+    private final PmdRuleset[] rules = new PmdRuleset[]{codeStyle(), design(), errorProne(), performance()};
 
     //## reuse
     private final CollectorTemplate<Ignore> pmdTestCollector = CollectorTemplate.forA(PmdViolationCollector.class)

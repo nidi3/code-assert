@@ -25,8 +25,7 @@ import guru.nidi.codeassert.pmd.*;
 import org.junit.jupiter.api.Disabled;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
-import static guru.nidi.codeassert.pmd.PmdRulesets.basic;
-import static guru.nidi.codeassert.pmd.PmdRulesets.braces;
+import static guru.nidi.codeassert.pmd.PmdRulesets.bestPractices;
 
 @Disabled
 //## codeTest
@@ -68,7 +67,7 @@ public class CodeTest extends CodeAssertJunit5Test {
     protected PmdResult analyzePmd() {
         final PmdViolationCollector collector = new PmdViolationCollector().just(
                 In.everywhere().ignore("MethodArgumentCouldBeFinal"));
-        return new PmdAnalyzer(CONFIG, collector).withRulesets(basic(), braces()).analyze();
+        return new PmdAnalyzer(CONFIG, collector).withRulesets(bestPractices()).analyze();
     }
 }
 //##

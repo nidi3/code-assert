@@ -19,6 +19,7 @@ import guru.nidi.codeassert.checkstyle.StyleChecks;
 import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.findbugs.BugCollector;
 import guru.nidi.codeassert.pmd.*;
+import guru.nidi.codeassert.pmd.PmdRulesets.Documentation.Requirement;
 
 import static com.puppycrawl.tools.checkstyle.api.TokenTypes.*;
 import static guru.nidi.codeassert.config.Language.KOTLIN;
@@ -38,7 +39,7 @@ public final class PredefConfig {
                                 "CommentDefaultAccessModifier", "AbstractNaming", "AvoidFieldNameMatchingTypeName",
                                 "UncommentedEmptyConstructor", "UseStringBufferForStringAppends",
                                 "UncommentedEmptyMethodBody", "EmptyMethodInAbstractClassShouldBeAbstract",
-                                "InefficientEmptyStringCheck"))
+                                "InefficientEmptyStringCheck", "AtLeastOneConstructor", "BeanMembersShouldSerialize"))
                 .because("it's equals", In.methods("equals")
                         .ignore("NPathComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity",
                                 "CyclomaticComplexity", "ConfusingTernary"))
@@ -75,14 +76,20 @@ public final class PredefConfig {
     }
 
     public static PmdRuleset[] defaultPmdRulesets() {
+//        return new PmdRuleset[]{
+//                basic(), braces(),
+//                comments().maxLines(35).maxLineLen(120).requirement(PmdRulesets.Comments.Requirement.IGNORED),
+//                codesize().excessiveMethodLength(40).tooManyMethods(30),
+//                design(), empty().allowCommentedEmptyCatch(true), exceptions(), imports(), junit(),
+//                naming().variableLen(1, 25).methodLen(2),
+//                optimizations(), strings(),
+//                sunSecure(), typeResolution(), unnecessary(), unused()};
         return new PmdRuleset[]{
-                basic(), braces(),
-                comments().maxLines(35).maxLineLen(120).requirement(PmdRulesets.Comments.Requirement.Ignored),
-                codesize().excessiveMethodLength(40).tooManyMethods(30),
-                design(), empty().allowCommentedEmptyCatch(true), exceptions(), imports(), junit(),
-                naming().variableLen(1, 25).methodLen(2),
-                optimizations(), strings(),
-                sunSecure(), typeResolution(), unnecessary(), unused()};
+                bestPractices(), performance(), security(), multithreading(),
+                documentation().maxLines(35).maxLineLen(120).requirement(Requirement.IGNORED),
+                design().excessiveMethodLength(40).tooManyMethods(30),
+                errorProne().allowCommentedEmptyCatch(true),
+                codeStyle().variableLen(1, 25).methodLen(2)};
     }
 
     public static CollectorTemplate<Ignore> minimalCheckstyleIgnore() {

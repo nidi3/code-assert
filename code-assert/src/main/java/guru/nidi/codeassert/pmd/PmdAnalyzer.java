@@ -20,12 +20,13 @@ import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.UsageCounter;
 import net.sourceforge.pmd.*;
+import net.sourceforge.pmd.cache.AnalysisCache;
 import net.sourceforge.pmd.renderers.AbstractAccumulatingRenderer;
 import net.sourceforge.pmd.renderers.Renderer;
+import net.sourceforge.pmd.stat.Metric;
 import org.apache.commons.io.output.NullWriter;
 
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.*;
 
 public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
@@ -103,9 +104,6 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
         final PMDConfiguration pmdConfig = new PMDConfiguration() {
             @Override
             public Renderer createRenderer() {
-                for (final PmdRuleset ruleset : rulesets.values()) {
-                    ruleset.apply(this);
-                }
                 return renderer;
             }
         };
@@ -116,6 +114,42 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
         pmdConfig.setInputPaths(inputs.substring(1));
         pmdConfig.setRuleSets(ruleSetNames());
         pmdConfig.setThreads(0);
+        pmdConfig.setAnalysisCache(new AnalysisCache() {
+            @Override
+            public void persist() {
+            }
+
+            @Override
+            public boolean isUpToDate(File sourceFile) {
+                return false;
+            }
+
+            @Override
+            public List<RuleViolation> getCachedViolations(File sourceFile) {
+                return null;
+            }
+
+            @Override
+            public void analysisFailed(File sourceFile) {
+            }
+
+            @Override
+            public void checkValidity(RuleSets ruleSets, ClassLoader auxclassPathClassLoader) {
+                for (final PmdRuleset ruleset : rulesets.values()) {
+                    ruleset.apply(ruleSets);
+                }
+            }
+
+            @Override
+            public void ruleViolationAdded(RuleViolation ruleViolation) {
+
+            }
+
+            @Override
+            public void metricAdded(Metric metric) {
+
+            }
+        });
         return pmdConfig;
     }
 

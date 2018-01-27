@@ -36,7 +36,7 @@ class ClassFileParser {
     private DataInputStream in;
 
     CodeClass parse(File file, Model model) throws IOException {
-        try (final InputStream in = new FileInputStream(file)) {
+        try (InputStream in = new FileInputStream(file)) {
             return parse(in, model);
         }
     }

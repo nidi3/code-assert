@@ -32,8 +32,8 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
-import static guru.nidi.codeassert.pmd.PmdRulesets.Comments.Requirement.Ignored;
-import static guru.nidi.codeassert.pmd.PmdRulesets.Comments.Requirement.Required;
+import static guru.nidi.codeassert.pmd.PmdRulesets.Documentation.Requirement.IGNORED;
+import static guru.nidi.codeassert.pmd.PmdRulesets.Documentation.Requirement.REQUIRED;
 import static guru.nidi.codeassert.pmd.PmdRulesets.*;
 import static guru.nidi.codeassert.pmd.RegexMatcher.matchesFormat;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class PmdTest {
     private static final String MEDIUM = "Medium";
+    private static final String MEDIUM_HIGH = "Medium High";
     private static final String HIGH = "High";
     private static final String MAIN = "main";
     private static final String TEST = "test";
@@ -51,8 +52,8 @@ class PmdTest {
     @Test
     void priority() {
         final PmdAnalyzer analyzer = new PmdAnalyzer(AnalyzerConfig.maven().mainAndTest(),
-                new PmdViolationCollector().minPriority(RulePriority.MEDIUM_HIGH))
-                .withRulesets(basic(), braces(), design(), optimizations(), codesize(), empty(), coupling());
+                new PmdViolationCollector().minPriority(RulePriority.HIGH))
+                .withRulesets(bestPractices(), errorProne(), design(), codeStyle());
         assertMatcher(""
                         + pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", "A class which only has private constructors should be final")
                         + pmd(HIGH, "EmptyMethodInAbstractClassShouldBeAbstract", TEST, "model/ExampleAbstractClass", "An empty method in an abstract class should be abstract instead")
@@ -64,6 +65,8 @@ class PmdTest {
     void pmdIgnore() {
         assertMatcher(""
                         + pmd(HIGH, "ClassWithOnlyPrivateConstructorsShouldBeFinal", TEST, "Bugs2", "A class which only has private constructors should be final")
+                        + pmd(MEDIUM_HIGH, "GuardLogStatement", MAIN, "checkstyle/CheckstyleAnalyzer", "There is log block not surrounded by if")
+                        + pmd(MEDIUM_HIGH, "GuardLogStatement", MAIN, "config/BaseCollector", "There is log block not surrounded by if")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "jacoco/JacocoAnalyzer", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "ktlint/KtlintAnalyzer", "Avoid assignments in operands")
                         + pmd(MEDIUM, "AssignmentInOperand", MAIN, "model/Model", "Avoid assignments in operands")
@@ -143,13 +146,17 @@ class PmdTest {
                                 In.classes("SourceFileParser").ignore("CyclomaticComplexity", "StdCyclomaticComplexity", "ModifiedCyclomaticComplexity"),
                                 In.everywhere().ignore("UseConcurrentHashMap", "ArrayIsStoredDirectly", "MethodReturnsInternalArray", "AvoidLiteralsInIfCondition"),
                                 In.classes("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))
-                .withRulesets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
-                        finalizers(), imports(), j2ee(), javabeans(), junit(), optimizations(),
-                        exceptions(), strings(), sunSecure(), typeResolution(), unnecessary(), unused(),
-                        codesize().excessiveMethodLength(50).tooManyMethods(30),
-                        comments().requirement(Ignored).enums(Required).maxLines(35).maxLineLen(100),
-                        empty().allowCommentedEmptyCatch(true),
-                        naming().variableLen(1, 20).methodLen(2));
+                .withRulesets(bestPractices(), design().excessiveMethodLength(50).tooManyMethods(30),
+                        errorProne().allowCommentedEmptyCatch(true),
+                        documentation().requirement(IGNORED).enums(REQUIRED).maxLines(35).maxLineLen(100),
+                        codeStyle().variableLen(1, 20).methodLen(2));
+//                        android(), basic(), braces(), cloning(), controversial(), coupling(), design(),
+//                        finalizers(), imports(), j2ee(), javabeans(), junit(), optimizations(),
+//                        exceptions(), strings(), sunSecure(), typeResolution(), unnecessary(), unused(),
+//                        codesize().excessiveMethodLength(50).tooManyMethods(30),
+//                        comments().requirement(IGNORED).enums(REQUIRED).maxLines(35).maxLineLen(100),
+//                        empty().allowCommentedEmptyCatch(true),
+//                        naming().variableLen(1, 20).methodLen(2));
         return analyzer.analyze();
     }
 
