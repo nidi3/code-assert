@@ -96,7 +96,7 @@ public class CheckstyleTest {
         assertMatcher(""
                         + line(ERROR, "assignment.inner.avoid", MAIN, "model/SignatureParser", 254, "Inner assignments should be avoided.")
                         + line(ERROR, "maxParam", MAIN, "jacoco/Coverage", 29, "More than 7 parameters (found 12).")
-                        + line(ERROR, "variable.notPrivate", MAIN, "config/CollectorConfig", 26, "Variable 'actions' must be private and have accessor methods.")
+                        + line(ERROR, "variable.notPrivate", MAIN, "config/CollectorConfig", 27, "Variable 'actions' must be private and have accessor methods.")
                         + line(ERROR, "variable.notPrivate", MAIN, "model/Scope", 28, "Variable 'model' must be private and have accessor methods."),
                 analyzer.analyze(), hasNoCheckstyleIssues());
     }

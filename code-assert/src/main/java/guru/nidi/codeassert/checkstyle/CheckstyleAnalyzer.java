@@ -46,7 +46,7 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
     };
 
     private static class LoggingAuditListener implements AuditListener {
-        private final List<AuditEvent> events = new ArrayList<>();
+        final List<AuditEvent> events = new ArrayList<>();
 
         @Override
         public void auditStarted(AuditEvent event) {

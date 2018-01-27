@@ -28,7 +28,6 @@ import java.io.File;
 import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static guru.nidi.codeassert.junit.kotlin.KotlinCodeAssertMatchers.hasNoDetektIssues;
 import static guru.nidi.codeassert.pmd.RegexMatcher.matchesFormat;
-import static io.gitlab.arturbosch.detekt.api.Severity.Defect;
 import static io.gitlab.arturbosch.detekt.api.Severity.Style;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -40,7 +39,6 @@ class DetektAnalyzerTest {
                 .just(In.classes("Linker").ignore("MaxLineLength")))
                 .analyze();
         assertMatcher(""
-                        + line(Defect, "exceptions", "TooGenericExceptionCatched", "Linker", 45, "Thrown exception is too generic. Prefer throwing project specific exceptions to handle error cases.")
                         + line(Style, "style", "NewLineAtEndOfFile", "Linker", 59, "Checks whether files end with a line separator.")
                         + line(Style, "style", "WildcardImport", "Linker", 19, "Wildcard imports should be replaced with imports using fully qualified class names. Wildcard imports can lead to naming conflicts. A library update can introduce naming clashes with your classes which results in compilation errors."),
                 result, hasNoDetektIssues());

@@ -35,8 +35,8 @@ public class DetektMatcher extends ResultMatcher<DetektResult, TypedDetektFindin
 
     private String printError(TypedDetektFinding finding) {
         final Location location = finding.entity.getLocation();
-        final File file = new File(finding.basedir, location.getFile());
+        final String path = new File(location.getFile()).getAbsolutePath();
         return String.format("%-15s %-15s %-30s %s:%d    %s", finding.severity, finding.type, finding.name,
-                file.getAbsolutePath(), location.getSource().getLine(), finding.description);
+                path, location.getSource().getLine(), finding.description);
     }
 }

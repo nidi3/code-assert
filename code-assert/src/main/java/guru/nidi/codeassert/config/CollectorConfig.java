@@ -17,8 +17,9 @@ package guru.nidi.codeassert.config;
 
 import guru.nidi.codeassert.util.ListUtils;
 
-import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Arrays.asList;
 
 public final class CollectorConfig<A extends Action> {
     public final String reason;
@@ -37,7 +38,7 @@ public final class CollectorConfig<A extends Action> {
 
     @SafeVarargs
     public static <A extends Action> CollectorConfig<A> because(String reason, A... actions) {
-        return new CollectorConfig<>(reason, false, Arrays.asList(actions));
+        return new CollectorConfig<>(reason, false, asList(actions));
     }
 
     @SafeVarargs

@@ -20,7 +20,10 @@ import guru.nidi.codeassert.util.ListUtils;
 import net.sourceforge.pmd.cpd.Mark;
 import net.sourceforge.pmd.cpd.Match;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+
+import static java.util.Collections.emptyList;
 
 public class CpdMatchCollector extends BaseCollector<Match, Ignore, CpdMatchCollector> {
     @Override
@@ -58,7 +61,7 @@ public class CpdMatchCollector extends BaseCollector<Match, Ignore, CpdMatchColl
 
     @Override
     public List<Ignore> unused(UsageCounter counter) {
-        return Collections.emptyList();
+        return emptyList();
     }
 
     @Override

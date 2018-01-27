@@ -17,12 +17,14 @@ package guru.nidi.codeassert.util;
 
 import java.util.*;
 
+import static java.util.Arrays.asList;
+
 public final class ListUtils {
     private ListUtils() {
     }
 
     public static String join(String sep, Object[] os) {
-        return join(sep, Arrays.asList(os));
+        return join(sep, asList(os));
     }
 
     public static String join(String sep, List<?> os) {

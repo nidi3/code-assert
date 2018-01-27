@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -228,7 +229,7 @@ public class ClassFileParserTest {
 
     @SafeVarargs
     private static <T> void assertCollectionEquals(Collection<T> actual, T... expected) {
-        assertEquals(new HashSet<>(Arrays.asList(expected)), new HashSet<>(actual));
+        assertEquals(new HashSet<>(asList(expected)), new HashSet<>(actual));
     }
 
     private List<String> toString(Collection<?> cs) {

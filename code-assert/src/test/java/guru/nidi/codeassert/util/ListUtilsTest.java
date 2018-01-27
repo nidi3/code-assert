@@ -17,8 +17,7 @@ package guru.nidi.codeassert.util;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ListUtilsTest {
@@ -45,21 +44,21 @@ class ListUtilsTest {
 
     @Test
     void emptyList() {
-        assertEquals("", ListUtils.join(",", Arrays.asList()));
+        assertEquals("", ListUtils.join(",", asList()));
     }
 
     @Test
     void oneElementList() {
-        assertEquals("a", ListUtils.join(",", Arrays.asList("a")));
+        assertEquals("a", ListUtils.join(",", asList("a")));
     }
 
     @Test
     void multiElementList() {
-        assertEquals("a,b", ListUtils.join(",", Arrays.asList("a", "b")));
+        assertEquals("a,b", ListUtils.join(",", asList("a", "b")));
     }
 
     @Test
     void notStringList() {
-        assertEquals("1,2", ListUtils.join(",", Arrays.asList(1, 2)));
+        assertEquals("1,2", ListUtils.join(",", asList(1, 2)));
     }
 }

@@ -49,7 +49,7 @@ class SourceFileParserTest {
 
     @Test
     void multilineStrings() throws IOException {
-        assertLines(4, 3, 0, 6, JAVA,   "line\n\"\"\"\"\n// line comment\n/*comment*/\n\"\"\"\" //line comment\nlast");
+        assertLines(4, 3, 0, 6, JAVA, "line\n\"\"\"\"\n// line comment\n/*comment*/\n\"\"\"\" //line comment\nlast");
         assertLines(6, 1, 0, 6, KOTLIN, "line\n\"\"\"\"\n// line comment\n/*comment*/\n\"\"\" //line comment\nlast");
     }
 

@@ -46,7 +46,7 @@ public class Model {
         try {
             final ClassFileParser classParser = new ClassFileParser();
             for (final File file : files) {
-                try (final InputStream in = new FileInputStream(file)) {
+                try (InputStream in = new FileInputStream(file)) {
                     add(classParser, file.getName(), in);
                 }
             }

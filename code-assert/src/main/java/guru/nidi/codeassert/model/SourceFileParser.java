@@ -26,11 +26,11 @@ import static guru.nidi.codeassert.model.SourceFileParser.State.*;
 
 abstract class SourceFileParser {
     private static final Logger LOG = LoggerFactory.getLogger(SourceFileParser.class);
-    private static final String SLASH_SLASH = "//";
-    private static final String QUOTE = "\"";
-    private static final String TRIPLE_QUOTE = "\"\"\"";
-    private static final String SLASH_STAR = "/*";
-    private static final String STAR_SLASH = "*/";
+    static final String SLASH_SLASH = "//";
+    static final String QUOTE = "\"";
+    static final String TRIPLE_QUOTE = "\"\"\"";
+    static final String SLASH_STAR = "/*";
+    static final String STAR_SLASH = "*/";
 
     enum State {
         CODE, STRING, LINE_STRING, COMMENT, LINE_COMMENT
@@ -46,7 +46,7 @@ abstract class SourceFileParser {
     int totalLines;
 
     static CodeClass parse(CodeClass clazz, File file, Charset charset) throws IOException {
-        try (final InputStream in = new FileInputStream(file)) {
+        try (InputStream in = new FileInputStream(file)) {
             final Language language = Language.byFilename(file.getName());
             if (language == null) {
                 LOG.info("Unknown source file type {}. Ignoring it", file);
@@ -58,13 +58,13 @@ abstract class SourceFileParser {
     }
 
     static CodeClass parse(CodeClass clazz, Language language, InputStream is, Charset charset) throws IOException {
-        try (final Reader in = new InputStreamReader(is, charset)) {
+        try (Reader in = new InputStreamReader(is, charset)) {
             return parse(clazz, language, in);
         }
     }
 
     static CodeClass parse(CodeClass clazz, Language language, Reader reader) throws IOException {
-        try (final BufferedReader in = new BufferedReader(reader)) {
+        try (BufferedReader in = new BufferedReader(reader)) {
             final SourceFileParser parser = parser(language);
             if (parser == null) {
                 LOG.info("No parser for language {}. Ignoring it", language);

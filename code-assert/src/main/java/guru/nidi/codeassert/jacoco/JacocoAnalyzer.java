@@ -23,6 +23,8 @@ import guru.nidi.codeassert.config.ValuedLocation;
 import java.io.*;
 import java.util.*;
 
+import static java.util.Collections.singleton;
+
 public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
     private final File jacocoCsv;
     private final CoverageCollector collector;
@@ -47,7 +49,7 @@ public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
 
     private Coverages readReport() {
         final Coverages coverages = new Coverages();
-        try (final BufferedReader in = new BufferedReader(new InputStreamReader(
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(
                 new FileInputStream(jacocoCsv), "utf-8"))) {
             String line;
             in.readLine();
@@ -69,7 +71,7 @@ public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
     private JacocoResult filterResult(Coverages coverages) {
         final List<ValuedLocation> filtered = new ArrayList<>();
         final UsageCounter counter = new UsageCounter();
-        filter(filtered, Collections.singleton(coverages.global), counter);
+        filter(filtered, singleton(coverages.global), counter);
         filter(filtered, coverages.perPackage.values(), counter);
         filter(filtered, coverages.coverages, counter);
         collector.printUnusedWarning(counter);

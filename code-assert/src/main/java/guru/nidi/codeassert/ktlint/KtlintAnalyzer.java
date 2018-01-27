@@ -29,6 +29,7 @@ import java.util.*;
 
 import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
 
 public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
     private static final Logger LOG = LoggerFactory.getLogger(KtlintAnalyzer.class);
@@ -48,7 +49,7 @@ public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
     }
 
     public KtlintAnalyzer withRuleSets(RuleSet... ruleSets) {
-        return new KtlintAnalyzer(config, collector, Arrays.asList(ruleSets));
+        return new KtlintAnalyzer(config, collector, asList(ruleSets));
     }
 
     public KtlintResult analyze() {
@@ -104,8 +105,8 @@ public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
     }
 
     private static class ErrorListener implements Function1<LintError, Unit> {
-        private final List<LocatedLintError> errors = new ArrayList<>();
-        private File currentFile;
+        final List<LocatedLintError> errors = new ArrayList<>();
+        File currentFile;
 
         @Override
         public Unit invoke(LintError e) {

@@ -18,6 +18,7 @@ package guru.nidi.codeassert.checkstyle;
 import java.util.*;
 
 import static com.puppycrawl.tools.checkstyle.api.TokenTypes.*;
+import static java.util.Arrays.asList;
 
 public class StyleChecks {
     private static final String MAX_LINE_LEN = "maxLineLen";
@@ -58,7 +59,7 @@ public class StyleChecks {
                     "parameterName", "^[a-z][a-z0-9][a-zA-Z0-9]*$",
                     "catchParameterName", "^[a-z][a-z0-9][a-zA-Z0-9]*$",
                     "localVariableName", "^[a-z][a-z0-9][a-zA-Z0-9]*$",
-                    "emptyLine-tokens", Arrays.asList(PACKAGE_DEF, IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
+                    "emptyLine-tokens", asList(PACKAGE_DEF, IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
                             STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF));
         }
 

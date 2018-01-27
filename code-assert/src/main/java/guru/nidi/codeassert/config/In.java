@@ -15,8 +15,10 @@
  */
 package guru.nidi.codeassert.config;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 public final class In {
@@ -126,7 +128,7 @@ public final class In {
     }
 
     public Ignore ignore(String... names) {
-        return new Ignore(locs, Arrays.asList(names));
+        return new Ignore(locs, asList(names));
     }
 
     public Ignore ignoreAll() {

@@ -20,6 +20,8 @@ import guru.nidi.codeassert.util.CountSet;
 
 import java.util.*;
 
+import static java.util.Collections.emptyList;
+
 /**
  * The <code>JavaClass</code> class represents a Java
  * class or interface.
@@ -148,7 +150,7 @@ public class CodeClass extends UsingElement<CodeClass> {
 
     @Override
     public Collection<String> usedVia(UsingElement<CodeClass> other) {
-        return Collections.emptyList();
+        return emptyList();
     }
 
     @Override

@@ -26,8 +26,8 @@ import java.util.*;
 
 import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static io.gitlab.arturbosch.detekt.api.Severity.*;
-import static java.lang.Boolean.FALSE;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
     private final AnalyzerConfig config;
@@ -36,7 +36,7 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
     private final List<RuleSetProvider> ruleSetProviders;
 
     public DetektAnalyzer(AnalyzerConfig config, DetektCollector collector) {
-        this(config, collector, null, Collections.emptyList());
+        this(config, collector, null, emptyList());
     }
 
     private DetektAnalyzer(AnalyzerConfig config, DetektCollector collector, Config detektConfig,
@@ -57,11 +57,10 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
 
     public DetektResult analyze() {
         final File baseDir = new File(AnalyzerConfig.Path.commonBase(config.getSourcePaths(KOTLIN)).getPath());
-        final ProcessingSettings settings = new ProcessingSettings(baseDir.toPath(),
-                calcDetektConfig(), Collections.emptyList(), false, false, Collections.emptyList());
-        final Detektor detektor = new Detektor(settings, calcRuleSetProviders(settings), Collections.emptyList());
-        final Detektion detektion = detektor.run(KtTreeCompiler.Companion.instance(settings));
-        return createResult(baseDir, detektion);
+        final ProcessingSettings settings = new ProcessingSettings(
+                baseDir.toPath(), calcDetektConfig(), emptyList(), false, false, emptyList());
+        final DetektFacade detekt = DetektFacade.Companion.create(settings, ruleSetProviders(settings), emptyList());
+        return createResult(baseDir, detekt.run());
     }
 
     private Config calcDetektConfig() {
@@ -70,7 +69,7 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
                 : detektConfig);
     }
 
-    private List<RuleSetProvider> calcRuleSetProviders(ProcessingSettings settings) {
+    private List<RuleSetProvider> ruleSetProviders(ProcessingSettings settings) {
         final List<RuleSetProvider> res = new RuleSetLocator(settings).load();
         res.addAll(ruleSetProviders);
         return res;
@@ -107,7 +106,7 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
 
         @Override
         public <T> T valueOrDefault(String s, T t) {
-            return "autoCorrect".equals(s) ? (T) FALSE : delegate.valueOrDefault(s, t);
+            return "autoCorrect".equals(s) ? (T) Boolean.FALSE : delegate.valueOrDefault(s, t);
         }
     }
 

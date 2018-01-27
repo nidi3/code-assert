@@ -19,11 +19,11 @@ import guru.nidi.codeassert.config.AnalyzerConfig.Path;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 import static guru.nidi.codeassert.config.Language.JAVA;
 import static guru.nidi.codeassert.config.Language.KOTLIN;
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -159,6 +159,6 @@ public class AnalyzerConfigTest {
 
     private void assertPath(List<Path> paths, Path... expected) {
         assertThat(paths, hasItems(expected));
-        assertThat(Arrays.asList(expected), hasItems(paths.toArray(new Path[paths.size()])));
+        assertThat(asList(expected), hasItems(paths.toArray(new Path[paths.size()])));
     }
 }
