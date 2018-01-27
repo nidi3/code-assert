@@ -20,4 +20,9 @@
         <sha1>dedc02034fb8fcd7615d66593228cb71709134b4</sha1>
         <cpe>cpe:/a:spice_project:spice:1.3</cpe>
     </suppress>
+    <suppress>
+        <note>This could be an issue, update spring-boot when a new version is available</note>
+        <sha1>aaf17df9fe0240e9e9d5375d24d5f177174b73d9</sha1>
+        <cpe>cpe:/a:apache:tomcat:8.5.23</cpe>
+    </suppress>
 </suppressions>
