@@ -24,10 +24,18 @@ import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
 import guru.nidi.codeassert.junit.PredefConfig;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
+import org.junit.jupiter.api.BeforeAll;
+
+import java.util.Locale;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
 
 public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
+    @BeforeAll
+    static void init() {
+        Locale.setDefault(Locale.ENGLISH);
+    }
+
     @Override
     protected DependencyResult analyzeDependencies() {
         class GuruNidiCodeassert extends DependencyRuler {
