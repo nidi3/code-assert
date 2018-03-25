@@ -41,4 +41,8 @@
         <notes>Well...</notes>
         <cpe>cpe:/a:fasterxml:jackson-databind:2.9.4</cpe>
     </suppress>
+    <suppress>
+        <notes>Well...</notes>
+        <cpe>cpe:/a:oracle:glassfish:1.3.2</cpe>
+    </suppress>
 </suppressions>
