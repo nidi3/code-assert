@@ -31,6 +31,10 @@
         <cpe>cpe:/a:apache:tomcat:8.5.23</cpe>
     </suppress>
     <suppress>
+        <notes>This could be an issue, update spring-boot when a new version is available</notes>
+        <cpe>cpe:/a:fasterxml:jackson:2.8.10</cpe>
+    </suppress>
+    <suppress>
         <notes>This is probably a bug in the dependency checker because detekt uses gitlab groupId</notes>
         <cpe>cpe:/a:gitlab:gitlab:1.0.0.rc6</cpe>
     </suppress>
