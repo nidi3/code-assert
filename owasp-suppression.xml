@@ -29,4 +29,16 @@
         <notes>This is probably a bug in the dependency checker because detekt uses gitlab groupId</notes>
         <cpe>cpe:/a:gitlab:gitlab:1.0.0.rc6</cpe>
     </suppress>
+    <suppress>
+        <notes>Well...</notes>
+        <cpe>cpe:/a:pivotal_software:spring_boot:2.0.0.m4</cpe>
+    </suppress>
+    <suppress>
+        <notes>Well...</notes>
+        <cpe>cpe:/a:fasterxml:jackson:2.9.4</cpe>
+    </suppress>
+    <suppress>
+        <notes>Well...</notes>
+        <cpe>cpe:/a:fasterxml:jackson-databind:2.9.4</cpe>
+    </suppress>
 </suppressions>
