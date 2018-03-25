@@ -45,8 +45,8 @@ public class DependencyTest {
 
             @Override
             public void defineRules() {
-                base().mayUse(util, dep.allSub()); //org.proj may use org.proj.util and all subpackages of org.proj.dep
-                dep.allSub().mustUse(model); //all subpackages of org.proj.dep must use org.proj.model
+                base().mayUse(util, dep.allSubOf()); //org.proj may use org.proj.util and all subpackages of org.proj.dep
+                dep.andAllSub().mustUse(model); //org.proj.dep and all subpackages thereof must use org.proj.model
                 model.mayUse(util).mustNotUse(base()); //org.proj.model may use org.proj.util but not org.proj
             }
         }

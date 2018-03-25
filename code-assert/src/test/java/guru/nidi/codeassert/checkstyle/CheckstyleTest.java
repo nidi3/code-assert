@@ -24,7 +24,6 @@ import guru.nidi.codeassert.dependency.DependencyRulesTest;
 import guru.nidi.codeassert.snippets.DependencyTest;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -44,13 +43,9 @@ public class CheckstyleTest {
 
     private final AnalyzerConfig config = AnalyzerConfig.maven().mainAndTest();
 
-    @BeforeAll
-    static void init() {
-        Locale.setDefault(Locale.ENGLISH);
-    }
-
     @Test
     void google() {
+        Locale.setDefault(Locale.ENGLISH);
         final CheckstyleAnalyzer analyzer = new CheckstyleAnalyzer(config, StyleChecks.google()
                 .maxLineLen(120).indentBasic(4).indentCase(4)
                 .paramName("^[a-z][a-zA-Z0-9]*$")
@@ -82,6 +77,7 @@ public class CheckstyleTest {
 
     @Test
     void sun() {
+        Locale.setDefault(Locale.ENGLISH);
         final CheckstyleAnalyzer analyzer = new CheckstyleAnalyzer(config, StyleChecks.sun()
                 .maxLineLen(120).allowDefaultAccessMembers(true),
                 new StyleEventCollector().severity(WARNING).config(

@@ -15,7 +15,6 @@
  */
 package guru.nidi.codeassert.config;
 
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -25,7 +24,7 @@ public class LocationMatcherTest {
     @Test
     void emptyPattern() {
         assertThrows(IllegalArgumentException.class, new Executable() {
-            public void execute() throws Throwable {
+            public void execute() {
                 new LocationMatcher(Location.of(""));
             }
         });
@@ -34,7 +33,7 @@ public class LocationMatcherTest {
     @Test
     void nullPattern() {
         assertThrows(IllegalArgumentException.class, new Executable() {
-            public void execute() throws Throwable {
+            public void execute() {
                 new LocationMatcher(null);
             }
         });
@@ -43,7 +42,7 @@ public class LocationMatcherTest {
     @Test
     void nullLocation() {
         assertThrows(IllegalArgumentException.class, new Executable() {
-            public void execute() throws Throwable {
+            public void execute() {
                 new LocationMatcher(Location.of(null));
             }
         });
@@ -52,17 +51,44 @@ public class LocationMatcherTest {
     @Test
     void wildcardInMiddle() {
         assertThrows(IllegalArgumentException.class, new Executable() {
-            public void execute() throws Throwable {
+            public void execute() {
                 new LocationMatcher(Location.of("a*b"));
             }
         });
     }
 
     @Test
-    void doubleWildcard() {
+    void doubleWildcard1() {
         assertThrows(IllegalArgumentException.class, new Executable() {
-            public void execute() throws Throwable {
+            public void execute() {
                 new LocationMatcher(Location.of("**"));
+            }
+        });
+    }
+
+    @Test
+    void doubleWildcard2() {
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() {
+                new LocationMatcher(Location.of("*+"));
+            }
+        });
+    }
+
+    @Test
+    void doubleWildcard3() {
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() {
+                new LocationMatcher(Location.of("+*"));
+            }
+        });
+    }
+
+    @Test
+    void doubleWildcard4() {
+        assertThrows(IllegalArgumentException.class, new Executable() {
+            public void execute() {
+                new LocationMatcher(Location.of("++"));
             }
         });
     }
@@ -70,7 +96,7 @@ public class LocationMatcherTest {
     @Test
     void wildcardBetweenPackageAndClass() {
         assertThrows(IllegalArgumentException.class, new Executable() {
-            public void execute() throws Throwable {
+            public void execute() {
                 new LocationMatcher(Location.of("a*B"));
             }
         });
@@ -79,7 +105,7 @@ public class LocationMatcherTest {
     @Test
     void illegalWildcardInPackage3() {
         assertThrows(IllegalArgumentException.class, new Executable() {
-            public void execute() throws Throwable {
+            public void execute() {
                 new LocationMatcher(Location.of("*a*b"));
             }
         });
@@ -88,7 +114,7 @@ public class LocationMatcherTest {
     @Test
     void illegalWildcardInClass() {
         assertThrows(IllegalArgumentException.class, new Executable() {
-            public void execute() throws Throwable {
+            public void execute() {
                 new LocationMatcher(Location.of("A*b"));
             }
         });
@@ -97,7 +123,7 @@ public class LocationMatcherTest {
     @Test
     void illegalWildcardInMethod() {
         assertThrows(IllegalArgumentException.class, new Executable() {
-            public void execute() throws Throwable {
+            public void execute() {
                 new LocationMatcher(Location.of("#a*b"));
             }
         });
@@ -162,7 +188,7 @@ public class LocationMatcherTest {
     }
 
     @Test
-    void startWildcard() {
+    void startStar() {
         final LocationMatcher m = new LocationMatcher(Location.of("*pa"));
         assertTrue(m.matchesPackage("pa"));
         assertTrue(m.matchesPackage("xxxpa"));
@@ -170,9 +196,33 @@ public class LocationMatcherTest {
     }
 
     @Test
-    void endWildcard() {
+    void startPlus() {
+        final LocationMatcher m = new LocationMatcher(Location.of("+pa"));
+        assertFalse(m.matchesPackage("pa"));
+        assertTrue(m.matchesPackage("xxxpa"));
+        assertFalse(m.matchesPackage("paxxx"));
+    }
+
+    @Test
+    void endStar() {
         final LocationMatcher m = new LocationMatcher(Location.of("pa*"));
         assertTrue(m.matchesPackage("pa"));
+        assertFalse(m.matchesPackage("xxxpa"));
+        assertTrue(m.matchesPackage("paxxx"));
+    }
+
+    @Test
+    void endDotStar() {
+        final LocationMatcher m = new LocationMatcher(Location.of("pa.*"));
+        assertTrue(m.matchesPackage("pa"));
+        assertFalse(m.matchesPackage("paxxx"));
+        assertTrue(m.matchesPackage("pa.xxx"));
+    }
+
+    @Test
+    void endPlus() {
+        final LocationMatcher m = new LocationMatcher(Location.of("pa+"));
+        assertFalse(m.matchesPackage("pa"));
         assertFalse(m.matchesPackage("xxxpa"));
         assertTrue(m.matchesPackage("paxxx"));
     }

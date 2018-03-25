@@ -26,25 +26,29 @@ public class CodeElement implements UsingElementMatcher {
 
     CodeElement(String pattern, boolean allowAll) {
         final int starPos = pattern.indexOf('*');
-        if (starPos >= 0 && starPos != pattern.length() - 1) {
-            throw new IllegalArgumentException("Wildcard * is only allowed at the end (e.g. java*)");
+        final int plusPos = pattern.indexOf('+');
+        if ((starPos >= 0 && starPos != pattern.length() - 1) || (plusPos >= 0 && plusPos != pattern.length() - 1)) {
+            throw new IllegalArgumentException("Wildcards are allowed at the end (e.g. java.*)");
         }
         this.pattern = new LocationMatcher(Location.of(pattern));
         this.allowAll = allowAll;
     }
 
-    public DependencyRule allSub() {
-        final String newPattern = pattern.toString() + (pattern.toString().endsWith(".") ? "*" : ".*");
-        return DependencyRules.addRuleToCurrent(new DependencyRule(newPattern, allowAll));
+    public DependencyRule andAllSub() {
+        return sub("*");
+    }
+
+    public DependencyRule allSubOf() {
+        return sub("+");
     }
 
     public DependencyRule sub(String name) {
-        final String newPattern = pattern.getPattern() + "." + name;
+        final String newPattern = pattern.toString() + (pattern.toString().endsWith(".") ? "" : ".") + name;
         return DependencyRules.addRuleToCurrent(new DependencyRule(newPattern, allowAll));
     }
 
     public DependencyRule rule() {
-        final String newPattern = pattern.getPattern();
+        final String newPattern = pattern.toString();
         return DependencyRules.addRuleToCurrent(new DependencyRule(newPattern, allowAll));
     }
 

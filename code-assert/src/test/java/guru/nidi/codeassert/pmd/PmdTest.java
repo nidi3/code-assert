@@ -140,7 +140,7 @@ class PmdTest {
                                 In.clazz(DependencyRules.class).ignore("LongVariable"),
                                 In.classes(PmdTest.class, FindBugsTest.class, CheckstyleTest.class).ignore("AddEmptyString", "UseObjectForClearerAPI"),
                                 In.classes(AnalyzerConfigTest.class).ignore("JUnitTestContainsTooManyAsserts"),
-                                In.classes("SourceFileParser").ignore("CyclomaticComplexity", "StdCyclomaticComplexity", "ModifiedCyclomaticComplexity"),
+                                In.classes("SourceFileParser", "Location", "LocationMatcher").ignore("CyclomaticComplexity", "StdCyclomaticComplexity", "ModifiedCyclomaticComplexity"),
                                 In.everywhere().ignore("UseConcurrentHashMap", "ArrayIsStoredDirectly", "MethodReturnsInternalArray", "AvoidLiteralsInIfCondition"),
                                 In.classes("ExampleConcreteClass", "ExampleAbstractClass", "GenericParameters").ignoreAll()))
                 .withRulesets(android(), basic(), braces(), cloning(), controversial(), coupling(), design(),

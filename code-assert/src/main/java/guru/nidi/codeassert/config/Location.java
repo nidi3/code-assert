@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 import static java.util.Locale.ENGLISH;
 
 public final class Location implements Comparable<Location> {
-    private static final Pattern CLASS_START = Pattern.compile("(^|\\.)\\*?[A-Z]");
+    private static final Pattern CLASS_START = Pattern.compile("(^|\\.)[*+]?[A-Z]");
 
     final Language language;
     final String pack;
@@ -112,23 +112,21 @@ public final class Location implements Comparable<Location> {
     }
 
     public String getPattern() {
+        final boolean noPackEndDot = pack.endsWith("*") || pack.endsWith("+") || pack.length() == 0;
         return (language == null ? "" : (language + ":"))
-                + (pack.endsWith("*") || pack.length() == 0 || clazz.length() == 0 ? pack : (pack + "."))
+                + (noPackEndDot || clazz.length() == 0 ? pack : (pack + "."))
                 + clazz
                 + (method.length() == 0 ? "" : ("#" + method));
     }
 
     private static void checkPattern(String pattern) {
-        if ("**".equals(pattern)) {
-            throw new IllegalArgumentException("Wildcard ** is illegal");
+        if ("**".equals(pattern) || "+*".equals(pattern) || "*+".equals(pattern) || "++".equals(pattern)) {
+            throw new IllegalArgumentException("Wildcard " + pattern + " is illegal");
         }
-        checkPattern(pattern, pattern.indexOf('*'));
-        checkPattern(pattern, pattern.lastIndexOf('*'));
-    }
-
-    private static void checkPattern(String pattern, int pos) {
-        if (pos > 0 && pos != pattern.length() - 1) {
-            throw new IllegalArgumentException("Wildcard * must be at begin or end of pattern");
+        for (int i = 0; i < pattern.length(); i++) {
+            if ((pattern.charAt(i) == '*' || pattern.charAt(i) == '+') && i != 0 && i != pattern.length() - 1) {
+                throw new IllegalArgumentException("Wildcards must be at begin or end of a pattern");
+            }
         }
     }
 

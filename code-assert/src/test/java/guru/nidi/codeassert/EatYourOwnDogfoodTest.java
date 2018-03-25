@@ -16,8 +16,7 @@
 package guru.nidi.codeassert;
 
 import guru.nidi.codeassert.checkstyle.*;
-import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.In;
+import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.dependency.*;
 import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.jacoco.Coverage;
@@ -46,7 +45,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
         }
 
         final DependencyRules rules = denyAll()
-                .withExternals("edu*", "java*", "net*", "org*", "com*", "kotlin*", "io*")
+                .withExternals("edu.*", "java.*", "net.*", "org.*", "com.*", "kotlin.*", "io.*")
                 .withRelativeRules(new GuruNidiCodeassert());
         return new DependencyAnalyzer(AnalyzerConfig.maven().main()).rules(rules).analyze();
     }
@@ -80,7 +79,9 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                         In.clazz(PmdRulesets.class).ignore("TooManyMethods", "AvoidDuplicateLiterals"),
                         In.classes("Reason").ignore("SingularField"),
                         In.clazz(Coverage.class).ignore("ExcessiveParameterList"),
-                        In.classes("SourceFileParser").ignore("CyclomaticComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity"),
+                        In.clazz(LocationMatcher.class).ignore("GodClass"),
+                        In.classes("SourceFileParser", "Location", "LocationMatcher")
+                                .ignore("CyclomaticComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity"),
                         In.classes("DependencyRules", "CodeClassBuilder").ignore("GodClass"));
         return new PmdAnalyzer(AnalyzerConfig.maven().main(), collector)
                 .withRulesets(PredefConfig.defaultPmdRulesets())

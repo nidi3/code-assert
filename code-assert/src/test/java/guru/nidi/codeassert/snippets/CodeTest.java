@@ -46,7 +46,7 @@ public class CodeTest extends CodeAssertJunit5Test {
             }
         }
 
-        final DependencyRules rules = denyAll().withExternals("java*").withRelativeRules(new MyProject());
+        final DependencyRules rules = denyAll().withExternals("java.*").withRelativeRules(new MyProject());
         return new DependencyAnalyzer(CONFIG).rules(rules).analyze();
     }
 

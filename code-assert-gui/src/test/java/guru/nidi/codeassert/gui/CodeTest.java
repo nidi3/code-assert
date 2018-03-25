@@ -47,7 +47,7 @@ public class CodeTest extends CodeAssertJunit5Test {
         }
 
         final DependencyRules rules = denyAll()
-                .withExternals("java*", "org*", "com*")
+                .withExternals("java.*", "org.*", "com.*")
                 .withRelativeRules(new GuruNidiCodeassert());
         return new DependencyAnalyzer(AnalyzerConfig.maven().main()).rules(rules).analyze();
     }

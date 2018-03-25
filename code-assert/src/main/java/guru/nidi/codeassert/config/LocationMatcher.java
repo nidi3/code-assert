@@ -17,10 +17,12 @@ package guru.nidi.codeassert.config;
 
 /**
  * The LocationMatcher is used to match a code location.
- * A pattern has the form [language:][package][[/]class][#method].
- * package and class are separated by the first occurrence of \.\*?[A-Z]
- * If this is not intended or clear, a / can be used to separate package and class.
- * All three elements may start and/or end with a wildcard *.
+ * A pattern has the form [language:][package][[/]class][#method]. <br>
+ * package and class are separated by the first occurrence of \.[*+]?[A-Z]
+ * If this is not intended or clear, a / can be used to separate package and class. <br>
+ * package, class, method may start and/or end with a wildcard '*' or '+'. <br>
+ * * means zero or more characters, + means one or more characters,
+ * .* means zero characters or . followed by one or more characters.
  */
 public class LocationMatcher implements Comparable<LocationMatcher> {
     private final Location loc;
@@ -69,10 +71,10 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
             return 1;
         }
         int s = 4;
-        if (pattern.startsWith("*")) {
+        if (pattern.startsWith("*") || pattern.startsWith("+")) {
             s--;
         }
-        if (pattern.endsWith("*")) {
+        if (pattern.endsWith("*") || pattern.endsWith("+")) {
             s--;
         }
         return s;
@@ -98,19 +100,36 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
     }
 
     static boolean matchesPattern(String pat, String name) {
-        if (pat.length() == 0) {
+        if (pat.length() == 0 || "*".equals(pat) || ("+".equals(pat) && name.length() > 0)) {
             return true;
         }
-        if (pat.startsWith("*") && pat.endsWith("*")) {
-            return pat.length() == 1 || name.contains(pat.substring(1, pat.length() - 1));
+        if (pat.endsWith(".*")) {
+            return matchesPattern(pat.substring(0, pat.length() - 2), name)
+                    || matchesPattern(pat.substring(0, pat.length() - 1) + "+", name);
         }
-        if (pat.startsWith("*")) {
-            return name.endsWith(pat.substring(1));
+        String pattern = pat;
+        final char start = pattern.charAt(0);
+        if (start == '*' || start == '+') {
+            pattern = pattern.substring(1);
         }
-        if (pat.endsWith("*")) {
-            return name.startsWith(pat.substring(0, pat.length() - 1));
+        final char end = pattern.charAt(pattern.length() - 1);
+        if (end == '*' || end == '+') {
+            pattern = pattern.substring(0, pattern.length() - 1);
         }
-        return name.equals(pat);
+        return doMatchesPattern(start, end, pattern, name);
+    }
+
+    private static boolean doMatchesPattern(char start, char end, String pat, String name) {
+        final int pos = name.indexOf(pat);
+        if (pos < 0) {
+            return false;
+        }
+
+        final boolean startsWithPat = pos == 0;
+        final boolean endsWithPat = pos + pat.length() == name.length();
+        final boolean startOk = start == '*' || ((start == '+') != startsWithPat);
+        final boolean endOk = end == '*' || ((end == '+') != endsWithPat);
+        return startOk && endOk;
     }
 
     @Override

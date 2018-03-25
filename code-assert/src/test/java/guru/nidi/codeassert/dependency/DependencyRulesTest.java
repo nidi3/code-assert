@@ -35,6 +35,7 @@ public class DependencyRulesTest {
     private static final String CODE_ASSERT = "guru.nidi.codeassert.";
     private static final String DEP = CODE_ASSERT + "dependency.";
     private static final Set<String> WILDCARD_UNDEFINED = set("guru.nidi.codeassert", ca("config"), ca("dependency"), ca("model"), ca("util"), ca("junit"), dep("a"), dep("b"), dep("c"));
+    private static final Set<String> WILDCARD_UNDEFINED2 = set("guru.nidi.codeassert", ca("config"), ca("dependency"), ca("model"), ca("util"), ca("junit"), dep("b.a"), dep("b.b"));
     private static final Set<String> UNDEFINED = set("guru.nidi.codeassert", ca("config"), ca("dependency"), ca("junit"), ca("model"), ca("util"), dep("a.a"), dep("a.b"), dep("b.a"), dep("b.b"), dep("c.a"), dep("c.b"));
     private static final Set<DependencyMap> CYCLES = new HashSet<>(asList(new DependencyMap()
                     .with(1, dep("a.a"), set(dep("a.a.Aa1")), dep("b.a"))
@@ -70,7 +71,7 @@ public class DependencyRulesTest {
     @Test
     public void classes() {
         final DependencyRules rules = DependencyRules.denyAll();
-        rules.withExternals("java.*", "org*");
+        rules.withExternals("java.*", "org.*");
         class Rules extends DependencyRuler{
             DependencyRule $A1,$A2,$B1,$X,guruNidiCodeassert_;
 
@@ -102,7 +103,7 @@ public class DependencyRulesTest {
 
     @Test
     void matcherFlags() {
-        final DependencyRules rules = DependencyRules.allowAll().withExternals("java.*", "org.hamcrest*");
+        final DependencyRules rules = DependencyRules.allowAll().withExternals("java.*", "org.hamcrest.*");
         rules.addRule(dep("a"));
         rules.addRule(dep("d"));
         final Set<String> undefined = new TreeSet<>(UNDEFINED);
@@ -166,7 +167,7 @@ public class DependencyRulesTest {
 
     @Test
     void allow() {
-        final DependencyRules rules = DependencyRules.allowAll().withExternals("java.*", "org*");
+        final DependencyRules rules = DependencyRules.allowAll().withExternals("java.*", "org.*");
         final DependencyRule a = rules.addRule(dep("a"));
         final DependencyRule b = rules.addRule(dep("b"));
         final DependencyRule c = rules.addRule(dep("c"));
@@ -209,7 +210,7 @@ public class DependencyRulesTest {
 
     @Test
     void denied() {
-        final DependencyRules rules = DependencyRules.denyAll().withExternals("java*", "org*");
+        final DependencyRules rules = DependencyRules.denyAll().withExternals("java.*", "org.*");
         final DependencyRule a = rules.addRule(dep("a"));
         final DependencyRule b = rules.addRule(dep("b"));
         final DependencyRule c = rules.addRule(dep("c"));
@@ -245,10 +246,10 @@ public class DependencyRulesTest {
 
     @Test
     void allowWithWildcard() {
-        final DependencyRules rules = DependencyRules.allowAll().withExternals("java*", "org*");
+        final DependencyRules rules = DependencyRules.allowAll().withExternals("java.*", "org.*");
         final DependencyRule a1 = rules.addRule(dep("a.a"));
         final DependencyRule a = rules.addRule(dep("a.*"));
-        final DependencyRule b = rules.addRule(dep("b.*"));
+        final DependencyRule b = rules.addRule(dep("b"));
         final DependencyRule c = rules.addRule(dep("c.*"));
 
         a.mustUse(b);
@@ -257,12 +258,12 @@ public class DependencyRulesTest {
         final Dependencies result = rules.analyzeRules(Scope.packages(model));
         final DependencyRules rules2 = DependencyRules.allowAll()
                 .withRules("guru.nidi.codeassert.dependency", new DependencyRuler() {
-                    DependencyRule aA, a_, b_, c_;
+                    DependencyRule aA, a_, b, c_;
 
                     @Override
                     public void defineRules() {
-                        a_.mustUse(b_);
-                        b_.mustNotUse(a_, c_).mayUse(aA);
+                        a_.mustUse(b);
+                        b.mustNotUse(a_, c_).mayUse(aA);
                     }
                 })
                 .withExternals(new DependencyRuler() {
@@ -273,42 +274,36 @@ public class DependencyRulesTest {
         assertEquals(new Dependencies(
                         new DependencyMap(),
                         new DependencyMap()
-                                .with(0, dep("a.a"), set(), dep("b.b"))
-                                .with(0, dep("a.b"), set(), dep("b.a"))
-                                .with(0, dep("a.b"), set(), dep("b.b")),
+                                .with(0, dep("a.a"), set(), dep("b"))
+                                .with(0, dep("a"), set(), dep("b"))
+                                .with(0, dep("a.b"), set(), dep("b")),
                         new DependencyMap()
-                                .with(0, dep("b.a"), set(dep("b.a.Ba1")), dep("a.b"))
-                                .with(0, dep("b.a"), set(dep("b.a.Ba2")), dep("c.b"))
-                                .with(0, dep("b.a"), set(dep("b.a.Ba2")), dep("c.a"))
-                                .with(0, dep("b.b"), set(dep("b.b.Bb1")), dep("c.a"))
-                                .with(0, dep("b.b"), set(dep("b.b.Bb1")), dep("c.b")),
+                                .with(0, dep("b"), set(dep("b.B1")), dep("c"))
+                                .with(0, dep("b"), set(dep("b.B1")), dep("a")),
                         patterns(),
-                        WILDCARD_UNDEFINED,
+                        WILDCARD_UNDEFINED2,
                         CYCLES),
                 result);
         assertMatcher("\n"
+                        + miss("guru.nidi.codeassert.dependency.a")
+                        + "  guru.nidi.codeassert.dependency.b\n"
                         + miss("guru.nidi.codeassert.dependency.a.a")
-                        + "  guru.nidi.codeassert.dependency.b.b\n"
+                        + "  guru.nidi.codeassert.dependency.b\n"
                         + miss("guru.nidi.codeassert.dependency.a.b")
-                        + "  guru.nidi.codeassert.dependency.b.a\n"
-                        + "  guru.nidi.codeassert.dependency.b.b\n"
-                        + deny("guru.nidi.codeassert.dependency.b.a")
-                        + "  guru.nidi.codeassert.dependency.a.b (by guru.nidi.codeassert.dependency.b.a.Ba1)\n"
-                        + "  guru.nidi.codeassert.dependency.c.a (by guru.nidi.codeassert.dependency.b.a.Ba2)\n"
-                        + "  guru.nidi.codeassert.dependency.c.b (by guru.nidi.codeassert.dependency.b.a.Ba2)\n"
-                        + deny("guru.nidi.codeassert.dependency.b.b")
-                        + "  guru.nidi.codeassert.dependency.c.a (by guru.nidi.codeassert.dependency.b.b.Bb1)\n"
-                        + "  guru.nidi.codeassert.dependency.c.b (by guru.nidi.codeassert.dependency.b.b.Bb1)\n",
+                        + "  guru.nidi.codeassert.dependency.b\n"
+                        + deny("guru.nidi.codeassert.dependency.b")
+                        + "  guru.nidi.codeassert.dependency.a (by guru.nidi.codeassert.dependency.b.B1)\n"
+                        + "  guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.b.B1)\n",
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRules());
     }
 
     @Test
     void denyWithWildcard() {
-        final DependencyRules rules = DependencyRules.denyAll().withExternals("java.*", "org*");
+        final DependencyRules rules = DependencyRules.denyAll().withExternals("java.*", "org.*");
         final DependencyRule a1 = rules.addRule(dep("a.a"));
-        final DependencyRule a = rules.addRule(dep("a.*"));
-        final DependencyRule b = rules.addRule(dep("b.*"));
-        final DependencyRule c = rules.addRule(dep("c.*"));
+        final DependencyRule a = rules.addRule(dep("a.+"));
+        final DependencyRule b = rules.addRule(dep("b.+"));
+        final DependencyRule c = rules.addRule(dep("c.+"));
 
         a.mustUse(b);
         b.mayUse(a, c).mustNotUse(a1);
@@ -344,8 +339,8 @@ public class DependencyRulesTest {
 
     @Test
     void externalsAreOptional() {
-        final DependencyRules rules = DependencyRules.denyAll().withExternals("java*", "org.*", "blablu");
-        final DependencyRule all = rules.addRule("guru.nidi.codeassert*");
+        final DependencyRules rules = DependencyRules.denyAll().withExternals("java.*", "org.*", "blablu");
+        final DependencyRule all = rules.addRule("guru.nidi.codeassert.*");
         all.mayUse(all);
         assertThat(new DependencyAnalyzer(model).rules(rules).analyze(), matchesRulesExactly());
     }
@@ -355,10 +350,9 @@ public class DependencyRulesTest {
         final DependencyCollector collector = new DependencyCollector()
                 .just(In.locs(dep("b*"), ca("x"), ca("dependency")).ignoreAll())
                 .just(In.locs(ca("z")).ignoreAll())
-                .just(In.packages("guru.nidi.codeassert").ignore(DependencyCollector.UNDEFINED))
                 .just(In.loc(dep("c*")).ignore(DependencyCollector.DENIED));
         final AnalyzerConfig config = AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/dependency");
-        final DependencyRules rules = DependencyRules.denyAll().withExternals("java*", "org.*");
+        final DependencyRules rules = DependencyRules.denyAll().withExternals("java.*", "org.*");
         rules.addRule(ca("*"));
         final DependencyRule a = rules.addRule(dep("a"));
         rules.addRule(dep("b.b")).mustUse(a);
@@ -386,7 +380,7 @@ public class DependencyRulesTest {
 
     @Test
     void classLevel() {
-        final DependencyRules rules = DependencyRules.denyAll().withExternals("java.*", "org*");
+        final DependencyRules rules = DependencyRules.denyAll().withExternals("java.*", "org.*");
         final DependencyRule m = rules.rule(ca("model"));
         final DependencyRule c = rules.rule(ca("config"));
         final DependencyRule a = rules.addRule(dep("CycleTest"));
@@ -401,7 +395,7 @@ public class DependencyRulesTest {
                         dependency.sub("CycleTest").mayUse(model, config);
                     }
                 })
-                .withExternals("java.*", "org*");
+                .withExternals("java.*", "org.*");
 
         final Dependencies result = rules.analyzeRules(Scope.classes(model));
         final Dependencies result2 = rules2.analyzeRules(Scope.classes(model));
