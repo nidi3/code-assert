@@ -23,9 +23,11 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public final class DependencyRules {
     private static final Logger LOG = LoggerFactory.getLogger(DependencyRules.class);
+    private static final Pattern ANONYMOUS_CLASS = Pattern.compile(".*?\\$\\d+");
     private static final ThreadLocal<DependencyRules> CURRENT = new ThreadLocal<>();
 
     private final List<DependencyRule> rules;
@@ -217,10 +219,18 @@ public final class DependencyRules {
     }
 
     private String addPackages(String base, Class<?> clazz) {
-        final String name = clazz == null || clazz.isAnonymousClass()
-                ? ""
-                : camelCaseToDotCase(reallySimpleName(clazz));
-        return addPackages(base, name);
+        if (clazz == null) {
+            return addPackages(base, "");
+        }
+        if (isAnonymous(clazz)) {
+            return addPackages(base.length() > 0 ? base : clazz.getPackage().getName(), "");
+        }
+        return addPackages(base, camelCaseToDotCase(reallySimpleName(clazz)));
+    }
+
+    private boolean isAnonymous(Class<?> clazz) {
+        //anonymous local classes return false to isAnonymousClass()
+        return clazz.isAnonymousClass() || ANONYMOUS_CLASS.matcher(clazz.getSimpleName()).matches();
     }
 
     private String addPackages(String p1, String p2) {
