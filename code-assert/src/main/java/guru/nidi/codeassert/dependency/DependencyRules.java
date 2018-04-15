@@ -228,15 +228,15 @@ public final class DependencyRules {
         return addPackages(base, camelCaseToDotCase(reallySimpleName(clazz)));
     }
 
-    private boolean isAnonymous(Class<?> clazz) {
-        //anonymous local classes return false to isAnonymousClass()
-        return clazz.isAnonymousClass() || ANONYMOUS_CLASS.matcher(clazz.getSimpleName()).matches();
-    }
-
     private String addPackages(String p1, String p2) {
         return p1.length() > 0 && !p1.endsWith(".") && p2.length() > 0
                 ? p1 + "." + p2
                 : p1 + p2;
+    }
+
+    private boolean isAnonymous(Class<?> clazz) {
+        //anonymous local classes return false to isAnonymousClass()
+        return clazz.isAnonymousClass() || ANONYMOUS_CLASS.matcher(clazz.getSimpleName()).matches();
     }
 
     private String reallySimpleName(Class<?> clazz) {
