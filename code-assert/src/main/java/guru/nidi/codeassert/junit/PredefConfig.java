@@ -25,6 +25,8 @@ import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static guru.nidi.codeassert.pmd.PmdRulesets.*;
 
 public final class PredefConfig {
+    private static final String VARIABLE_PATTERN = "^[a-z][a-zA-Z0-9]*$";
+
     private PredefConfig() {
     }
 
@@ -94,17 +96,19 @@ public final class PredefConfig {
                                 "design.forExtension", "hidden.field", "inline.conditional.avoid", "magic.number"));
     }
 
-    public static StyleChecks adjustedGoogleStyleChecks() {
+    public static StyleChecks.Google adjustedGoogleStyleChecks() {
         return StyleChecks.google()
                 .maxLineLen(120).indentBasic(4).indentCase(4)
-                .paramName("^[a-z][a-zA-Z0-9]*$")
-                .catchParamName("^[a-z][a-zA-Z0-9]*$")
-                .localVarName("^[a-z][a-zA-Z0-9]*$")
+                .paramName(VARIABLE_PATTERN)
+                .catchParamName(VARIABLE_PATTERN)
+                .localVarName(VARIABLE_PATTERN)
+                .memberName(VARIABLE_PATTERN)
+                .methodName(VARIABLE_PATTERN)
                 .emptyLineSeparatorTokens(IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
                         STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF);
     }
 
-    public static StyleChecks adjustedSunStyleChecks() {
+    public static StyleChecks.Sun adjustedSunStyleChecks() {
         return StyleChecks.sun().maxLineLen(120).allowDefaultAccessMembers(true);
     }
 }

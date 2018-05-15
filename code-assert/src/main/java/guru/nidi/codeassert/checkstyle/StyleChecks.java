@@ -59,6 +59,8 @@ public class StyleChecks {
                     "parameterName", "^[a-z][a-z0-9][a-zA-Z0-9]*$",
                     "catchParameterName", "^[a-z][a-z0-9][a-zA-Z0-9]*$",
                     "localVariableName", "^[a-z][a-z0-9][a-zA-Z0-9]*$",
+                    "memberName", "^[a-z][a-z0-9][a-zA-Z0-9]*$",
+                    "methodName", "^[a-z][a-z0-9][a-zA-Z0-9_]*$",
                     "emptyLine-tokens", asList(PACKAGE_DEF, IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
                             STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF));
         }
@@ -97,6 +99,14 @@ public class StyleChecks {
 
         public Google localVarName(String pattern) {
             return withParam("localVariableName", pattern);
+        }
+
+        public Google memberName(String pattern) {
+            return withParam("memberName", pattern);
+        }
+
+        public Google methodName(String pattern) {
+            return withParam("methodName", pattern);
         }
 
         public Google emptyLineSeparatorTokens(int... tokens) {
