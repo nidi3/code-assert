@@ -115,7 +115,6 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                 .just(In.classes("Coverage", "Constant").ignore("empty.line.separator"))
                 .just(In.classes("BaseCollector", "In", "Location", "SourceFileParser").ignore("overload.methods.declaration"))
                 .just(In.clazz(PmdRulesets.class).ignore("abbreviation.as.word"))
-                .just(In.classes("SignatureParser").ignore("name.invalidPattern"))
                 .just(In.classes("DependencyMap").ignore("tag.continuation.indent"));
 
         return new CheckstyleAnalyzer(AnalyzerConfig.maven().main(), PredefConfig.adjustedGoogleStyleChecks(), collector).analyze();

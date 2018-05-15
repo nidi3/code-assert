@@ -51,15 +51,17 @@ public class StyleChecks {
     }
 
     public static final class Google extends StyleChecks {
+        private static final String VARIABLE_PATTERN = "^[a-z][a-z0-9][a-zA-Z0-9]*$";
+
         protected Google() {
             super("/guru/nidi/codeassert/checkstyle/google_checks.xml",
                     MAX_LINE_LEN, 100,
                     "indent-basicOffset", 2, "indent-case", 2, "indent-arrayInit", 2, "indent-throws", 4,
                     "indent-lineWrapping", 4,
-                    "parameterName", "^[a-z][a-z0-9][a-zA-Z0-9]*$",
-                    "catchParameterName", "^[a-z][a-z0-9][a-zA-Z0-9]*$",
-                    "localVariableName", "^[a-z][a-z0-9][a-zA-Z0-9]*$",
-                    "memberName", "^[a-z][a-z0-9][a-zA-Z0-9]*$",
+                    "parameterName", VARIABLE_PATTERN,
+                    "catchParameterName", VARIABLE_PATTERN,
+                    "localVariableName", VARIABLE_PATTERN,
+                    "memberName", VARIABLE_PATTERN,
                     "methodName", "^[a-z][a-z0-9][a-zA-Z0-9_]*$",
                     "emptyLine-tokens", asList(PACKAGE_DEF, IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
                             STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF));
