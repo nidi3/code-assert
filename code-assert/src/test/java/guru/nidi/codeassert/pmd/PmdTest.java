@@ -79,9 +79,11 @@ class PmdTest {
                         + pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", "Class cannot be instantiated and does not provide any static methods or fields")
                         + pmd(MEDIUM, "NoPackage", TEST, "/CodeCoverage", "All classes and interfaces must belong to a named package")
                         + pmd(MEDIUM, "NullAssignment", MAIN, "dependency/DependencyRules", "Assigning an Object to null is a code smell.  Consider refactoring.")
-                        + pmd(MEDIUM, "TooManyMethods", MAIN, "pmd/PmdRulesets", "This class has too many methods, consider refactoring it.")
-                        + pmd(MEDIUM, "TooManyMethods", TEST, "config/LocationMatcherTest", "This class has too many methods, consider refactoring it.")
-                        + pmd(MEDIUM, "UseObjectForClearerAPI", TEST, "detekt/DetektAnalyzerTest", "Rather than using a lot of String arguments, consider using a container object for those values."),
+                        + pmd(MEDIUM, "TooManyStaticImports", MAIN, "config/AnalyzerConfig", "Too many static imports may lead to messy code")
+                        + pmd(MEDIUM, "TooManyStaticImports", MAIN, "detekt/DetektAnalyzer", "Too many static imports may lead to messy code")
+                        + pmd(MEDIUM, "TooManyStaticImports", MAIN, "ktlint/KtlintAnalyzer", "Too many static imports may lead to messy code")
+                        + pmd(MEDIUM, "UseObjectForClearerAPI", TEST, "detekt/DetektAnalyzerTest", "Rather than using a lot of String arguments, consider using a container object for those values.")
+                        + pmd(MEDIUM, "UseProperClassLoader", MAIN, "pmd/PmdAnalyzer", "In J2EE, getClassLoader() might not work as expected.  Use Thread.currentThread().getContextClassLoader() instead."),
                 pmdResult, hasNoPmdViolations());
     }
 
@@ -95,11 +97,11 @@ class PmdTest {
         assertMatcher(""
                         + cpd(42, "detekt/DetektCollector")
                         + cpd("ktlint/KtlintCollector")
-                        + cpd(40, "pmd/PmdAnalyzer")
-                        + cpd("pmd/PmdAnalyzer")
                         + cpd(35, "dependency/DependencyCollector")
                         + cpd("detekt/DetektCollector")
                         + cpd("ktlint/KtlintCollector")
+                        + cpd(35, "pmd/PmdAnalyzer")
+                        + cpd("pmd/PmdAnalyzer")
                         + cpd(29, "detekt/DetektMatcher")
                         + cpd("ktlint/KtlintMatcher")
                         + cpd(26, "checkstyle/StyleEventCollector")
@@ -126,7 +128,7 @@ class PmdTest {
                                 "AvoidFieldNameMatchingMethodName", "AvoidFieldNameMatchingTypeName", "BeanMembersShouldSerialize",
                                 "JUnitAssertionsShouldIncludeMessage", "JUnitSpelling", "SimplifyStartsWith", "AvoidInstantiatingObjectsInLoops",
                                 "UseStringBufferForStringAppends", "AvoidSynchronizedAtMethodLevel", "VariableNamingConventions",
-                                "CommentRequired"))
+                                "CommentRequired", "AccessorMethodGeneration"))
                         .because("They are snippets", In.packages("*.snippets.*").ignoreAll())
                         .just(
                                 In.clazz(DependencyRulesTest.class).ignore("ExcessiveMethodLength"),

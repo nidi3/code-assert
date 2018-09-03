@@ -44,11 +44,11 @@ public final class DependencyRules {
     }
 
     public static DependencyRules allowAll() {
-        return new DependencyRules(new ArrayList<DependencyRule>(), true, true, true);
+        return new DependencyRules(new ArrayList<>(), true, true, true);
     }
 
     public static DependencyRules denyAll() {
-        return new DependencyRules(new ArrayList<DependencyRule>(), false, false, false);
+        return new DependencyRules(new ArrayList<>(), false, false, false);
     }
 
     public DependencyRules allowIntraPackageCycles(boolean allowIntraPackageCycles) {

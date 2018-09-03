@@ -20,32 +20,34 @@ import guru.nidi.codeassert.AnalyzerException;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.UsageCounter;
 import net.sourceforge.pmd.*;
+import net.sourceforge.pmd.lang.LanguageFilenameFilter;
+import net.sourceforge.pmd.lang.java.JavaLanguageModule;
+import net.sourceforge.pmd.processor.MonoThreadProcessor;
+import net.sourceforge.pmd.processor.MultiThreadProcessor;
 import net.sourceforge.pmd.renderers.AbstractAccumulatingRenderer;
-import net.sourceforge.pmd.renderers.Renderer;
+import net.sourceforge.pmd.util.FileUtil;
+import net.sourceforge.pmd.util.datasource.DataSource;
 import org.apache.commons.io.output.NullWriter;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
-    private static final Comparator<RuleViolation> VIOLATION_SORTER = new Comparator<RuleViolation>() {
-        @Override
-        public int compare(RuleViolation v1, RuleViolation v2) {
-            final int prio = v1.getRule().getPriority().getPriority() - v2.getRule().getPriority().getPriority();
-            if (prio != 0) {
-                return prio;
-            }
-            return v1.getRule().getName().compareTo(v2.getRule().getName());
-        }
-    };
+    private static final Comparator<RuleViolation> VIOLATION_SORTER = Comparator
+            .comparingInt((RuleViolation v) -> v.getRule().getPriority().getPriority())
+            .thenComparing(v -> v.getRule().getName());
 
     private final AnalyzerConfig config;
     private final PmdViolationCollector collector;
     private final Map<String, PmdRuleset> rulesets;
 
     public PmdAnalyzer(AnalyzerConfig config, PmdViolationCollector collector) {
-        this(config, new HashMap<String, PmdRuleset>(), collector);
+        this(config, new HashMap<>(), collector);
     }
 
     private PmdAnalyzer(AnalyzerConfig config, Map<String, PmdRuleset> rulesets, PmdViolationCollector collector) {
@@ -55,8 +57,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     }
 
     public PmdAnalyzer withRulesets(PmdRuleset... rulesets) {
-        final Map<String, PmdRuleset> newRuleset = new HashMap<>();
-        newRuleset.putAll(this.rulesets);
+        final Map<String, PmdRuleset> newRuleset = new HashMap<>(this.rulesets);
         for (final PmdRuleset ruleset : rulesets) {
             newRuleset.put(ruleset.name, ruleset);
         }
@@ -64,8 +65,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
     }
 
     public PmdAnalyzer withoutRulesets(PmdRuleset... rulesets) {
-        final Map<String, PmdRuleset> newRuleset = new HashMap<>();
-        newRuleset.putAll(this.rulesets);
+        final Map<String, PmdRuleset> newRuleset = new HashMap<>(this.rulesets);
         for (final PmdRuleset ruleset : rulesets) {
             newRuleset.remove(ruleset.name);
         }
@@ -78,37 +78,16 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
             throw new AnalyzerException("No rulesets defined. Use the withRulesets methods to define some. "
                     + "See Rulesets class for predefined rule sets.");
         }
-        final PmdRenderer renderer = new PmdRenderer();
-        final PMDConfiguration pmdConfig = createPmdConfig(renderer);
-        PMD.doPMD(pmdConfig);
-        return processViolations(renderer);
+        final PMDConfiguration pmdConfig = createPmdConfig();
+        final RuleSetFactory ruleSetFactory = createRuleSetFactory(pmdConfig);
+        final List<DataSource> files = FileUtil.collectFiles(pmdConfig.getInputPaths(),
+                new LanguageFilenameFilter(new JavaLanguageModule()));
+
+        return runPmd(pmdConfig, ruleSetFactory, files);
     }
 
-    private PmdResult processViolations(PmdRenderer renderer) {
-        final List<RuleViolation> violations = new ArrayList<>();
-        final UsageCounter counter = new UsageCounter();
-        if (renderer.getReport() != null) {
-            for (final RuleViolation violation : renderer.getReport()) {
-                if (counter.accept(collector.accept(violation))) {
-                    violations.add(violation);
-                }
-            }
-        }
-        Collections.sort(violations, VIOLATION_SORTER);
-        collector.printUnusedWarning(counter);
-        return new PmdResult(this, violations, collector.unusedActions(counter));
-    }
-
-    private PMDConfiguration createPmdConfig(final PmdRenderer renderer) {
-        final PMDConfiguration pmdConfig = new PMDConfiguration() {
-            @Override
-            public Renderer createRenderer() {
-                for (final PmdRuleset ruleset : rulesets.values()) {
-                    ruleset.apply(this);
-                }
-                return renderer;
-            }
-        };
+    private PMDConfiguration createPmdConfig() {
+        final PMDConfiguration pmdConfig = new PMDConfiguration();
         final StringBuilder inputs = new StringBuilder();
         for (final AnalyzerConfig.Path source : config.getSourcePaths()) {
             inputs.append(',').append(source.getPath());
@@ -127,15 +106,57 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
         return rulesets.isEmpty() ? "" : s.substring(1);
     }
 
+    private RuleSetFactory createRuleSetFactory(PMDConfiguration pmdConfig) {
+        return new RuleSetFactory(PmdAnalyzer.class.getClassLoader(), pmdConfig.getMinimumPriority(), true,
+                pmdConfig.isRuleSetFactoryCompatibilityEnabled()) {
+            @Override
+            public synchronized RuleSets createRuleSets(List<RuleSetReferenceId> ruleSetReferenceIds)
+                    throws RuleSetNotFoundException {
+                final RuleSets sets = super.createRuleSets(ruleSetReferenceIds);
+                for (final PmdRuleset ruleset : rulesets.values()) {
+                    ruleset.apply(sets);
+                }
+                return sets;
+            }
+        };
+    }
+
+    private PmdResult runPmd(PMDConfiguration pmdConfig, RuleSetFactory ruleSetFactory, List<DataSource> files) {
+        try {
+            final PmdRenderer renderer = new PmdRenderer();
+            renderer.start();
+            final RuleContext ctx = new RuleContext();
+            if (pmdConfig.getThreads() > 0) {
+                new MultiThreadProcessor(pmdConfig).processFiles(ruleSetFactory, files, ctx, singletonList(renderer));
+            } else {
+                new MonoThreadProcessor(pmdConfig).processFiles(ruleSetFactory, files, ctx, singletonList(renderer));
+            }
+            renderer.end();
+            renderer.flush();
+            return processViolations(renderer);
+        } catch (IOException e) {
+            throw new AnalyzerException("Problem running PMD", e);
+        }
+    }
+
+    private PmdResult processViolations(PmdRenderer renderer) {
+        final UsageCounter counter = new UsageCounter();
+        final List<RuleViolation> violations = asStream(renderer.getReport())
+                .filter(v -> counter.accept(collector.accept(v)))
+                .sorted(VIOLATION_SORTER)
+                .collect(toList());
+        collector.printUnusedWarning(counter);
+        return new PmdResult(this, violations, collector.unusedActions(counter));
+    }
+
+    private Stream<RuleViolation> asStream(Report report) {
+        return report == null ? Stream.empty() : StreamSupport.stream(report.spliterator(), false);
+    }
+
     private static class PmdRenderer extends AbstractAccumulatingRenderer {
         PmdRenderer() {
             super("", "");
             super.setWriter(new NullWriter());
-        }
-
-        @Override
-        public void setWriter(Writer writer) {
-            //we want to keep NullWriter, no logging whatsoever, we are only interested in report
         }
 
         @Override
@@ -144,7 +165,7 @@ public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
         }
 
         @Override
-        public void end() throws IOException {
+        public void end() {
             //do nothing
         }
 

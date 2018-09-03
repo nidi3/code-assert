@@ -23,12 +23,7 @@ import org.hamcrest.Description;
 import java.util.*;
 
 public class CpdMatcher extends ResultMatcher<CpdResult, Match> {
-    private static final Comparator<Mark> MARK_COMPARATOR = new Comparator<Mark>() {
-        @Override
-        public int compare(Mark m1, Mark m2) {
-            return m1.getFilename().compareTo(m2.getFilename());
-        }
-    };
+    private static final Comparator<Mark> MARK_COMPARATOR = Comparator.comparing(Mark::getFilename);
 
     public void describeTo(Description description) {
         description.appendText("Has no code duplications");
@@ -58,7 +53,7 @@ public class CpdMatcher extends ResultMatcher<CpdResult, Match> {
         while (iter.hasNext()) {
             marks.add(iter.next());
         }
-        Collections.sort(marks, MARK_COMPARATOR);
+        marks.sort(MARK_COMPARATOR);
         return marks;
     }
 }

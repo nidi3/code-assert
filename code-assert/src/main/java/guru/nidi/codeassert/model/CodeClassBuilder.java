@@ -142,7 +142,7 @@ class CodeClassBuilder {
         }
     }
 
-    private void addMemberTypes(List<MemberInfo> infos) throws IOException {
+    private void addMemberTypes(List<MemberInfo> infos) {
         for (final MemberInfo info : infos) {
             final String[] types = descriptorToTypes(info.descriptor);
             for (final String type : types) {

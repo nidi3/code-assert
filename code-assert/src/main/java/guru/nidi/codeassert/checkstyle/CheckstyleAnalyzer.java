@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
+
 public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
     private static final Logger LOG = LoggerFactory.getLogger(CheckstyleAnalyzer.class);
 
@@ -34,16 +36,9 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
     private final StyleChecks checks;
     private final StyleEventCollector collector;
 
-    private static final Comparator<AuditEvent> EVENT_SORTER = new Comparator<AuditEvent>() {
-        @Override
-        public int compare(AuditEvent b1, AuditEvent b2) {
-            final int severity = b1.getSeverityLevel().compareTo(b2.getSeverityLevel());
-            if (severity != 0) {
-                return severity;
-            }
-            return b1.getLocalizedMessage().getKey().compareTo(b2.getLocalizedMessage().getKey());
-        }
-    };
+    private static final Comparator<AuditEvent> EVENT_COMPARATOR = Comparator
+            .comparing(AuditEvent::getSeverityLevel)
+            .thenComparing(e -> e.getLocalizedMessage().getKey());
 
     private static class LoggingAuditListener implements AuditListener {
         final List<AuditEvent> events = new ArrayList<>();
@@ -107,7 +102,7 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
 
     private String propertyValue(String name, Object value) {
         if (name.endsWith("-tokens")) {
-            final StringBuilder tokens = new StringBuilder("");
+            final StringBuilder tokens = new StringBuilder();
             for (final Integer val : (List<Integer>) value) {
                 for (final Field f : TokenTypes.class.getFields()) {
                     try {
@@ -125,17 +120,13 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
     }
 
     private CheckstyleResult createResult(List<AuditEvent> events) {
-        final List<AuditEvent> sorted = new ArrayList<>(events);
-        Collections.sort(sorted, EVENT_SORTER);
-        final List<AuditEvent> filtered = new ArrayList<>();
         final UsageCounter counter = new UsageCounter();
-        for (final AuditEvent event : sorted) {
-            if (counter.accept(collector.accept(event))) {
-                filtered.add(event);
-            }
-        }
+        final List<AuditEvent> res = events.stream()
+                .filter(e -> counter.accept(collector.accept(e)))
+                .sorted(EVENT_COMPARATOR)
+                .collect(toList());
         collector.printUnusedWarning(counter);
-        return new CheckstyleResult(this, filtered, collector.unusedActions(counter));
+        return new CheckstyleResult(this, res, collector.unusedActions(counter));
     }
 
 }

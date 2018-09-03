@@ -22,6 +22,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.project.MavenProject;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 import static guru.nidi.codeassert.AssertMojo.JACOCO_VERSION;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
@@ -41,7 +42,7 @@ public class PrepareMojo extends AbstractMojo {
     @Component
     private BuildPluginManager pluginManager;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException {
         executeJacocoPlugin();
         writeArgLineFile();
     }
@@ -64,7 +65,7 @@ public class PrepareMojo extends AbstractMojo {
         if (argLine != null) {
             final File file = new File("target", "coverageOptions.txt");
             file.getParentFile().mkdirs();
-            try (final Writer out = new OutputStreamWriter(new FileOutputStream(file), "utf-8")) {
+            try (final Writer out = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
                 out.write(argLine);
                 getLog().info("Wrote argLine to " + file);
             } catch (IOException e) {

@@ -20,26 +20,9 @@ import guru.nidi.codeassert.config.LocationMatcher;
 import java.util.Set;
 
 interface RuleAccessor {
-    RuleAccessor MAY_BE_USED = new RuleAccessor() {
-        @Override
-        public Set<LocationMatcher> access(DependencyRule rule) {
-            return rule.usedBy.may;
-        }
-    };
-
-    RuleAccessor MUST_BE_USED = new RuleAccessor() {
-        @Override
-        public Set<LocationMatcher> access(DependencyRule rule) {
-            return rule.usedBy.must;
-        }
-    };
-
-    RuleAccessor MUST_NOT_BE_USED = new RuleAccessor() {
-        @Override
-        public Set<LocationMatcher> access(DependencyRule rule) {
-            return rule.usedBy.mustNot;
-        }
-    };
+    RuleAccessor MAY_BE_USED = rule -> rule.usedBy.may;
+    RuleAccessor MUST_BE_USED = rule -> rule.usedBy.must;
+    RuleAccessor MUST_NOT_BE_USED = rule -> rule.usedBy.mustNot;
 
     Set<LocationMatcher> access(DependencyRule rule);
 }

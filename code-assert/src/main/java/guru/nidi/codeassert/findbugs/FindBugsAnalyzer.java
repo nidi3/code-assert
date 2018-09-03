@@ -23,23 +23,16 @@ import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.UsageCounter;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
-    private static final Comparator<BugInstance> BUG_SORTER = new Comparator<BugInstance>() {
-        @Override
-        public int compare(BugInstance b1, BugInstance b2) {
-            final int prio = Integer.compare(b1.getPriority(), b2.getPriority());
-            if (prio != 0) {
-                return prio;
-            }
-            final int rank = Integer.compare(b2.getBugRank(), b1.getBugRank());
-            if (rank != 0) {
-                return rank;
-            }
-            return b1.getType().compareTo(b2.getType());
-        }
-    };
+    private static final Comparator<BugInstance> BUG_COMPARATOR = Comparator
+            .comparingInt(BugInstance::getPriority)
+            .thenComparingInt(BugInstance::getBugRank)
+            .thenComparing(BugInstance::getType);
 
     final AnalyzerConfig config;
     private final BugCollector collector;
@@ -68,9 +61,7 @@ public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
         for (final AnalyzerConfig.Path clazz : config.getClassPaths()) {
             project.addFile(clazz.getPath());
         }
-        for (final AnalyzerConfig.Path source : config.getSourcePaths()) {
-            project.addSourceDir(source.getPath());
-        }
+        project.addSourceDirs(config.getSourcePaths().stream().map(AnalyzerConfig.Path::getPath).collect(toList()));
         final String pathSeparator = System.getProperty("path.separator");
         final String classPath = System.getProperty("java.class.path");
         for (final String entry : classPath.split(pathSeparator)) {
@@ -96,17 +87,12 @@ public class FindBugsAnalyzer implements Analyzer<List<BugInstance>> {
     }
 
     private FindBugsResult createBugList(BugCollectionBugReporter bugReporter) {
-        final Collection<BugInstance> bugs = bugReporter.getBugCollection().getCollection();
-        final List<BugInstance> sorted = new ArrayList<>(bugs);
-        Collections.sort(sorted, BUG_SORTER);
-        final List<BugInstance> filtered = new ArrayList<>();
         final UsageCounter counter = new UsageCounter();
-        for (final BugInstance bug : sorted) {
-            if (counter.accept(collector.accept(bug))) {
-                filtered.add(bug);
-            }
-        }
+        final List<BugInstance> bugs = bugReporter.getBugCollection().getCollection().stream()
+                .filter(b -> counter.accept(collector.accept(b)))
+                .sorted(BUG_COMPARATOR)
+                .collect(toList());
         collector.printUnusedWarning(counter);
-        return new FindBugsResult(this, filtered, collector.unusedActions(counter));
+        return new FindBugsResult(this, bugs, collector.unusedActions(counter));
     }
 }

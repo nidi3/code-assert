@@ -15,8 +15,7 @@
  */
 package guru.nidi.codeassert.detekt;
 
-import io.gitlab.arturbosch.detekt.api.Entity;
-import io.gitlab.arturbosch.detekt.api.Severity;
+import io.gitlab.arturbosch.detekt.api.*;
 
 import java.io.File;
 
@@ -35,5 +34,10 @@ class TypedDetektFinding {
         this.name = name;
         this.severity = severity;
         this.description = description;
+    }
+
+    TypedDetektFinding(File basedir, String type, Finding finding) {
+        this(basedir, finding.getEntity(), type, finding.getId(),
+                finding.getIssue().getSeverity(), finding.getIssue().getDescription());
     }
 }

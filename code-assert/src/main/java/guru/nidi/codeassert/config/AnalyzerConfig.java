@@ -24,6 +24,7 @@ import java.util.*;
 import static guru.nidi.codeassert.config.Language.JAVA;
 import static guru.nidi.codeassert.util.ListUtils.concat;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 public class AnalyzerConfig {
@@ -32,7 +33,7 @@ public class AnalyzerConfig {
     private final List<Path> classes;
 
     public AnalyzerConfig() {
-        this(EnumSet.of(JAVA), Collections.<Path>emptyList(), Collections.<Path>emptyList());
+        this(EnumSet.of(JAVA), emptyList(), emptyList());
     }
 
     public AnalyzerConfig(AnalyzerConfig config) {

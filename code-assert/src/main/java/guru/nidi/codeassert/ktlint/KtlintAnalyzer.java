@@ -30,16 +30,20 @@ import java.util.*;
 import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
     private static final Logger LOG = LoggerFactory.getLogger(KtlintAnalyzer.class);
-
+    private static final Comparator<LocatedLintError> ERROR_COMPARATOR = Comparator
+            .comparing((LocatedLintError e) -> e.ruleId)
+            .thenComparing(e -> e.line);
     private final AnalyzerConfig config;
     private final KtlintCollector collector;
     private final List<RuleSet> ruleSets;
 
     public KtlintAnalyzer(AnalyzerConfig config, KtlintCollector collector) {
-        this(config, collector, Collections.<RuleSet>emptyList());
+        this(config, collector, emptyList());
     }
 
     private KtlintAnalyzer(AnalyzerConfig config, KtlintCollector collector, List<RuleSet> ruleSets) {
@@ -93,15 +97,13 @@ public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
     }
 
     private KtlintResult createResult(ErrorListener listener) {
-        final List<LocatedLintError> filtered = new ArrayList<>();
         final UsageCounter counter = new UsageCounter();
-        for (final LocatedLintError error : listener.errors) {
-            if (counter.accept(collector.accept(error))) {
-                filtered.add(error);
-            }
-        }
+        final List<LocatedLintError> errors = listener.errors.stream()
+                .filter(e -> counter.accept(collector.accept(e)))
+                .sorted(ERROR_COMPARATOR)
+                .collect(toList());
         collector.printUnusedWarning(counter);
-        return new KtlintResult(this, filtered, collector.unusedActions(counter));
+        return new KtlintResult(this, errors, collector.unusedActions(counter));
     }
 
     private static class ErrorListener implements Function1<LintError, Unit> {

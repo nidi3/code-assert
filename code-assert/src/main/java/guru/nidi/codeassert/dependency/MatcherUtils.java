@@ -19,6 +19,8 @@ import guru.nidi.codeassert.config.LocationMatcher;
 
 import java.util.*;
 
+import static java.util.Collections.sort;
+
 final class MatcherUtils {
     private MatcherUtils() {
     }
@@ -46,7 +48,7 @@ final class MatcherUtils {
 
     public static List<String> sorted(Collection<String> ss) {
         final List<String> sorted = new ArrayList<>(ss);
-        Collections.sort(sorted);
+        sort(sorted);
         return sorted;
     }
 

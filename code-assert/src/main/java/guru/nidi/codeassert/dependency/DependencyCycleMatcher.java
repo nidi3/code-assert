@@ -52,7 +52,7 @@ public class DependencyCycleMatcher extends TypeSafeMatcher<DependencyResult> {
 
     private static List<DependencyMap> sortedDepMaps(Collection<DependencyMap> maps) {
         final List<DependencyMap> sorted = new ArrayList<>(maps);
-        Collections.sort(sorted, DEP_MAP_COMPARATOR);
+        sorted.sort(DEP_MAP_COMPARATOR);
         return sorted;
     }
 

@@ -21,9 +21,10 @@ import guru.nidi.codeassert.config.UsageCounter;
 import guru.nidi.codeassert.config.ValuedLocation;
 
 import java.io.*;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
-import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.toList;
 
 public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
     private final File jacocoCsv;
@@ -50,7 +51,7 @@ public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
     private Coverages readReport() {
         final Coverages coverages = new Coverages();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(
-                new FileInputStream(jacocoCsv), "utf-8"))) {
+                new FileInputStream(jacocoCsv), StandardCharsets.UTF_8))) {
             String line;
             in.readLine();
             while ((line = in.readLine()) != null) {
@@ -69,21 +70,12 @@ public class JacocoAnalyzer implements Analyzer<List<ValuedLocation>> {
     }
 
     private JacocoResult filterResult(Coverages coverages) {
-        final List<ValuedLocation> filtered = new ArrayList<>();
         final UsageCounter counter = new UsageCounter();
-        filter(filtered, singleton(coverages.global), counter);
-        filter(filtered, coverages.perPackage.values(), counter);
-        filter(filtered, coverages.coverages, counter);
+        final List<ValuedLocation> locations = coverages.asStream()
+                .map(c -> c.toValuedLocation(collector.types))
+                .filter(vl -> counter.accept(collector.accept(vl)))
+                .collect(toList());
         collector.printUnusedWarning(counter);
-        return new JacocoResult(this, filtered, collector.unusedActions(counter), collector.types);
-    }
-
-    private void filter(List<ValuedLocation> filtered, Collection<Coverage> coverages, UsageCounter counter) {
-        for (final Coverage c : coverages) {
-            final ValuedLocation vc = c.toValuedLocation(collector.types);
-            if (counter.accept(collector.accept(vc))) {
-                filtered.add(vc);
-            }
-        }
+        return new JacocoResult(this, locations, collector.unusedActions(counter), collector.types);
     }
 }

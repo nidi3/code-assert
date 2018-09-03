@@ -17,10 +17,9 @@ package guru.nidi.codeassert.config;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-
 import static guru.nidi.codeassert.config.Language.*;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,7 +39,7 @@ public class LocationNameMatcherTest {
 
     @Test
     void emptyLocs() {
-        final LocationNameMatcher m = new LocationNameMatcher(Collections.<Location>emptyList(), asList("c", "d"));
+        final LocationNameMatcher m = new LocationNameMatcher(emptyList(), asList("c", "d"));
         assertTrue(m.matches("c", null, "X", null, true));
         assertTrue(m.matches("c", null, null, "#e", true));
         assertFalse(m.matches("e", null, "X", null, true));
@@ -50,14 +49,14 @@ public class LocationNameMatcherTest {
     void emptyNames() {
         final LocationNameMatcher m = new LocationNameMatcher(
                 asList(Location.of("A"), Location.of("a.B"), Location.of("x.Y#c")),
-                Collections.<String>emptyList());
+                emptyList());
         assertTrue(m.matches("c", null, "A", null, true));
         assertFalse(m.matches("c", null, "B", null, true));
     }
 
     @Test
     void nonStrictNames() {
-        final LocationNameMatcher m = new LocationNameMatcher(Collections.<Location>emptyList(), asList("cat"));
+        final LocationNameMatcher m = new LocationNameMatcher(emptyList(), asList("cat"));
         assertTrue(m.matches("cat", null, null, null, false));
         assertTrue(m.matches("xcat", null, null, null, false));
         assertTrue(m.matches("catx", null, null, null, false));

@@ -23,7 +23,11 @@ import net.sourceforge.pmd.cpd.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.StreamSupport;
+
+import static java.util.stream.Collectors.toList;
 
 public class CpdAnalyzer implements Analyzer<List<Match>> {
     private final AnalyzerConfig config;
@@ -63,14 +67,11 @@ public class CpdAnalyzer implements Analyzer<List<Match>> {
     }
 
     private CpdResult processMatches(Iterator<Match> matches) {
-        final List<Match> res = new ArrayList<>();
         final UsageCounter counter = new UsageCounter();
-        while (matches.hasNext()) {
-            final Match match = matches.next();
-            if (counter.accept(collector.accept(match))) {
-                res.add(match);
-            }
-        }
+        final Iterable<Match> miter = () -> matches;
+        final List<Match> res = StreamSupport.stream(miter.spliterator(), false)
+                .filter(m -> counter.accept(collector.accept(m)))
+                .collect(toList());
         collector.printUnusedWarning(counter);
         return new CpdResult(this, res, collector.unusedActions(counter));
     }

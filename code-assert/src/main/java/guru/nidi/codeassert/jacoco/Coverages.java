@@ -16,6 +16,7 @@
 package guru.nidi.codeassert.jacoco;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Coverages {
     final Set<Coverage> coverages = new TreeSet<>();
@@ -27,5 +28,10 @@ public class Coverages {
         final Coverage pc = perPackage.get(coverage.pack);
         perPackage.put(coverage.pack, pc == null ? coverage.withClazz("") : pc.combined(coverage));
         global = global == null ? coverage : global.combined(coverage);
+    }
+
+    Stream<Coverage> asStream() {
+        return Stream.concat(Stream.concat(
+                Stream.of(global), perPackage.values().stream()), coverages.stream());
     }
 }

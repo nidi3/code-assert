@@ -36,9 +36,9 @@ class KtlintAnalyzerTest {
         final KtlintResult result = new KtlintAnalyzer(AnalyzerConfig.maven(KOTLIN).test(), new KtlintCollector()
                 .just(In.classes("Linker").ignore("no-semi"))).analyze();
         assertMatcher(""
+                        + line("no-consecutive-blank-lines", "Linker", 34, "Needless blank line(s)")
                         + line("no-unused-imports", "Linker", 18, "Unused import")
-                        + line("no-wildcard-imports", "Linker", 19, "Wildcard import")
-                        + line("no-consecutive-blank-lines", "Linker", 34, "Needless blank line(s)"),
+                        + line("no-wildcard-imports", "Linker", 19, "Wildcard import"),
                 result, hasNoKtlintIssues());
     }
 

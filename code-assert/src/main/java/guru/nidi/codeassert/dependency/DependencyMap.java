@@ -29,11 +29,7 @@ class DependencyMap {
     }
 
     DependencyMap with(int specificity, String from, Collection<String> vias, String to) {
-        Map<String, Info> deps = map.get(from);
-        if (deps == null) {
-            deps = new HashMap<>();
-            map.put(from, deps);
-        }
+        final Map<String, Info> deps = map.computeIfAbsent(from, k -> new HashMap<>());
         final Info info = deps.get(to);
         if (info == null) {
             deps.put(to, new Info(vias, specificity));

@@ -19,7 +19,11 @@ import guru.nidi.codeassert.util.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 public abstract class BaseCollector<S, A extends Action, T extends BaseCollector<S, A, T>> {
     private static final Logger LOG = LoggerFactory.getLogger(BaseCollector.class);
@@ -107,9 +111,7 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
     }
 
     protected List<A> unusedNullAction(UsageCounter counter, boolean hasDefaultConfig) {
-        return counter.getCount(null) == 0 && hasDefaultConfig
-                ? Collections.<A>singletonList(null)
-                : Collections.<A>emptyList();
+        return counter.getCount(null) == 0 && hasDefaultConfig ? singletonList(null) : emptyList();
     }
 
     protected String guessClassFromFile(String filename, Language language) {

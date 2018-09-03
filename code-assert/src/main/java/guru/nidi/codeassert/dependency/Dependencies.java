@@ -29,8 +29,7 @@ public class Dependencies {
 
     public Dependencies() {
         this(new DependencyMap(), new DependencyMap(), new DependencyMap(),
-                new TreeSet<LocationMatcher>(), new TreeSet<String>(),
-                new HashSet<DependencyMap>());
+                new TreeSet<>(), new TreeSet<>(), new HashSet<>());
     }
 
     public Dependencies(DependencyMap allowed, DependencyMap missing, DependencyMap denied,

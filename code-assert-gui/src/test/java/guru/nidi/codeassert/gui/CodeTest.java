@@ -17,9 +17,8 @@ package guru.nidi.codeassert.gui;
 
 import guru.nidi.codeassert.checkstyle.*;
 import guru.nidi.codeassert.config.AnalyzerConfig;
-import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.*;
-import guru.nidi.codeassert.findbugs.*;
+import guru.nidi.codeassert.findbugs.FindBugsResult;
 import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
 import guru.nidi.codeassert.junit.PredefConfig;
 import guru.nidi.codeassert.pmd.*;

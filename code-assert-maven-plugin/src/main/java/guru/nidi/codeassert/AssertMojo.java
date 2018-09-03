@@ -50,7 +50,7 @@ public class AssertMojo extends AbstractMojo {
     @Component
     private BuildPluginManager pluginManager;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException {
         report();
         if (canRunTest()) {
             runTest();

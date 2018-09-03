@@ -27,7 +27,7 @@ public class PmdRuleset {
         this.name = name;
     }
 
-    public void apply(PMDConfiguration config) {
+    public void apply(RuleSets ruleSets) {
         for (final Field descField : getClass().getDeclaredFields()) {
             final PropertyField propertyField = descField.getAnnotation(PropertyField.class);
             if (propertyField != null) {
@@ -35,7 +35,7 @@ public class PmdRuleset {
                     descField.setAccessible(true);
                     final Object value = descField.get(this);
                     if (value != null) {
-                        setProperty(config, propertyField.rule(), propertyField.property(), value);
+                        setProperty(ruleSets, propertyField.rule(), propertyField.property(), value);
                     }
                 } catch (IllegalAccessException e) {
                     throw new AnalyzerException("Could not read property " + descField.getName()
@@ -45,8 +45,8 @@ public class PmdRuleset {
         }
     }
 
-    private void setProperty(PMDConfiguration config, String rule, String property, Object value) {
-        final Rule r = config.getPmdRuleSets().getRuleByName(rule);
+    private void setProperty(RuleSets ruleSets, String rule, String property, Object value) {
+        final Rule r = ruleSets.getRuleByName(rule);
         if (r == null) {
             throw new AnalyzerException("Rule '" + rule + "' not existing.");
         }

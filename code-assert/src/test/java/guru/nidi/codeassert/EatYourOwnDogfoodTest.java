@@ -18,10 +18,12 @@ package guru.nidi.codeassert;
 import guru.nidi.codeassert.checkstyle.*;
 import guru.nidi.codeassert.config.*;
 import guru.nidi.codeassert.dependency.*;
+import guru.nidi.codeassert.detekt.DetektAnalyzer;
 import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
 import guru.nidi.codeassert.junit.PredefConfig;
+import guru.nidi.codeassert.ktlint.KtlintAnalyzer;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.jupiter.api.BeforeAll;
@@ -81,7 +83,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                 .just(
                         In.everywhere().ignore(
                                 "AvoidInstantiatingObjectsInLoops", "AvoidSynchronizedAtMethodLevel",
-                                "SimplifyStartsWith", "ArrayIsStoredDirectly", "MethodReturnsInternalArray"),
+                                "SimplifyStartsWith", "ArrayIsStoredDirectly", "MethodReturnsInternalArray",
+                                "AccessorMethodGeneration"),
                         In.classes("AttributeInfo", "ConstantPool").ignore("ArrayIsStoredDirectly"),
                         In.classes("SignatureParser").ignore("SwitchStmtsShouldHaveDefault"),
                         In.clazz(PmdRulesets.class).ignore("TooManyMethods", "AvoidDuplicateLiterals"),
@@ -90,7 +93,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                         In.clazz(LocationMatcher.class).ignore("GodClass"),
                         In.classes("SourceFileParser", "Location", "LocationMatcher")
                                 .ignore("CyclomaticComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity"),
-                        In.classes("DependencyRules", "CodeClassBuilder").ignore("GodClass"));
+                        In.classes("DependencyRules", "CodeClassBuilder").ignore("GodClass"),
+                        In.classes(AnalyzerConfig.class, DetektAnalyzer.class, KtlintAnalyzer.class).ignore("TooManyStaticImports"));
         return new PmdAnalyzer(AnalyzerConfig.maven().main(), collector)
                 .withRulesets(PredefConfig.defaultPmdRulesets())
                 .analyze();

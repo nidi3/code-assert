@@ -18,20 +18,18 @@ package guru.nidi.codeassert.model;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AnalyzerTest {
     final Model model = Model.from(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model").getClasses());
 
     @Test
-    void packages() throws IOException {
+    void packages() {
         assertEquals(40, model.getPackages().size());
     }
 
     @Test
-    void classes() throws IOException {
-        assertEquals(129, model.getClasses().size());
+    void classes() {
+        assertEquals(130, model.getClasses().size());
     }
 }

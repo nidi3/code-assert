@@ -20,16 +20,31 @@ import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.UsageCounter;
 import io.gitlab.arturbosch.detekt.api.*;
 import io.gitlab.arturbosch.detekt.core.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.Executors;
 
 import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static io.gitlab.arturbosch.detekt.api.Severity.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
+    private static final Logger LOG = LoggerFactory.getLogger(DetektAnalyzer.class);
+    private static final List<Severity> SEVERITIES = asList(
+            Style, CodeSmell, Minor, Performance, Maintainability, Warning, Security, Defect);
+    private static final Comparator<Severity> SEVERITY_COMPARATOR = Comparator.comparingInt(SEVERITIES::indexOf);
+    private static final Comparator<TypedDetektFinding> FINDING_COMPARATOR = Comparator
+            .comparing((TypedDetektFinding f) -> f.severity, SEVERITY_COMPARATOR)
+            .thenComparing(f -> f.type)
+            .thenComparing(f -> f.name);
+
     private final AnalyzerConfig config;
     private final DetektCollector collector;
     private final Config detektConfig;
@@ -57,10 +72,16 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
 
     public DetektResult analyze() {
         final File baseDir = new File(AnalyzerConfig.Path.commonBase(config.getSourcePaths(KOTLIN)).getPath());
-        final ProcessingSettings settings = new ProcessingSettings(
-                baseDir.toPath(), calcDetektConfig(), emptyList(), false, false, emptyList());
-        final DetektFacade detekt = DetektFacade.Companion.create(settings, ruleSetProviders(settings), emptyList());
-        return createResult(baseDir, detekt.run());
+        try {
+            final ProcessingSettings settings = new ProcessingSettings(
+                    baseDir.toPath(), calcDetektConfig(), emptyList(), false, false, emptyList(),
+                    Executors.newSingleThreadExecutor(), new PrintStream(new LoggingOutputStream(), true, "utf-8"));
+            final DetektFacade df = DetektFacade.Companion.create(settings, ruleSetProviders(settings), emptyList());
+            return createResult(baseDir, df.run());
+        } catch (UnsupportedEncodingException e) {
+            //cannot happen
+            throw new AssertionError(e);
+        }
     }
 
     private Config calcDetektConfig() {
@@ -76,20 +97,15 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
     }
 
     private DetektResult createResult(File baseDir, Detektion detektion) {
-        final List<TypedDetektFinding> filtered = new ArrayList<>();
         final UsageCounter counter = new UsageCounter();
-        for (final Map.Entry<String, List<Finding>> entry : detektion.getFindings().entrySet()) {
-            for (final Finding finding : entry.getValue()) {
-                final TypedDetektFinding typed = new TypedDetektFinding(baseDir, finding.getEntity(), entry.getKey(),
-                        finding.getId(), finding.getIssue().getSeverity(), finding.getIssue().getDescription());
-                if (counter.accept(collector.accept(typed))) {
-                    filtered.add(typed);
-                }
-            }
-        }
+        final List<TypedDetektFinding> findings = detektion.getFindings().entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream()
+                        .map(finding -> new TypedDetektFinding(baseDir, entry.getKey(), finding))
+                        .filter(typed -> counter.accept(collector.accept(typed))))
+                .sorted(FINDING_COMPARATOR)
+                .collect(toList());
         collector.printUnusedWarning(counter);
-        Collections.sort(filtered, TypedDetektFindingComparator.INSTANCE);
-        return new DetektResult(this, filtered, collector.unusedActions(counter));
+        return new DetektResult(this, findings, collector.unusedActions(counter));
     }
 
     private static class NoFormat implements Config {
@@ -108,32 +124,27 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
         public <T> T valueOrDefault(String s, T t) {
             return "autoCorrect".equals(s) ? (T) Boolean.FALSE : delegate.valueOrDefault(s, t);
         }
-    }
 
-    private static class SeverityComparator implements Comparator<Severity> {
-        static final SeverityComparator INSTANCE = new SeverityComparator();
-
-        private static final List<Severity> SEVERITIES = asList(
-                Style, CodeSmell, Minor, Performance, Maintainability, Warning, Security, Defect);
-
-        public int compare(Severity s1, Severity s2) {
-            return SEVERITIES.indexOf(s2) - SEVERITIES.indexOf(s1);
+        @Override
+        public <T> T valueOrNull(String s) {
+            return "autoCorrect".equals(s) ? (T) Boolean.FALSE : delegate.valueOrNull(s);
         }
     }
 
-    private static class TypedDetektFindingComparator implements Comparator<TypedDetektFinding> {
-        static final TypedDetektFindingComparator INSTANCE = new TypedDetektFindingComparator();
+    private static class LoggingOutputStream extends OutputStream {
+        private final byte[] buf = new byte[1024];
+        private int pos;
 
-        public int compare(TypedDetektFinding f1, TypedDetektFinding f2) {
-            int res = SeverityComparator.INSTANCE.compare(f1.severity, f2.severity);
-            if (res != 0) {
-                return res;
-            }
-            res = f1.type.compareTo(f2.type);
-            if (res != 0) {
-                return res;
-            }
-            return f1.name.compareTo(f2.name);
+        @Override
+        public void write(int b) {
+            buf[pos++] = (byte) b;
+        }
+
+        @Override
+        public void flush() throws IOException {
+            super.flush();
+            LOG.warn(new String(buf, 0, pos, StandardCharsets.UTF_8));
+            pos = 0;
         }
     }
 }

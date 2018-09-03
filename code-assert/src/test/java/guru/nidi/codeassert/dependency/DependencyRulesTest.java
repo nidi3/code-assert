@@ -22,12 +22,12 @@ import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import java.util.*;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static java.util.Arrays.asList;
+import static java.util.Collections.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -59,11 +59,7 @@ public class DependencyRulesTest {
 
     @Test
     void wildcardNotAtEnd() {
-        assertThrows(IllegalArgumentException.class, new Executable() {
-            public void execute() throws Throwable {
-                DependencyRule.allowAll("a*b");
-            }
-        });
+        assertThrows(IllegalArgumentException.class, () -> DependencyRule.allowAll("a*b"));
     }
 
     //TODO test AmbiguousRuleException
@@ -107,7 +103,7 @@ public class DependencyRulesTest {
         rules.addRule(dep("a"));
         rules.addRule(dep("d"));
         final Set<String> undefined = new TreeSet<>(UNDEFINED);
-        undefined.addAll(set("org.junit.jupiter.api", "org.junit.jupiter.api.function", "org.slf4j", dep("b"), dep("c")));
+        undefined.addAll(set("org.junit.jupiter.api", "org.slf4j", dep("b"), dep("c")));
 
         final Dependencies result = rules.analyzeRules(Scope.packages(model));
         assertEquals(new Dependencies(
@@ -137,7 +133,6 @@ public class DependencyRulesTest {
                         + undef("guru.nidi.codeassert.model")
                         + undef("guru.nidi.codeassert.util")
                         + undef("org.junit.jupiter.api")
-                        + undef("org.junit.jupiter.api.function")
                         + undef("org.slf4j"),
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRulesExactly());
 
@@ -157,7 +152,6 @@ public class DependencyRulesTest {
                         + undef("guru.nidi.codeassert.model")
                         + undef("guru.nidi.codeassert.util")
                         + undef("org.junit.jupiter.api")
-                        + undef("org.junit.jupiter.api.function")
                         + undef("org.slf4j"),
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRulesIgnoringNonExisting());
 
@@ -367,7 +361,7 @@ public class DependencyRulesTest {
                                 .with(0, dep("a.a"), set(dep("a.a.Aa1")), dep("b.a"))
                                 .with(0, dep("a"), set(dep("a.A1")), dep("c")),
                         new HashSet<>(asList(new LocationMatcher(Location.of("guru.nidi.codeassert.y")))),
-                        new HashSet<String>(),
+                        new HashSet<>(),
                         new HashSet<>(asList(
                                 new DependencyMap()
                                         .with(1, dep("c.a"), set(dep("c.a.Ca1")), dep("a.a")),
@@ -410,7 +404,7 @@ public class DependencyRulesTest {
         assertEquals(new DependencyMap()
                         .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertMatchers")),
                 result3.denied);
-        assertEquals(71, result.undefined.size());
+        assertEquals(67, result.undefined.size());
     }
 
     private static String ca(String s) {
@@ -423,7 +417,7 @@ public class DependencyRulesTest {
 
     private static Set<String> set(String... ss) {
         final Set<String> res = new TreeSet<>();
-        Collections.addAll(res, ss);
+        addAll(res, ss);
         return res;
     }
 
