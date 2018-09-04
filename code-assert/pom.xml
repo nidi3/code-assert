@@ -27,7 +27,7 @@
             <plugin>
                 <groupId>guru.nidi</groupId>
                 <artifactId>code-assert-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <version>0.9.4</version>
                 <executions>
                     <execution>
                         <goals>
@@ -64,8 +64,8 @@
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
                 <executions>
                     <execution>
