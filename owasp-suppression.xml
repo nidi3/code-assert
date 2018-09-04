@@ -27,7 +27,7 @@
     </suppress>
     <suppress>
         <notes>This is probably a bug in the dependency checker because detekt uses gitlab groupId</notes>
-        <cpe>cpe:/a:gitlab:gitlab:1.0.0.rc6</cpe>
+        <cpe>cpe:/a:gitlab:gitlab:1.0.0.rc8</cpe>
     </suppress>
     <suppress>
         <notes>Well...</notes>
