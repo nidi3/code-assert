@@ -18,7 +18,7 @@
         <findbugs.version>3.1.6</findbugs.version>
         <findsecbugs.version>1.8.0</findsecbugs.version>
         <pmd.version>5.8.1</pmd.version>
-        <kotlin.version>1.2.30</kotlin.version>
+        <kotlin.version>1.2.51</kotlin.version>
         <detekt.version>1.0.0.RC8</detekt.version>
         <ktlint.version>0.27.0</ktlint.version>
     </properties>

@@ -17,12 +17,12 @@ package guru.nidi.codeassert.gui;
 
 import guru.nidi.codeassert.checkstyle.*;
 import guru.nidi.codeassert.config.AnalyzerConfig;
+import guru.nidi.codeassert.config.In;
 import guru.nidi.codeassert.dependency.*;
-import guru.nidi.codeassert.findbugs.FindBugsResult;
+import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
 import guru.nidi.codeassert.junit.PredefConfig;
 import guru.nidi.codeassert.pmd.*;
-import net.sourceforge.pmd.RulePriority;
 import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
@@ -53,18 +53,18 @@ public class CodeTest extends CodeAssertJunit5Test {
 
     @Override
     protected FindBugsResult analyzeFindBugs() {
-        return null; //TODO JVM crashes, WTF!?
-//        final BugCollector bugCollector = new BugCollector()
-//                .apply(PredefConfig.minimalFindBugsIgnore())
+//        return null; //TODO JVM crashes, WTF!?
+        final BugCollector bugCollector = new BugCollector()
+                .apply(PredefConfig.minimalFindBugsIgnore())
 //                TODO fix
-//                .just(In.clazz(AppController.class).ignore("PATH_TRAVERSAL_IN"))
-//                .just(In.everywhere().ignore("SE_NO_SERIALVERSIONID", "SPRING_ENDPOINT"));
-//        return new FindBugsAnalyzer(AnalyzerConfig.maven().main(), bugCollector).analyze();
+                .just(In.clazz(AppController.class).ignore("PATH_TRAVERSAL_IN"))
+                .just(In.everywhere().ignore("SE_NO_SERIALVERSIONID", "SPRING_ENDPOINT"));
+        return new FindBugsAnalyzer(AnalyzerConfig.maven().main(), bugCollector).analyze();
     }
 
     @Override
     protected PmdResult analyzePmd() {
-        final PmdViolationCollector collector = new PmdViolationCollector().minPriority(RulePriority.MEDIUM)
+        final PmdViolationCollector collector = new PmdViolationCollector()//.minPriority(RulePriority.MEDIUM)
                 .apply(PredefConfig.minimalPmdIgnore());
         return new PmdAnalyzer(AnalyzerConfig.maven().main(), collector)
                 .withRulesets(PredefConfig.defaultPmdRulesets())

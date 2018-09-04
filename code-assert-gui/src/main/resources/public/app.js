@@ -26,8 +26,8 @@ function packOf(name) {
 // d3.json('/model?jarfile=/Users/nidi/.m2/repository/guru/nidi/code-assert/0.8.2/code-assert-0.8.2.jar', (error, model) => {
 // d3.json('/model?jarfile=/Users/nidi/.m2/repository/guru/nidi/raml/raml-tester/0.8.11/raml-tester-0.8.11.jar', (error, model) => {
 // d3.json('/model?jarfile=/Users/nidi/.m2/repository/guru/nidi/graphviz-java/0.2.2/graphviz-java-0.2.2.jar', (error, model) => {
-// d3.json('/model?jarfile=/Users/nidi/.m2/repository/org/springframework/spring-core/3.1.3.RELEASE/spring-core-3.1.3.RELEASE.jar', (error, model) => {
-d3.json('/model?jarfile=/Users/nidi/.m2/repository/org/springframework/spring-expression/4.3.10.RELEASE/spring-expression-4.3.10.RELEASE.jar', (error, model) => {
+d3.json('/model?jarfile=/Users/nidi/.m2/repository/org/springframework/spring-core/5.0.8.RELEASE/spring-core-5.0.8.RELEASE.jar', (error, model) => {
+// d3.json('/model?jarfile=/Users/nidi/.m2/repository/org/springframework/spring-expression/4.3.10.RELEASE/spring-expression-4.3.10.RELEASE.jar', (error, model) => {
     if (error) throw error;
 
     let packages = {};
