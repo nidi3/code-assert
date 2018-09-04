@@ -4,7 +4,7 @@
     <parent>
         <artifactId>code-assert-parent</artifactId>
         <groupId>guru.nidi</groupId>
-        <version>0.9.4</version>
+        <version>0.9.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>code-assert-gui</artifactId>
