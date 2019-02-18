@@ -27,6 +27,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AnalyzerConfigTest {
     @Test
@@ -59,6 +60,18 @@ public class AnalyzerConfigTest {
         final AnalyzerConfig config = AnalyzerConfig.maven("code-assert").mainAndTest();
         assertPath(config.getSourcePaths(), path("src/main/java", ""), path("src/test/java", ""));
         assertPath(config.getClassPaths(), path("target/classes", ""), path("target/test-classes", ""));
+    }
+
+    @Test
+    void mavenModules() {
+        final AnalyzerConfig config = AnalyzerConfig.maven().modules("code-assert", "module").mainAndTest();
+        assertPath(config.getSourcePaths(), path("src/main/java", ""), path("src/test/java", ""), path("module/src/main/java", ""), path("module/src/test/java", ""));
+        assertPath(config.getClassPaths(), path("target/classes", ""), path("target/test-classes", ""), path("module/target/classes", ""), path("module/target/test-classes", ""));
+    }
+
+    @Test
+    void mavenModuleRedefinition() {
+        assertThrows(IllegalStateException.class, () -> AnalyzerConfig.maven("code-assert").modules("").mainAndTest());
     }
 
     @Test

@@ -21,14 +21,29 @@ import java.io.File;
 import java.util.*;
 
 import static guru.nidi.codeassert.config.Language.JAVA;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
-public class ProjectLayout {
-    private final String module;
+public class ProjectLayout<T extends ProjectLayout> {
+    private final List<String> modules;
     private final EnumSet<Language> languages;
 
-    protected ProjectLayout(String module, Language... languages) {
-        this.module = module;
-        this.languages = languages.length == 0 ? EnumSet.of(JAVA) : EnumSet.of(languages[0], languages);
+    protected ProjectLayout(List<String> modules, EnumSet<Language> languages) {
+        this.modules = new ArrayList<>(modules);
+        this.languages = languages;
+    }
+
+    protected ProjectLayout(List<String> modules, Language... languages) {
+        this(modules, languages.length == 0 ? EnumSet.of(JAVA) : EnumSet.of(languages[0], languages));
+    }
+
+    public T modules(String... modules) {
+        if (this.modules.size() > 1 || (this.modules.size() == 1 && this.modules.get(0) != null)) {
+            throw new IllegalStateException("You already defined modules.");
+        }
+        this.modules.clear();
+        this.modules.addAll(Arrays.asList(modules));
+        return (T) this;
     }
 
     public EnumSet<Language> getLanguages() {
@@ -38,35 +53,42 @@ public class ProjectLayout {
     protected List<Path> path(String[] packs, String... paths) {
         final List<Path> res = new ArrayList<>();
         for (final String path : paths) {
-            final String normPath = path(path);
-            if (packs.length == 0) {
-                res.add(new Path(normPath, ""));
-            } else {
-                for (final String pack : packs) {
-                    final String normPack = pack.replace('.', '/');
-                    res.add(new Path(normPath, normPack));
+            for (final String normPath : paths(path)) {
+                if (packs.length == 0) {
+                    res.add(new Path(normPath, ""));
+                } else {
+                    for (final String pack : packs) {
+                        final String normPack = pack.replace('.', '/');
+                        res.add(new Path(normPath, normPack));
+                    }
                 }
             }
         }
         return res;
     }
 
-    private String path(String relative) {
-        if (module == null || module.length() == 0 || runningInModuleDir()) {
-            return relative;
+    private List<String> paths(String relative) {
+        if (modules.isEmpty()) {
+            return singletonList(relative);
         }
-        return module.endsWith("/")
-                ? module + relative
-                : module + "/" + relative;
+        return modules.stream().map(module ->
+                module == null || module.length() == 0 || runningInModuleDir(module)
+                        ? relative
+                        : concat(module, relative)
+        ).collect(toList());
     }
 
-    private boolean runningInModuleDir() {
+    private String concat(String path1, String path2) {
+        return path1.endsWith("/") ? path1 + path2 : path1 + "/" + path2;
+    }
+
+    private boolean runningInModuleDir(String module) {
         return new File("").getAbsoluteFile().getName().equals(module);
     }
 
-    public static class Maven extends ProjectLayout {
+    public static class Maven extends ProjectLayout<Maven> {
         public Maven(String module, Language... languages) {
-            super(module, languages);
+            super(singletonList(module), languages);
         }
 
         public AnalyzerConfig main(String... packages) {
@@ -86,9 +108,9 @@ public class ProjectLayout {
         }
     }
 
-    public static class Gradle extends ProjectLayout {
+    public static class Gradle extends ProjectLayout<Gradle> {
         public Gradle(String module, Language... languages) {
-            super(module, languages);
+            super(singletonList(module), languages);
         }
 
         public AnalyzerConfig main(String... packages) {
