@@ -1,48 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
     <suppress>
-        <notes>code-assert is only used during test phase, so vulnerable libs do not end in production code.</notes>
-        <sha1>c586cd0b44cae8c0239a977277f99d08d751a482</sha1>
-        <cpe>cpe:/a:apple:java:1.4</cpe>
-    </suppress>
-    <suppress>
-        <notes>code-assert is only used during test phase, so vulnerable libs do not end in production code.</notes>
-        <sha1>8613ae82954779d518631e05daa73a6a954817d5</sha1>
-        <cpe>cpe:/a:bean_project:bean:7.x-1.1::~~~drupal~~</cpe>
-    </suppress>
-    <suppress>
-        <notes>Haha funny! But code-assert is only used during test phase, so vulnerable libs do not end in production code.</notes>
-        <sha1>a178eeeb5f3e15660e94d5731a3dc161c8350099</sha1>
-        <cpe>cpe:/a:mod_security:mod_security:1.7.1</cpe>
-    </suppress>
-    <suppress>
-        <notes>This is a nexus-staging dependency, what can we do?</notes>
-        <sha1>50ade46f23bb38cd984b4ec560c46223432aac38</sha1>
-        <cpe>cpe:/a:spice_project:spice:1.4</cpe>
-    </suppress>
-    <suppress>
-        <notes>This is a nexus-staging dependency, what can we do?</notes>
-        <sha1>dedc02034fb8fcd7615d66593228cb71709134b4</sha1>
-        <cpe>cpe:/a:spice_project:spice:1.3</cpe>
-    </suppress>
-    <suppress>
-        <notes>This is probably a bug in the dependency checker because detekt uses gitlab groupId</notes>
-        <cpe>cpe:/a:gitlab:gitlab:1.0.0.rc8</cpe>
+        <notes>Well...</notes>
+        <cpe>cpe:/a:fasterxml:jackson:2.9.6</cpe>
     </suppress>
     <suppress>
         <notes>Well...</notes>
-        <cpe>cpe:/a:pivotal_software:spring_boot:2.0.0.m4</cpe>
+        <cpe>cpe:/a:google:guava:19.0</cpe>
     </suppress>
     <suppress>
         <notes>Well...</notes>
-        <cpe>cpe:/a:fasterxml:jackson:2.9.4</cpe>
+        <cpe>cpe:/a:fasterxml:jackson-databind:2.9.6</cpe>
     </suppress>
     <suppress>
         <notes>Well...</notes>
-        <cpe>cpe:/a:fasterxml:jackson-databind:2.9.4</cpe>
-    </suppress>
-    <suppress>
-        <notes>Well...</notes>
-        <cpe>cpe:/a:oracle:glassfish:1.3.2</cpe>
+        <cpe>cpe:/a:sec_project:sec:1.3</cpe>
     </suppress>
 </suppressions>
