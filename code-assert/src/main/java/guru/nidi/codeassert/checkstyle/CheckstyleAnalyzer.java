@@ -38,7 +38,9 @@ public class CheckstyleAnalyzer implements Analyzer<List<AuditEvent>> {
 
     private static final Comparator<AuditEvent> EVENT_COMPARATOR = Comparator
             .comparing(AuditEvent::getSeverityLevel)
-            .thenComparing(e -> e.getLocalizedMessage().getKey());
+            .thenComparing(e -> e.getLocalizedMessage().getKey())
+            .thenComparing(AuditEvent::getFileName)
+            .thenComparing(AuditEvent::getLine);
 
     private static class LoggingAuditListener implements AuditListener {
         final List<AuditEvent> events = new ArrayList<>();
