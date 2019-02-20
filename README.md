@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/nidi3/code-assert.svg?branch=master)](https://travis-ci.org/nidi3/code-assert)
 [![codecov](https://codecov.io/gh/nidi3/code-assert/branch/master/graph/badge.svg)](https://codecov.io/gh/nidi3/code-assert)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/guru.nidi/code-assert/badge.svg)](https://maven-badges.herokuapp.com/maven-central/guru.nidi/code-assert)
 
 Assert that the source code of a project satisfies certain rules.
 
@@ -81,6 +82,9 @@ public class DependencyTest {
 [//]: # (end)
 
 ### Test coverage
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/guru.nidi/code-assert-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/guru.nidi/code-assert-maven-plugin)
+
 
 To verify the test coverage of a project, [JaCoCo](http://eclemma.org/jacoco/trunk/index.html) can be used.
 The following steps are needed:
