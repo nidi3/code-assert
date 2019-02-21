@@ -97,6 +97,8 @@ class PmdTest {
         assertMatcher(""
                         + cpd(42, "detekt/DetektCollector")
                         + cpd("ktlint/KtlintCollector")
+                        + cpd(39, "findbugs/FindBugsConfigs")
+                        + cpd("pmd/PmdConfigs")
                         + cpd(35, "dependency/DependencyCollector")
                         + cpd("detekt/DetektCollector")
                         + cpd("ktlint/KtlintCollector")

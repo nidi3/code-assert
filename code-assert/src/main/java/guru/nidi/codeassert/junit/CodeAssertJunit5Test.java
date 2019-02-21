@@ -28,71 +28,71 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 public class CodeAssertJunit5Test extends CodeAssertTestBase {
     @Test
     void dependencies() {
-        assumeFalse(dependencyResult() == null, "analyzeDependencies() not implemented.");
         assumeTrue(defaultTests().contains(DEPENDENCIES), "Dependencies test excluded.");
+        assumeFalse(dependencyResult() == null, "analyzeDependencies() not implemented.");
         assertThat(dependencyResult(), matchesRulesExactly());
     }
 
     @Test
     void circularDependencies() {
-        assumeFalse(dependencyResult() == null, "analyzeDependencies() not implemented.");
         assumeTrue(defaultTests().contains(CIRCULAR_DEPENDENCIES), "Circular dependencies test excluded.");
+        assumeFalse(dependencyResult() == null, "analyzeDependencies() not implemented.");
         assertThat(dependencyResult(), hasNoCycles());
     }
 
     @Test
     void findBugs() {
-        assumeFalse(findBugsResult() == null, "analyzeFindBugs() not implemented.");
         assumeTrue(defaultTests().contains(FIND_BUGS), "FindBugs test excluded.");
+        assumeFalse(findBugsResult() == null, "analyzeFindBugs() not implemented.");
         assertThat(findBugsResult(), hasNoBugs());
     }
 
     @Test
     void findBugsUnusedActions() {
-        assumeFalse(findBugsResult() == null, "analyzeFindBugs() not implemented.");
         assumeTrue(defaultTests().contains(FIND_BUGS_UNUSED_ACTIONS), "FindBugs - unused actions test excluded.");
+        assumeFalse(findBugsResult() == null, "analyzeFindBugs() not implemented.");
         assertThat(findBugsResult(), hasNoUnusedActions());
     }
 
     @Test
     void pmdViolations() {
-        assumeFalse(pmdResult() == null, "analyzePmd() not implemented.");
         assumeTrue(defaultTests().contains(PMD), "PMD test excluded.");
+        assumeFalse(pmdResult() == null, "analyzePmd() not implemented.");
         assertThat(pmdResult(), hasNoPmdViolations());
     }
 
     @Test
     void pmdUnusedActions() {
-        assumeFalse(pmdResult() == null, "analyzePmd() not implemented.");
         assumeTrue(defaultTests().contains(PMD_UNUSED_ACTIONS), "PMD - unused actions test excluded.");
+        assumeFalse(pmdResult() == null, "analyzePmd() not implemented.");
         assertThat(pmdResult(), hasNoUnusedActions());
     }
 
     @Test
     void cpd() {
-        assumeFalse(cpdResult() == null, "analyzeCpd() not implemented.");
         assumeTrue(defaultTests().contains(CPD), "CPD test excluded.");
+        assumeFalse(cpdResult() == null, "analyzeCpd() not implemented.");
         assertThat(cpdResult(), hasNoCodeDuplications());
     }
 
     @Test
     void cpdUnusedActions() {
-        assumeFalse(cpdResult() == null, "analyzeCpd() not implemented.");
         assumeTrue(defaultTests().contains(CPD_UNUSED_ACTIONS), "CPD - unused actions test excluded.");
+        assumeFalse(cpdResult() == null, "analyzeCpd() not implemented.");
         assertThat(cpdResult(), hasNoUnusedActions());
     }
 
     @Test
     void checkstyle() {
-        assumeFalse(checkstyleResult() == null, "analyzeCheckstyle() not implemented.");
         assumeTrue(defaultTests().contains(CHECKSTYLE), "Checkstyle test excluded.");
+        assumeFalse(checkstyleResult() == null, "analyzeCheckstyle() not implemented.");
         assertThat(checkstyleResult(), hasNoCheckstyleIssues());
     }
 
     @Test
     void checkstyleUnusedActions() {
-        assumeFalse(checkstyleResult() == null, "analyzeCheckstyle() not implemented.");
         assumeTrue(defaultTests().contains(CHECKSTYLE_UNUSED_ACTIONS), "Checkstyle - unused actions test excluded.");
+        assumeFalse(checkstyleResult() == null, "analyzeCheckstyle() not implemented.");
         assertThat(checkstyleResult(), hasNoUnusedActions());
     }
 
