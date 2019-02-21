@@ -17,6 +17,7 @@ package guru.nidi.codeassert.io;
 
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.model.Model;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ModelVisualizerTest {
     @Test
+    @Disabled("No coverage data available on CI server")
     void myself() throws IOException {
         final Model model = Model
                 .from(AnalyzerConfig.maven().main().getClasses())
@@ -34,7 +36,7 @@ class ModelVisualizerTest {
                 .mergingPackages("edu.umd.cs.findbugs", "net.sourceforge.pmd", "io.gitlab.arturbosch.detekt", "com.puppycrawl.tools.checkstyle", "com.github.shyiko.ktlint", "kotlin", "org.junit", "guru.nidi.graphviz")
                 .read();
         final ModelVisualizer visualizer = new ModelVisualizer(model).labelFunc(replaceFunc("guru.nidi.codeassert", ""));
-        final File target = new File("target/out.png");
+        final File target = new File("images/packages.png");
         visualizer.visualize().toFile(target);
         assertTrue(target.exists());
     }
