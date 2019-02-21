@@ -25,11 +25,11 @@ class AnalyzerTest {
 
     @Test
     void packages() {
-        assertEquals(40, model.getPackages().size());
+        assertEquals(41, model.getPackages().size());
     }
 
     @Test
     void classes() {
-        assertEquals(130, model.getClasses().size());
+        assertEquals(133, model.getClasses().size());
     }
 }

@@ -23,6 +23,7 @@ import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
 import guru.nidi.codeassert.ktlint.KtlintAnalyzer;
+import guru.nidi.codeassert.model.CodeClass;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.jupiter.api.BeforeAll;
@@ -45,7 +46,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
             DependencyRule findBugsLib = denyRule("edu.umd.cs.findbugs").andAllSub();
             DependencyRule ktlintLib = denyRule("com.github.shyiko.ktlint").andAllSub();
             DependencyRule pmdLib = denyRule("net.sourceforge.pmd").andAllSub();
-            DependencyRule config, dependency, findbugs, checkstyle, detekt, model, pmd, ktlint, util, junit, junitKotlin, jacoco;
+            DependencyRule graphvizLib = denyRule("guru.nidi.graphviz").andAllSub();
+            DependencyRule config, dependency, findbugs, checkstyle, detekt, io, model, pmd, ktlint, util, junit, junitKotlin, jacoco;
 
             @Override
             public void defineRules() {
@@ -58,6 +60,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                 checkstyle.mayUse(checkstyleLib);
                 detekt.mayUse(detektLib);
                 findbugs.mayUse(findBugsLib);
+                io.mayUse(jacoco, model, graphvizLib);
                 ktlint.mayUse(ktlintLib);
                 pmd.mayUse(pmdLib);
             }
@@ -100,6 +103,8 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                         In.classes("Reason").ignore("SingularField"),
                         In.clazz(Coverage.class).ignore("ExcessiveParameterList"),
                         In.clazz(LocationMatcher.class).ignore("GodClass"),
+                        In.classes("ClassFileParser").ignore("PrematureDeclaration"),
+                        In.clazz(CodeClass.class).ignore("TooManyFields"),
                         In.classes("SourceFileParser", "Location", "LocationMatcher")
                                 .ignore("CyclomaticComplexity", "ModifiedCyclomaticComplexity", "StdCyclomaticComplexity"),
                         In.classes("DependencyRules", "CodeClassBuilder").ignore("GodClass"),

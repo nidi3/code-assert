@@ -79,6 +79,8 @@ class PmdTest {
                         + pmd(MEDIUM, "MissingStaticMethodInNonInstantiatableClass", TEST, "Bugs2", "Class cannot be instantiated and does not provide any static methods or fields")
                         + pmd(MEDIUM, "NoPackage", TEST, "/CodeCoverage", "All classes and interfaces must belong to a named package")
                         + pmd(MEDIUM, "NullAssignment", MAIN, "dependency/DependencyRules", "Assigning an Object to null is a code smell.  Consider refactoring.")
+                        + pmd(MEDIUM, "PrematureDeclaration", MAIN, "model/ClassFileParser", "Avoid declaring a variable if it is unreferenced before a possible exit point.")
+                        + pmd(MEDIUM, "TooManyFields", MAIN, "model/CodeClass", "Too many fields")
                         + pmd(MEDIUM, "TooManyStaticImports", MAIN, "config/AnalyzerConfig", "Too many static imports may lead to messy code")
                         + pmd(MEDIUM, "TooManyStaticImports", MAIN, "detekt/DetektAnalyzer", "Too many static imports may lead to messy code")
                         + pmd(MEDIUM, "TooManyStaticImports", MAIN, "ktlint/KtlintAnalyzer", "Too many static imports may lead to messy code")

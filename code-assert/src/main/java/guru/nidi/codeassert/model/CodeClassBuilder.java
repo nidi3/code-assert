@@ -115,7 +115,8 @@ class CodeClassBuilder {
         return this;
     }
 
-    public CodeClassBuilder addSourceSizes(int sourceSize, int codeLines, int commentLines, int emptyLines, int totalLines) {
+    public CodeClassBuilder addSourceSizes(int sourceSize,
+                                           int codeLines, int commentLines, int emptyLines, int totalLines) {
         clazz.sourceSize = sourceSize;
         clazz.codeLines = codeLines;
         clazz.commentLines = commentLines;

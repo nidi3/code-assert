@@ -26,12 +26,7 @@ public class ModelBuilder {
     private final List<String> ignorePackages = new ArrayList<>();
     private final List<String> mergePackages = new ArrayList<>();
 
-    public static ModelBuilder from(File... files) {
-        return from(asList(files));
-    }
-
-    public static ModelBuilder from(List<File> files) {
-        return new ModelBuilder().and(files);
+    ModelBuilder() {
     }
 
     public ModelBuilder and(File... files) {
@@ -62,6 +57,6 @@ public class ModelBuilder {
     }
 
     public Model read() {
-        return new Model(ignorePackages,mergePackages).read(files);
+        return new Model(ignorePackages, mergePackages).read(files);
     }
 }

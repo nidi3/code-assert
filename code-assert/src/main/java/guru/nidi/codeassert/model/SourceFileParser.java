@@ -71,8 +71,8 @@ abstract class SourceFileParser {
                 LOG.info("No parser for language {}. Ignoring it", language);
             } else {
                 parser.parse(in);
-                new CodeClassBuilder(clazz)
-                        .addSourceSizes(parser.sourceSize, parser.codeLines, parser.commentLines, parser.emptyLines, parser.totalLines);
+                new CodeClassBuilder(clazz).addSourceSizes(parser.sourceSize,
+                        parser.codeLines, parser.commentLines, parser.emptyLines, parser.totalLines);
             }
             return clazz;
         }
