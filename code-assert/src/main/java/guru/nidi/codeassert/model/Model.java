@@ -23,26 +23,35 @@ import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 public class Model {
     public static final String UNNAMED_PACKAGE = "<Unnamed Package>";
 
     final Map<String, CodePackage> packages = new HashMap<>();
     final Map<String, CodeClass> classes = new HashMap<>();
+    private final Set<String> ownPackages = new HashSet<>();
+    private final List<String> ignorePackages;
+    private final List<String> mergePackages;
 
-    public static Model from(File... files) {
+    Model() {
+        this(emptyList(), emptyList());
+    }
+
+    Model(List<String> ignorePackages, List<String> mergePackages) {
+        this.ignorePackages = ignorePackages;
+        this.mergePackages = mergePackages;
+    }
+
+    public static ModelBuilder from(File... files) {
         return from(asList(files));
     }
 
-    public static Model from(List<File> files) {
-        return new Model().and(files);
+    public static ModelBuilder from(List<File> files) {
+        return new ModelBuilder().and(files);
     }
 
-    public Model and(File... files) {
-        return and(asList(files));
-    }
-
-    public Model and(List<File> files) {
+    public Model read(List<File> files) {
         try {
             final ClassFileParser classParser = new ClassFileParser();
             for (final File file : files) {
@@ -70,7 +79,10 @@ public class Model {
                 }
             }
         } else if (name.endsWith(".class")) {
-            parser.parse(in, this);
+            final CodeClass clazz = parser.parse(in, this);
+            if (clazz != null) {
+                ownPackages.add(clazz.getPackageName());
+            }
         }
     }
 
@@ -84,6 +96,9 @@ public class Model {
     }
 
     CodeClass getOrCreateClass(String name) {
+        if (isIgnoreClass(name)) {
+            return null;
+        }
         CodeClass clazz = classes.get(name);
         if (clazz == null) {
             final CodePackage pack = getOrCreatePackage(packageOf(name));
@@ -94,9 +109,18 @@ public class Model {
         return clazz;
     }
 
-    static String packageOf(String type) {
+    String packageOf(String type) {
         final int pos = type.lastIndexOf('.');
-        return pos < 0 ? UNNAMED_PACKAGE : type.substring(0, pos);
+        final String pack = pos < 0 ? UNNAMED_PACKAGE : type.substring(0, pos);
+        return mergePackages.stream().filter(pack::startsWith).findFirst().orElse(pack);
+    }
+
+    boolean isIgnoreClass(String name) {
+        return ignorePackages.stream().anyMatch(name::startsWith);
+    }
+
+    public boolean isOwnPackage(CodePackage pack) {
+        return ownPackages.contains(pack.getName());
     }
 
     public Collection<CodePackage> getPackages() {

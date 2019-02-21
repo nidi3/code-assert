@@ -54,6 +54,9 @@ class ClassFileParser {
         final int flags = parseAccessFlags();
 
         final String className = parseClassName();
+        if (model.isIgnoreClass(className)) {
+            return null;
+        }
         final String superClassName = parseSuperClassName();
         final List<String> interfaceNames = parseInterfaces();
         final List<MemberInfo> fields = parseMembers();

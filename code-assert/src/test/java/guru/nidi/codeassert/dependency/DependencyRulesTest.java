@@ -54,7 +54,7 @@ public class DependencyRulesTest {
 
     @BeforeEach
     void analyze() {
-        model = Model.from(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/dependency").getClasses());
+        model = Model.from(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/dependency").getClasses()).read();
     }
 
     @Test

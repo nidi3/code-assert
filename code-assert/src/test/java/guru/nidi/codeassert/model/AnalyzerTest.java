@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AnalyzerTest {
-    final Model model = Model.from(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model").getClasses());
+    final Model model = Model.from(AnalyzerConfig.maven().mainAndTest("guru/nidi/codeassert/model").getClasses()).read();
 
     @Test
     void packages() {

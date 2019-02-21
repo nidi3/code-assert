@@ -25,6 +25,6 @@ public class AppController {
 
     @GetMapping("model")
     public Model model(@RequestParam String jarfile) {
-        return Model.from(new File(jarfile));
+        return Model.from(new File(jarfile)).read();
     }
 }

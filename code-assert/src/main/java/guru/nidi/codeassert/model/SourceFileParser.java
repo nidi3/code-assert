@@ -44,6 +44,7 @@ abstract class SourceFileParser {
     int commentLines;
     int emptyLines;
     int totalLines;
+    int sourceSize;
 
     static CodeClass parse(CodeClass clazz, File file, Charset charset) throws IOException {
         try (InputStream in = new FileInputStream(file)) {
@@ -71,7 +72,7 @@ abstract class SourceFileParser {
             } else {
                 parser.parse(in);
                 new CodeClassBuilder(clazz)
-                        .addSourceSizes(parser.codeLines, parser.commentLines, parser.emptyLines, parser.totalLines);
+                        .addSourceSizes(parser.sourceSize, parser.codeLines, parser.commentLines, parser.emptyLines, parser.totalLines);
             }
             return clazz;
         }
@@ -92,6 +93,7 @@ abstract class SourceFileParser {
         state = CODE;
         while ((line = in.readLine()) != null) {
             pos = 0;
+            sourceSize += line.length() + 1; //TODO newline could also be 2 len, can we support this?
             totalLines++;
             if (line.trim().length() == 0) {
                 emptyLines++;

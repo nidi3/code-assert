@@ -41,6 +41,7 @@ public class CodeClass extends UsingElement<CodeClass> {
     int codeSize;
     int totalSize;
     boolean concrete;
+    int sourceSize;
     int codeLines;
     int commentLines;
     int emptyLines;
@@ -89,6 +90,10 @@ public class CodeClass extends UsingElement<CodeClass> {
 
     public boolean isConcrete() {
         return concrete;
+    }
+
+    public int getSourceSize() {
+        return sourceSize;
     }
 
     public int getCodeLines() {
@@ -160,17 +165,23 @@ public class CodeClass extends UsingElement<CodeClass> {
 
     void addImport(String type, Model model) {
         if (!name.equals(type)) {
-            final String packName = Model.packageOf(type);
-            final CodePackage p = model.getOrCreatePackage(packName);
-            usedPackages.add(p);
-            pack.addEfferent(p);
-            usedClasses.add(model.getOrCreateClass(type));
+            final CodeClass clazz = model.getOrCreateClass(type);
+            if (clazz != null) {
+                final String packName = model.packageOf(type);
+                final CodePackage p = model.getOrCreatePackage(packName);
+                usedPackages.add(p);
+                pack.addEfferent(p);
+                usedClasses.add(clazz);
+            }
         }
     }
 
     void addAnnotation(String type, Model model) {
-        addImport(type, model);
-        annotations.add(model.getOrCreateClass(type));
+        final CodeClass clazz = model.getOrCreateClass(type);
+        if (clazz != null) {
+            addImport(type, model);
+            annotations.add(clazz);
+        }
     }
 
     public boolean equals(Object other) {

@@ -97,7 +97,7 @@ class CodeClassBuilder {
 
     public CodeClassBuilder addPackageInfo(Model model, String className) {
         if (className.endsWith(".package-info")) {
-            final CodePackage pack = model.getOrCreatePackage(Model.packageOf(className));
+            final CodePackage pack = model.getOrCreatePackage(model.packageOf(className));
             for (final CodeClass ann : clazz.getAnnotations()) {
                 pack.addAnnotation(ann);
             }
@@ -115,7 +115,8 @@ class CodeClassBuilder {
         return this;
     }
 
-    public CodeClassBuilder addSourceSizes(int codeLines, int commentLines, int emptyLines, int totalLines) {
+    public CodeClassBuilder addSourceSizes(int sourceSize, int codeLines, int commentLines, int emptyLines, int totalLines) {
+        clazz.sourceSize = sourceSize;
         clazz.codeLines = codeLines;
         clazz.commentLines = commentLines;
         clazz.emptyLines = emptyLines;

@@ -33,7 +33,7 @@ public class DependencyAnalyzer implements Analyzer<Dependencies> {
     private final DependencyCollector collector;
 
     public DependencyAnalyzer(AnalyzerConfig config) {
-        this(Model.from(config.getClasses()), DependencyRules.denyAll(), Scope.PACKAGES, new DependencyCollector());
+        this(Model.from(config.getClasses()).read(), DependencyRules.denyAll(), Scope.PACKAGES, new DependencyCollector());
     }
 
     public DependencyAnalyzer(Model model) {
