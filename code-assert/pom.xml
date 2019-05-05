@@ -13,7 +13,6 @@
     <name>${project.artifactId}</name>
 
     <properties>
-        <slf4j.version>1.7.25</slf4j.version>
         <checkstyle.version>6.19</checkstyle.version>
         <findbugs.version>3.1.12</findbugs.version>
         <findsecbugs.version>1.9.0</findsecbugs.version>
@@ -167,7 +166,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -187,7 +185,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

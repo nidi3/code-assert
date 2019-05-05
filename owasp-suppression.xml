@@ -10,22 +10,10 @@
     </suppress>
     <suppress>
         <notes>Well...</notes>
-        <cpe>cpe:/a:checkstyle:checkstyle:6.19</cpe>
+        <cpe>cpe:/a:graphviz:graphviz:0.8.4</cpe>
     </suppress>
     <suppress>
         <notes>Well...</notes>
-        <cpe>cpe:/a:ktlint_project:ktlint:0.29.0</cpe>
-    </suppress>
-    <suppress>
-        <notes>Well...</notes>
-        <cpe>cpe/a:ktlint_project:ktlint:0.29.0</cpe>
-    </suppress>
-    <suppress>
-        <notes>Well...</notes>
-        <cpe>cpe:/a:springsource:spring_framework:2.1.4</cpe>
-    </suppress>
-    <suppress>
-        <notes>Well...</notes>
-        <cpe>cpe:/a:apache:tomcat:9.0.17</cpe>
+        <cpe>cpe:/a:svg_salamander_project:svg_salamander:1.1.2</cpe>
     </suppress>
 </suppressions>
