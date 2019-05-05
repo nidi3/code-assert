@@ -2,18 +2,30 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
     <suppress>
         <notes>Well...</notes>
-        <cpe>cpe:/a:fasterxml:jackson:2.9.6</cpe>
-    </suppress>
-    <suppress>
-        <notes>Well...</notes>
         <cpe>cpe:/a:google:guava:19.0</cpe>
     </suppress>
     <suppress>
         <notes>Well...</notes>
-        <cpe>cpe:/a:fasterxml:jackson-databind:2.9.6</cpe>
+        <cpe>cpe:/a:pmd_project:pmd:5.8.1</cpe>
     </suppress>
     <suppress>
         <notes>Well...</notes>
-        <cpe>cpe:/a:sec_project:sec:1.3</cpe>
+        <cpe>cpe:/a:checkstyle:checkstyle:6.19</cpe>
+    </suppress>
+    <suppress>
+        <notes>Well...</notes>
+        <cpe>cpe:/a:ktlint_project:ktlint:0.29.0</cpe>
+    </suppress>
+    <suppress>
+        <notes>Well...</notes>
+        <cpe>cpe/a:ktlint_project:ktlint:0.29.0</cpe>
+    </suppress>
+    <suppress>
+        <notes>Well...</notes>
+        <cpe>cpe:/a:springsource:spring_framework:2.1.4</cpe>
+    </suppress>
+    <suppress>
+        <notes>Well...</notes>
+        <cpe>cpe:/a:apache:tomcat:9.0.17</cpe>
     </suppress>
 </suppressions>
