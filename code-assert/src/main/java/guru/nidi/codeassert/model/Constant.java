@@ -30,11 +30,14 @@ final class Constant {
             STRING = 8,
             FIELD = 9,
             METHOD = 10,
-            INTERFACEMETHOD = 11,
-            NAMEANDTYPE = 12,
+            INTERFACE_METHOD = 11,
+            NAME_AND_TYPE = 12,
             METHOD_HANDLE = 15,
             METHOD_TYPE = 16,
-            INVOKEDYNAMIC = 18;
+            DYNAMIC = 17,
+            INVOKE_DYNAMIC = 18,
+            MODULE = 19,
+            PACKGE = 20;
 
     final byte tag;
     final int nameIndex;
@@ -47,12 +50,15 @@ final class Constant {
             case CLASS:
             case STRING:
             case METHOD_TYPE:
+            case MODULE:
+            case PACKGE:
                 return new Constant(tag, in.readUnsignedShort());
             case FIELD:
             case METHOD:
-            case INTERFACEMETHOD:
-            case NAMEANDTYPE:
-            case INVOKEDYNAMIC:
+            case INTERFACE_METHOD:
+            case NAME_AND_TYPE:
+            case DYNAMIC:
+            case INVOKE_DYNAMIC:
                 return new Constant(tag, in.readUnsignedShort(), in.readUnsignedShort());
             case INTEGER:
                 return new Constant(tag, in.readInt());
