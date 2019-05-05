@@ -73,6 +73,7 @@ class PmdTest {
                         + pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/CodeClassBuilder", "Avoid using final local variables, turn them into fields")
                         + pmd(MEDIUM, "CommentSize", MAIN, "config/LocationNameMatcher", "Comment is too large: Line too long")
                         + pmd(MEDIUM, "ConfusingTernary", MAIN, "config/Location", "Avoid if (x != y) ..; else ..;")
+                        + pmd(MEDIUM, "ExcessiveMethodLength", TEST, "io/ModelVisualizerTest", "Avoid really long methods.")
                         + pmd(MEDIUM, "ExcessiveParameterList", MAIN, "jacoco/Coverage", "Avoid long parameter lists.")
                         + pmd(MEDIUM, "InefficientEmptyStringCheck", MAIN, "model/SourceFileParser", "String.trim().length()==0 is an inefficient way to validate an empty String.")
                         + pmd(MEDIUM, "LongVariable", MAIN, "dependency/Tarjan", "Avoid excessively long variable names like allowIntraPackageCycles")

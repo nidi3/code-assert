@@ -27,19 +27,9 @@ import static guru.nidi.graphviz.model.Factory.mutGraph;
 
 public class ModelVisualizer {
     private final Model model;
-    private final Function<String, String> labelFunc;
 
     public ModelVisualizer(Model model) {
-        this(model, n -> n);
-    }
-
-    public ModelVisualizer(Model model, Function<String, String> labelFunc) {
         this.model = model;
-        this.labelFunc = labelFunc;
-    }
-
-    public ModelVisualizer labelFunc(Function<String, String> labelFunc) {
-        return new ModelVisualizer(model, labelFunc);
     }
 
     public Visualized visualizePackages(Function<CodePackage, MutableNode> transform) {
@@ -49,22 +39,22 @@ public class ModelVisualizer {
             for (CodePackage pack : model.getPackages()) {
                 g.add(transform.apply(pack));
             }
-
-//            for (CodeClass clazz : model.getClasses()) {
-//                final MutableNode source = mutNode(clazz.getSimpleName()).add(Shape.ELLIPSE);
-//                if (model.isOwnPackage(clazz.getPackage())) {
-//                    final Double cover = coverage.getOrDefault(clazz.getName(), 1D);
-//                    source.add(Shape.RECTANGLE)
-//                            .add(Size.mode(FIXED).size(1 + clazz.getTotalSize() / 5000.0, 1))
-//                            .add(Color.rgb(255 - (int) (2.55 * cover), (int) (2.55 * cover) - 255, 0).fill())
-//                            .add(Style.FILLED);
-//                }
-//                g.add(source);
-//                for (CodeClass dep : clazz.uses()) {
-//                    source.addLink(dep.getSimpleName());
-//                }
-//            }
-
+            /*
+            for (CodeClass clazz : model.getClasses()) {
+                final MutableNode source = mutNode(clazz.getSimpleName()).add(Shape.ELLIPSE);
+                if (model.isOwnPackage(clazz.getPackage())) {
+                    final Double cover = coverage.getOrDefault(clazz.getName(), 1D);
+                    source.add(Shape.RECTANGLE)
+                            .add(Size.mode(FIXED).size(1 + clazz.getTotalSize() / 5000.0, 1))
+                            .add(Color.rgb(255 - (int) (2.55 * cover), (int) (2.55 * cover) - 255, 0).fill())
+                            .add(Style.FILLED);
+                }
+                g.add(source);
+                for (CodeClass dep : clazz.uses()) {
+                    source.addLink(dep.getSimpleName());
+                }
+            }
+            */
             return g;
         });
         return new Visualized(Graphviz.fromGraph(graph));

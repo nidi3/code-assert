@@ -87,7 +87,7 @@ class ModelVisualizerTest {
                 .collect(toMap(f -> f.getPack(), f -> f.getValues()[0]));
 
         final Function<String, String> labelFunc = replaceFunc("guru.nidi.codeassert", "");
-        final ModelVisualizer visualizer = new ModelVisualizer(model).labelFunc(labelFunc);
+        final ModelVisualizer visualizer = new ModelVisualizer(model);
         final File target = new File("images/packages.png");
         visualizer.visualizePackages(pack -> {
             final MutableNode node = mutNode(labelFunc.apply(pack.getName())).add(Shape.ELLIPSE);
