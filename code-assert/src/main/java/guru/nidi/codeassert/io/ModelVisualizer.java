@@ -15,75 +15,66 @@
  */
 package guru.nidi.codeassert.io;
 
-import guru.nidi.codeassert.config.For;
-import guru.nidi.codeassert.jacoco.*;
-import guru.nidi.codeassert.model.*;
-import guru.nidi.graphviz.attribute.*;
+import guru.nidi.codeassert.model.CodePackage;
+import guru.nidi.codeassert.model.Model;
+import guru.nidi.graphviz.attribute.RankDir;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.*;
 
-import java.util.Map;
 import java.util.function.Function;
 
-import static guru.nidi.codeassert.config.CollectorConfig.just;
 import static guru.nidi.graphviz.model.Factory.mutGraph;
-import static guru.nidi.graphviz.model.Factory.mutNode;
-import static java.util.stream.Collectors.toMap;
 
 public class ModelVisualizer {
     private final Model model;
-    private final Function<CodePackage, String> labelFunc;
+    private final Function<String, String> labelFunc;
 
     public ModelVisualizer(Model model) {
-        this(model, CodePackage::getName);
+        this(model, n -> n);
     }
 
-    public ModelVisualizer(Model model, Function<CodePackage, String> labelFunc) {
+    public ModelVisualizer(Model model, Function<String, String> labelFunc) {
         this.model = model;
         this.labelFunc = labelFunc;
     }
 
-    public ModelVisualizer labelFunc(Function<CodePackage, String> labelFunc) {
+    public ModelVisualizer labelFunc(Function<String, String> labelFunc) {
         return new ModelVisualizer(model, labelFunc);
     }
 
-    public Visualized visualize() {
-        final Map<String, Double> coverage = new JacocoAnalyzer(new CoverageCollector(CoverageType.LINE)
-                .config(just(For.allPackages().setMinima(100))))
-                .analyze()
-                .findings().stream()
-                .collect(toMap(f -> f.getPack(), f -> f.getValues()[0]));
+    public Visualized visualizePackages(Function<CodePackage, MutableNode> transform) {
         final MutableGraph graph = CreationContext.use(ctx -> {
             final MutableGraph g = mutGraph().setDirected(true)
                     .graphAttrs().add(RankDir.LEFT_TO_RIGHT);
             for (CodePackage pack : model.getPackages()) {
-                final MutableNode source = mutNode(labelFunc.apply(pack)).add(Shape.ELLIPSE);
-                if (model.isOwnPackage(pack)) {
-                    final Double cover = coverage.getOrDefault(pack.getName(), 1D);
-                    final int codeSize = pack.getClasses().stream().mapToInt(CodeClass::getTotalSize).sum();
-                    source.add(Shape.RECTANGLE)
-                            .add(Size.mode(Size.Mode.FIXED))
-                            .add("height", .5 + pack.getClasses().size() / 10.0)
-                            .add("width", 1 + codeSize / 20000.0)
-                            .add(Color.rgb(255 - (int) (2.55 * cover), (int) (2.55 * cover) - 255, 0).fill())
-                            .add(Style.FILLED);
-                }
-                g.add(source);
-                for (CodePackage dep : pack.uses()) {
-                    source.addLink(labelFunc.apply(dep));
-                }
+                g.add(transform.apply(pack));
             }
+
+//            for (CodeClass clazz : model.getClasses()) {
+//                final MutableNode source = mutNode(clazz.getSimpleName()).add(Shape.ELLIPSE);
+//                if (model.isOwnPackage(clazz.getPackage())) {
+//                    final Double cover = coverage.getOrDefault(clazz.getName(), 1D);
+//                    source.add(Shape.RECTANGLE)
+//                            .add(Size.mode(FIXED).size(1 + clazz.getTotalSize() / 5000.0, 1))
+//                            .add(Color.rgb(255 - (int) (2.55 * cover), (int) (2.55 * cover) - 255, 0).fill())
+//                            .add(Style.FILLED);
+//                }
+//                g.add(source);
+//                for (CodeClass dep : clazz.uses()) {
+//                    source.addLink(dep.getSimpleName());
+//                }
+//            }
+
             return g;
         });
         return new Visualized(Graphviz.fromGraph(graph));
     }
 
-    public static Function<CodePackage, String> replaceFunc(String... replacements) {
+    public static Function<String, String> replaceFunc(String... replacements) {
         if (replacements.length % 2 != 0) {
             throw new IllegalArgumentException("An even number of replacement parameters expected.");
         }
-        return codePackage -> {
-            final String name = codePackage.getName();
+        return name -> {
             for (int i = 0; i < replacements.length; i += 2) {
                 if (name.startsWith(replacements[i])) {
                     return replacements[i + 1] + name.substring(replacements[i].length());

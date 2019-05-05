@@ -60,6 +60,10 @@ public class CodeClass extends UsingElement<CodeClass> {
         return name;
     }
 
+    public String getSimpleName() {
+        return name.substring(pack.getName().length() + 1);
+    }
+
     public CodePackage getPackage() {
         return pack;
     }

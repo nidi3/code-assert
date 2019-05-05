@@ -18,6 +18,10 @@ package guru.nidi.codeassert.dependency;
 import guru.nidi.codeassert.config.LocationMatcher;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.StreamSupport;
+
+import static java.util.stream.Collectors.toList;
 
 public class Dependencies {
     final DependencyMap allowed;
@@ -79,6 +83,16 @@ public class Dependencies {
 
     public Set<DependencyMap> getCycles() {
         return cycles;
+    }
+
+    public boolean isDenied(String from, String to) {
+        return denied.getDependency(from, to) != null;
+    }
+
+    public <T> List<String> getMissing(String from, Iterable<T> to, Function<T, String> toPack) {
+        return missing.getDependencies(from).keySet().stream().filter(miss ->
+                StreamSupport.stream(to.spliterator(), false).noneMatch(p -> toPack.apply(p).equals(miss))
+        ).collect(toList());
     }
 
     @Override

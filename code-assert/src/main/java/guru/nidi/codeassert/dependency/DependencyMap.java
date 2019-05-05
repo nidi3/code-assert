@@ -21,7 +21,9 @@ import guru.nidi.codeassert.model.UsingElement;
 import java.util.*;
 import java.util.Map.Entry;
 
-class DependencyMap {
+import static java.util.Collections.emptyMap;
+
+public class DependencyMap {
     private final Map<String, Map<String, Info>> map = new LinkedHashMap<>();
 
     public <T> void with(int specificity, UsingElement<T> from, UsingElement<T> to) {
@@ -101,7 +103,11 @@ class DependencyMap {
      * Key: package, Value: A set of all classes importing the package
      */
     public Map<String, Info> getDependencies(String name) {
-        return map.get(name);
+        return map.getOrDefault(name, emptyMap());
+    }
+
+    public Info getDependency(String from, String to) {
+        return getDependencies(from).get(to);
     }
 
     @Override
