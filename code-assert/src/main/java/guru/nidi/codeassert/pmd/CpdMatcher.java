@@ -22,6 +22,8 @@ import org.hamcrest.Description;
 
 import java.util.*;
 
+import static java.lang.System.lineSeparator;
+
 public class CpdMatcher extends ResultMatcher<CpdResult, Match> {
     private static final Comparator<Mark> MARK_COMPARATOR = Comparator.comparing(Mark::getFilename);
 
@@ -32,7 +34,7 @@ public class CpdMatcher extends ResultMatcher<CpdResult, Match> {
     @Override
     protected void describeMismatchSafely(CpdResult item, Description description) {
         for (final Match match : item.findings()) {
-            description.appendText("\n").appendText(printMatch(match));
+            description.appendText(lineSeparator()).appendText(printMatch(match));
         }
     }
 
@@ -44,7 +46,7 @@ public class CpdMatcher extends ResultMatcher<CpdResult, Match> {
             first = false;
             s.append(String.format("%s:%d-%d%n", mark.getFilename(), mark.getBeginLine(), mark.getEndLine()));
         }
-        return s.substring(0, s.length() - 1);
+        return s.substring(0, s.length() - lineSeparator().length());
     }
 
     private List<Mark> getMarks(Match match) {

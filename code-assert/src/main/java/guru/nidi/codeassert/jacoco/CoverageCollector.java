@@ -16,9 +16,10 @@
 package guru.nidi.codeassert.jacoco;
 
 import guru.nidi.codeassert.config.*;
-import guru.nidi.codeassert.util.ListUtils;
 
 import java.util.List;
+
+import static guru.nidi.codeassert.util.ListUtils.andJoin;
 
 public class CoverageCollector extends BaseCollector<ValuedLocation, Minima, CoverageCollector> {
     final CoverageType[] types;
@@ -50,7 +51,7 @@ public class CoverageCollector extends BaseCollector<ValuedLocation, Minima, Cov
 
             @Override
             public String toString() {
-                return CoverageCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
+                return andJoin(CoverageCollector.this, configs);
             }
         };
     }

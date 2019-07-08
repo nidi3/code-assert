@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 
 import static guru.nidi.codeassert.jacoco.CoverageType.*;
+import static java.lang.System.lineSeparator;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -58,7 +59,7 @@ class JacocoTest {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allInPackage("org.springframework.handler").setMinima(40, 50)));
         assertOutput(result, ""
-                + "org.springframework.handler.InputPersister                   24 / 40      50 / 50      40 / na     \n"
+                + "org.springframework.handler.InputPersister                   24 / 40      50 / 50      40 / na     %n"
                 + "org.springframework.handler.MailReceiver                      7 / 40      40 / 50      33 / na     ");
     }
 
@@ -67,9 +68,9 @@ class JacocoTest {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allPackages().setMinima(40, 50, 40)));
         assertOutput(result, ""
-                + "org.springframework.config                                   81 / 40      87 / 50      19 / 40     \n"
-                + "org.springframework.data.neo4j.repository.query              70 / 40      78 / 50      39 / 40     \n"
-                + "org.springframework.event                                    80 / 40      80 / 50      24 / 40     \n"
+                + "org.springframework.config                                   81 / 40      87 / 50      19 / 40     %n"
+                + "org.springframework.data.neo4j.repository.query              70 / 40      78 / 50      39 / 40     %n"
+                + "org.springframework.event                                    80 / 40      80 / 50      24 / 40     %n"
                 + "org.springframework.persist                                  19 / 40      19 / 50      52 / 40     ");
     }
 
@@ -78,7 +79,7 @@ class JacocoTest {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allInPackage("org.springframework.handler").setMinima(40, 50, 40)));
         assertOutput(result, ""
-                + "org.springframework.handler.InputPersister                   24 / 40      50 / 50      40 / 40     \n"
+                + "org.springframework.handler.InputPersister                   24 / 40      50 / 50      40 / 40     %n"
                 + "org.springframework.handler.MailReceiver                      7 / 40      40 / 50      33 / 40     ");
     }
 
@@ -87,12 +88,12 @@ class JacocoTest {
         final JacocoResult result = analyze(new CoverageCollector(INSTRUCTION, METHOD, COMPLEXITY)
                 .just(For.allClasses().setMinima(30, 30, 30)));
         assertOutput(result, ""
-                + "org.springframework.config.MailSparkConverter                 7 / 30      50 / 30      50 / 30     \n"
-                + "org.springframework.handler.InputPersister                   24 / 30      50 / 30      40 / 30     \n"
-                + "org.springframework.handler.MailReceiver                      7 / 30      40 / 30      33 / 30     \n"
-                + "org.springframework.parsing.SingleLineValueRetriever.Boundar  0 / 30       0 / 30       0 / 30     \n"
-                + "org.springframework.parsing.strategy.algo.BodyParser          0 / 30       0 / 30       0 / 30     \n"
-                + "org.springframework.persist.JsonRepositoryImpl                8 / 30       6 / 30       7 / 30     \n"
+                + "org.springframework.config.MailSparkConverter                 7 / 30      50 / 30      50 / 30     %n"
+                + "org.springframework.handler.InputPersister                   24 / 30      50 / 30      40 / 30     %n"
+                + "org.springframework.handler.MailReceiver                      7 / 30      40 / 30      33 / 30     %n"
+                + "org.springframework.parsing.SingleLineValueRetriever.Boundar  0 / 30       0 / 30       0 / 30     %n"
+                + "org.springframework.parsing.strategy.algo.BodyParser          0 / 30       0 / 30       0 / 30     %n"
+                + "org.springframework.persist.JsonRepositoryImpl                8 / 30       6 / 30       7 / 30     %n"
                 + "org.springframework.persist.TransactionalEventBus            19 / 30      12 / 30      13 / 30     ");
     }
 
@@ -102,8 +103,8 @@ class JacocoTest {
                 .just(For.allClasses().setMinima(30, 30, 30))
                 .just(For.loc("org.springframework.p*").setNoMinima()));
         assertOutput(result, ""
-                + "org.springframework.config.MailSparkConverter                 7 / 30      50 / 30      50 / 30     \n"
-                + "org.springframework.handler.InputPersister                   24 / 30      50 / 30      40 / 30     \n"
+                + "org.springframework.config.MailSparkConverter                 7 / 30      50 / 30      50 / 30     %n"
+                + "org.springframework.handler.InputPersister                   24 / 30      50 / 30      40 / 30     %n"
                 + "org.springframework.handler.MailReceiver                      7 / 30      40 / 30      33 / 30     ");
     }
 
@@ -113,7 +114,7 @@ class JacocoTest {
                 .just(For.loc("org.springframework.handler.InputPersister").setMinima(30, 30, 30))
                 .just(For.thePackage("org.springframework.event").setMinima(30, 30, 30)));
         assertOutput(result, ""
-                + "org.springframework.event                                    80 / 30      80 / 30      24 / 30     \n"
+                + "org.springframework.event                                    80 / 30      80 / 30      24 / 30     %n"
                 + "org.springframework.handler.InputPersister                   24 / 30      50 / 30      40 / 30     ");
     }
 
@@ -124,8 +125,8 @@ class JacocoTest {
     private void assertOutput(JacocoResult result, String expected) {
         final StringDescription sd = new StringDescription();
         new CoverageMatcher().describeMismatchSafely(result, sd);
-        assertThat(sd.toString(), equalTo("Found unsatisfied test coverage requirements:\n"
-                + "Analyzed coverage types:                                    INSTRUCTION  METHOD       COMPLEXITY   \n"
-                + expected));
+        assertThat(sd.toString(), equalTo(("Found unsatisfied test coverage requirements:%n"
+                + "Analyzed coverage types:                                    INSTRUCTION  METHOD       COMPLEXITY   %n"
+                + expected).replace("%n", lineSeparator())));
     }
 }

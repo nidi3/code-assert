@@ -18,9 +18,10 @@ package guru.nidi.codeassert.findbugs;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import guru.nidi.codeassert.config.*;
-import guru.nidi.codeassert.util.ListUtils;
 
 import java.util.List;
+
+import static guru.nidi.codeassert.util.ListUtils.andJoin;
 
 public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollector> {
     private final Integer maxRank;
@@ -62,7 +63,7 @@ public class BugCollector extends BaseCollector<BugInstance, Ignore, BugCollecto
 
             @Override
             public String toString() {
-                return BugCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
+                return andJoin(BugCollector.this, configs);
             }
         };
     }

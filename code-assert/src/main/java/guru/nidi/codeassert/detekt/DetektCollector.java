@@ -16,12 +16,12 @@
 package guru.nidi.codeassert.detekt;
 
 import guru.nidi.codeassert.config.*;
-import guru.nidi.codeassert.util.ListUtils;
 
 import java.io.File;
 import java.util.List;
 
 import static guru.nidi.codeassert.config.Language.KOTLIN;
+import static guru.nidi.codeassert.util.ListUtils.andJoin;
 
 public class DetektCollector extends BaseCollector<TypedDetektFinding, Ignore, DetektCollector> {
     @Override
@@ -38,7 +38,7 @@ public class DetektCollector extends BaseCollector<TypedDetektFinding, Ignore, D
 
             @Override
             public String toString() {
-                return DetektCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
+                return andJoin(DetektCollector.this, configs);
             }
         };
     }

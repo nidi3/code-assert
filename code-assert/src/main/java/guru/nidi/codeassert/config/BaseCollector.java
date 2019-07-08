@@ -15,13 +15,14 @@
  */
 package guru.nidi.codeassert.config;
 
-import guru.nidi.codeassert.util.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static guru.nidi.codeassert.util.ListUtils.join;
+import static java.lang.System.lineSeparator;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
@@ -90,7 +91,7 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
     }
 
     public void printUnusedWarning(UsageCounter counter) {
-        final String s = ListUtils.join("\n", unusedActions(counter));
+        final String s = join(lineSeparator(), unusedActions(counter));
         if (s.length() > 0) {
             final StackTraceElement[] trace = new Exception().fillInStackTrace().getStackTrace();
             int i;
@@ -106,7 +107,7 @@ public abstract class BaseCollector<S, A extends Action, T extends BaseCollector
             }
             final String location = i == trace.length ? ""
                     : ("In " + trace[i].getClassName() + "#" + trace[i].getMethodName() + ": ");
-            LOG.warn(location + "These collector actions have not been used:\n" + s);
+            LOG.warn(String.format("%sThese collector actions have not been used:%n%s", location, s));
         }
     }
 

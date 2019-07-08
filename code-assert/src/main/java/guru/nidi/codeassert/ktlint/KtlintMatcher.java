@@ -18,6 +18,8 @@ package guru.nidi.codeassert.ktlint;
 import guru.nidi.codeassert.util.ResultMatcher;
 import org.hamcrest.Description;
 
+import static java.lang.System.lineSeparator;
+
 public class KtlintMatcher extends ResultMatcher<KtlintResult, LocatedLintError> {
     public void describeTo(Description description) {
         description.appendText("Has no ktlint issues");
@@ -26,7 +28,7 @@ public class KtlintMatcher extends ResultMatcher<KtlintResult, LocatedLintError>
     @Override
     protected void describeMismatchSafely(KtlintResult item, Description description) {
         for (final LocatedLintError error : item.findings()) {
-            description.appendText("\n").appendText(printError(error));
+            description.appendText(lineSeparator()).appendText(printError(error));
         }
     }
 

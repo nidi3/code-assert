@@ -29,6 +29,7 @@ import java.io.File;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoBugs;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoUnusedActions;
+import static java.lang.System.lineSeparator;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -147,14 +148,14 @@ public class FindBugsTest {
     void unusedActions() {
         System.gc();
         final FindBugsAnalyzer analyzer = new FindBugsAnalyzer(config, bugCollector.just(In.methods("bugs").ignore("BLA")));
-        assertMatcher("Found unused actions:\n    ignore [BLA] in [#bugs]", analyzer.analyze(), hasNoUnusedActions());
+        assertMatcher("Found unused actions:%n    ignore [BLA] in [#bugs]", analyzer.analyze(), hasNoUnusedActions());
     }
 
     private <T extends AnalyzerResult<?>> void assertMatcher(String message, T result, Matcher<T> matcher) {
         assertFalse(matcher.matches(result));
         final StringDescription sd = new StringDescription();
         matcher.describeMismatch(result, sd);
-        assertEquals(message, sd.toString());
+        assertEquals(message.replace("%n", lineSeparator()), sd.toString());
     }
 
     private String line(int rank, String priority, String type, String relative, int line, String msg) {

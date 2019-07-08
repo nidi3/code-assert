@@ -20,6 +20,8 @@ import net.sourceforge.pmd.Rule;
 import net.sourceforge.pmd.RuleViolation;
 import org.hamcrest.Description;
 
+import static java.lang.System.lineSeparator;
+
 public class PmdMatcher extends ResultMatcher<PmdResult, RuleViolation> {
     public void describeTo(Description description) {
         description.appendText("Has no PMD issues");
@@ -28,7 +30,7 @@ public class PmdMatcher extends ResultMatcher<PmdResult, RuleViolation> {
     @Override
     protected void describeMismatchSafely(PmdResult item, Description description) {
         for (final RuleViolation violation : item.findings()) {
-            description.appendText("\n").appendText(printViolation(violation));
+            description.appendText(lineSeparator()).appendText(printViolation(violation));
         }
     }
 

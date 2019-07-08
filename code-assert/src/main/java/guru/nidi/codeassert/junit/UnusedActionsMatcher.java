@@ -19,6 +19,8 @@ import guru.nidi.codeassert.AnalyzerResult;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
+import static java.lang.System.lineSeparator;
+
 public class UnusedActionsMatcher<T extends AnalyzerResult<?>> extends TypeSafeMatcher<T> {
     @Override
     protected boolean matchesSafely(T item) {
@@ -33,7 +35,7 @@ public class UnusedActionsMatcher<T extends AnalyzerResult<?>> extends TypeSafeM
     protected void describeMismatchSafely(T item, Description description) {
         description.appendText("Found unused actions:");
         for (final String action : item.unusedActions()) {
-            description.appendText("\n").appendText(action);
+            description.appendText(lineSeparator()).appendText(action);
         }
     }
 }

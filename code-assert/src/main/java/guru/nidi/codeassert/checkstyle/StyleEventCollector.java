@@ -18,9 +18,10 @@ package guru.nidi.codeassert.checkstyle;
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
 import guru.nidi.codeassert.config.*;
-import guru.nidi.codeassert.util.ListUtils;
 
 import java.util.List;
+
+import static guru.nidi.codeassert.util.ListUtils.andJoin;
 
 public class StyleEventCollector extends BaseCollector<AuditEvent, Ignore, StyleEventCollector> {
     private final SeverityLevel severity;
@@ -52,7 +53,7 @@ public class StyleEventCollector extends BaseCollector<AuditEvent, Ignore, Style
 
             @Override
             public String toString() {
-                return StyleEventCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
+                return andJoin(StyleEventCollector.this, configs);
             }
         };
     }

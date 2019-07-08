@@ -19,6 +19,7 @@ import guru.nidi.codeassert.config.LocationMatcher;
 
 import java.util.*;
 
+import static java.lang.System.lineSeparator;
 import static java.util.Collections.sort;
 
 final class MatcherUtils {
@@ -33,7 +34,7 @@ final class MatcherUtils {
             if (!by.isEmpty()) {
                 s.append(" (by ").append(join(by)).append(')');
             }
-            s.append('\n');
+            s.append(lineSeparator());
         }
         return s.toString();
     }

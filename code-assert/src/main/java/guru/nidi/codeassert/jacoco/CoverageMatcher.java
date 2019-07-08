@@ -19,6 +19,8 @@ import guru.nidi.codeassert.config.ValuedLocation;
 import guru.nidi.codeassert.util.ResultMatcher;
 import org.hamcrest.Description;
 
+import static java.lang.System.lineSeparator;
+
 public class CoverageMatcher extends ResultMatcher<JacocoResult, ValuedLocation> {
     public void describeTo(Description description) {
         description.appendText("Has enough test coverage.");
@@ -26,13 +28,13 @@ public class CoverageMatcher extends ResultMatcher<JacocoResult, ValuedLocation>
 
     @Override
     protected void describeMismatchSafely(JacocoResult item, Description description) {
-        description.appendText("Found unsatisfied test coverage requirements:\n");
+        description.appendText(String.format("Found unsatisfied test coverage requirements:%n"));
         description.appendText(pad("Analyzed coverage types:", 60));
         for (final CoverageType type : item.getTypes()) {
             description.appendText(pad(type.toString(), 13));
         }
         for (final ValuedLocation coverage : item.findings()) {
-            description.appendText("\n");
+            description.appendText(lineSeparator());
             printCoverage(coverage, description);
         }
     }

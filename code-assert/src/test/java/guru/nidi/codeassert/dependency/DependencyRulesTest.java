@@ -26,8 +26,9 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
+import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
-import static java.util.Collections.*;
+import static java.util.Collections.addAll;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -116,8 +117,8 @@ public class DependencyRulesTest {
                 result);
 
         assertThat(new DependencyAnalyzer(model).rules(rules).analyze(), matchesRules());
-        assertMatcher("\n"
-                        + "NOT_EXISTING guru.nidi.codeassert.dependency.d             There is a rule for this element, but it has not been found in the code.\n"
+        assertMatcher("%n"
+                        + "NOT_EXISTING guru.nidi.codeassert.dependency.d             There is a rule for this element, but it has not been found in the code.%n"
                         + undef("guru.nidi.codeassert")
                         + undef("guru.nidi.codeassert.config")
                         + undef("guru.nidi.codeassert.dependency")
@@ -136,7 +137,7 @@ public class DependencyRulesTest {
                         + undef("org.slf4j"),
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRulesExactly());
 
-        assertMatcher("\n"
+        assertMatcher("%n"
                         + undef("guru.nidi.codeassert")
                         + undef("guru.nidi.codeassert.config")
                         + undef("guru.nidi.codeassert.dependency")
@@ -155,7 +156,7 @@ public class DependencyRulesTest {
                         + undef("org.slf4j"),
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRulesIgnoringNonExisting());
 
-        assertMatcher("\n" + unexist("guru.nidi.codeassert.dependency.d"),
+        assertMatcher("%n" + unexist("guru.nidi.codeassert.dependency.d"),
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRulesIgnoringUndefined());
     }
 
@@ -194,11 +195,11 @@ public class DependencyRulesTest {
                         UNDEFINED,
                         CYCLES),
                 result);
-        assertMatcher("\n"
+        assertMatcher("%n"
                         + miss("guru.nidi.codeassert.dependency.a")
-                        + "  guru.nidi.codeassert.dependency.b\n"
+                        + "  guru.nidi.codeassert.dependency.b%n"
                         + deny("guru.nidi.codeassert.dependency.b")
-                        + "  guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.b.B1)\n",
+                        + "  guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.b.B1)%n",
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRules());
     }
 
@@ -225,16 +226,16 @@ public class DependencyRulesTest {
                         UNDEFINED,
                         CYCLES),
                 result);
-        assertMatcher("\n"
+        assertMatcher("%n"
                         + miss("guru.nidi.codeassert.dependency.a")
-                        + "  guru.nidi.codeassert.dependency.b\n"
+                        + "  guru.nidi.codeassert.dependency.b%n"
                         + deny("guru.nidi.codeassert.dependency.a")
-                        + "  guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.a.A1)\n"
+                        + "  guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.a.A1)%n"
                         + deny("guru.nidi.codeassert.dependency.b")
-                        + "  guru.nidi.codeassert.dependency.a (by guru.nidi.codeassert.dependency.b.B1)\n"
+                        + "  guru.nidi.codeassert.dependency.a (by guru.nidi.codeassert.dependency.b.B1)%n"
                         + deny("guru.nidi.codeassert.dependency.c")
-                        + "  guru.nidi.codeassert.dependency.a (by guru.nidi.codeassert.dependency.c.C1)\n"
-                        + "  guru.nidi.codeassert.dependency.b (by guru.nidi.codeassert.dependency.c.C1, guru.nidi.codeassert.dependency.c.C2)\n",
+                        + "  guru.nidi.codeassert.dependency.a (by guru.nidi.codeassert.dependency.c.C1)%n"
+                        + "  guru.nidi.codeassert.dependency.b (by guru.nidi.codeassert.dependency.c.C1, guru.nidi.codeassert.dependency.c.C2)%n",
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRules());
     }
 
@@ -278,16 +279,16 @@ public class DependencyRulesTest {
                         WILDCARD_UNDEFINED2,
                         CYCLES),
                 result);
-        assertMatcher("\n"
+        assertMatcher("%n"
                         + miss("guru.nidi.codeassert.dependency.a")
-                        + "  guru.nidi.codeassert.dependency.b\n"
+                        + "  guru.nidi.codeassert.dependency.b%n"
                         + miss("guru.nidi.codeassert.dependency.a.a")
-                        + "  guru.nidi.codeassert.dependency.b\n"
+                        + "  guru.nidi.codeassert.dependency.b%n"
                         + miss("guru.nidi.codeassert.dependency.a.b")
-                        + "  guru.nidi.codeassert.dependency.b\n"
+                        + "  guru.nidi.codeassert.dependency.b%n"
                         + deny("guru.nidi.codeassert.dependency.b")
-                        + "  guru.nidi.codeassert.dependency.a (by guru.nidi.codeassert.dependency.b.B1)\n"
-                        + "  guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.b.B1)\n",
+                        + "  guru.nidi.codeassert.dependency.a (by guru.nidi.codeassert.dependency.b.B1)%n"
+                        + "  guru.nidi.codeassert.dependency.c (by guru.nidi.codeassert.dependency.b.B1)%n",
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRules());
     }
 
@@ -317,17 +318,17 @@ public class DependencyRulesTest {
                         WILDCARD_UNDEFINED,
                         CYCLES),
                 result);
-        assertMatcher("\n"
+        assertMatcher("%n"
                         + miss("guru.nidi.codeassert.dependency.a.a")
-                        + "  guru.nidi.codeassert.dependency.b.b\n"
+                        + "  guru.nidi.codeassert.dependency.b.b%n"
                         + miss("guru.nidi.codeassert.dependency.a.b")
-                        + "  guru.nidi.codeassert.dependency.b.a\n"
-                        + "  guru.nidi.codeassert.dependency.b.b\n"
+                        + "  guru.nidi.codeassert.dependency.b.a%n"
+                        + "  guru.nidi.codeassert.dependency.b.b%n"
                         + deny("guru.nidi.codeassert.dependency.b.a")
-                        + "  guru.nidi.codeassert.dependency.a.a (by guru.nidi.codeassert.dependency.b.a.Ba1)\n"
+                        + "  guru.nidi.codeassert.dependency.a.a (by guru.nidi.codeassert.dependency.b.a.Ba1)%n"
                         + deny("guru.nidi.codeassert.dependency.c.a")
-                        + "  guru.nidi.codeassert.dependency.a.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n"
-                        + "  guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.c.a.Ca1)\n",
+                        + "  guru.nidi.codeassert.dependency.a.a (by guru.nidi.codeassert.dependency.c.a.Ca1)%n"
+                        + "  guru.nidi.codeassert.dependency.b.a (by guru.nidi.codeassert.dependency.c.a.Ca1)%n",
                 new DependencyAnalyzer(model).rules(rules).analyze(), matchesRules());
     }
 
@@ -433,7 +434,7 @@ public class DependencyRulesTest {
         assertFalse(matcher.matches(result));
         final StringDescription sd = new StringDescription();
         matcher.describeMismatch(result, sd);
-        assertEquals(message, sd.toString());
+        assertEquals(message.replace("%n", lineSeparator()), sd.toString());
     }
 
     private String undef(String s) {

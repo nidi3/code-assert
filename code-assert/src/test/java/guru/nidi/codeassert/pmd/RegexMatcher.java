@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static java.lang.System.lineSeparator;
+
 public class RegexMatcher extends TypeSafeMatcher<String> {
     private final List<Pattern> patterns;
 
@@ -30,7 +32,7 @@ public class RegexMatcher extends TypeSafeMatcher<String> {
 
     public static Matcher<String> matchesFormat(String format) {
         final List<Pattern> patterns = new ArrayList<>();
-        for (final String line : format.split("\n")) {
+        for (final String line : format.split(lineSeparator())) {
             patterns.add(Pattern.compile("\\Q" + line.replace("%d", "\\E\\d+\\Q") + "\\E"));
         }
         return new RegexMatcher(patterns);
@@ -38,7 +40,7 @@ public class RegexMatcher extends TypeSafeMatcher<String> {
 
     @Override
     protected boolean matchesSafely(String item) {
-        final String[] lines = item.split("\n");
+        final String[] lines = item.split(lineSeparator());
         if (patterns.size() != lines.length) {
             return false;
         }
@@ -52,24 +54,21 @@ public class RegexMatcher extends TypeSafeMatcher<String> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("matches pattern\n");
+        description.appendText(String.format("matches pattern%n"));
         for (final Pattern p : patterns) {
-            description.appendText(pattern(p)).appendText("\n");
+            description.appendText(pattern(p)).appendText(lineSeparator());
         }
     }
 
     @Override
     protected void describeMismatchSafely(String item, Description description) {
-        description.appendText("was\n").appendText(item).appendText("\n");
-        final String[] lines = item.split("\n");
+        description.appendText(String.format("was%n%s%n", item));
+        final String[] lines = item.split(lineSeparator());
         int i;
         for (i = 0; i < lines.length && i < patterns.size(); i++) {
             if (!patterns.get(i).matcher(lines[i]).matches()) {
-                description
-                        .appendText("At line " + (i + 1) + " expected:\n")
-                        .appendText(pattern(patterns.get(i)))
-                        .appendText("\nbut got\n")
-                        .appendText(lines[i]);
+                description.appendText(String.format("At line %d expected:%n%s%nbut got%n%s",
+                        i + 1, pattern(patterns.get(i)), lines[i]));
                 return;
             }
         }

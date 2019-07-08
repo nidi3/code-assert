@@ -16,9 +16,10 @@
 package guru.nidi.codeassert.dependency;
 
 import guru.nidi.codeassert.config.*;
-import guru.nidi.codeassert.util.ListUtils;
 
 import java.util.List;
+
+import static guru.nidi.codeassert.util.ListUtils.andJoin;
 
 public class DependencyCollector extends BaseCollector<DependencyEntry, Ignore, DependencyCollector> {
     public static final String MISSING = "MISSING";
@@ -41,7 +42,7 @@ public class DependencyCollector extends BaseCollector<DependencyEntry, Ignore, 
 
             @Override
             public String toString() {
-                return DependencyCollector.this + "\n" + ListUtils.join("\n", configs);
+                return andJoin(DependencyCollector.this, configs);
             }
         };
     }

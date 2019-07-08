@@ -21,6 +21,8 @@ import org.hamcrest.Description;
 
 import java.io.File;
 
+import static java.lang.System.lineSeparator;
+
 public class DetektMatcher extends ResultMatcher<DetektResult, TypedDetektFinding> {
     public void describeTo(Description description) {
         description.appendText("Has no detekt issues");
@@ -29,7 +31,7 @@ public class DetektMatcher extends ResultMatcher<DetektResult, TypedDetektFindin
     @Override
     protected void describeMismatchSafely(DetektResult item, Description description) {
         for (final TypedDetektFinding error : item.findings()) {
-            description.appendText("\n").appendText(printError(error));
+            description.appendText(lineSeparator()).appendText(printError(error));
         }
     }
 

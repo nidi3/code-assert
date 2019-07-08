@@ -23,6 +23,8 @@ import org.hamcrest.Description;
 import java.io.File;
 import java.util.List;
 
+import static java.lang.System.lineSeparator;
+
 public class FindBugsMatcher extends ResultMatcher<FindBugsResult, BugInstance> {
     public void describeTo(Description description) {
         description.appendText("Has no FindBugs issues");
@@ -31,7 +33,7 @@ public class FindBugsMatcher extends ResultMatcher<FindBugsResult, BugInstance> 
     @Override
     protected void describeMismatchSafely(FindBugsResult item, Description description) {
         for (final BugInstance bug : item.findings()) {
-            description.appendText("\n")
+            description.appendText(lineSeparator())
                     .appendText(printBug(bug, ((FindBugsAnalyzer) item.analyzer()).config.getSourcePaths()));
         }
     }

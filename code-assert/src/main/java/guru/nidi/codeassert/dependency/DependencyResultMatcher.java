@@ -20,6 +20,7 @@ import org.hamcrest.TypeSafeMatcher;
 
 import static guru.nidi.codeassert.dependency.DependencyCollector.*;
 import static guru.nidi.codeassert.dependency.MatcherUtils.*;
+import static java.lang.System.lineSeparator;
 
 public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
     private static final String SIMPLE_FORMAT = "%-12s %-45s %s%n";
@@ -47,7 +48,7 @@ public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
     @Override
     protected void describeMismatchSafely(DependencyResult item, Description description) {
         final Dependencies dependencies = item.findings();
-        description.appendText("\n");
+        description.appendText(lineSeparator());
         describeNotExisting(dependencies, description);
         describeUndefined(dependencies, description);
         describeMissing(dependencies, description);
@@ -65,7 +66,7 @@ public class DependencyResultMatcher extends TypeSafeMatcher<DependencyResult> {
         for (final String elem : sorted(result.getMissing().getElements())) {
             description.appendText(String.format(ARROW_FORMAT, MISSING, elem + " ->", "This dependency is missing."));
             for (final String dep : sorted(result.getMissing().getDependencies(elem).keySet())) {
-                description.appendText("  " + dep + "\n");
+                description.appendText(String.format("  %s%n", dep));
             }
         }
     }

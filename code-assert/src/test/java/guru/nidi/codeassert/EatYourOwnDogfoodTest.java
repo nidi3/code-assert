@@ -28,11 +28,26 @@ import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.jupiter.api.BeforeAll;
 
+import java.lang.reflect.Field;
 import java.util.Locale;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
 
 public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
+    static {
+        //windowsNewlines();
+    }
+
+    public static void windowsNewlines() {
+        try {
+            final Field f = System.class.getDeclaredField("lineSeparator");
+            f.setAccessible(true);
+            f.set(null, "\r\n");
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
+    }
+
     @BeforeAll
     static void init() {
         Locale.setDefault(Locale.ENGLISH);

@@ -36,6 +36,7 @@ import static guru.nidi.codeassert.pmd.PmdRulesets.Comments.Requirement.Ignored;
 import static guru.nidi.codeassert.pmd.PmdRulesets.Comments.Requirement.Required;
 import static guru.nidi.codeassert.pmd.PmdRulesets.*;
 import static guru.nidi.codeassert.pmd.RegexMatcher.matchesFormat;
+import static java.lang.System.lineSeparator;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -107,14 +108,8 @@ class PmdTest {
                         + cpd("ktlint/KtlintCollector")
                         + cpd(35, "pmd/PmdAnalyzer")
                         + cpd("pmd/PmdAnalyzer")
-                        + cpd(29, "detekt/DetektMatcher")
-                        + cpd("ktlint/KtlintMatcher")
-                        + cpd(26, "checkstyle/StyleEventCollector")
-                        + cpd("detekt/DetektCollector")
-                        + cpd("findbugs/BugCollector")
-                        + cpd("jacoco/CoverageCollector")
-                        + cpd("ktlint/KtlintCollector")
-                        + cpd("pmd/PmdViolationCollector"),
+                        + cpd(31, "detekt/DetektMatcher")
+                        + cpd("ktlint/KtlintMatcher"),
                 cpdResult, hasNoCodeDuplications());
     }
 
@@ -193,7 +188,7 @@ class PmdTest {
     }
 
     private String cpd(int len, String file) {
-        return "\n" + (len == 0 ? "     " : String.format("%-4d ", len))
+        return lineSeparator() + (len == 0 ? "     " : String.format("%-4d ", len))
                 + new File("src/main/java/guru/nidi/codeassert/" + file + ".java").getAbsolutePath()
                 + ":%d-%d";
     }

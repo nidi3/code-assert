@@ -16,11 +16,12 @@
 package guru.nidi.codeassert.pmd;
 
 import guru.nidi.codeassert.config.*;
-import guru.nidi.codeassert.util.ListUtils;
 import net.sourceforge.pmd.RulePriority;
 import net.sourceforge.pmd.RuleViolation;
 
 import java.util.List;
+
+import static guru.nidi.codeassert.util.ListUtils.andJoin;
 
 public class PmdViolationCollector extends BaseCollector<RuleViolation, Ignore, PmdViolationCollector> {
     private final RulePriority minPriority;
@@ -47,7 +48,7 @@ public class PmdViolationCollector extends BaseCollector<RuleViolation, Ignore, 
 
             @Override
             public String toString() {
-                return PmdViolationCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
+                return andJoin(PmdViolationCollector.this, configs);
             }
         };
     }

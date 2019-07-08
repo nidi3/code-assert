@@ -16,9 +16,10 @@
 package guru.nidi.codeassert.ktlint;
 
 import guru.nidi.codeassert.config.*;
-import guru.nidi.codeassert.util.ListUtils;
 
 import java.util.List;
+
+import static guru.nidi.codeassert.util.ListUtils.andJoin;
 
 public class KtlintCollector extends BaseCollector<LocatedLintError, Ignore, KtlintCollector> {
     @Override
@@ -35,7 +36,7 @@ public class KtlintCollector extends BaseCollector<LocatedLintError, Ignore, Ktl
 
             @Override
             public String toString() {
-                return KtlintCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
+                return andJoin(KtlintCollector.this, configs);
             }
         };
     }

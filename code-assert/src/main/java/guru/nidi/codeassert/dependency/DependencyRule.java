@@ -173,6 +173,6 @@ public class DependencyRule extends CodeElement {
 
     @Override
     public String toString() {
-        return "DependencyRule for " + pattern + "\n  use:      " + use + "\n  used by:  " + usedBy + "\n";
+        return String.format("DependencyRule for %s%n  use:      %s%n  used by:  %s%n", pattern, use, usedBy);
     }
 }

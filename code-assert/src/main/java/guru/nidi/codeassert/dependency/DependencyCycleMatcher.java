@@ -23,6 +23,7 @@ import java.util.*;
 import static guru.nidi.codeassert.dependency.DependencyCollector.CYCLE;
 import static guru.nidi.codeassert.dependency.MatcherUtils.deps;
 import static guru.nidi.codeassert.dependency.MatcherUtils.sorted;
+import static java.lang.System.lineSeparator;
 
 public class DependencyCycleMatcher extends TypeSafeMatcher<DependencyResult> {
     private static final Comparator<DependencyMap> DEP_MAP_COMPARATOR = new DependencyMapComparator();
@@ -38,13 +39,13 @@ public class DependencyCycleMatcher extends TypeSafeMatcher<DependencyResult> {
 
     @Override
     protected void describeMismatchSafely(DependencyResult item, Description description) {
-        description.appendText("\n");
+        description.appendText(lineSeparator());
         final Set<DependencyMap> result = item.findings().getCycles();
         for (final DependencyMap cycle : sortedDepMaps(result)) {
             description.appendText(String.format("%-12s %s%n", CYCLE,
                     "This group of elements has mutual dependencies:"));
             for (final String elem : sorted(cycle.getElements())) {
-                description.appendText("  " + elem + " ->\n");
+                description.appendText(String.format("  %s ->%n", elem));
                 description.appendText(deps("    ", cycle.getDependencies(elem)));
             }
         }

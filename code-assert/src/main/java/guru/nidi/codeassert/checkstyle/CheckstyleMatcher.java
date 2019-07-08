@@ -20,6 +20,8 @@ import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
 import guru.nidi.codeassert.util.ResultMatcher;
 import org.hamcrest.Description;
 
+import static java.lang.System.*;
+
 public class CheckstyleMatcher extends ResultMatcher<CheckstyleResult, AuditEvent> {
     public void describeTo(Description description) {
         description.appendText("Has no Checkstyle issues");
@@ -28,7 +30,7 @@ public class CheckstyleMatcher extends ResultMatcher<CheckstyleResult, AuditEven
     @Override
     protected void describeMismatchSafely(CheckstyleResult item, Description description) {
         for (final AuditEvent event : item.findings()) {
-            description.appendText("\n").appendText(printEvent(event));
+            description.appendText(lineSeparator()).appendText(printEvent(event));
         }
     }
 

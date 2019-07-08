@@ -17,10 +17,19 @@ package guru.nidi.codeassert.util;
 
 import java.util.*;
 
+import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 
 public final class ListUtils {
     private ListUtils() {
+    }
+
+    public static String andJoin(Object first, Object[] os) {
+        return andJoin(first, asList(os));
+    }
+
+    public static String andJoin(Object first, List<?> os) {
+        return first.toString() + lineSeparator() + join(lineSeparator(), os);
     }
 
     public static String join(String sep, Object[] os) {

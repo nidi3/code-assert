@@ -16,13 +16,13 @@
 package guru.nidi.codeassert.pmd;
 
 import guru.nidi.codeassert.config.*;
-import guru.nidi.codeassert.util.ListUtils;
 import net.sourceforge.pmd.cpd.Mark;
 import net.sourceforge.pmd.cpd.Match;
 
 import java.util.Iterator;
 import java.util.List;
 
+import static guru.nidi.codeassert.util.ListUtils.andJoin;
 import static java.util.Collections.emptyList;
 
 public class CpdMatchCollector extends BaseCollector<Match, Ignore, CpdMatchCollector> {
@@ -36,7 +36,7 @@ public class CpdMatchCollector extends BaseCollector<Match, Ignore, CpdMatchColl
 
             @Override
             public String toString() {
-                return CpdMatchCollector.this.toString() + "\n" + ListUtils.join("\n", configs);
+                return andJoin(CpdMatchCollector.this, configs);
             }
         };
     }
