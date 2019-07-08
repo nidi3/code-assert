@@ -35,7 +35,9 @@ import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
 
 public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
     static {
-        //windowsNewlines();
+        if (System.getenv("WINDOWS_NEWLINES") != null) {
+            windowsNewlines();
+        }
     }
 
     public static void windowsNewlines() {
