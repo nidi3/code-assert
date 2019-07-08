@@ -120,7 +120,7 @@ public class CycleTest {
         for (int i = 0; i < message.length() && i < s.length(); i++) {
             if (message.charAt(i) != s.charAt(i)) {
                 System.out.println("%%%% dif at " + i);
-                System.out.println(message.substring(i - 5, 11) + "--" + s.substring(i - 5, 11));
+                System.out.println(message.substring(i - 5, i + 6) + "--" + s.substring(i - 5, i + 6));
             }
         }
         assertEquals(message, s);
