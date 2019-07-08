@@ -116,7 +116,13 @@ public class CycleTest {
         assertFalse(matcher.matches(result), "Should not match");
         final StringDescription sd = new StringDescription();
         matcher.describeMismatch(result, sd);
-        assertEquals(message, sd.toString());
+        final String s = sd.toString();
+        for (int i = 0; i < message.length() && i < s.length(); i++) {
+            if (message.charAt(i) != s.charAt(i)) {
+                System.out.println("%%%% dif at " + i);
+            }
+        }
+        assertEquals(message, s);
     }
 
     private static String base(String s) {
