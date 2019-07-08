@@ -34,8 +34,9 @@ final class PmdUtils {
         return className(violation.getPackageName(), violation.getFilename());
     }
 
-    private static String className(String packageName, String filename) {
-        if (filename.length() > 0) {
+    private static String className(String packageName, String rawFilename) {
+        if (rawFilename.length() > 0) {
+            final String filename = rawFilename.replace('\\', '/');
             final int last = filename.lastIndexOf('/');
             String prefix = "";
             if (packageName != null && packageName.length() > 0) {

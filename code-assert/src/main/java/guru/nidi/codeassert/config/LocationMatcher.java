@@ -55,9 +55,7 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
         final boolean matchesClass = matchesAll(loc.method)
                 ? matchesClassPattern(loc.clazz, className)
                 : matchesPattern(loc.clazz, className);
-        final boolean b = matchesPattern(loc.pack, packageName) && matchesClass && matchesPattern(loc.method, methodName);
-        System.out.println("%%%" + packageName + "-" + className + ">>" + loc + ">>" + b);
-        return b;
+        return matchesPattern(loc.pack, packageName) && matchesClass && matchesPattern(loc.method, methodName);
     }
 
     public boolean matchesLanguage(Language language) {
