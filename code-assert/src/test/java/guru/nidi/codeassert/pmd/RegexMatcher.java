@@ -33,7 +33,7 @@ public class RegexMatcher extends TypeSafeMatcher<String> {
     public static Matcher<String> matchesFormat(String format) {
         final List<Pattern> patterns = new ArrayList<>();
         for (final String line : format.split(lineSeparator())) {
-            patterns.add(Pattern.compile("\\Q" + line.replace("%d", "\\E\\d+\\Q").replace("\\", "\\\\") + "\\E"));
+            patterns.add(Pattern.compile(Pattern.quote(line).replace("%d", "\\E\\d+\\Q")));
         }
         return new RegexMatcher(patterns);
     }
@@ -80,6 +80,7 @@ public class RegexMatcher extends TypeSafeMatcher<String> {
     }
 
     private String pattern(Pattern p) {
-        return p.pattern().replace("\\Q", "").replace("\\E", "").replace("\\d+", "%d").replace("\\\\", "\\");
+        return p.pattern().replace("\\d+", "%d").replace("\\Q", "")
+                .replaceAll("([^\\\\])\\\\E", "$1").replace("\\\\E", "\\E");
     }
 }
