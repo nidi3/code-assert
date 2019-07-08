@@ -157,10 +157,10 @@ public class AnalyzerConfig {
         public static List<Path> of(File basedir, String... packages) {
             final List<Path> sources = new ArrayList<>();
             if (packages.length == 0) {
-                sources.add(new Path(basedir.getPath(), ""));
+                sources.add(new Path(basedir.getPath().replace('\\', '/'), ""));
             } else {
                 for (final String pack : packages) {
-                    sources.add(new Path(basedir.getPath(), pack));
+                    sources.add(new Path(basedir.getPath().replace('\\', '/'), pack));
                 }
             }
             return sources;
