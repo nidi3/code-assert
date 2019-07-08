@@ -1,10 +1,17 @@
 sudo: false
-language: java
-jdk:
-- oraclejdk8
+language: shell
+os: windows
+
 cache:
   directories:
-  - $HOME/.m2
+    - $HOME/.m2
+    - /c/bin
 
-after_success:
-- bash <(curl -s https://codecov.io/bash)
+before_install:
+  - echo $HOME
+  - choco install jdk8 -params 'installdir=c:\\bin\\jdk' -y
+  - choco install maven -params 'installdir=c:\\bin\\mvn' --version 3.6.0 -y
+  - export JAVA_HOME=${JAVA_HOME:-/c/bin/jdk}
+  - echo $JAVA_HOME
+script:
+  mvn install -P -jdeps
