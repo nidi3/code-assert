@@ -52,7 +52,7 @@ public class LocationMatcher implements Comparable<LocationMatcher> {
     }
 
     public boolean matches(String packageName, String className, String methodName) {
-        System.out.println("*** match '" + packageName+"--"+className + "--"+methodName+" - " +loc);
+        System.out.println("*** match '" + packageName + "--" + className + "--" + methodName + " - " + loc);
         final boolean matchesClass = matchesAll(loc.method)
                 ? matchesClassPattern(loc.clazz, className)
                 : matchesPattern(loc.clazz, className);
