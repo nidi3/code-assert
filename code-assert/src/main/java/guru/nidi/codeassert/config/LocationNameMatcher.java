@@ -78,7 +78,6 @@ public class LocationNameMatcher {
         if (names.isEmpty()) {
             return true;
         }
-        System.out.println("*** match '" + name + "' - " + names);
         for (final String n : names) {
             if (LocationMatcher.matchesPattern(createPattern(n, strictNameMatch), name)) {
                 return true;
