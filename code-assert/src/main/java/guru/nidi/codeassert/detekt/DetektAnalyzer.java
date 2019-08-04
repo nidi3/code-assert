@@ -73,9 +73,10 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
     public DetektResult analyze() {
         final File baseDir = new File(AnalyzerConfig.Path.commonBase(config.getSourcePaths(KOTLIN)).getPath());
         try {
+            final PrintStream printStream = new PrintStream(new LoggingOutputStream(), true, "utf-8");
             final ProcessingSettings settings = new ProcessingSettings(
                     baseDir.toPath(), calcDetektConfig(), emptyList(), false, false, emptyList(),
-                    Executors.newSingleThreadExecutor(), new PrintStream(new LoggingOutputStream(), true, "utf-8"));
+                    Executors.newSingleThreadExecutor(), printStream, printStream);
             final DetektFacade df = DetektFacade.Companion.create(settings, ruleSetProviders(settings), emptyList());
             return createResult(baseDir, df.run());
         } catch (UnsupportedEncodingException e) {
