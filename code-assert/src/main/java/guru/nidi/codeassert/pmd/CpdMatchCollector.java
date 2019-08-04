@@ -19,7 +19,6 @@ import guru.nidi.codeassert.config.*;
 import net.sourceforge.pmd.cpd.Mark;
 import net.sourceforge.pmd.cpd.Match;
 
-import java.util.Iterator;
 import java.util.List;
 
 import static guru.nidi.codeassert.util.ListUtils.andJoin;
@@ -44,7 +43,7 @@ public class CpdMatchCollector extends BaseCollector<Match, Ignore, CpdMatchColl
     @Override
     protected ActionResult doAccept(Match issue, Ignore action) {
         ActionResult res = ActionResult.undecided(null);
-        for (Mark mark : issue) {
+        for (final Mark mark : issue) {
             final Language language = Language.byFilename(mark.getFilename());
             res = res.orMoreQuality(action.accept(
                     new NamedLocation(mark.getSourceCodeSlice(), language, PmdUtils.className(mark), "", false)));
