@@ -33,4 +33,10 @@
         <cve>CVE-2019-1010260</cve>
         <cpe>cpe:2.3:a:ktlint_project:ktlint:0.29.0</cpe>
     </suppress>
+    <suppress>
+        <cve>CVE-2019-10101</cve>
+        <cve>CVE-2019-10102</cve>
+        <cve>CVE-2019-10103</cve>
+        <cpe>cpe:2.3:a:jetbrains:kotlin:1.2.61</cpe>
+    </suppress>
 </suppressions>
