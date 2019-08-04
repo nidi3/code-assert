@@ -18,6 +18,7 @@ package guru.nidi.codeassert.model;
 import guru.nidi.codeassert.config.LocationMatcher;
 import guru.nidi.codeassert.util.CountSet;
 
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 import static java.util.Collections.emptyList;
@@ -37,10 +38,11 @@ public class CodeClass extends UsingElement<CodeClass> {
     private final Set<CodeClass> annotations;
     final List<MemberInfo> fields = new ArrayList<>();
     final List<MemberInfo> methods = new ArrayList<>();
+    String superClass;
     String sourceFile;
     int codeSize;
     int totalSize;
-    boolean concrete;
+    int flags;
     int sourceSize;
     int codeLines;
     int commentLines;
@@ -56,6 +58,17 @@ public class CodeClass extends UsingElement<CodeClass> {
         sourceFile = "Unknown";
     }
 
+    public boolean isParsed() {
+        return superClass != null;
+    }
+
+    public List<MemberInfo> getMembers() {
+        final List<MemberInfo> members = new ArrayList<>();
+        members.addAll(methods);
+        members.addAll(fields);
+        return members;
+    }
+
     public String getName() {
         return name;
     }
@@ -66,6 +79,10 @@ public class CodeClass extends UsingElement<CodeClass> {
 
     public CodePackage getPackage() {
         return pack;
+    }
+
+    public String getSuperClass() {
+        return superClass;
     }
 
     public String getSourceFile() {
@@ -93,7 +110,7 @@ public class CodeClass extends UsingElement<CodeClass> {
     }
 
     public boolean isConcrete() {
-        return concrete;
+        return !Modifier.isAbstract(flags) && !Modifier.isInterface(flags);
     }
 
     public int getSourceSize() {
@@ -180,7 +197,7 @@ public class CodeClass extends UsingElement<CodeClass> {
         }
     }
 
-    void addAnnotation(String type, Model model) {
+    void addAnnotation(String type, Model model, Collection<CodeClass> annotations) {
         final CodeClass clazz = model.getOrCreateClass(type);
         if (clazz != null) {
             addImport(type, model);

@@ -41,6 +41,13 @@ public class CodeAssertJunit5Test extends CodeAssertTestBase {
     }
 
     @Test
+    void codeStructure() {
+        assumeTrue(defaultTests().contains(STRUCTURE), "Structure tests excluded.");
+        assumeFalse(createModel() == null, "createModel() not implemented.");
+        assertThat(createModel(), exposesNoInternalTypes());
+    }
+
+    @Test
     void findBugs() {
         assumeTrue(defaultTests().contains(FIND_BUGS), "FindBugs test excluded.");
         assumeFalse(findBugsResult() == null, "analyzeFindBugs() not implemented.");

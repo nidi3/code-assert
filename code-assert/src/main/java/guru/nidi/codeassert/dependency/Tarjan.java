@@ -31,7 +31,7 @@ class Tarjan<T extends UsingElement<T>> {
         boolean onStack;
     }
 
-    public Set<DependencyMap> analyzeCycles(Iterable<T> elems, boolean allowIntraPackageCycles) {
+    Set<DependencyMap> analyzeCycles(Iterable<T> elems, boolean allowIntraPackageCycles) {
         index = 0;
         final Map<String, T> map = new HashMap<>();
         for (final T elem : elems) {

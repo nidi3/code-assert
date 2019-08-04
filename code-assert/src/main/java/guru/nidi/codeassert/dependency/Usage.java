@@ -25,7 +25,7 @@ class Usage {
     final Set<LocationMatcher> may = new HashSet<>();
     final Set<LocationMatcher> mustNot = new HashSet<>();
 
-    public Usage copy() {
+    Usage copy() {
         final Usage u = new Usage();
         u.must.addAll(must);
         u.may.addAll(may);
@@ -33,25 +33,25 @@ class Usage {
         return u;
     }
 
-    public void must(CodeElement... rules) {
+    void must(CodeElement... rules) {
         for (final CodeElement rule : rules) {
             must.add(rule.pattern);
         }
     }
 
-    public void may(CodeElement... rules) {
+    void may(CodeElement... rules) {
         for (final CodeElement rule : rules) {
             may.add(rule.pattern);
         }
     }
 
-    public void mustNot(CodeElement... rules) {
+    void mustNot(CodeElement... rules) {
         for (final CodeElement rule : rules) {
             mustNot.add(rule.pattern);
         }
     }
 
-    public boolean isEmpty() {
+    boolean isEmpty() {
         return must.isEmpty() && may.isEmpty() && mustNot.isEmpty();
     }
 

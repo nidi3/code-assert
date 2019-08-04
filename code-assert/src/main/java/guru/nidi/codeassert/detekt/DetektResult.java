@@ -21,8 +21,8 @@ import guru.nidi.codeassert.AnalyzerResult;
 import java.util.List;
 
 public class DetektResult extends AnalyzerResult<List<TypedDetektFinding>> {
-    public DetektResult(Analyzer<List<TypedDetektFinding>> analyzer,
-                        List<TypedDetektFinding> findings, List<String> unusedActions) {
+    DetektResult(Analyzer<List<TypedDetektFinding>> analyzer,
+                 List<TypedDetektFinding> findings, List<String> unusedActions) {
         super(analyzer, findings, unusedActions);
     }
 }

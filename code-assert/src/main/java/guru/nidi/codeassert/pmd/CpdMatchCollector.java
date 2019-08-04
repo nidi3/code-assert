@@ -44,9 +44,7 @@ public class CpdMatchCollector extends BaseCollector<Match, Ignore, CpdMatchColl
     @Override
     protected ActionResult doAccept(Match issue, Ignore action) {
         ActionResult res = ActionResult.undecided(null);
-        final Iterator<Mark> it = issue.iterator();
-        while (it.hasNext()) {
-            final Mark mark = it.next();
+        for (Mark mark : issue) {
             final Language language = Language.byFilename(mark.getFilename());
             res = res.orMoreQuality(action.accept(
                     new NamedLocation(mark.getSourceCodeSlice(), language, PmdUtils.className(mark), "", false)));

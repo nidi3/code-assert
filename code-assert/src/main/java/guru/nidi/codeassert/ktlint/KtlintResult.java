@@ -21,8 +21,8 @@ import guru.nidi.codeassert.AnalyzerResult;
 import java.util.List;
 
 public class KtlintResult extends AnalyzerResult<List<LocatedLintError>> {
-    public KtlintResult(Analyzer<List<LocatedLintError>> analyzer,
-                        List<LocatedLintError> findings, List<String> unusedActions) {
+    KtlintResult(Analyzer<List<LocatedLintError>> analyzer,
+                 List<LocatedLintError> findings, List<String> unusedActions) {
         super(analyzer, findings, unusedActions);
     }
 }

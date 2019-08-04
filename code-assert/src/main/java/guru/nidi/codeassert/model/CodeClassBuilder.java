@@ -18,7 +18,6 @@ package guru.nidi.codeassert.model;
 import guru.nidi.codeassert.AnalyzerException;
 
 import java.io.IOException;
-import java.lang.reflect.Modifier;
 import java.util.List;
 
 class CodeClassBuilder {
@@ -43,19 +42,20 @@ class CodeClassBuilder {
         this(clazz, null, null);
     }
 
-    public CodeClassBuilder addSuperClass(String className) {
+    CodeClassBuilder addSuperClass(String className) {
+        clazz.superClass = className;
         addImport(className);
         return this;
     }
 
-    public CodeClassBuilder addInterfaces(List<String> interfaceNames) {
+    CodeClassBuilder addInterfaces(List<String> interfaceNames) {
         for (final String interfaceName : interfaceNames) {
             addImport(interfaceName);
         }
         return this;
     }
 
-    public CodeClassBuilder addClassConstantReferences() throws IOException {
+    CodeClassBuilder addClassConstantReferences() throws IOException {
         for (final Constant constant : constantPool) {
             if (constant.tag == Constant.CLASS) {
                 final String name = constantPool.getUtf8(constant.nameIndex);
@@ -65,12 +65,12 @@ class CodeClassBuilder {
         return this;
     }
 
-    public CodeClassBuilder addFlags(int flags) {
-        clazz.concrete = !Modifier.isAbstract(flags) && !Modifier.isInterface(flags);
+    CodeClassBuilder addFlags(int flags) {
+        clazz.flags = flags;
         return this;
     }
 
-    public CodeClassBuilder addMethodRefs(List<MemberInfo> methods) throws IOException {
+    CodeClassBuilder addMethodRefs(List<MemberInfo> methods) throws IOException {
         addMemberAnnotationRefs(methods);
         addMemberSignatureRefs(SignatureParser.Source.METHOD, methods);
         addMemberTypes(methods);
@@ -78,7 +78,7 @@ class CodeClassBuilder {
         return this;
     }
 
-    public CodeClassBuilder addFieldRefs(List<MemberInfo> fields) throws IOException {
+    CodeClassBuilder addFieldRefs(List<MemberInfo> fields) throws IOException {
         addMemberAnnotationRefs(fields);
         addMemberSignatureRefs(SignatureParser.Source.FIELD, fields);
         addMemberTypes(fields);
@@ -86,7 +86,7 @@ class CodeClassBuilder {
         return this;
     }
 
-    public CodeClassBuilder addAttributeRefs(List<AttributeInfo> attributes) throws IOException {
+    CodeClassBuilder addAttributeRefs(List<AttributeInfo> attributes) throws IOException {
         for (final AttributeInfo attribute : attributes) {
             addSourceAttribute(attribute);
             addAttributeAnnotationRefs(attribute);
@@ -95,7 +95,7 @@ class CodeClassBuilder {
         return this;
     }
 
-    public CodeClassBuilder addPackageInfo(Model model, String className) {
+    CodeClassBuilder addPackageInfo(Model model, String className) {
         if (className.endsWith(".package-info")) {
             final CodePackage pack = model.getOrCreatePackage(model.packageOf(className));
             for (final CodeClass ann : clazz.getAnnotations()) {
@@ -105,7 +105,7 @@ class CodeClassBuilder {
         return this;
     }
 
-    public CodeClassBuilder addCodeSizes(int totalSize, List<MemberInfo> methods) {
+    CodeClassBuilder addCodeSizes(int totalSize, List<MemberInfo> methods) {
         int codeSize = 0;
         for (final MemberInfo method : methods) {
             codeSize += method.codeSize;
@@ -115,8 +115,8 @@ class CodeClassBuilder {
         return this;
     }
 
-    public CodeClassBuilder addSourceSizes(int sourceSize,
-                                           int codeLines, int commentLines, int emptyLines, int totalLines) {
+    CodeClassBuilder addSourceSizes(int sourceSize,
+                                    int codeLines, int commentLines, int emptyLines, int totalLines) {
         clazz.sourceSize = sourceSize;
         clazz.codeLines = codeLines;
         clazz.commentLines = commentLines;
@@ -125,30 +125,31 @@ class CodeClassBuilder {
         return this;
     }
 
-    private void addMemberAnnotationRefs(List<MemberInfo> infos) throws IOException {
-        for (final MemberInfo info : infos) {
-            if (info.annotations != null) {
-                addAnnotationReferences(info.annotations);
+    private void addMemberAnnotationRefs(List<MemberInfo> members) throws IOException {
+        for (final MemberInfo member : members) {
+            if (member.annotations != null) {
+                addAnnotationReferences(member.annotations, member);
             }
         }
     }
 
-    private void addMemberSignatureRefs(SignatureParser.Source source, List<MemberInfo> infos) throws IOException {
-        for (final MemberInfo info : infos) {
-            if (info.signature != null) {
-                final String name = constantPool.getUtf8(u2(info.signature.value, 0));
-                for (final String clazz : SignatureParser.parseSignature(source, name).getClasses()) {
+    private void addMemberSignatureRefs(SignatureParser.Source source, List<MemberInfo> members) throws IOException {
+        for (final MemberInfo member : members) {
+            if (member.signature != null) {
+                for (final String clazz : SignatureParser.parseSignature(source, member.signature).getClasses()) {
+                    addMemberClassRef(member, clazz);
                     addImport(clazz);
                 }
             }
         }
     }
 
-    private void addMemberTypes(List<MemberInfo> infos) {
-        for (final MemberInfo info : infos) {
-            final String[] types = descriptorToTypes(info.descriptor);
+    private void addMemberTypes(List<MemberInfo> members) {
+        for (final MemberInfo member : members) {
+            final String[] types = descriptorToTypes(member.descriptor);
             for (final String type : types) {
                 if (type.length() > 0) {
+                    addMemberClassRef(member, type);
                     addImport(type);
                 }
             }
@@ -163,7 +164,7 @@ class CodeClassBuilder {
 
     private void addAttributeSignatureRefs(AttributeInfo attribute) throws IOException {
         if (attribute.isSignature()) {
-            final String name = constantPool.getUtf8(u2(attribute.value, 0));
+            final String name = constantPool.getUtf8(attribute.u2(0));
             for (final String clazz : SignatureParser.parseSignature(SignatureParser.Source.CLASS, name).getClasses()) {
                 addImport(clazz);
             }
@@ -172,34 +173,35 @@ class CodeClassBuilder {
 
     private void addAttributeAnnotationRefs(AttributeInfo attribute) throws IOException {
         if (attribute.isAnnotation()) {
-            addAnnotationReferences(attribute);
+            addAnnotationReferences(attribute, null);
         }
     }
 
-    private void addAnnotationReferences(AttributeInfo annotation) throws IOException {
+    private void addAnnotationReferences(AttributeInfo annotation, MemberInfo member) throws IOException {
         // JVM Spec 4.8.15
-        final byte[] data = annotation.value;
-        final int numAnnotations = u2(data, 0);
-        addAnnotationReferences(data, 2, numAnnotations);
+        addAnnotationReferences(annotation, member, 2, annotation.u2(0));
     }
 
-    private int addAnnotationReferences(byte[] data, int index, int numAnnotations) throws IOException {
+    private int addAnnotationReferences(AttributeInfo annotation, MemberInfo member, int index, int numAnnotations)
+            throws IOException {
         int i = index;
         for (int a = 0; a < numAnnotations; a++) {
-            final int typeIndex = u2(data, i);
+            final int typeIndex = annotation.u2(i);
             i += 2;
-            final int elements = u2(data, i);
+            final int elements = annotation.u2(i);
             i += 2;
-            clazz.addAnnotation(getTypeName(descriptorToType(constantPool.getUtf8(typeIndex))), model);
+            final String annType = getTypeName(descriptorToType(constantPool.getUtf8(typeIndex)));
+            clazz.addAnnotation(annType, model, member == null ? clazz.getAnnotations() : member.annotationClasses);
             for (int e = 0; e < elements; e++) {
-                i = addAnnotationElementValueReferences(data, i + 2);
+                i = addAnnotationElementValueReferences(annotation, member, i + 2);
             }
         }
         return i;
     }
 
-    private int addAnnotationElementValueReferences(byte[] data, int i) throws IOException {
-        final byte tag = data[i];
+    private int addAnnotationElementValueReferences(AttributeInfo annotation, MemberInfo member, int i)
+            throws IOException {
+        final byte tag = annotation.value[i];
         switch (tag) {
             case 'B':
             case 'C':
@@ -212,20 +214,18 @@ class CodeClassBuilder {
             case 's':
                 return i + 3;
             case 'e':
-                final int enumTypeIndex = u2(data, i + 1);
-                addImport(descriptorToType(constantPool.getUtf8(enumTypeIndex)));
+                addClassOrEnumRef(annotation, member, i);
                 return i + 5;
             case 'c':
-                final int classInfoIndex = u2(data, i + 1);
-                addImport(descriptorToType(constantPool.getUtf8(classInfoIndex)));
+                addClassOrEnumRef(annotation, member, i);
                 return i + 3;
             case '@':
-                return addAnnotationReferences(data, i + 1, 1);
+                return addAnnotationReferences(annotation, member, i + 1, 1);
             case '[':
-                final int numValues = u2(data, i + 1);
+                final int numValues = annotation.u2(i + 1);
                 int k = i + 3;
                 for (int j = 0; j < numValues; j++) {
-                    k = addAnnotationElementValueReferences(data, k);
+                    k = addAnnotationElementValueReferences(annotation, member, k);
                 }
                 return k;
             default:
@@ -233,14 +233,26 @@ class CodeClassBuilder {
         }
     }
 
-    private int u2(byte[] data, int index) {
-        return (data[index] << 8 & 0xFF00) | (data[index + 1] & 0xFF);
+    private void addClassOrEnumRef(AttributeInfo annotation, MemberInfo member, int i) throws IOException {
+        final int enumTypeIndex = annotation.u2(i + 1);
+        final String type = descriptorToType(constantPool.getUtf8(enumTypeIndex));
+        addMemberClassRef(member, type);
+        addImport(type);
     }
 
     private void addImport(String type) {
         final String name = getTypeName(type);
         if (name != null) {
             clazz.addImport(name, model);
+        }
+    }
+
+    private void addMemberClassRef(MemberInfo member, String type) {
+        if (member != null) {
+            final String name = getTypeName(type);
+            if (name != null) {
+                member.referencedClasses.add(name);
+            }
         }
     }
 

@@ -43,7 +43,7 @@ final class SignatureParser {
         read();
     }
 
-    public static SignatureParser parseSignature(Source source, String signature) {
+    static SignatureParser parseSignature(Source source, String signature) {
         final SignatureParser parser = new SignatureParser(signature);
         switch (source) {
             case CLASS:

@@ -17,17 +17,21 @@ package guru.nidi.codeassert.model;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class MemberInfo {
     private final int accessFlags;
     private final String name;
     final String descriptor;
     final AttributeInfo annotations;
-    final AttributeInfo signature;
+    final String signature;
     final int codeSize;
+    final Set<String> referencedClasses = new HashSet<>();
+    final Set<CodeClass> annotationClasses = new HashSet<>();
 
     private MemberInfo(int accessFlags, String name, String descriptor,
-                       AttributeInfo annotations, AttributeInfo signature, int codeSize) {
+                       AttributeInfo annotations, String signature, int codeSize) {
         this.accessFlags = accessFlags;
         this.name = name;
         this.descriptor = descriptor;
@@ -42,7 +46,7 @@ public final class MemberInfo {
         final String descriptor = constantPool.getUtf8(in.readUnsignedShort());
         final int attributesCount = in.readUnsignedShort();
         AttributeInfo annotations = null;
-        AttributeInfo signature = null;
+        String signature = null;
         int codeSize = 0;
         for (int a = 0; a < attributesCount; a++) {
             final AttributeInfo attribute = AttributeInfo.fromData(in, constantPool);
@@ -50,7 +54,7 @@ public final class MemberInfo {
                 annotations = attribute;
             }
             if (attribute.isSignature()) {
-                signature = attribute;
+                signature = constantPool.getUtf8(attribute.u2(0));
             }
             if (attribute.isCode()) {
                 codeSize = attribute.value.length;

@@ -27,10 +27,8 @@ final class AttributeInfo {
         this.value = value;
     }
 
-    public static AttributeInfo fromData(DataInputStream in, ConstantPool constantPool) throws IOException {
-        final int nameIndex = in.readUnsignedShort();
-        final String name = nameIndex == -1 ? null : constantPool.getUtf8(nameIndex);
-
+    static AttributeInfo fromData(DataInputStream in, ConstantPool constantPool) throws IOException {
+        final String name = constantPool.getUtf8(in.readUnsignedShort());
         final int attributeLength = in.readInt();
         final byte[] value = new byte[attributeLength];
         for (int b = 0; b < attributeLength; b++) {
@@ -40,26 +38,30 @@ final class AttributeInfo {
         return new AttributeInfo(name, value);
     }
 
-    public boolean isAnnotation() {
+    boolean isAnnotation() {
         return "RuntimeVisibleAnnotations".equals(name) || "RuntimeInvisibleAnnotations".equals(name);
     }
 
-    public boolean isSignature() {
+    boolean isSignature() {
         return "Signature".equals(name);
     }
 
-    public boolean isSource() {
+    boolean isSource() {
         return "SourceFile".equals(name);
     }
 
-    public boolean isCode() {
+    boolean isCode() {
         return "Code".equals(name);
     }
 
-    public String sourceFile(ConstantPool constantPool) throws IOException {
+    String sourceFile(ConstantPool constantPool) throws IOException {
         final int b0 = value[0] < 0 ? value[0] + 256 : value[0];
         final int b1 = value[1] < 0 ? value[1] + 256 : value[1];
         final int pe = b0 * 256 + b1;
         return constantPool.getUtf8(pe);
+    }
+
+    int u2(int index) {
+        return (value[index] << 8 & 0xFF00) | (value[index + 1] & 0xFF);
     }
 }

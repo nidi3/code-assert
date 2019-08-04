@@ -22,7 +22,7 @@ public class AmbiguousRuleException extends RuntimeException {
     private final UsingElement<?> from;
     private final UsingElement<?> to;
 
-    public AmbiguousRuleException(DependencyRule rule, UsingElement<?> from, UsingElement<?> to) {
+    AmbiguousRuleException(DependencyRule rule, UsingElement<?> from, UsingElement<?> to) {
         this.rule = rule;
         this.from = from;
         this.to = to;

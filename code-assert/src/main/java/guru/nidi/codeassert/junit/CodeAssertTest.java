@@ -41,6 +41,13 @@ public class CodeAssertTest extends CodeAssertTestBase {
     }
 
     @Test
+    public void codeStructure() {
+        assumeTrue("Structure tests excluded.", defaultTests().contains(STRUCTURE));
+        assumeFalse("createModel() not implemented.", createModel() == null);
+        assertThat(createModel(), exposesNoInternalTypes());
+    }
+
+    @Test
     public void findBugs() {
         assumeTrue("FindBugs test excluded.", defaultTests().contains(FIND_BUGS));
         assumeFalse("analyzeFindBugs() not implemented.", findBugsResult() == null);

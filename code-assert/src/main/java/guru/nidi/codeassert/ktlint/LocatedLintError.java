@@ -17,7 +17,7 @@ package guru.nidi.codeassert.ktlint;
 
 import java.io.File;
 
-class LocatedLintError {
+public class LocatedLintError {
     final File file;
     final int line;
     final String ruleId;

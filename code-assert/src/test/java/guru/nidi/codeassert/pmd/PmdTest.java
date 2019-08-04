@@ -74,6 +74,7 @@ class PmdTest {
                         + pmd(MEDIUM, "AvoidFinalLocalVariable", MAIN, "model/CodeClassBuilder", "Avoid using final local variables, turn them into fields")
                         + pmd(MEDIUM, "CommentSize", MAIN, "config/LocationNameMatcher", "Comment is too large: Line too long")
                         + pmd(MEDIUM, "ConfusingTernary", MAIN, "config/Location", "Avoid if (x != y) ..; else ..;")
+                        + pmd(MEDIUM, "CouplingBetweenObjects", TEST, "EatYourOwnDogfoodTest", "High amount of different objects as members denotes a high coupling")
                         + pmd(MEDIUM, "ExcessiveMethodLength", TEST, "io/ModelVisualizerTest", "Avoid really long methods.")
                         + pmd(MEDIUM, "ExcessiveParameterList", MAIN, "jacoco/Coverage", "Avoid long parameter lists.")
                         + pmd(MEDIUM, "InefficientEmptyStringCheck", MAIN, "model/SourceFileParser", "String.trim().length()==0 is an inefficient way to validate an empty String.")
@@ -106,10 +107,14 @@ class PmdTest {
                         + cpd(35, "dependency/DependencyCollector")
                         + cpd("detekt/DetektCollector")
                         + cpd("ktlint/KtlintCollector")
+                        + cpd(35, "model/InternalTypeInPublicApiMatcher")
+                        + cpd("model/PublicMemberInInternalTypeMatcher")
                         + cpd(35, "pmd/PmdAnalyzer")
                         + cpd("pmd/PmdAnalyzer")
                         + cpd(31, "detekt/DetektMatcher")
-                        + cpd("ktlint/KtlintMatcher"),
+                        + cpd("ktlint/KtlintMatcher")
+                        + cpd(31, "model/InternalTypeInPublicApiMatcher")
+                        + cpd("model/PublicMemberInInternalTypeMatcher"),
                 cpdResult, hasNoCodeDuplications());
     }
 

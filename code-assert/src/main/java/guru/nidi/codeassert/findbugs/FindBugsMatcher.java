@@ -41,7 +41,7 @@ public class FindBugsMatcher extends ResultMatcher<FindBugsResult, BugInstance> 
     private String printBug(BugInstance bug, List<AnalyzerConfig.Path> sources) {
         final int rank = BugRanker.findRank(bug);
         final SourceLineAnnotation line = bug.getPrimarySourceLineAnnotation();
-        final int startLine = line.getStartLine() <= 0 ? 0 : line.getStartLine();
+        final int startLine = Math.max(line.getStartLine(), 0);
         final String msg = bug.getMessage();
         final int pos = msg.indexOf(':');
         final String message = msg.substring(pos + 2).replace('\n', ' ');

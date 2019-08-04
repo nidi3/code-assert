@@ -26,7 +26,7 @@ final class MatcherUtils {
     private MatcherUtils() {
     }
 
-    public static String deps(String prefix, Map<String, DependencyMap.Info> deps) {
+    static String deps(String prefix, Map<String, DependencyMap.Info> deps) {
         final StringBuilder s = new StringBuilder();
         for (final String dep : sorted(deps.keySet())) {
             s.append(prefix).append(dep);
@@ -39,7 +39,7 @@ final class MatcherUtils {
         return s.toString();
     }
 
-    public static String join(Collection<String> packs) {
+    static String join(Collection<String> packs) {
         final StringBuilder s = new StringBuilder();
         for (final String pack : sorted(packs)) {
             s.append(", ").append(pack);
@@ -47,13 +47,13 @@ final class MatcherUtils {
         return s.length() > 0 ? s.substring(2) : s.toString();
     }
 
-    public static List<String> sorted(Collection<String> ss) {
+    static List<String> sorted(Collection<String> ss) {
         final List<String> sorted = new ArrayList<>(ss);
         sort(sorted);
         return sorted;
     }
 
-    public static List<String> sortedPatterns(Collection<LocationMatcher> patterns) {
+    static List<String> sortedPatterns(Collection<LocationMatcher> patterns) {
         final List<String> ss = new ArrayList<>();
         for (final LocationMatcher pattern : patterns) {
             ss.add(pattern.toString());

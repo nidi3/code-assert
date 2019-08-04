@@ -19,7 +19,7 @@ import io.gitlab.arturbosch.detekt.api.*;
 
 import java.io.File;
 
-class TypedDetektFinding {
+public class TypedDetektFinding {
     final File basedir;
     final Entity entity;
     final String type;

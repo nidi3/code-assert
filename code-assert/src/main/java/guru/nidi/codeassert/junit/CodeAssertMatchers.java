@@ -23,6 +23,7 @@ import guru.nidi.codeassert.findbugs.FindBugsMatcher;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
 import guru.nidi.codeassert.jacoco.CoverageMatcher;
 import guru.nidi.codeassert.jacoco.JacocoResult;
+import guru.nidi.codeassert.model.*;
 import guru.nidi.codeassert.pmd.*;
 import org.hamcrest.Matcher;
 
@@ -44,6 +45,14 @@ public final class CodeAssertMatchers {
 
     public static Matcher<DependencyResult> matchesRulesIgnoringUndefined() {
         return new DependencyResultMatcher(true, false);
+    }
+
+    public static Matcher<Model> exposesNoInternalTypes() {
+        return new InternalTypeInPublicApiMatcher();
+    }
+
+    public static Matcher<Model> hasNoPublicMembersInInternalTypes() {
+        return new PublicMemberInInternalTypeMatcher();
     }
 
     public static Matcher<DependencyResult> hasNoCycles() {

@@ -23,7 +23,7 @@ import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
 import guru.nidi.codeassert.ktlint.KtlintAnalyzer;
-import guru.nidi.codeassert.model.CodeClass;
+import guru.nidi.codeassert.model.*;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.jupiter.api.BeforeAll;
@@ -90,6 +90,11 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
     }
 
     @Override
+    protected Model createModel() {
+        return Model.from(AnalyzerConfig.maven().main().getClasses()).read();
+    }
+
+    @Override
     protected FindBugsResult analyzeFindBugs() {
         System.gc();
         final BugCollector bugCollector = new BugCollector()
@@ -136,7 +141,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
         System.gc();
         final CpdMatchCollector collector = new CpdMatchCollector()
                 .apply(PmdConfigs.cpdIgnoreEqualsHashCodeToString())
-                .just(In.classes("DetektMatcher", "ProjectLayout", "SourceFileParser").ignoreAll())
+                .just(In.classes("DetektMatcher", "ProjectLayout", "SourceFileParser", "InternalTypeInPublicApiMatcher").ignoreAll())
                 .just(In.classes(FindBugsConfigs.class, PmdConfigs.class).ignore("dependencyTestIgnore"))
                 .just(In.clazz(PmdAnalyzer.class).ignore("Map<String, PmdRuleset> newRuleset"));
 
@@ -151,6 +156,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                 .just(In.classes("Coverage", "Constant").ignore("empty.line.separator"))
                 .just(In.classes("BaseCollector", "In", "Location", "SourceFileParser").ignore("overload.methods.declaration"))
                 .just(In.clazz(PmdRulesets.class).ignore("abbreviation.as.word"))
+                .just(In.clazz(InternalTypeInPublicApiMatcher.class).ignore("indentation.error"))
                 .just(In.classes("DependencyMap").ignore("tag.continuation.indent"));
 
         return new CheckstyleAnalyzer(AnalyzerConfig.maven().main(), CheckstyleConfigs.adjustedGoogleStyleChecks(), collector).analyze();

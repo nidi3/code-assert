@@ -51,9 +51,8 @@ public class CpdMatcher extends ResultMatcher<CpdResult, Match> {
 
     private List<Mark> getMarks(Match match) {
         final List<Mark> marks = new ArrayList<>();
-        final Iterator<Mark> iter = match.iterator();
-        while (iter.hasNext()) {
-            marks.add(iter.next());
+        for (Mark mark : match) {
+            marks.add(mark);
         }
         marks.sort(MARK_COMPARATOR);
         return marks;

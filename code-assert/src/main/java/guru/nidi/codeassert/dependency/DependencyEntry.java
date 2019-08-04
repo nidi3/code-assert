@@ -15,7 +15,7 @@
  */
 package guru.nidi.codeassert.dependency;
 
-class DependencyEntry {
+public class DependencyEntry {
     final String name;
     final String className;
 
