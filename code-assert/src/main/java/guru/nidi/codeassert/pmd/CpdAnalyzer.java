@@ -23,13 +23,16 @@ import net.sourceforge.pmd.cpd.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
 public class CpdAnalyzer implements Analyzer<List<Match>> {
+    private static final Comparator<Match> MATCH_SORTER = Comparator
+            .comparingInt(Match::getTokenCount).reversed()
+            .thenComparing(m -> m.getFirstMark().getFilename());
+
     private final AnalyzerConfig config;
     private final int minTokens;
     private final CpdMatchCollector collector;
@@ -71,6 +74,7 @@ public class CpdAnalyzer implements Analyzer<List<Match>> {
         final Iterable<Match> miter = () -> matches;
         final List<Match> res = StreamSupport.stream(miter.spliterator(), false)
                 .filter(m -> counter.accept(collector.accept(m)))
+                .sorted(MATCH_SORTER)
                 .collect(toList());
         collector.printUnusedWarning(counter);
         return new CpdResult(this, res, collector.unusedActions(counter));

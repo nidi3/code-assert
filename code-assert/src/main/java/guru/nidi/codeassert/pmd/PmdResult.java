@@ -22,7 +22,7 @@ import net.sourceforge.pmd.RuleViolation;
 import java.util.List;
 
 public class PmdResult extends AnalyzerResult<List<RuleViolation>> {
-    public PmdResult(Analyzer<List<RuleViolation>> analyzer, List<RuleViolation> findings, List<String> unusedActions) {
+    PmdResult(Analyzer<List<RuleViolation>> analyzer, List<RuleViolation> findings, List<String> unusedActions) {
         super(analyzer, findings, unusedActions);
     }
 }

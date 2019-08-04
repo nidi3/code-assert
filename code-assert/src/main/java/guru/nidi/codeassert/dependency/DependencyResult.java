@@ -21,8 +21,8 @@ import guru.nidi.codeassert.AnalyzerResult;
 import java.util.List;
 
 public class DependencyResult extends AnalyzerResult<Dependencies> {
-    public DependencyResult(Analyzer<Dependencies> analyzer,
-                            Dependencies findings, List<String> unusedActions) {
+    DependencyResult(Analyzer<Dependencies> analyzer,
+                     Dependencies findings, List<String> unusedActions) {
         super(analyzer, findings, unusedActions);
     }
 }

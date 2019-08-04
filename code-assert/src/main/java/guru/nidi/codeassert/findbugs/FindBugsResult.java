@@ -22,8 +22,8 @@ import guru.nidi.codeassert.AnalyzerResult;
 import java.util.List;
 
 public class FindBugsResult extends AnalyzerResult<List<BugInstance>> {
-    public FindBugsResult(Analyzer<List<BugInstance>> analyzer,
-                          List<BugInstance> findings, List<String> unusedActions) {
+    FindBugsResult(Analyzer<List<BugInstance>> analyzer,
+                   List<BugInstance> findings, List<String> unusedActions) {
         super(analyzer, findings, unusedActions);
     }
 }
