@@ -43,8 +43,9 @@ final class PmdUtils {
                 prefix = packageName + ".";
             } else {
                 //TODO can this heuristic be improved?
+                //TODO problem with "/graphviz-java/src/main/java/..." matches first "java/"
                 final int src = filename.indexOf("src/") + 3;
-                final int java = filename.indexOf("java/") + 4; //TODO problem with "/graphviz-java/src/main/java/..." matches first "java/"
+                final int java = filename.indexOf("java/") + 4;
                 final int later = Math.max(src, java);
                 if (later >= 4) {
                     prefix = filename.substring(later + 1, last + 1).replace('/', '.');
