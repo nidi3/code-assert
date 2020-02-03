@@ -17,8 +17,8 @@ package guru.nidi.codeassert;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.*;
-import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -33,7 +33,8 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
  */
 @Mojo(name = "assert", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class AssertMojo extends AbstractMojo {
-    static final String JACOCO_VERSION = "0.7.9";
+    static final String JACOCO_VERSION = "0.8.5";
+    private static final String SUREFIRE_VERSION = "2.22.2";
 
     /**
      * The test class to be run.
@@ -75,7 +76,7 @@ public class AssertMojo extends AbstractMojo {
                 plugin(
                         groupId("org.apache.maven.plugins"),
                         artifactId("maven-surefire-plugin"),
-                        version("2.19.1")
+                        version(SUREFIRE_VERSION)
                 ),
                 goal("test"),
                 configuration(

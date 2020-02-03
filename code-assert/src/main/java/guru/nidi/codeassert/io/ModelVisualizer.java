@@ -17,12 +17,13 @@ package guru.nidi.codeassert.io;
 
 import guru.nidi.codeassert.model.CodePackage;
 import guru.nidi.codeassert.model.Model;
-import guru.nidi.graphviz.attribute.RankDir;
+import guru.nidi.graphviz.attribute.Rank;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.*;
 
 import java.util.function.Function;
 
+import static guru.nidi.graphviz.attribute.Rank.RankDir.LEFT_TO_RIGHT;
 import static guru.nidi.graphviz.model.Factory.mutGraph;
 
 public class ModelVisualizer {
@@ -35,7 +36,7 @@ public class ModelVisualizer {
     public Visualized visualizePackages(Function<CodePackage, MutableNode> transform) {
         final MutableGraph graph = CreationContext.use(ctx -> {
             final MutableGraph g = mutGraph().setDirected(true)
-                    .graphAttrs().add(RankDir.LEFT_TO_RIGHT);
+                    .graphAttrs().add(Rank.dir(LEFT_TO_RIGHT));
             for (CodePackage pack : model.getPackages()) {
                 g.add(transform.apply(pack));
             }
