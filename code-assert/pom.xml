@@ -87,7 +87,7 @@
         <dependency>
             <groupId>guru.nidi</groupId>
             <artifactId>graphviz-java</artifactId>
-            <version>0.12.0</version>
+            <version>0.15.1</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -120,6 +120,10 @@
             <artifactId>checkstyle</artifactId>
             <version>${checkstyle.version}</version>
             <exclusions>
+                <exclusion>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
