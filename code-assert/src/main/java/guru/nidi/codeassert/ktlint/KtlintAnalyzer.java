@@ -15,12 +15,12 @@
  */
 package guru.nidi.codeassert.ktlint;
 
-import com.github.shyiko.ktlint.core.*;
+import com.pinterest.ktlint.core.*;
 import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.UsageCounter;
 import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +31,7 @@ import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
 
 public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
@@ -61,7 +62,9 @@ public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
         for (final File src : config.getSources(KOTLIN)) {
             try {
                 listener.currentFile = src;
-                KtLint.INSTANCE.lint(readFile(src), findRuleSets(), listener);
+                KtLint.INSTANCE.lint(new KtLint.Params(
+                        src.getAbsolutePath(), readFile(src), findRuleSets(),
+                        emptyMap(), listener, false, null, false));
             } catch (IOException e) {
                 LOG.error("Could not read file {}", src, e);
             }
@@ -106,12 +109,12 @@ public class KtlintAnalyzer implements Analyzer<List<LocatedLintError>> {
         return new KtlintResult(this, errors, collector.unusedActions(counter));
     }
 
-    private static class ErrorListener implements Function1<LintError, Unit> {
+    private static class ErrorListener implements Function2<LintError, Boolean, Unit> {
         final List<LocatedLintError> errors = new ArrayList<>();
         File currentFile;
 
         @Override
-        public Unit invoke(LintError e) {
+        public Unit invoke(LintError e, Boolean corrected) {
             errors.add(new LocatedLintError(currentFile, e.getLine(), e.getRuleId(), e.getDetail()));
             return null;
         }

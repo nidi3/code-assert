@@ -36,6 +36,7 @@ class KtlintAnalyzerTest {
         final KtlintResult result = new KtlintAnalyzer(AnalyzerConfig.maven(KOTLIN).test(), new KtlintCollector()
                 .just(In.classes("Linker").ignore("no-semi"))).analyze();
         assertMatcher(""
+                        + line("import-ordering", "Linker", 18, "Imports must be ordered in lexicographic order without any empty lines in-between")
                         + line("no-consecutive-blank-lines", "Linker", 34, "Needless blank line(s)")
                         + line("no-unused-imports", "Linker", 18, "Unused import")
                         + line("no-wildcard-imports", "Linker", 19, "Wildcard import"),

@@ -39,8 +39,7 @@ class DetektAnalyzerTest {
                 .just(In.classes("Linker").ignore("MaxLineLength")))
                 .analyze();
         assertMatcher(""
-                        + line(Style, "style", "NewLineAtEndOfFile", "Linker", 59, "Checks whether files end with a line separator.")
-                        + line(Style, "style", "WildcardImport", "Linker", 19, "Wildcard imports should be replaced with imports using fully qualified class names. Wildcard imports can lead to naming conflicts. A library update can introduce naming clashes with your classes which results in compilation errors."),
+                        + line(Style, "style", "NewLineAtEndOfFile", "Linker", 59, "Checks whether files end with a line separator."),
                 result, hasNoDetektIssues());
     }
 

@@ -19,7 +19,10 @@ import guru.nidi.codeassert.Analyzer;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.UsageCounter;
 import io.gitlab.arturbosch.detekt.api.*;
+import io.gitlab.arturbosch.detekt.api.internal.YamlConfig;
 import io.gitlab.arturbosch.detekt.core.*;
+import org.jetbrains.kotlin.config.JvmTarget;
+import org.jetbrains.kotlin.config.LanguageVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +36,7 @@ import static guru.nidi.codeassert.config.Language.KOTLIN;
 import static io.gitlab.arturbosch.detekt.api.Severity.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
@@ -75,8 +79,9 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
         try {
             final PrintStream printStream = new PrintStream(new LoggingOutputStream(), true, "utf-8");
             final ProcessingSettings settings = new ProcessingSettings(
-                    baseDir.toPath(), calcDetektConfig(), emptyList(), false, false, emptyList(),
-                    Executors.newSingleThreadExecutor(), printStream, printStream);
+                    singletonList(baseDir.toPath()), calcDetektConfig(), null, false, false, emptyList(), emptyList(),
+                    LanguageVersion.KOTLIN_1_3, JvmTarget.JVM_1_8, Executors.newSingleThreadExecutor(),
+                    printStream, printStream, false, false, emptyList());
             final DetektFacade df = DetektFacade.Companion.create(settings, ruleSetProviders(settings), emptyList());
             return createResult(baseDir, df.run());
         } catch (UnsupportedEncodingException e) {
@@ -129,6 +134,11 @@ public class DetektAnalyzer implements Analyzer<List<TypedDetektFinding>> {
         @Override
         public <T> T valueOrNull(String s) {
             return "autoCorrect".equals(s) ? (T) Boolean.FALSE : delegate.valueOrNull(s);
+        }
+
+        @Override
+        public String getParentPath() {
+            return delegate.getParentPath();
         }
     }
 

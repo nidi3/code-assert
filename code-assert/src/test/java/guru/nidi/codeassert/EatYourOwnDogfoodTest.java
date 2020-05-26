@@ -61,7 +61,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
             DependencyRule checkstyleLib = denyRule("com.puppycrawl.tools.checkstyle").andAllSub();
             DependencyRule detektLib = denyRule("io.gitlab.arturbosch.detekt").andAllSub();
             DependencyRule findBugsLib = denyRule("edu.umd.cs.findbugs").andAllSub();
-            DependencyRule ktlintLib = denyRule("com.github.shyiko.ktlint").andAllSub();
+            DependencyRule ktlintLib = denyRule("com.pinterest.ktlint").andAllSub();
             DependencyRule pmdLib = denyRule("net.sourceforge.pmd").andAllSub();
             DependencyRule graphvizLib = denyRule("guru.nidi.graphviz").andAllSub();
             DependencyRule config, dependency, findbugs, checkstyle, detekt, io, model, pmd, ktlint, util, junit, junitKotlin, jacoco;
