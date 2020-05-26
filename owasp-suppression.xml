@@ -28,4 +28,8 @@
         <cve>CVE-2019-7722</cve>
         <cpe>cpe:2.3:a:pmd_project:pmd:5.8.1</cpe>
     </suppress>
+    <suppress>
+        <cve>CVE-2020-10683</cve>
+        <cpe>cpe:/a:dom4j_project:dom4j</cpe>
+    </suppress>
 </suppressions>
