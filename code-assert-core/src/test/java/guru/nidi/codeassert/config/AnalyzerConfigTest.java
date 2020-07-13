@@ -57,21 +57,21 @@ public class AnalyzerConfigTest {
 
     @Test
     void mavenOwnModule() {
-        final AnalyzerConfig config = AnalyzerConfig.maven("code-assert").mainAndTest();
+        final AnalyzerConfig config = AnalyzerConfig.maven("code-assert-core").mainAndTest();
         assertPath(config.getSourcePaths(), path("src/main/java", ""), path("src/test/java", ""));
         assertPath(config.getClassPaths(), path("target/classes", ""), path("target/test-classes", ""));
     }
 
     @Test
     void mavenModules() {
-        final AnalyzerConfig config = AnalyzerConfig.maven().modules("code-assert", "module").mainAndTest();
+        final AnalyzerConfig config = AnalyzerConfig.maven().modules("code-assert-core", "module").mainAndTest();
         assertPath(config.getSourcePaths(), path("src/main/java", ""), path("src/test/java", ""), path("module/src/main/java", ""), path("module/src/test/java", ""));
         assertPath(config.getClassPaths(), path("target/classes", ""), path("target/test-classes", ""), path("module/target/classes", ""), path("module/target/test-classes", ""));
     }
 
     @Test
     void mavenModuleRedefinition() {
-        assertThrows(IllegalStateException.class, () -> AnalyzerConfig.maven("code-assert").modules("").mainAndTest());
+        assertThrows(IllegalStateException.class, () -> AnalyzerConfig.maven("code-assert-core").modules("").mainAndTest());
     }
 
     @Test
@@ -111,7 +111,7 @@ public class AnalyzerConfigTest {
 
     @Test
     void gradleOwnModule() {
-        final AnalyzerConfig config = AnalyzerConfig.gradle("code-assert").mainAndTest();
+        final AnalyzerConfig config = AnalyzerConfig.gradle("code-assert-core").mainAndTest();
         assertPath(config.getSourcePaths(), path("src/main/java", ""), path("src/test/java", ""));
         assertPath(config.getClassPaths(),
                 path("build/classes/main", ""),

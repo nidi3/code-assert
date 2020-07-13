@@ -16,33 +16,15 @@
 package guru.nidi.codeassert.junit;
 
 import guru.nidi.codeassert.checkstyle.CheckstyleResult;
-import guru.nidi.codeassert.dependency.DependencyResult;
 import guru.nidi.codeassert.findbugs.FindBugsResult;
-import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.pmd.CpdResult;
 import guru.nidi.codeassert.pmd.PmdResult;
 
-import java.util.EnumSet;
-
-public class CodeAssertTestBase {
-    private Model model;
-    private DependencyResult dependencyResult;
+public class CodeAssertTestBase extends CodeAssertCoreTestBase {
     private FindBugsResult findBugsResult;
     private PmdResult pmdResult;
     private CpdResult cpdResult;
     private CheckstyleResult checkstyleResult;
-
-    protected EnumSet<CodeAssertTestType> defaultTests() {
-        return EnumSet.allOf(CodeAssertTestType.class);
-    }
-
-    protected Model createModel() {
-        return null;
-    }
-
-    protected DependencyResult analyzeDependencies() {
-        return null;
-    }
 
     protected FindBugsResult analyzeFindBugs() {
         return null;
@@ -58,20 +40,6 @@ public class CodeAssertTestBase {
 
     protected CheckstyleResult analyzeCheckstyle() {
         return null;
-    }
-
-    protected synchronized Model model() {
-        if (model == null) {
-            model = createModel();
-        }
-        return model;
-    }
-
-    protected synchronized DependencyResult dependencyResult() {
-        if (dependencyResult == null) {
-            dependencyResult = analyzeDependencies();
-        }
-        return dependencyResult;
     }
 
     protected synchronized FindBugsResult findBugsResult() {

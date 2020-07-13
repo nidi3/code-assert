@@ -25,7 +25,7 @@ import guru.nidi.codeassert.pmd.*;
 import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyRules.denyAll;
-import static guru.nidi.codeassert.junit.CodeAssertMatchers.matchesRulesExactly;
+import static guru.nidi.codeassert.junit.CodeAssertCoreMatchers.matchesRulesExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class CodeTest extends CodeAssertJunit5Test {

@@ -25,6 +25,7 @@
     </properties>
 
     <modules>
+        <module>code-assert-core</module>
         <module>code-assert</module>
         <module>code-assert-maven-plugin</module>
         <module>code-assert-gui</module>

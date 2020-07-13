@@ -20,7 +20,7 @@ import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
 import guru.nidi.codeassert.util.ResultMatcher;
 import org.hamcrest.Description;
 
-import static java.lang.System.*;
+import static java.lang.System.lineSeparator;
 
 public class CheckstyleMatcher extends ResultMatcher<CheckstyleResult, AuditEvent> {
     public void describeTo(Description description) {

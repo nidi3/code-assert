@@ -23,7 +23,7 @@ import org.hamcrest.StringDescription;
 import org.junit.jupiter.api.Test;
 
 import static guru.nidi.codeassert.dependency.DependencyCollector.CYCLE;
-import static guru.nidi.codeassert.junit.CodeAssertMatchers.hasNoCycles;
+import static guru.nidi.codeassert.junit.CodeAssertCoreMatchers.hasNoCycles;
 import static java.lang.System.lineSeparator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

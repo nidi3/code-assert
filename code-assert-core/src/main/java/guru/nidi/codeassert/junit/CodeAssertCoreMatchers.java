@@ -16,69 +16,49 @@
 package guru.nidi.codeassert.junit;
 
 import guru.nidi.codeassert.AnalyzerResult;
-import guru.nidi.codeassert.checkstyle.CheckstyleMatcher;
-import guru.nidi.codeassert.checkstyle.CheckstyleResult;
-import guru.nidi.codeassert.dependency.DependencyResult;
-import guru.nidi.codeassert.findbugs.FindBugsMatcher;
-import guru.nidi.codeassert.findbugs.FindBugsResult;
+import guru.nidi.codeassert.dependency.*;
+import guru.nidi.codeassert.jacoco.CoverageMatcher;
 import guru.nidi.codeassert.jacoco.JacocoResult;
-import guru.nidi.codeassert.model.Model;
-import guru.nidi.codeassert.pmd.*;
+import guru.nidi.codeassert.model.*;
 import org.hamcrest.Matcher;
 
-public final class CodeAssertMatchers {
-    private CodeAssertMatchers() {
+public final class CodeAssertCoreMatchers {
+    private CodeAssertCoreMatchers() {
     }
 
     public static Matcher<DependencyResult> matchesRules() {
-        return CodeAssertCoreMatchers.matchesRules();
+        return new DependencyResultMatcher(false, false);
     }
 
     public static Matcher<DependencyResult> matchesRulesExactly() {
-        return CodeAssertCoreMatchers.matchesRulesExactly();
+        return new DependencyResultMatcher(true, true);
     }
 
     public static Matcher<DependencyResult> matchesRulesIgnoringNonExisting() {
-        return CodeAssertCoreMatchers.matchesRulesIgnoringNonExisting();
+        return new DependencyResultMatcher(false, true);
     }
 
     public static Matcher<DependencyResult> matchesRulesIgnoringUndefined() {
-        return CodeAssertCoreMatchers.matchesRulesIgnoringUndefined();
+        return new DependencyResultMatcher(true, false);
     }
 
     public static Matcher<Model> exposesNoInternalTypes() {
-        return CodeAssertCoreMatchers.exposesNoInternalTypes();
+        return new InternalTypeInPublicApiMatcher();
     }
 
     public static Matcher<Model> hasNoPublicMembersInInternalTypes() {
-        return CodeAssertCoreMatchers.hasNoPublicMembersInInternalTypes();
+        return new PublicMemberInInternalTypeMatcher();
     }
 
     public static Matcher<DependencyResult> hasNoCycles() {
-        return CodeAssertCoreMatchers.hasNoCycles();
+        return new DependencyCycleMatcher();
     }
 
     public static <T extends AnalyzerResult<?>> Matcher<T> hasNoUnusedActions() {
-        return CodeAssertCoreMatchers.hasNoUnusedActions();
+        return new UnusedActionsMatcher<>();
     }
 
     public static Matcher<JacocoResult> hasEnoughCoverage() {
-        return CodeAssertCoreMatchers.hasEnoughCoverage();
-    }
-
-    public static Matcher<FindBugsResult> hasNoBugs() {
-        return new FindBugsMatcher();
-    }
-
-    public static Matcher<PmdResult> hasNoPmdViolations() {
-        return new PmdMatcher();
-    }
-
-    public static Matcher<CpdResult> hasNoCodeDuplications() {
-        return new CpdMatcher();
-    }
-
-    public static Matcher<CheckstyleResult> hasNoCheckstyleIssues() {
-        return new CheckstyleMatcher();
+        return new CoverageMatcher();
     }
 }

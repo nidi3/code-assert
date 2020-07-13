@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
+import static guru.nidi.codeassert.junit.CodeAssertCoreMatchers.*;
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.Collections.addAll;
@@ -400,10 +400,10 @@ public class DependencyRulesTest {
                         .with(0, dep("CycleTest"), set(), dep("DependencyAnalyzer"))
                         .with(0, dep("CycleTest"), set(), dep("DependencyResult"))
                         .with(0, dep("CycleTest"), set(), dep("DependencyCollector"))
-                        .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertMatchers")),
+                        .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertCoreMatchers")),
                 result.denied);
         assertEquals(new DependencyMap()
-                        .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertMatchers")),
+                        .with(0, dep("CycleTest"), set(), ca("junit.CodeAssertCoreMatchers")),
                 result3.denied);
         assertEquals(68, result.undefined.size());
     }

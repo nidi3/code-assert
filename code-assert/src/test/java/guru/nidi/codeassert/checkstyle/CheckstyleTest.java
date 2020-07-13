@@ -20,7 +20,6 @@ import guru.nidi.codeassert.AnalyzerResult;
 import guru.nidi.codeassert.EatYourOwnDogfoodTest;
 import guru.nidi.codeassert.config.AnalyzerConfig;
 import guru.nidi.codeassert.config.In;
-import guru.nidi.codeassert.dependency.DependencyRulesTest;
 import guru.nidi.codeassert.snippets.DependencyTest;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -63,23 +62,12 @@ public class CheckstyleTest {
                                 "multiple.variable.declarations.comma", "custom.import.order.nonGroup.expected")),
                         just(In.classes("Coverage", "Constant", "DependencyRulesTest", "DependencyTest", "EatYourOwnDogfoodTest")
                                 .ignore("empty.line.separator")),
-                        just(In.classes("*Test").ignore("maxLineLen")),
-                        just(In.classes("DependencyRulesTest", "ExampleAbstractClass", "ExampleConcreteClass",
-                                "ExampleInterface", "SignatureParser", "DependencyTest", "EatYourOwnDogfoodTest")
-                                .ignore("name.invalidPattern"))
+                        just(In.classes("*Test").ignore("maxLineLen"))
                 ));
 
         assertMatcher(""
                         + line(WARNING, "abbreviation.as.word", MAIN, "pmd/PmdRulesets", 165, "Abbreviation in name 'serialVersionUID' must contain no more than '1' capital letters.")
-                        + line(WARNING, "abbreviation.as.word", MAIN, "pmd/PmdRulesets", 210, "Abbreviation in name 'serialVersionUID' must contain no more than '1' capital letters.")
-                        + line(WARNING, "empty.line.separator", TEST, "io/ModelVisualizerTest", 59, "',' should be separated from previous statement.")
-                        + line(WARNING, "indentation.error", MAIN, "model/InternalTypeInPublicApiMatcher", 45, "'lambda arguments' have incorrect indentation level 32, expected level should be 28.")
-                        + line(WARNING, "indentation.error", MAIN, "model/InternalTypeInPublicApiMatcher", 47, "'lambda arguments' have incorrect indentation level 32, expected level should be 28.")
-                        + line(WARNING, "one.top.level.class", TEST, "model/ExampleConcreteClass", 79, "Top-level class ExamplePackageClass has to reside in its own source file.")
-                        + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 58, "Overload methods should not be split. Previous overloaded method located at line '52'.")
-                        + line(WARNING, "overload.methods.declaration", MAIN, "config/BaseCollector", 69, "Overload methods should not be split. Previous overloaded method located at line '56'.")
-                        + line(WARNING, "overload.methods.declaration", MAIN, "model/SourceFileParser", 92, "Overload methods should not be split. Previous overloaded method located at line '67'.")
-                        + line(WARNING, "tag.continuation.indent", MAIN, "dependency/DependencyMap", 103, "Line continuation have incorrect indentation level, expected level should be 4."),
+                        + line(WARNING, "abbreviation.as.word", MAIN, "pmd/PmdRulesets", 210, "Abbreviation in name 'serialVersionUID' must contain no more than '1' capital letters."),
                 analyzer.analyze(), hasNoCheckstyleIssues());
     }
 
@@ -92,15 +80,12 @@ public class CheckstyleTest {
                                 "design.forExtension", "hidden.field", "import.avoidStar", "inline.conditional.avoid",
                                 "magic.number")),
                         just(In.classes("*Test").ignore("maxLineLen")),
-                        just(In.classes("Bugs*").ignore("final.class")),
-                        just(In.classes(DependencyRulesTest.class, DependencyTest.class, EatYourOwnDogfoodTest.class).ignore("name.invalidPattern"))
+                        just(In.classes(DependencyTest.class, EatYourOwnDogfoodTest.class).ignore("name.invalidPattern"))
                 ));
 
         assertMatcher(""
-                        + line(ERROR, "assignment.inner.avoid", MAIN, "model/SignatureParser", 254, "Inner assignments should be avoided.")
-                        + line(ERROR, "maxParam", MAIN, "jacoco/Coverage", 29, "More than 7 parameters (found 12).")
-                        + line(ERROR, "variable.notPrivate", MAIN, "config/CollectorConfig", 26, "Variable 'actions' must be private and have accessor methods.")
-                        + line(ERROR, "variable.notPrivate", MAIN, "model/Scope", 28, "Variable 'model' must be private and have accessor methods."),
+                        + line(ERROR, "final.class", TEST, "Bugs", 27, "Class InnerBugs should be declared as final.")
+                        + line(ERROR, "final.class", TEST, "Bugs2", 18, "Class Bugs2 should be declared as final."),
                 analyzer.analyze(), hasNoCheckstyleIssues());
     }
 

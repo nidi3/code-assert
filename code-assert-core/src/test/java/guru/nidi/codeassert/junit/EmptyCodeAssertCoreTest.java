@@ -15,5 +15,5 @@
  */
 package guru.nidi.codeassert.junit;
 
-class EmptyCodeAssertTest extends CodeAssertTest {
+class EmptyCodeAssertCoreTest extends CodeAssertCoreTest {
 }

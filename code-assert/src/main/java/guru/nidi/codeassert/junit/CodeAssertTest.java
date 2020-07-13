@@ -18,6 +18,7 @@ package guru.nidi.codeassert.junit;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static guru.nidi.codeassert.junit.CodeAssertCoreMatchers.*;
 import static guru.nidi.codeassert.junit.CodeAssertMatchers.*;
 import static guru.nidi.codeassert.junit.CodeAssertTestType.*;
 import static org.hamcrest.MatcherAssert.assertThat;

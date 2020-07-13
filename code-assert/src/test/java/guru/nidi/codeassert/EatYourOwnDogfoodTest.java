@@ -23,7 +23,8 @@ import guru.nidi.codeassert.findbugs.*;
 import guru.nidi.codeassert.jacoco.Coverage;
 import guru.nidi.codeassert.junit.CodeAssertJunit5Test;
 import guru.nidi.codeassert.ktlint.KtlintAnalyzer;
-import guru.nidi.codeassert.model.*;
+import guru.nidi.codeassert.model.CodeClass;
+import guru.nidi.codeassert.model.Model;
 import guru.nidi.codeassert.pmd.*;
 import net.sourceforge.pmd.RulePriority;
 import org.junit.jupiter.api.BeforeAll;
@@ -63,21 +64,18 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
             DependencyRule findBugsLib = denyRule("edu.umd.cs.findbugs").andAllSub();
             DependencyRule ktlintLib = denyRule("com.pinterest.ktlint").andAllSub();
             DependencyRule pmdLib = denyRule("net.sourceforge.pmd").andAllSub();
-            DependencyRule graphvizLib = denyRule("guru.nidi.graphviz").andAllSub();
-            DependencyRule config, dependency, findbugs, checkstyle, detekt, io, model, pmd, ktlint, util, junit, junitKotlin, jacoco;
+            DependencyRule config, findbugs, checkstyle, detekt, pmd, ktlint, util, junit, junitKotlin;
 
             @Override
             public void defineRules() {
                 base().mayBeUsedBy(all());
                 config.mayBeUsedBy(all());
                 util.mayBeUsedBy(all());
-                dependency.mayUse(model);
-                junit.mayUse(model, dependency, findbugs, checkstyle, pmd, jacoco);
+                junit.mayUse(findbugs, checkstyle, pmd);
                 junitKotlin.mayUse(ktlint, detekt);
                 checkstyle.mayUse(checkstyleLib);
                 detekt.mayUse(detektLib);
                 findbugs.mayUse(findBugsLib);
-                io.mayUse(jacoco, model, graphvizLib);
                 ktlint.mayUse(ktlintLib);
                 pmd.mayUse(pmdLib);
             }
@@ -101,9 +99,6 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
                 .apply(FindBugsConfigs.minimalFindBugsIgnore())
                 .just(
                         In.clazz(DependencyRules.class).withMethods("withRules").and(In.clazz(PmdRuleset.class)).ignore("DP_DO_INSIDE_DO_PRIVILEGED"),
-                        In.classes("*Comparator").ignore("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"),
-                        In.classes("*Exception").ignore("SE_BAD_FIELD"),
-                        In.clazz(Coverage.class).ignore("EQ_COMPARETO_USE_OBJECT_EQUALS"),
                         In.everywhere().ignore("EI_EXPOSE_REP", "EI_EXPOSE_REP2", "PATH_TRAVERSAL_IN", "CRLF_INJECTION_LOGS"),
                         In.classes("ClassFileParser", "Constant", "MemberInfo", "PmdRulesets", "Reason").ignore("URF_UNREAD_FIELD"));
         return new FindBugsAnalyzer(AnalyzerConfig.maven().main(), bugCollector).analyze();
@@ -153,11 +148,7 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
         System.gc();
         final StyleEventCollector collector = new StyleEventCollector()
                 .apply(CheckstyleConfigs.minimalCheckstyleIgnore())
-                .just(In.classes("Coverage", "Constant").ignore("empty.line.separator"))
-                .just(In.classes("BaseCollector", "In", "Location", "SourceFileParser").ignore("overload.methods.declaration"))
-                .just(In.clazz(PmdRulesets.class).ignore("abbreviation.as.word"))
-                .just(In.clazz(InternalTypeInPublicApiMatcher.class).ignore("indentation.error"))
-                .just(In.classes("DependencyMap").ignore("tag.continuation.indent"));
+                .just(In.clazz(PmdRulesets.class).ignore("abbreviation.as.word"));
 
         return new CheckstyleAnalyzer(AnalyzerConfig.maven().main(), CheckstyleConfigs.adjustedGoogleStyleChecks(), collector).analyze();
     }
