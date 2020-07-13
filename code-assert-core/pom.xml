@@ -12,7 +12,7 @@
     <name>${project.artifactId}</name>
 
     <properties>
-        <maven-jar.version>3.2.0</maven-jar.version>
+        <module.name>guru.nidi.codeassert.core</module.name>
     </properties>
 
     <build>
@@ -72,18 +72,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven-jar.version}</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Automatic-Module-Name>guru.nidi.codeassert</Automatic-Module-Name>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
         </plugins>
     </build>

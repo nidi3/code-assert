@@ -12,6 +12,10 @@
     <name>${project.artifactId}</name>
     <packaging>maven-plugin</packaging>
 
+    <properties>
+        <module.name>guru.nidi.codeassert.mavenplugin</module.name>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
