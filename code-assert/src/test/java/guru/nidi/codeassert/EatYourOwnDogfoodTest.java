@@ -65,13 +65,14 @@ public class EatYourOwnDogfoodTest extends CodeAssertJunit5Test {
             DependencyRule ktlintLib = denyRule("com.pinterest.ktlint").andAllSub();
             DependencyRule pmdLib = denyRule("net.sourceforge.pmd").andAllSub();
             DependencyRule config, findbugs, checkstyle, detekt, pmd, ktlint, util, junit, junitKotlin;
+            DependencyRule dependency, model, jacoco;
 
             @Override
             public void defineRules() {
                 base().mayBeUsedBy(all());
                 config.mayBeUsedBy(all());
                 util.mayBeUsedBy(all());
-                junit.mayUse(findbugs, checkstyle, pmd);
+                junit.mayUse(dependency, model, jacoco, findbugs, checkstyle, pmd);
                 junitKotlin.mayUse(ktlint, detekt);
                 checkstyle.mayUse(checkstyleLib);
                 detekt.mayUse(detektLib);
