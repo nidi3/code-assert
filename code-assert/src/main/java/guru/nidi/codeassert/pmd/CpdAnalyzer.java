@@ -29,6 +29,10 @@ import java.util.stream.StreamSupport;
 import static java.util.stream.Collectors.toList;
 
 public class CpdAnalyzer implements Analyzer<List<Match>> {
+    static {
+        JavaUtilLoggerConfigurer.init();
+    }
+
     private static final Comparator<Match> MATCH_SORTER = Comparator
             .comparingInt(Match::getTokenCount).reversed()
             .thenComparing(m -> m.getFirstMark().getFilename());

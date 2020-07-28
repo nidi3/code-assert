@@ -13,30 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package guru.nidi.codeassert;
+package guru.nidi.codeassert.pmd;
 
-import java.util.List;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
-public class AnalyzerResult<T> {
-    private final Analyzer<T> analyzer;
-    private final T findings;
-    private final List<String> unusedActions;
-
-    public AnalyzerResult(Analyzer<T> analyzer, T findings, List<String> unusedActions) {
-        this.analyzer = analyzer;
-        this.findings = findings;
-        this.unusedActions = unusedActions;
+final class JavaUtilLoggerConfigurer {
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
     }
 
-    public Analyzer<T> analyzer() {
-        return analyzer;
+    private JavaUtilLoggerConfigurer() {
     }
 
-    public T findings() {
-        return findings;
-    }
-
-    public List<String> unusedActions() {
-        return unusedActions;
+    static void init() {
     }
 }

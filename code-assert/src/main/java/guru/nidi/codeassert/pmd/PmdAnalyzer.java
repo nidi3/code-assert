@@ -38,6 +38,10 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 public class PmdAnalyzer implements Analyzer<List<RuleViolation>> {
+    static {
+        JavaUtilLoggerConfigurer.init();
+    }
+
     private static final Comparator<RuleViolation> VIOLATION_SORTER = Comparator
             .comparingInt((RuleViolation v) -> v.getRule().getPriority().getPriority())
             .thenComparing(v -> v.getRule().getName());

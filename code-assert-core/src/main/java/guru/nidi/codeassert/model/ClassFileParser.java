@@ -15,7 +15,7 @@
  */
 package guru.nidi.codeassert.model;
 
-import org.apache.commons.io.input.CountingInputStream;
+import guru.nidi.codeassert.util.CountingInputStream;
 
 import java.io.*;
 import java.util.ArrayList;
