@@ -25,7 +25,7 @@ class AnalyzerTest {
 
     @Test
     void packages() {
-        assertEquals(42, model.getPackages().size());
+        assertEquals(41, model.getPackages().size());
     }
 
     @Test
