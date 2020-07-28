@@ -322,7 +322,7 @@ If it does so, these standard checks will be executed:
 [//]: # (codeTest)
 ```java
 //extend CodeAssertTest if you still use JUnit 4
-public class CodeTest extends CodeAssertCoreJunit5Test {
+public class CodeTest extends CodeAssertJunit5Test {
 
     private static final AnalyzerConfig CONFIG = AnalyzerConfig.maven().main();
 
@@ -339,6 +339,27 @@ public class CodeTest extends CodeAssertCoreJunit5Test {
 
         final DependencyRules rules = denyAll().withExternals("java.*").withRelativeRules(new MyProject());
         return new DependencyAnalyzer(CONFIG).rules(rules).analyze();
+    }
+
+    @Override
+    protected FindBugsResult analyzeFindBugs() {
+        final BugCollector bugCollector = new BugCollector().just(
+                In.classes("*Exception").ignore("SE_BAD_FIELD"));
+        return new FindBugsAnalyzer(CONFIG, bugCollector).analyze();
+    }
+
+    @Override
+    protected CheckstyleResult analyzeCheckstyle() {
+        final StyleEventCollector bugCollector = new StyleEventCollector().just(
+                In.everywhere().ignore("javadoc.missing"));
+        return new CheckstyleAnalyzer(CONFIG, StyleChecks.google(), bugCollector).analyze();
+    }
+
+    @Override
+    protected PmdResult analyzePmd() {
+        final PmdViolationCollector collector = new PmdViolationCollector().just(
+                In.everywhere().ignore("MethodArgumentCouldBeFinal"));
+        return new PmdAnalyzer(CONFIG, collector).withRulesets(basic(), braces()).analyze();
     }
 }
 ```
