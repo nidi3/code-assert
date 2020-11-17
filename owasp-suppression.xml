@@ -14,12 +14,6 @@
         <cpe>cpe:2.3:a:google:guava:19.0</cpe>
     </suppress>
     <suppress>
-        <cve>CVE-2019-10101</cve>
-        <cve>CVE-2019-10102</cve>
-        <cve>CVE-2019-10103</cve>
-        <cpe>cpe:2.3:a:jetbrains:kotlin:1.2.61</cpe>
-    </suppress>
-    <suppress>
         <vulnerabilityName>Directory traversal in org.codehaus.plexus.util.Expand</vulnerabilityName>
         <vulnerabilityName>Possible XML Injection</vulnerabilityName>
         <cpe>cpe:2.3:a:plexus-utils_project:plexus-utils:3.0.20</cpe>
@@ -31,5 +25,9 @@
     <suppress>
         <cve>CVE-2020-10683</cve>
         <cpe>cpe:/a:dom4j_project:dom4j</cpe>
+    </suppress>
+    <suppress>
+        <cve>CVE-2020-15250</cve>
+        <cpe>cpe:2.3:a:junit:junit:4.13.1</cpe>
     </suppress>
 </suppressions>
