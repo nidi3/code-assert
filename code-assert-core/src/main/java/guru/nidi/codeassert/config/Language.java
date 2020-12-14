@@ -23,7 +23,9 @@ public enum Language {
     JAVA("java", asList(".java")),
     KOTLIN("kotlin", asList(".kt", ".kts")),
     SCALA("scala", asList(".scala")),
-    GROOVY("groovy", asList(".groovy", ".gvy", ".gy", ".gsh"));
+    GROOVY("groovy", asList(".groovy", ".gvy", ".gy", ".gsh")),
+    ADOC("adoc", asList(".adoc")),
+    ;
 
     final String path;
     final List<String> suffices;
