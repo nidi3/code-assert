@@ -11,6 +11,7 @@
     </suppress>
     <suppress>
         <cve>CVE-2018-10237</cve>
+        <cve>CVE-2020-8908</cve>
         <cpe>cpe:2.3:a:google:guava:19.0</cpe>
     </suppress>
     <suppress>
