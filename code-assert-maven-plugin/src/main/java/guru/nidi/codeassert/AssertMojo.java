@@ -33,7 +33,7 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
  */
 @Mojo(name = "assert", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class AssertMojo extends AbstractMojo {
-    static final String JACOCO_VERSION = "0.8.5";
+    static final String JACOCO_VERSION = "0.8.6";
     private static final String SUREFIRE_VERSION = "2.22.2";
 
     /**
