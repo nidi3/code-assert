@@ -93,7 +93,7 @@ The following steps are needed:
 <plugin>
     <groupId>guru.nidi</groupId>
     <artifactId>code-assert-maven-plugin</artifactId>
-    <version>0.0.6</version>
+    <version>0.9.14</version>
     <executions>
         <execution>
             <goals>

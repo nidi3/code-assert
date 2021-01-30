@@ -32,7 +32,7 @@ public class CodePackage extends UsingElement<CodePackage> {
     private final List<CodePackage> uses;
     private final Set<CodeClass> annotations;
 
-    CodePackage(String name) {
+    public CodePackage(String name) {
         this.name = name;
         classes = new HashSet<>();
         uses = new ArrayList<>();

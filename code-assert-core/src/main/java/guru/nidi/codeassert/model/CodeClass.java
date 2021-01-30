@@ -49,6 +49,10 @@ public class CodeClass extends UsingElement<CodeClass> {
     int emptyLines;
     int totalLines;
 
+    public CodeClass(String fullName) {
+        this(fullName, new CodePackage(fullName.substring(0, fullName.lastIndexOf('.'))));
+    }
+
     CodeClass(String name, CodePackage pack) {
         this.name = name;
         this.pack = pack;
@@ -208,13 +212,13 @@ public class CodeClass extends UsingElement<CodeClass> {
     public boolean equals(Object other) {
         if (other instanceof CodeClass) {
             final CodeClass otherClass = (CodeClass) other;
-            return otherClass.getName().equals(getName());
+            return otherClass.getName().equals(getName()) && otherClass.getPackage().equals(getPackage());
         }
         return false;
     }
 
     public int hashCode() {
-        return getName().hashCode();
+        return getName().hashCode() * 31 + getPackage().hashCode();
     }
 
     @Override

@@ -10,11 +10,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class CodeCoverage {
     @Test
     void coverage() {
-        JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(BRANCH, LINE, METHOD)
-                .just(For.global().setMinima(80, 80, 80))
-                .just(For.allPackages().setMinima(75, 80, 80))
-                .just(For.thePackage("*junit").setMinima(70, 70, 60))
-        );
+        JacocoAnalyzer analyzer = new JacocoAnalyzer(new CoverageCollector(BRANCH, LINE, METHOD).just(
+                For.allPackages().setMinima(75, 80, 80),
+                For.thePackage("*.detekt").setMinima(35, 80, 65),
+                For.thePackage("*.findbugs").setMinima(70, 80, 80),
+                For.thePackage("*.junit").setMinima(35, 55, 50)
+        ));
         assertThat(analyzer.analyze(), hasEnoughCoverage());
     }
 }

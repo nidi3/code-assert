@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.util.*;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -59,7 +62,7 @@ public class ClassFileParserTest {
     void size() throws IOException {
         final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
         assertEquals(518, clazz.getCodeSize());
-        assertEquals(2221, clazz.getTotalSize());
+        assertThat(clazz.getTotalSize(), anyOf(equalTo(2218), equalTo(2221)));
     }
 
     @Test
@@ -98,8 +101,11 @@ public class ClassFileParserTest {
     @Test
     void classImportCounts() throws IOException {
         final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
-        assertCollectionEquals(toString(clazz.usedPackageCounts()),
-                "java.net 1", "java.text 1", "java.sql 1", "java.lang 5", "java.io 3",
+        final Map<CodePackage, Integer> packCounts = clazz.usedPackageCounts();
+        final Integer javaLangCount = packCounts.remove(new CodePackage("java.lang"));
+        assertThat(javaLangCount, anyOf(equalTo(4), equalTo(5)));
+        assertCollectionEquals(toString(packCounts),
+                "java.net 1", "java.text 1", "java.sql 1", "java.io 3",
                 "java.rmi 1", "java.util 1", "java.util.jar 1", "java.math 1",
 
                 // annotations
@@ -126,8 +132,11 @@ public class ClassFileParserTest {
     @Test
     void usedClassCount() throws IOException {
         final CodeClass clazz = parse(Path.testClass("ExampleConcreteClass"));
-        assertCollectionEquals(toString(clazz.usedClassCounts()),
-                "java.lang.String 3", "java.lang.Exception 2", "java.io.IOException 1", "java.io.File 2",
+        final Map<CodeClass, Integer> classCounts = clazz.usedClassCounts();
+        final Integer exCount = classCounts.remove(new CodeClass("java.lang.Exception"));
+        assertThat(exCount, anyOf(equalTo(1), equalTo(2)));
+        assertCollectionEquals(toString(classCounts),
+                "java.lang.String 3", "java.io.IOException 1", "java.io.File 2",
                 "java.math.BigDecimal 1", "java.util.Vector 1", "java.util.jar.JarFile 1", "java.net.URL 1",
                 "java.awt.im.InputContext 1", "java.awt.geom.AffineTransform 1",
                 "java.awt.image.renderable.ContextualRenderedImageFactory 1", "java.awt.Checkbox 1",
