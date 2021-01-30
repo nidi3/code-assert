@@ -33,6 +33,6 @@ class AnalyzerTest {
 
     @Test
     void classes() {
-        assertThat(model.getClasses().size(), anyOf(equalTo(140), equalTo(141), equalTo(142)));
+        assertThat(model.getClasses().size(), anyOf(equalTo(139), equalTo(140), equalTo(141), equalTo(142)));
     }
 }
