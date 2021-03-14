@@ -13,7 +13,7 @@
 
     <properties>
         <module.name>guru.nidi.codeassert</module.name>
-        <checkstyle.version>6.19</checkstyle.version>
+        <checkstyle.version>8.29</checkstyle.version>
         <findbugs.version>4.2.0</findbugs.version>
         <findsecbugs.version>1.11.0</findsecbugs.version>
         <pmd.version>5.8.1</pmd.version>
